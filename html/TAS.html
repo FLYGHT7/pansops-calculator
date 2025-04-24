@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TAS Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f4f7f9] min-h-screen">
+  <div class="max-w-3xl mx-auto p-6 bg-white shadow-xl rounded-2xl mt-10 border border-gray-200">
+    <h1 class="text-3xl font-bold text-[#1f3b57] mb-6">True Airspeed (TAS) Calculator</h1>
+
+    <!-- File Upload Section -->
+    <div class="flex justify-between items-center mb-6">
+      <label for="loadFile" class="block mb-1 font-medium text-gray-700">Upload Saved ISA Parameters File</label>
+      <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
+      <button onclick="document.getElementById('loadFile').click()" class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
+        Load Parameters
+      </button>
+    </div>
+
+    <!-- Inputs for TAS Calculation -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+      <div>
+        <label class="block mb-1 font-medium text-gray-700">Indicated Airspeed (IAS) in knots</label>
+        <input id="ias" type="number" class="w-full p-2 border border-gray-300 rounded-xl" placeholder="Enter IAS" />
+      </div>
+      <div>
+        <label class="block mb-1 font-medium text-gray-700">Altitude (in feet)</label>
+        <input id="altitude" type="number" class="w-full p-2 border border-gray-300 rounded-xl" placeholder="Enter altitude" />
+      </div>
+      <div>
+        <label class="block mb-1 font-medium text-gray-700">ISA Deviation (VAR) in °C</label>
+        <input id="isaDeviation" type="number" class="w-full p-2 border border-gray-300 rounded-xl" placeholder="Enter ISA Deviation or Load Parameters" />
+      </div>
+    </div>
+    <button onclick="calculateTAS()" class="mt-4 bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
+      Calculate True Airspeed
+    </button>
+
+    <!-- Results for TAS -->
+    <div id="tasResults" class="mt-6 hidden bg-[#e6f4ea] p-4 rounded-xl border border-green-300">
+      <p><strong>k Factor:</strong> <span id="kFactor"></span></p>
+      <p><strong>True Airspeed (TAS):</strong> <span id="tas"></span> knots</p>
+      <button onclick="copyResultsToClipboard()" class="mt-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-2xl shadow">
+        Copy Results as Table
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let loadedDeviation = null; // Stores loaded ISA deviation
+
+    function loadParameters(event) {
+      const file = event.target.files[0];
+      if (!file) {
+        alert("Please select a valid JSON file.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data["ISA Deviation"]) {
+            loadedDeviation = parseFloat(data["ISA Deviation"]);
+            alert(`ISA Deviation loaded: ${loadedDeviation} °C`);
+            document.getElementById("isaDeviation").value = loadedDeviation; // Populate input
+          } else {
+            alert("ISA Deviation not found in the file.");
+          }
+        } catch (err) {
+          alert("Invalid JSON file. Please upload a valid ISA parameters file.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function calculateTAS() {
+      const ias = parseFloat(document.getElementById("ias").value);
+      const altitude = parseFloat(document.getElementById("altitude").value);
+      const isaDeviation = loadedDeviation !== null ? loadedDeviation : parseFloat(document.getElementById("isaDeviation").value);
+
+      if (isNaN(ias) || isNaN(altitude) || isNaN(isaDeviation)) {
+        alert("Please enter valid values for IAS, altitude, and ISA deviation.");
+        return;
+      }
+
+      // Calculate 'k' based on altitude and ISA deviation
+      const k = (171233 * Math.sqrt((288 + isaDeviation) - 0.00198 * altitude)) / 
+                Math.pow(288 - 0.00198 * altitude, 2.628);
+
+      // Calculate True Airspeed
+      const tas = k * ias;
+
+      // Display results with 4 decimal places
+      document.getElementById("kFactor").textContent = k.toFixed(4);
+      document.getElementById("tas").textContent = tas.toFixed(4);
+      document.getElementById("tasResults").classList.remove("hidden");
+    }
+
+function copyResultsToClipboard() {
+  const ias = document.getElementById("ias").value || "N/A";
+  const altitude = document.getElementById("altitude").value || "N/A";
+  const isaDeviation = document.getElementById("isaDeviation").value || "N/A";
+  const kFactor = document.getElementById("kFactor").textContent || "N/A";
+  const tas = document.getElementById("tas").textContent || "N/A";
+
+  // Create a formatted Word-style table as HTML
+  const htmlContent = `
+    <table border="1" style="border-collapse: collapse; text-align: center;">
+      <tr><th>Parameter</th><th>Value</th></tr>
+      <tr><td>Indicated Airspeed (IAS)</td><td>${ias} knots</td></tr>
+      <tr><td>Altitude</td><td>${altitude} feet</td></tr>
+      <tr><td>ISA Deviation (VAR)</td><td>${isaDeviation} °C</td></tr>
+      <tr><td>k Factor</td><td>${kFactor}</td></tr>
+      <tr><td>True Airspeed (TAS)</td><td>${tas} knots</td></tr>
+    </table>
+  `;
+
+  // Create a Blob for the content
+  const blob = new Blob([htmlContent], { type: "text/html" });
+
+  // Use Clipboard API to copy the Blob contents
+  navigator.clipboard.write([
+    new ClipboardItem({ [blob.type]: blob })
+  ]).then(() => {
+    alert("Formatted table with 'Parameter' copied to clipboard! You can paste it into Word.");
+  }).catch(err => {
+    console.error("Error copying content to clipboard:", err);
+  });
+}
+
+  
+  </script>
+</body>
+</html>

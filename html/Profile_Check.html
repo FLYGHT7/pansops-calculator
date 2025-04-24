@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile Estimator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Optionally, you can add some custom CSS for the SVG text if desired */
+  </style>
+</head>
+<body class="bg-[#f4f7f9] min-h-screen">
+  <div class="max-w-3xl mx-auto p-6 bg-white shadow-xl rounded-2xl mt-10 border border-gray-200">
+    <h1 class="text-3xl font-bold text-[#1f3b57] mb-6">
+      Profile Estimator
+    </h1>
+    
+    <!-- Load/Save Parameters -->
+    <div class="flex justify-between items-center mb-6">
+      <label for="loadFile" class="block mb-1 font-medium text-gray-700">
+        Load Parameters File (JSON)
+      </label>
+      <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
+      <button onclick="document.getElementById('loadFile').click()"
+              class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
+        Load Parameters
+      </button>
+      <button onclick="saveParameters()"
+              class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-2xl shadow">
+        Save Parameters
+      </button>
+    </div>
+    
+    <!-- Row 1: THR Elevation and TCH -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+      <!-- THR Elevation -->
+      <div>
+        <label class="block mb-1 font-medium text-gray-700">THR Elevation</label>
+        <div class="flex">
+          <input id="thrElev" type="number" class="flex-grow p-2 border border-gray-300 rounded-l-xl" placeholder="Enter THR Elev" />
+          <select id="thrElevUnit" class="p-2 border border-gray-300 rounded-r-xl">
+            <option value="ft" selected>ft</option>
+            <option value="m">m</option>
+          </select>
+        </div>
+      </div>
+      <!-- TCH -->
+      <div>
+        <label class="block mb-1 font-medium text-gray-700">TCH</label>
+        <div class="flex">
+          <input id="tch" type="number" class="flex-grow p-2 border border-gray-300 rounded-l-xl" placeholder="Enter TCH" />
+          <select id="tchUnit" class="p-2 border border-gray-300 rounded-r-xl">
+            <option value="ft" selected>ft</option>
+            <option value="m">m</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Row 2: VPA, Distance to FAF, Intermediate Length, Initial Length -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mt-4">
+      <!-- VPA -->
+      <div>
+        <label class="block mb-1 font-medium text-gray-700">Vertical Path Angle (°)</label>
+        <input id="vpa" type="number" step="0.01" class="w-full p-2 border border-gray-300 rounded-xl" placeholder="Enter VPA" />
+      </div>
+      <!-- Distance to FAF -->
+      <div>
+        <label class="block mb-1 font-medium text-gray-700">Distance to FAF (NM)</label>
+        <input id="distToFaf" type="number" class="w-full p-2 border border-gray-300 rounded-xl" placeholder="Enter Distance to FAF" />
+      </div>
+      <!-- Intermediate Length -->
+      <div>
+        <label class="block mb-1 font-medium text-gray-700">Intermediate Length (NM)</label>
+        <input id="intermediateLength" type="number" class="w-full p-2 border border-gray-300 rounded-xl" placeholder="Enter Intermediate Length" />
+      </div>
+      <!-- Initial Length -->
+      <div>
+        <label class="block mb-1 font-medium text-gray-700">Initial Length (NM)</label>
+        <input id="initialLength" type="number" class="w-full p-2 border border-gray-300 rounded-xl" placeholder="Enter Initial Length" />
+      </div>
+    </div>
+    
+    <!-- Calculate Button -->
+    <div class="flex justify-end mt-6">
+      <button onclick="estimateProfile()" class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
+        Estimate Profile
+      </button>
+    </div>
+    
+    <!-- Results and SVG Diagram -->
+    <div id="results" class="mt-6 hidden bg-[#e6f4ea] p-4 rounded-xl border border-green-300">
+      <!-- Output values -->
+      <p><strong>THR Elevation:</strong> <span id="outputThrElev"></span> ft</p>
+      <p><strong>TCH:</strong> <span id="outputTch"></span> ft</p>
+      <p><strong>FAF Elevation:</strong> <span id="fafElevation"></span> ft</p>
+      <p><strong>Intermediate Elevation:</strong> <span id="intermediateElevation"></span> ft</p>
+      <p><strong>Initial Elevation:</strong> <span id="initialElevation"></span> ft</p>
+      
+      <!-- SVG Profile Diagram -->
+      <p class="mt-4 font-medium text-gray-700">Profile Diagram:</p>
+      <svg id="profileSvg" width="500" height="400" viewBox="-20 0 520 400" xmlns="http://www.w3.org/2000/svg" class="mt-2 border">
+        <!-- Polyline for profile -->
+        <polyline id="profilePolyline" points="" stroke="#0078D4" stroke-width="2" fill="none" />
+        <!-- Group for all grid lines, vertical markers, and annotations -->
+        <g id="profileAnnotations"></g>
+      </svg>
+      
+      <button onclick="copyToWordDocument()" class="mt-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-2xl shadow">
+         Copy to Word Document
+      </button>
+    </div>
+  </div>
+  
+  <script>
+    // Load parameters from a JSON file.
+    function loadParameters(event) {
+      const file = event.target.files[0];
+      if (!file) {
+        alert("Please select a valid JSON file.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data["THR Elev"]) document.getElementById("thrElev").value = data["THR Elev"];
+          if (data["thrElevUnit"]) document.getElementById("thrElevUnit").value = data["thrElevUnit"];
+          if (data["TCH"]) document.getElementById("tch").value = data["TCH"];
+          if (data["tchUnit"]) document.getElementById("tchUnit").value = data["tchUnit"];
+          if (data["VPA"]) document.getElementById("vpa").value = data["VPA"];
+          if (data["Distance to FAF"]) document.getElementById("distToFaf").value = data["Distance to FAF"];
+          if (data["Intermediate Length"]) document.getElementById("intermediateLength").value = data["Intermediate Length"];
+          if (data["Initial Length"]) document.getElementById("initialLength").value = data["Initial Length"];
+          alert("Parameters successfully loaded!");
+        } catch (err) {
+          alert("Invalid JSON file. Please upload a valid parameters file.");
+        }
+      };
+      reader.readAsText(file);
+    }
+    
+    // Save parameters to a JSON file.
+    function saveParameters() {
+      const thrElev = document.getElementById("thrElev").value || "";
+      const thrElevUnit = document.getElementById("thrElevUnit").value || "ft";
+      const tch = document.getElementById("tch").value || "";
+      const tchUnit = document.getElementById("tchUnit").value || "ft";
+      const vpa = document.getElementById("vpa").value || "";
+      const distToFaf = document.getElementById("distToFaf").value || "";
+      const intermediateLength = document.getElementById("intermediateLength").value || "";
+      const initialLength = document.getElementById("initialLength").value || "";
+      
+      const data = {
+        "THR Elev": thrElev,
+        "thrElevUnit": thrElevUnit,
+        "TCH": tch,
+        "tchUnit": tchUnit,
+        "VPA": vpa,
+        "Distance to FAF": distToFaf,
+        "Intermediate Length": intermediateLength,
+        "Initial Length": initialLength
+      };
+      
+      const now = new Date();
+      const timestamp = now.toISOString().replace(/[:.]/g, "-");
+      const filename = `${timestamp}_profileestimator.json`;
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+    }
+    
+    // Estimate the profile, update results and draw the SVG diagram with annotations.
+    function estimateProfile() {
+      let thrElev = parseFloat(document.getElementById("thrElev").value);
+      let tch = parseFloat(document.getElementById("tch").value);
+      const thrElevUnit = document.getElementById("thrElevUnit").value;
+      const tchUnit = document.getElementById("tchUnit").value;
+      const vpa = parseFloat(document.getElementById("vpa").value);
+      const distToFaf = parseFloat(document.getElementById("distToFaf").value);
+      const intermediateLength = parseFloat(document.getElementById("intermediateLength").value);
+      const initialLength = parseFloat(document.getElementById("initialLength").value);
+      
+      if (isNaN(thrElev) || isNaN(tch) || isNaN(vpa) || isNaN(distToFaf) || isNaN(intermediateLength) || isNaN(initialLength)) {
+        alert("Please enter valid values for all inputs.");
+        return;
+      }
+      
+      // Convert THR Elev and TCH to feet if needed.
+      if (thrElevUnit === "m") { thrElev = thrElev / 0.3048; }
+      if (tchUnit === "m") { tch = tch / 0.3048; }
+      
+      // Set output values for THR Elev and TCH.
+      document.getElementById("outputThrElev").textContent = thrElev.toFixed(2);
+      document.getElementById("outputTch").textContent = tch.toFixed(2);
+      
+      // Compute slope from VPA in degrees.
+      const slope = Math.tan(vpa * (Math.PI / 180));
+      
+      // Conversion constant for NM to ft.
+      const nmToFt = (1852 / 0.3048);
+      
+      // Base elevation is the sum of THR Elev and TCH.
+      const baseElevation = thrElev + tch;
+      
+      // Calculate elevations.
+      const fafElevation = baseElevation + (distToFaf * slope * nmToFt);
+      const intermediateElevation = fafElevation + (intermediateLength * slope * nmToFt);
+      const initialElevation = intermediateElevation + (initialLength * nmToFt * 0.08);
+      
+      // Display computed elevations.
+      document.getElementById("fafElevation").textContent = fafElevation.toFixed(2);
+      document.getElementById("intermediateElevation").textContent = intermediateElevation.toFixed(2);
+      document.getElementById("initialElevation").textContent = initialElevation.toFixed(2);
+      
+      // Prepare to update SVG diagram.
+      // Horizontal scale: 50 px per NM.
+      // Vertical scale: 0.03 px per ft.
+      // Base Y (datum) is set at 300.
+      const xScale = 50;
+      const yScale = 0.03;
+      const baseY = 300;
+      
+      // Compute x coordinates for key points.
+      const x0 = 0;
+      const x1 = distToFaf * xScale;
+      const x2 = (distToFaf + intermediateLength) * xScale;
+      const x3 = (distToFaf + intermediateLength + initialLength) * xScale;
+      
+      // Compute y coordinates using the formula: y = baseY - ((E - baseElevation) * yScale).
+      const y0 = baseY; // THR level.
+      const y1 = baseY - ((fafElevation - baseElevation) * yScale);
+      const y2 = baseY - ((intermediateElevation - baseElevation) * yScale);
+      const y3 = baseY - ((initialElevation - baseElevation) * yScale);
+      
+      // Set the polyline points.
+      const polylinePoints = `${x0},${y0} ${x1},${y1} ${x2},${y2} ${x3},${y3}`;
+      document.getElementById("profilePolyline").setAttribute("points", polylinePoints);
+      
+      // Determine total distance to cover.
+      const totalDistance = distToFaf + intermediateLength + initialLength;
+      const gridMax = Math.ceil(totalDistance / 5) * 5 || 5;
+      const newSvgWidth = gridMax * xScale + 20;
+      
+      // Update the SVG width and viewBox.
+      const profileSvg = document.getElementById("profileSvg");
+      profileSvg.setAttribute("width", newSvgWidth);
+      profileSvg.setAttribute("viewBox", `-20 0 ${newSvgWidth} 400`);
+      
+      // Prepare grid/annotation HTML.
+      let gridHtml = "";
+      // Horizontal datum line.
+      gridHtml += `<line x1="0" y1="${baseY}" x2="${newSvgWidth}" y2="${baseY}" stroke="black" stroke-width="1" stroke-dasharray="4,2" />`;
+      
+      // Vertical key lines for THR, FAF, IF, IAF.
+      gridHtml += `<line x1="${x0}" y1="0" x2="${x0}" y2="${baseY}" stroke="black" stroke-width="1" />`;
+      gridHtml += `<text x="${x0}" y="15" font-size="12" text-anchor="middle" fill="black">THR</text>`;
+      
+      gridHtml += `<line x1="${x1}" y1="0" x2="${x1}" y2="${baseY}" stroke="black" stroke-width="1" />`;
+      gridHtml += `<text x="${x1}" y="15" font-size="12" text-anchor="middle" fill="black">FAF</text>`;
+      
+      gridHtml += `<line x1="${x2}" y1="0" x2="${x2}" y2="${baseY}" stroke="black" stroke-width="1" />`;
+      gridHtml += `<text x="${x2}" y="15" font-size="12" text-anchor="middle" fill="black">IF</text>`;
+      
+      gridHtml += `<line x1="${x3}" y1="0" x2="${x3}" y2="${baseY}" stroke="black" stroke-width="1" />`;
+      gridHtml += `<text x="${x3}" y="15" font-size="12" text-anchor="middle" fill="black">IAF</text>`;
+      
+      // Draw distance hash marks every 1 NM and label every 5 NM.
+      for (let i = 0; i <= gridMax; i++) {
+        const xi = i * xScale;
+        gridHtml += `<line x1="${xi}" y1="${baseY}" x2="${xi}" y2="${baseY+5}" stroke="black" stroke-width="1" />`;
+        if (i % 5 === 0) {
+          gridHtml += `<text x="${xi}" y="${baseY + 20}" font-size="10" text-anchor="middle" fill="black">${i}</text>`;
+        }
+      }
+      
+      // Annotate key profile points with circles and elevation labels.
+      gridHtml += `<circle cx="${x1}" cy="${y1}" r="4" fill="#d32f2f" />`;
+      gridHtml += `<text x="${x1+5}" y="${y1-5}" font-size="12" fill="black">FAF: ${fafElevation.toFixed(0)} ft</text>`;
+      
+      gridHtml += `<circle cx="${x2}" cy="${y2}" r="4" fill="#d32f2f" />`;
+      gridHtml += `<text x="${x2+5}" y="${y2-5}" font-size="12" fill="black">IF: ${intermediateElevation.toFixed(0)} ft</text>`;
+      
+      gridHtml += `<circle cx="${x3}" cy="${y3}" r="4" fill="#d32f2f" />`;
+      gridHtml += `<text x="${x3+5}" y="${y3-5}" font-size="12" fill="black">IAF: ${initialElevation.toFixed(0)} ft</text>`;
+      
+      // Update the annotations group.
+      document.getElementById("profileAnnotations").innerHTML = gridHtml;
+      
+      // Finally, show the results section.
+      document.getElementById("results").classList.remove("hidden");
+    }
+    
+    // Copy inputs and outputs as a formatted HTML table for Word.
+    function copyToWordDocument() {
+      const thrElev = document.getElementById("thrElev").value || "N/A";
+      const thrElevUnit = document.getElementById("thrElevUnit").value || "N/A";
+      const tch = document.getElementById("tch").value || "N/A";
+      const tchUnit = document.getElementById("tchUnit").value || "N/A";
+      const vpa = document.getElementById("vpa").value || "N/A";
+      const distToFaf = document.getElementById("distToFaf").value || "N/A";
+      const intermediateLength = document.getElementById("intermediateLength").value || "N/A";
+      const initialLength = document.getElementById("initialLength").value || "N/A";
+      
+      const outputThrElev = document.getElementById("outputThrElev").textContent || "N/A";
+      const outputTch = document.getElementById("outputTch").textContent || "N/A";
+      const fafElevation = document.getElementById("fafElevation").textContent || "N/A";
+      const intermediateElevation = document.getElementById("intermediateElevation").textContent || "N/A";
+      const initialElevation = document.getElementById("initialElevation").textContent || "N/A";
+      
+      const htmlContent = `
+        <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
+          <tr><th>Parameter</th><th>Value</th></tr>
+          <tr><td>THR Elev (ft)</td><td>${outputThrElev} (Input: ${thrElev} ${thrElevUnit})</td></tr>
+          <tr><td>TCH (ft)</td><td>${outputTch} (Input: ${tch} ${tchUnit})</td></tr>
+          <tr><td>VPA (°)</td><td>${vpa}</td></tr>
+          <tr><td>Distance to FAF (NM)</td><td>${distToFaf}</td></tr>
+          <tr><td>Intermediate Length (NM)</td><td>${intermediateLength}</td></tr>
+          <tr><td>Initial Length (NM)</td><td>${initialLength}</td></tr>
+          <tr><td>FAF Elevation (ft)</td><td>${fafElevation}</td></tr>
+          <tr><td>Intermediate Elevation (ft)</td><td>${intermediateElevation}</td></tr>
+          <tr><td>Initial Elevation (ft)</td><td>${initialElevation}</td></tr>
+        </table>
+      `;
+      const blob = new Blob([htmlContent], { type: "text/html" });
+      navigator.clipboard.write([new ClipboardItem({ "text/html": blob })])
+        .then(() => { alert("Results copied; paste into Word."); })
+        .catch(err => { console.error("Copy failed:", err); });
+    }
+  </script>
+</body>
+</html>
