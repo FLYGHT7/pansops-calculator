@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VSS/OCS Parameters</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f4f7f9] min-h-screen">
+  <!-- Main Container -->
+  <div class="max-w-3xl mx-auto p-6 bg-white shadow-xl rounded-2xl mt-10 border border-gray-200">
+  
+    <h1 class="text-3xl font-bold text-[#1f3b57] mb-6">VSS/OCS Parameters</h1>
+    
+    <!-- Dropdown to select approach type -->
+    <div class="mb-6">
+      <label for="approachType" class="block mb-1 font-medium text-gray-700">Select Approach Type</label>
+      <select id="approachType" onchange="updateApproach()" class="w-full p-2 border border-gray-300 rounded-xl">
+        <option value="" disabled selected>Select an option</option>
+        <option value="straightInNpa">Straight-in NPA</option>
+        <option value="ilsApvLoc">ILS, APV I, LOC Only</option>
+      </select>
+    </div>
+    
+    <!-- Dynamic Container -->
+    <div id="dynamicContainer" class="hidden">
+      <!-- Option A: Straight-in NPA Form -->
+      <div id="optionAContainer">
+        <!-- Load/Save Parameter Buttons -->
+        <div class="flex justify-end mb-4 space-x-4">
+          <button onclick="document.getElementById('loadFile').click()"
+            class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
+            Load Parameters
+          </button>
+          <button onclick="saveParameters()"
+            class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
+            Save Parameters
+          </button>
+          <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
+        </div>
+        
+        <!-- Input Section -->
+        <!-- Row 1: THR Elevation & RDH -->
+        <div class="grid grid-cols-2 gap-4">
+          <!-- THR Elevation -->
+          <div>
+            <label class="block mb-1 font-medium text-gray-700">THR Elevation</label>
+            <div class="flex">
+              <input id="thrElev" type="number" placeholder="Enter THR Elevation" class="flex-grow p-2 border border-gray-300 rounded-l-xl"/>
+              <select id="thrElevUnit" class="p-2 border border-gray-300 rounded-r-xl">
+                <option value="ft">ft</option>
+                <option value="m">m</option>
+              </select>
+            </div>
+          </div>
+          <!-- RDH -->
+          <div>
+            <label class="block mb-1 font-medium text-gray-700">RDH</label>
+            <div class="flex">
+              <input id="rdh" type="number" placeholder="Enter RDH" class="flex-grow p-2 border border-gray-300 rounded-l-xl"/>
+              <select id="rdhUnit" class="p-2 border border-gray-300 rounded-r-xl">
+                <option value="m" selected>m</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Row 2: VPA & OCH -->
+        <div class="grid grid-cols-2 gap-4 mt-4">
+          <!-- VPA -->
+          <div>
+            <label class="block mb-1 font-medium text-gray-700">Vertical Path Angle (°)</label>
+            <input id="vpa" type="number" step="0.01" placeholder="Enter VPA" class="w-full p-2 border border-gray-300 rounded-xl"/>
+          </div>
+          <!-- OCH -->
+          <div>
+            <label class="block mb-1 font-medium text-gray-700">Obstacle Clearance Height (OCH)</label>
+            <div class="flex">
+              <input id="och" type="number" step="0.001" placeholder="Enter OCH" class="flex-grow p-2 border border-gray-300 rounded-l-xl"/>
+              <select id="ochUnit" class="p-2 border border-gray-300 rounded-r-xl">
+                <option value="m" selected>m</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Calculation Buttons (aligned to right) -->
+        <div class="flex justify-end mt-6 space-x-4">
+          <button onclick="calculateDVSS()"
+            class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
+            Calculate VSS Distance
+          </button>
+          <button onclick="calculateOCS()"
+            class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
+            Calculate OCS
+          </button>
+        </div>
+        
+        <!-- Results Section for VSS Distance -->
+        <div id="resultsDVSS" class="hidden bg-[#e6f4ea] p-4 rounded-xl border border-green-300 mt-6">
+          <h2 class="text-xl font-bold text-[#1f3b57] mb-4">VSS Distance Results</h2>
+          <p><strong>VSS Distance:</strong> <span id="dvssOutput"></span></p>
+          <p><strong>THR Elevation:</strong> <span id="thrElevOutput"></span></p>
+          <p><strong>RDH:</strong> <span id="rdhOutput"></span></p>
+          <p><strong>VPA:</strong> <span id="vpaOutput"></span>°</p>
+          <p><strong>OCH:</strong> <span id="ochOutput"></span></p>
+          <div class="flex justify-end mt-4">
+            <button onclick="copyToWordDocument('dvss')"
+              class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
+              Copy to Word Document
+            </button>
+          </div>
+        </div>
+        
+        <!-- Results Section for OCS -->
+        <div id="resultsOCS" class="hidden bg-[#e6f4ea] p-4 rounded-xl border border-green-300 mt-6">
+          <h2 class="text-xl font-bold text-[#1f3b57] mb-4">OCS Results</h2>
+          <p><strong>OCS Length:</strong> <span id="ocsLengthOutput"></span></p>
+          <p><strong>OCS E (Lateral):</strong> <span id="ocsEOutput"></span></p>
+          <p><strong>OCS Elevation:</strong> <span id="ocsElevOutput"></span> m</p>
+          <p><strong>OCS θ:</strong> <span id="ocsThetaOutput"></span>°</p>
+          <p><strong>OCS Elevation Adjustment:</strong> <span id="ocsAdjustOutput"></span> m</p>
+          <div class="flex justify-end mt-4">
+            <button onclick="copyToWordDocument('ocs')"
+              class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
+              Copy to Word Document
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- End Option A Container -->
+      
+      <!-- Option B: ILS, APV I, LOC Only -->
+      <div id="optionBContainer" class="hidden">
+        <div class="max-w-3xl mx-auto p-6 bg-white shadow-xl rounded-2xl mt-6 border border-gray-200">
+          <h2 class="text-xl font-bold text-[#1f3b57] mb-4">ILS, APV I, LOC Only Parameters</h2>
+          <p class="text-gray-700 text-lg">To Be Developed</p>
+        </div>
+      </div>
+    </div>
+    <!-- End Dynamic Container -->
+  </div>
+  <!-- End Main Container -->
+  
+  <script>
+    // Update displayed container based on selected approach.
+    function updateApproach() {
+      const approach = document.getElementById("approachType").value;
+      const dynamicContainer = document.getElementById("dynamicContainer");
+      if (approach === "straightInNpa") {
+        dynamicContainer.classList.remove("hidden");
+        document.getElementById("optionAContainer").classList.remove("hidden");
+        document.getElementById("optionBContainer").classList.add("hidden");
+      } else if (approach === "ilsApvLoc") {
+        dynamicContainer.classList.remove("hidden");
+        document.getElementById("optionAContainer").classList.add("hidden");
+        document.getElementById("optionBContainer").classList.remove("hidden");
+      }
+    }
+    
+    // Function to calculate VSS Distance.
+    // VSS Distance = OCH / tan(radians(VPA - 1.12))
+    function calculateDVSS() {
+      // Hide OCS results.
+      document.getElementById("resultsOCS").classList.add("hidden");
+      
+      const och = parseFloat(document.getElementById("och").value);
+      const vpa = parseFloat(document.getElementById("vpa").value);
+      const thrElev = parseFloat(document.getElementById("thrElev").value);
+      const rdh = parseFloat(document.getElementById("rdh").value);
+      
+      if (isNaN(och) || isNaN(vpa) || isNaN(thrElev) || isNaN(rdh)) {
+        alert("Please enter valid values for OCH, VPA, THR Elevation, and RDH.");
+        return;
+      }
+      
+      // Calculate VSS Distance in meters.
+      const vssDistance_m = och / Math.tan((Math.PI / 180) * (vpa - 1.12));
+      const vssDistance_nm = vssDistance_m / 1852;
+      
+      document.getElementById("dvssOutput").textContent =
+        vssDistance_nm.toFixed(2) + " NM (" + vssDistance_m.toFixed(4) + " m)";
+      
+      // Display input values.
+      document.getElementById("thrElevOutput").textContent =
+        thrElev + " " + document.getElementById("thrElevUnit").value;
+      document.getElementById("rdhOutput").textContent =
+        rdh + " " + document.getElementById("rdhUnit").value;
+      document.getElementById("vpaOutput").textContent = vpa.toFixed(2);
+      document.getElementById("ochOutput").textContent =
+        parseFloat(och).toFixed(4) + " " + document.getElementById("ochUnit").value;
+      
+      // Show the VSS Distance results section.
+      document.getElementById("resultsDVSS").classList.remove("hidden");
+    }
+    
+    // Function to calculate OCS parameters.
+    // OCS Length = (OCH - RDH) / tan(radians(VPA))
+    // OCS E (Lateral) = OCS Length * tan(radians(2)) + 120
+    // Also, OCS Elevation = (if RDH ≤ 15 then THR Elevation_m else THR Elevation_m + (RDH - 15))
+    // and OCS θ = VPA - 1°
+    function calculateOCS() {
+      // Hide VSS Distance results.
+      document.getElementById("resultsDVSS").classList.add("hidden");
+      
+      const och = parseFloat(document.getElementById("och").value);
+      const rdh = parseFloat(document.getElementById("rdh").value);
+      const vpa = parseFloat(document.getElementById("vpa").value);
+      const thrElevInput = parseFloat(document.getElementById("thrElev").value);
+      const thrElevUnit = document.getElementById("thrElevUnit").value;
+      
+      if (isNaN(och) || isNaN(rdh) || isNaN(vpa) || isNaN(thrElevInput)) {
+        alert("Please enter valid values for OCH, RDH, VPA, and THR Elevation.");
+        return;
+      }
+      
+      // Calculate OCS Length in meters.
+      const ocsLength_m = (och - rdh) / Math.tan((Math.PI / 180) * vpa);
+      const ocsLength_nm = ocsLength_m / 1852;
+      
+      // Calculate OCS E (Lateral) in meters.
+      const ocsE_m = ocsLength_m * Math.tan((Math.PI / 180) * 2) + 120;
+      const ocsE_nm = ocsE_m / 1852;
+      
+      // Convert THR Elevation to meters if needed.
+      let thrElev_m;
+      if (thrElevUnit === "ft") {
+        thrElev_m = thrElevInput * 0.3048;
+      } else {
+        thrElev_m = thrElevInput;
+      }
+      
+      // Calculate OCS Elevation:
+      // If RDH <= 15 m, OCS Elevation is THR Elevation (in m),
+      // otherwise, OCS Elevation = THR Elevation_m + (RDH - 15)
+      let ocsElev;
+      let adjustment;
+      if (rdh <= 15) {
+        ocsElev = thrElev_m;
+        adjustment = 0;
+      } else {
+        adjustment = rdh - 15;
+        ocsElev = thrElev_m + adjustment;
+      }
+      
+      // Calculate OCS θ = VPA - 1°
+      const ocsTheta = vpa - 1;
+      
+      document.getElementById("ocsLengthOutput").textContent =
+        ocsLength_nm.toFixed(2) + " NM (" + ocsLength_m.toFixed(4) + " m)";
+      document.getElementById("ocsEOutput").textContent =
+        ocsE_nm.toFixed(2) + " NM (" + ocsE_m.toFixed(4) + " m)";
+      
+      document.getElementById("ocsElevOutput").textContent = ocsElev.toFixed(4);
+      document.getElementById("ocsThetaOutput").textContent = ocsTheta.toFixed(2);
+      
+      // Output the RDH adjustment if any.
+      document.getElementById("ocsAdjustOutput").textContent =
+        adjustment.toFixed(4);
+      
+      // Show the OCS results section.
+      document.getElementById("resultsOCS").classList.remove("hidden");
+    }
+    
+    // Function to load parameters from a JSON file.
+    function loadParameters(event) {
+      const file = event.target.files[0];
+      if (!file) {
+        alert("Please select a valid JSON file.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data["THR Elev"]) document.getElementById("thrElev").value = data["THR Elev"];
+          if (data["thrElevUnit"]) document.getElementById("thrElevUnit").value = data["thrElevUnit"];
+          if (data["RDH"]) document.getElementById("rdh").value = data["RDH"];
+          if (data["rdhUnit"]) document.getElementById("rdhUnit").value = data["rdhUnit"];
+          if (data["VPA"]) document.getElementById("vpa").value = data["VPA"];
+          if (data["OCH"]) document.getElementById("och").value = data["OCH"];
+          if (data["ochUnit"]) document.getElementById("ochUnit").value = data["ochUnit"];
+          alert("Parameters successfully loaded!");
+        } catch (err) {
+          alert("Invalid JSON file. Please upload a valid parameters file.");
+        }
+      };
+      reader.readAsText(file);
+    }
+    
+    // Function to save parameters to a JSON file.
+    function saveParameters() {
+      const thrElev = document.getElementById("thrElev").value || "";
+      const thrElevUnit = document.getElementById("thrElevUnit").value || "ft";
+      const rdh = document.getElementById("rdh").value || "";
+      const rdhUnit = document.getElementById("rdhUnit").value || "m";
+      const vpa = document.getElementById("vpa").value || "";
+      const och = document.getElementById("och").value || "";
+      const ochUnit = document.getElementById("ochUnit").value || "m";
+      
+      const data = {
+        "THR Elev": thrElev,
+        "thrElevUnit": thrElevUnit,
+        "RDH": rdh,
+        "rdhUnit": rdhUnit,
+        "VPA": vpa,
+        "OCH": och,
+        "ochUnit": ochUnit
+      };
+      
+      const now = new Date();
+      const timestamp = now.toISOString().replace(/[:.]/g, "-");
+      const filename = `${timestamp}_vssocs.json`;
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+    }
+    
+    // Create new paragraph in OCS results section to output adjustment information.
+    // Below the OCS E and above the Copy button we add:
+    // <p><strong>OCS Elevation Adjustment:</strong> <span id="ocsAdjustOutput"></span> m</p>
+    // We have already inserted that in the HTML!
+    
+    // Function to copy results as an HTML table for Word.
+    // 'type' is either "dvss" or "ocs". Each table will have two columns with 50% width.
+    function copyToWordDocument(type) {
+      let htmlContent = "";
+      if (type === "dvss") {
+        const thrElev = document.getElementById("thrElev").value || "N/A";
+        const thrElevUnit = document.getElementById("thrElevUnit").value || "N/A";
+        const rdh = document.getElementById("rdh").value || "N/A";
+        const rdhUnit = document.getElementById("rdhUnit").value || "N/A";
+        const vpa = document.getElementById("vpa").value || "N/A";
+        const och = document.getElementById("och").value || "N/A";
+        const ochUnit = document.getElementById("ochUnit").value || "N/A";
+        const vssDistance = document.getElementById("dvssOutput").textContent || "N/A";
+        
+        htmlContent = `
+          <table border="1" style="border-collapse: collapse; width: 100%;">
+            <tr>
+              <th style="width:50%;">Parameter</th>
+              <th style="width:50%;">Value</th>
+            </tr>
+            <tr>
+              <td>THR Elev</td>
+              <td>${thrElev} ${thrElevUnit}</td>
+            </tr>
+            <tr>
+              <td>RDH</td>
+              <td>${rdh} ${rdhUnit}</td>
+            </tr>
+            <tr>
+              <td>VPA (°)</td>
+              <td>${parseFloat(vpa).toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td>OCH</td>
+              <td>${parseFloat(och).toFixed(4)} ${ochUnit}</td>
+            </tr>
+            <tr>
+              <td>VSS Distance</td>
+              <td>${vssDistance}</td>
+            </tr>
+          </table>
+        `;
+      } else if (type === "ocs") {
+        const och = document.getElementById("och").value || "N/A";
+        const rdh = document.getElementById("rdh").value || "N/A";
+        const vpa = document.getElementById("vpa").value || "N/A";
+        const ocsLength = document.getElementById("ocsLengthOutput").textContent || "N/A";
+        const ocsE = document.getElementById("ocsEOutput").textContent || "N/A";
+        const ocsElev = document.getElementById("ocsElevOutput").textContent || "N/A";
+        const ocsTheta = document.getElementById("ocsThetaOutput").textContent || "N/A";
+        const ocsAdjust = document.getElementById("ocsAdjustOutput").textContent || "N/A";
+        
+        htmlContent = `
+          <table border="1" style="border-collapse: collapse; width: 100%;">
+            <tr>
+              <th style="width:50%;">Parameter</th>
+              <th style="width:50%;">Value</th>
+            </tr>
+            <tr>
+              <td>OCH</td>
+              <td>${parseFloat(och).toFixed(4)} m</td>
+            </tr>
+            <tr>
+              <td>RDH</td>
+              <td>${rdh} m</td>
+            </tr>
+            <tr>
+              <td>VPA (°)</td>
+              <td>${parseFloat(vpa).toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td>OCS Length</td>
+              <td>${ocsLength}</td>
+            </tr>
+            <tr>
+              <td>OCS E (Lateral)</td>
+              <td>${ocsE}</td>
+            </tr>
+            <tr>
+              <td>OCS Elevation</td>
+              <td>${parseFloat(ocsElev).toFixed(4)} m</td>
+            </tr>
+            <tr>
+              <td>OCS θ</td>
+              <td>${parseFloat(ocsTheta).toFixed(2)}°</td>
+            </tr>
+            <tr>
+              <td>OCS Elevation Adjustment</td>
+              <td>${parseFloat(ocsAdjust).toFixed(4)} m</td>
+            </tr>
+          </table>
+        `;
+      }
+      
+      const blob = new Blob([htmlContent], { type: "text/html" });
+      navigator.clipboard.write([new ClipboardItem({ "text/html": blob })])
+        .then(() => { alert("Results copied; paste into Word."); })
+        .catch(err => { console.error("Copy failed:", err); });
+    }
+  </script>
+</body>
+</html>
