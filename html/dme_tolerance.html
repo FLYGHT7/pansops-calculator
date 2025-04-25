@@ -5,125 +5,204 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DME Slant Range & Tolerance Calculator</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="dark-mode.css">
 </head>
-<body class="bg-[#f4f7f9] min-h-screen">
-  <div class="max-w-3xl mx-auto p-6 bg-white shadow-xl rounded-2xl mt-10 border border-gray-200">
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
     
-    <h1 class="text-3xl font-bold text-[#1f3b57] mb-6">
-      DME Slant Range & Tolerance Calculator
+    <h1 class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 sm:h-8 sm:w-8 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4"></circle>
+        <circle cx="12" cy="12" r="8" stroke-dasharray="4 4"></circle>
+        <circle cx="12" cy="12" r="12" stroke-dasharray="4 4"></circle>
+      </svg>
+      DME Slant Range & Tolerance
     </h1>
     
     <!-- Load/Save Parameters -->
-    <div class="flex justify-between items-center mb-6">
-      <label for="loadFile" class="block mb-1 font-medium text-gray-700">
+    <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
+      <label for="loadFile" class="text-gray-700 dark:text-gray-300 font-medium">
         Load Parameters File (JSON)
       </label>
-      <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
-      <button onclick="document.getElementById('loadFile').click()"
-              class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
-        Load Parameters
-      </button>
-      <button onclick="saveParameters()"
-              class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-2xl shadow">
-        Save Parameters
-      </button>
+      <div class="flex gap-3 flex-wrap">
+        <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
+        <button onclick="document.getElementById('loadFile').click()"
+                class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          Load
+        </button>
+        <button onclick="saveParameters()"
+                class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          Save
+        </button>
+      </div>
     </div>
     
     <!-- Inputs for DME Calculation -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <!-- Navaid Elevation with Unit Selector -->
-      <div>
-        <label class="block mb-1 font-medium text-gray-700">Navaid Elevation</label>
-        <div class="flex">
-          <input id="navaidElevation" type="number" class="flex-grow p-2 border border-gray-300 rounded-l-xl" placeholder="Enter Navaid Elevation" />
-          <select id="navaidUnit" class="p-2 border border-gray-300 rounded-r-xl">
+      <div class="space-y-2">
+        <label class="block font-medium text-gray-700 dark:text-gray-300">Navaid Elevation</label>
+        <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+          <input id="navaidElevation" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter Navaid Elevation" />
+          <select id="navaidUnit" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
             <option value="feet">Feet</option>
             <option value="meters">Meters</option>
           </select>
         </div>
       </div>
       <!-- Fix Ground Distance -->
-      <div>
-        <label class="block mb-1 font-medium text-gray-700">Fix Ground Distance (in NM)</label>
-        <input id="groundDistance" type="number" class="w-full p-2 border border-gray-300 rounded-xl" placeholder="Enter Ground Distance" />
+      <div class="space-y-2">
+        <label class="block font-medium text-gray-700 dark:text-gray-300">Fix Ground Distance (in NM)</label>
+        <input id="groundDistance" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter Ground Distance" />
       </div>
       <!-- Aircraft Elevation -->
-      <div>
-        <label class="block mb-1 font-medium text-gray-700">Aircraft Elevation (in feet)</label>
-        <input id="aircraftElevation" type="number" class="w-full p-2 border border-gray-300 rounded-xl" placeholder="Enter Aircraft Elevation" />
+      <div class="space-y-2 md:col-span-2">
+        <label class="block font-medium text-gray-700 dark:text-gray-300">Aircraft Elevation (in feet)</label>
+        <input id="aircraftElevation" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter Aircraft Elevation" />
       </div>
     </div>
     
     <!-- Reference Diagram (Always Visible) -->
-    <!-- The viewBox is extended to allow room on the left for the DME Elevation text -->
-    <div class="mt-6 flex flex-col items-center">
-      <p class="mb-2 text-sm text-gray-700">
+    <div class="mt-6 flex flex-col items-center bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+      <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
         Diagram: Relationship between Ground Distance, Height Above Station, and Slant Range
-      </p>
-      <svg width="300" height="200" viewBox="-20 0 360 200" xmlns="http://www.w3.org/2000/svg">
+      </h3>
+      <svg width="100%" height="250" viewBox="-20 0 360 200" xmlns="http://www.w3.org/2000/svg" class="mt-2 dark:text-white">
         <!-- Define key points:
              B = (50,150): Left end of the blue line (start of slant line).
              A = (250,150): DME fix (base of red vertical line).
              C = (250,50): Aircraft location (top of red vertical line). -->
              
         <!-- Blue horizontal line for Ground Distance -->
-        <line x1="50" y1="150" x2="250" y2="150" stroke="#0078D4" stroke-width="2"/>
+        <line x1="50" y1="150" x2="250" y2="150" stroke="#0284c7" class="dark:stroke-blue-400" stroke-width="2"/>
         
         <!-- Red vertical line for Height Above Station -->
-        <line x1="250" y1="150" x2="250" y2="50" stroke="#D32F2F" stroke-width="2"/>
+        <line x1="250" y1="150" x2="250" y2="50" stroke="#ef4444" class="dark:stroke-red-400" stroke-width="2"/>
         
         <!-- Green straight line for Slant Range -->
-        <line id="greenLine" x1="50" y1="150" x2="250" y2="50" stroke="#388E3C" stroke-width="2"/>
+        <line id="greenLine" x1="50" y1="150" x2="250" y2="50" stroke="#22c55e" class="dark:stroke-green-400" stroke-width="2"/>
         
         <!-- DME Elevation label (2 lines) positioned to the left of point B -->
-        <text x="40" y="150" font-size="12" fill="#000" text-anchor="end">
+        <text x="40" y="150" font-size="12" fill="#334155" class="dark:fill-white" text-anchor="end" font-weight="bold">
           <tspan x="40" dy="0">DME</tspan>
           <tspan x="40" dy="15">Elevation</tspan>
         </text>
         
         <!-- Ground Distance label (2 lines) centered below the blue line -->
-        <text x="150" y="170" font-size="12" fill="#0078D4" text-anchor="middle">
+        <text x="150" y="170" font-size="12" fill="#0284c7" class="dark:fill-blue-400" text-anchor="middle" font-weight="bold">
           <tspan x="150" dy="0">Ground</tspan>
           <tspan x="150" dy="15">Distance</tspan>
         </text>
         
         <!-- Height Above Station label (3 lines) to the right of the red vertical line -->
-        <text x="255" y="80" font-size="12" fill="#D32F2F" text-anchor="start">
+        <text x="255" y="80" font-size="12" fill="#ef4444" class="dark:fill-red-400" text-anchor="start" font-weight="bold">
           <tspan x="255" dy="0">Height</tspan>
           <tspan x="255" dy="15">Above</tspan>
           <tspan x="255" dy="15">Station</tspan>
         </text>
         
         <!-- Slant Range label: placed over the green line at (150,90) -->
-        <text x="150" y="90" font-size="12" fill="#388E3C" text-anchor="middle">
+        <text x="150" y="90" font-size="12" fill="#22c55e" class="dark:fill-green-400" text-anchor="middle" font-weight="bold">
           Slant Range
         </text>
         
         <!-- Aircraft symbol: small black triangle at point C -->
-        <polygon points="250,40 245,50 255,50" fill="#000"/>
+        <polygon points="250,40 245,50 255,50" fill="#334155" class="dark:fill-white"/>
       </svg>
     </div>
     
     <!-- Calculation Button -->
     <div class="flex justify-end mt-6">
-      <button onclick="calculateSlantRange()" class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
+      <button onclick="calculateSlantRange()" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
         Calculate Slant Range
       </button>
     </div>
     
     <!-- Results Section (Initially Hidden) -->
-    <div id="results" class="mt-6 hidden bg-[#e6f4ea] p-4 rounded-xl border border-green-300">
-      <p><strong>Slant Range:</strong> <span id="slantRange"></span> NM</p>
-      <p><strong>DME Tolerance:</strong> ±<span id="dmeTolerance"></span> NM</p>
-      <p><strong>Slant Range (Min):</strong> <span id="slantRangeMin"></span> NM</p>
-      <p><strong>Slant Range (Max):</strong> <span id="slantRangeMax"></span> NM</p>
-      <button onclick="copyResultsToClipboard()" class="mt-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-2xl shadow">
-        Copy Results as Table
-      </button>
+    <div id="results" class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600">
+      <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">DME Results</h2>
+      
+      <!-- Output values in a grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
+          <p class="text-sm text-gray-500 dark:text-gray-400">Slant Range</p>
+          <p class="text-lg font-semibold dark:text-white"><span id="slantRange"></span> NM</p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
+          <p class="text-sm text-gray-500 dark:text-gray-400">DME Tolerance</p>
+          <p class="text-lg font-semibold dark:text-white">±<span id="dmeTolerance"></span> NM</p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
+          <p class="text-sm text-gray-500 dark:text-gray-400">Slant Range (Min)</p>
+          <p class="text-lg font-semibold dark:text-white"><span id="slantRangeMin"></span> NM</p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
+          <p class="text-sm text-gray-500 dark:text-gray-400">Slant Range (Max)</p>
+          <p class="text-lg font-semibold dark:text-white"><span id="slantRangeMax"></span> NM</p>
+        </div>
+      </div>
+      
+      <div class="mt-6 flex justify-end">
+        <button onclick="copyResultsToClipboard()" class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+          </svg>
+          Copy Results as Table
+        </button>
+      </div>
     </div>
   </div>
   
   <script>
+    // Check for dark mode on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if parent has set dark mode
+      try {
+        if (window.parent && window.parent.document.documentElement.classList.contains('dark')) {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (e) {
+        console.log("Running in standalone mode");
+      }
+    });
+    
     // --- Load/Save Functions ---
     function loadParameters(event) {
       const file = event.target.files[0];
@@ -229,7 +308,7 @@
       
       const htmlContent = `
         <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-          <tr><th>Parameter</th><th>Value</th></tr>
+          <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
           <tr><td>Navaid Elevation</td><td>${navaidElevation} ${navaidUnit}</td></tr>
           <tr><td>Fix Ground Distance</td><td>${groundDistance} NM</td></tr>
           <tr><td>Aircraft Elevation</td><td>${aircraftElevation} ft</td></tr>

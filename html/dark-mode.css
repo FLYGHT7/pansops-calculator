@@ -1,0 +1,102 @@
+/* Dark mode styles for calculator pages */
+.dark {
+    --bg-color: #111827;
+    --text-color: #f9fafb;
+    --card-bg: #1f2937;
+    --border-color: #374151;
+    --input-bg: #111827;
+    --input-border: #4b5563;
+    --button-primary: #0284c7;
+    --button-primary-hover: #0369a1;
+    --button-success: #059669;
+    --button-success-hover: #047857;
+    --results-bg: #064e3b;
+    --results-border: #065f46;
+    --results-text: #a7f3d0;
+    --muted-text: #9ca3af;
+  }
+  
+  /* Apply dark mode styles */
+  .dark body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+  
+  .dark .bg-white,
+  .dark .bg-gray-50,
+  .dark [class*="bg-[#f4f7f9]"] {
+    background-color: var(--card-bg) !important;
+  }
+  
+  .dark .border-gray-200,
+  .dark .border-gray-300 {
+    border-color: var(--border-color) !important;
+  }
+  
+  .dark input,
+  .dark select {
+    background-color: var(--input-bg) !important;
+    border-color: var(--input-border) !important;
+    color: var(--text-color) !important;
+  }
+  
+  .dark .bg-gray-100 {
+    background-color: var(--input-bg) !important;
+  }
+  
+  .dark [class*="bg-primary-"],
+  .dark [class*="bg-[#0078D4"],
+  .dark .bg-blue-600 {
+    background-color: var(--button-primary) !important;
+  }
+  
+  .dark [class*="hover:bg-primary-"],
+  .dark [class*="hover:bg-[#005fa3"],
+  .dark .hover:bg-blue-700 {
+    background-color: var(--button-primary-hover) !important;
+  }
+  
+  .dark .bg-green-600 {
+    background-color: var(--button-success) !important;
+  }
+  
+  .dark .hover:bg-green-700 {
+    background-color: var(--button-success-hover) !important;
+  }
+  
+  .dark .bg-green-50 {
+    background-color: var(--results-bg) !important;
+    border-color: var(--results-border) !important;
+  }
+  
+  .dark .text-green-800 {
+    color: var(--results-text) !important;
+  }
+  
+  .dark .text-gray-700,
+  .dark .text-gray-900,
+  .dark [class*="text-[#1f3b57"] {
+    color: var(--text-color) !important;
+  }
+  
+  .dark .text-gray-500 {
+    color: var(--muted-text) !important;
+  }
+  
+  .dark .bg-white {
+    background-color: var(--card-bg) !important;
+  }
+  
+  .dark .border-green-100,
+  .dark .border-green-200 {
+    border-color: var(--results-border) !important;
+  }
+  
+  .dark svg {
+    color: currentColor;
+  }
+  
+  .dark svg [stroke] {
+    stroke: currentColor;
+  }
+  

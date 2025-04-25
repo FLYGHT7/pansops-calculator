@@ -1,141 +1,272 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ISA Deviation, TAS, Rate of Turn, DME Tolerance & VSS/OCS</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Aviation Calculators Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body {
-            display: flex;
-            margin: 0;
-            height: 100vh;
+        /* Custom styles for active sidebar item */
+        .sidebar-item.active {
+            background-color: rgba(14, 165, 233, 0.2); /* primary-500 with opacity */
+            color: #38bdf8; /* primary-400 */
+            border-left: 4px solid #38bdf8; /* primary-400 */
         }
-        .sidebar {
-            width: 80px;
-            background-color: #2c3e50;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 10px 0;
-            transition: width 0.3s ease; /* Smooth transition for expanding/collapsing */
+        
+        /* Dark mode styles */
+        .dark .sidebar-item.active {
+            background-color: rgba(56, 189, 248, 0.2); /* primary-400 with opacity */
+            color: #7dd3fc; /* primary-300 */
+            border-left: 4px solid #7dd3fc; /* primary-300 */
         }
-        .sidebar.expanded {
-            width: 200px; /* Expanded width to show text */
+
+        /* Add this to your existing styles */
+        .dark iframe {
+            background-color: #111827; /* Match dark:bg-gray-900 */
         }
-        .sidebar button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.2em;
-            margin: 15px 0;
-            cursor: pointer;
-            height: 50px; /* Fixed height */
-            width: 100%; /* Adjust width to match sidebar */
-            display: flex;
-            justify-content: start; /* Align items to the left */
-            align-items: center; /* Icon stays vertically centered */
-            transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transitions */
-            padding-left: 10px; /* Space for icon and text */
-        }
-        .sidebar button:hover {
-            background-color: #34495e;
-        }
-        .sidebar button.active {
-            background-color: #1abc9c;
-            border-radius: 5px;
-            transform: scale(0.95); /* Depressed effect */
-        }
-        .sidebar .icon {
-            margin-right: 10px; /* Space between icon and text */
-        }
-        .sidebar .text {
-            display: none; /* Initially hide the text */
-        }
-        .sidebar.expanded .text {
-            display: inline-block; /* Show text when sidebar is expanded */
-            color: white;
-            font-size: 1em;
-        }
-        .hamburger {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5em;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-        .content {
-            flex-grow: 1;
-            position: relative;
-            overflow: hidden;
-        }
+
+        /* Add a simple fade transition for the iframe */
         iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
+            transition: opacity 0.15s ease-in-out;
+        }
+        iframe.loading {
+            opacity: 0;
         }
     </style>
 </head>
-<body>
-    <div class="sidebar" id="sidebar">
-        <button class="hamburger" onclick="toggleSidebar()">
-            <i class="fas fa-bars"></i>
-        </button>
-        <button id="isaButton" class="active" onclick="loadPage('ISA_deviation.html', 'isaButton')">
-            <i class="fas fa-thermometer-half icon"></i>
-            <span class="text">ISA Deviation</span>
-        </button>
-        <button id="tasButton" onclick="loadPage('TAS.html', 'tasButton')">
-            <i class="fas fa-plane icon"></i>
-            <span class="text">TAS</span>
-        </button>
-        <button id="rateTurnButton" onclick="loadPage('rate_turn.html', 'rateTurnButton')">
-            <i class="fas fa-circle-notch icon"></i>
-            <span class="text">Rate of Turn</span>
-        </button>
-        <button id="dmeButton" onclick="loadPage('dme_tolerance.html', 'dmeButton')">
-            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="4" fill="white"></circle>
-                <circle cx="12" cy="12" r="8" stroke-dasharray="4 4"></circle>
-                <circle cx="12" cy="12" r="12" stroke-dasharray="4 4"></circle>
-            </svg>
-            <span class="text">DME Tolerance</span>
-        </button>
-        <button id="elevationButton" onclick="loadPage('Profile_Check.html', 'elevationButton')">
-            <i class="fas fa-chart-line icon"></i>
-            <span class="text">Max Altitude Estimate</span>
-        </button>
-        <button id="vssOcsButton" onclick="loadPage('VSS_OCS.html', 'vssOcsButton')">
-            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="6" y1="12" x2="18" y2="12" stroke-dasharray="4 2"></line> <!-- Dashed horizontal axis -->
-                <polygon points="6,6 18,12 6,18" fill="none"></polygon> <!-- Hollow reversed trapezoid -->
-            </svg>
-            <span class="text">VSS/OCS</span>
-        </button>
-    </div>
-    <div class="content">
-        <iframe id="iframe" src="ISA_deviation.html"></iframe>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-gray-800 dark:bg-gray-900 shadow-lg transition-all duration-300 ease-in-out flex flex-col w-16 hover:w-64 md:w-64 overflow-y-auto border-r border-gray-700">
+            <div class="flex items-center justify-between p-4 border-b border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"></path>
+                    </svg>
+                    <span class="hidden md:inline text-lg font-semibold text-white">Aviation Tools</span>
+                </div>
+                <button id="toggleSidebar" class="md:hidden rounded-lg p-1 hover:bg-gray-700 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="py-4 flex flex-col justify-between h-full">
+                <nav>
+                    <ul class="space-y-1 px-2">
+                        <li>
+                            <button id="isaButton" onclick="loadPage('ISA_deviation.html', this)" class="sidebar-item active w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors">
+                                <i class="fas fa-thermometer-half text-primary-400 text-xl w-5 h-5 mr-3"></i>
+                                <span class="hidden md:inline">ISA Deviation</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button id="tasButton" onclick="loadPage('TAS.html', this)" class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors">
+                                <i class="fas fa-plane text-primary-400 text-xl w-5 h-5 mr-3"></i>
+                                <span class="hidden md:inline">TAS Calculator</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button id="rateTurnButton" onclick="loadPage('rate_turn.html', this)" class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors">
+                                <i class="fas fa-circle-notch text-primary-400 text-xl w-5 h-5 mr-3"></i>
+                                <span class="hidden md:inline">Rate & Radius of Turn</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button id="dmeButton" onclick="loadPage('dme_tolerance.html', this)" class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors">
+                                <svg class="text-primary-400 w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="4"></circle>
+                                    <circle cx="12" cy="12" r="8" stroke-dasharray="4 4"></circle>
+                                    <circle cx="12" cy="12" r="12" stroke-dasharray="4 4"></circle>
+                                </svg>
+                                <span class="hidden md:inline">DME Tolerance</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button id="elevationButton" onclick="loadPage('Profile_Check.html', this)" class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors">
+                                <i class="fas fa-chart-line text-primary-400 text-xl w-5 h-5 mr-3"></i>
+                                <span class="hidden md:inline">Profile Estimator</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button id="vssOcsButton" onclick="loadPage('VSS_OCS.html', this)" class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors">
+                                <svg class="text-primary-400 w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="6" y1="12" x2="18" y2="12" stroke-dasharray="4 2"></line>
+                                    <polygon points="6,6 18,12 6,18" fill="none"></polygon>
+                                </svg>
+                                <span class="hidden md:inline">VSS/OCS Parameters</span>
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+                
+                <div class="px-4 mt-6 mb-4">
+                    <!-- Dark Mode Toggle -->
+                    <button id="darkModeToggle" class="w-full flex items-center justify-between p-3 text-gray-300 rounded-lg hover:bg-gray-700 mb-4 transition-colors">
+                        <div class="flex items-center">
+                            <i class="fas fa-moon text-primary-400 text-xl w-5 h-5 mr-3"></i>
+                            <span class="hidden md:inline">Dark Mode</span>
+                        </div>
+                        <div class="relative inline-block w-10 h-5 transition duration-200 ease-in-out rounded-full">
+                            <div class="absolute inset-0 bg-gray-600 rounded-full shadow-inner"></div>
+                            <div id="darkModeIndicator" class="absolute left-0 w-5 h-5 transition duration-200 transform bg-white rounded-full shadow"></div>
+                        </div>
+                    </button>
+                    
+                    <div class="flex items-center space-x-2 text-sm text-gray-400">
+                        <span class="hidden md:inline">Aviation Calculators Suite</span>
+                        <span class="hidden md:inline">v1.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900">
+            <iframe id="iframe" src="ISA_deviation.html" class="w-full h-full border-none"></iframe>
+        </div>
     </div>
 
     <script>
-        function loadPage(pageUrl, buttonId) {
+        // Load page in iframe and update active button
+        function loadPage(pageUrl, buttonElement) {
             const iframe = document.getElementById('iframe');
-            iframe.src = pageUrl; // Instantly switch the iframe content
-
-            // Remove active class from all buttons
-            document.querySelectorAll('.sidebar button').forEach(button => {
-                button.classList.remove('active');
-            });
-
-            // Add active class to the selected button
-            document.getElementById(buttonId).classList.add('active');
+            
+            // Add loading class to fade out
+            iframe.classList.add('loading');
+            
+            // Short timeout to allow fade out before changing src
+            setTimeout(() => {
+                iframe.src = pageUrl;
+                
+                // Remove loading class after the new page has loaded
+                iframe.onload = function() {
+                    iframe.classList.remove('loading');
+                    
+                    // Apply dark mode immediately if needed
+                    try {
+                        if (document.documentElement.classList.contains('dark')) {
+                            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                            iframeDoc.documentElement.classList.add('dark');
+                        }
+                    } catch (e) {
+                        console.error("Error applying dark mode to iframe:", e);
+                    }
+                };
+                
+                // Remove active class from all buttons
+                document.querySelectorAll('.sidebar-item').forEach(button => {
+                    button.classList.remove('active');
+                });
+                
+                // Add active class to the clicked button
+                buttonElement.classList.add('active');
+            }, 150); // Short delay for the fade effect
         }
 
-        function toggleSidebar() {
+        // Toggle sidebar on mobile
+        document.getElementById('toggleSidebar').addEventListener('click', function() {
             const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('expanded'); // Toggle the sidebar class
-        }
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-16');
+        });
+        
+        // Dark mode functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const darkModeIndicator = document.getElementById('darkModeIndicator');
+            const html = document.documentElement;
+            const iframe = document.getElementById('iframe');
+            
+            // Check for saved theme preference or use system preference
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                enableDarkMode();
+            } else {
+                disableDarkMode();
+            }
+            
+            // Toggle dark mode
+            darkModeToggle.addEventListener('click', function() {
+                if (html.classList.contains('dark')) {
+                    disableDarkMode();
+                } else {
+                    enableDarkMode();
+                }
+            });
+            
+            function enableDarkMode() {
+                html.classList.add('dark');
+                darkModeIndicator.style.transform = 'translateX(100%)';
+                localStorage.setItem('theme', 'dark');
+                updateIframeDarkMode(true);
+            }
+            
+            function disableDarkMode() {
+                html.classList.remove('dark');
+                darkModeIndicator.style.transform = 'translateX(0)';
+                localStorage.setItem('theme', 'light');
+                updateIframeDarkMode(false);
+            }
+            
+            // Update iframe dark mode
+            function updateIframeDarkMode(isDark) {
+                try {
+                    const iframe = document.getElementById('iframe');
+                    
+                    // Function to apply dark mode to the iframe document
+                    const applyDarkMode = () => {
+                        try {
+                            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                            const iframeHtml = iframeDoc.documentElement;
+                            
+                            if (isDark) {
+                                iframeHtml.classList.add('dark');
+                            } else {
+                                iframeHtml.classList.remove('dark');
+                            }
+                        } catch (e) {
+                            console.error("Error updating iframe dark mode:", e);
+                        }
+                    };
+                    
+                    // Apply immediately if possible
+                    applyDarkMode();
+                    
+                    // Also apply when iframe loads
+                    iframe.onload = applyDarkMode;
+                } catch (e) {
+                    console.error("Error accessing iframe:", e);
+                }
+            }
+        });
     </script>
 </body>
 </html>
