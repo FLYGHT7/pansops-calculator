@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ILS Distance Calculations</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Styles for the SVG (if any additional styling is needed later) */
+    .axis { stroke: #333; stroke-width: 1; }
+    .grid-line { stroke: #ccc; stroke-width: 0.5; }
+  </style>
+</head>
+<body class="bg-[#f4f7f9] min-h-screen">
+  <!-- Main Container -->
+  <div class="max-w-3xl mx-auto p-6 bg-white shadow-xl rounded-2xl mt-10 border border-gray-200">
+    <h1 class="text-3xl font-bold text-[#1f3b57] mb-6">ILS Distance Calculations</h1>
+    
+    <!-- Global Load/Save Buttons -->
+    <div class="flex justify-end mb-6 space-x-4">
+      <button onclick="document.getElementById('loadFile').click()"
+              class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
+        Load Parameters
+      </button>
+      <button onclick="saveParameters()"
+              class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
+        Save Parameters
+      </button>
+      <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
+    </div>
+    
+    <!-- Row for THR Elevation, RDH, and Glidepath Angle -->
+    <div class="grid grid-cols-3 gap-4 mt-4">
+      <!-- THR Elevation Input -->
+      <div>
+        <label class="block mb-1 font-medium text-gray-700">THR Elevation</label>
+        <div class="flex">
+          <input id="thrElev" type="number" placeholder="Enter THR Elevation" class="w-full p-2 border border-gray-300 rounded-l-xl" />
+          <select id="thrElevUnit" class="w-full p-2 border border-gray-300 rounded-r-xl">
+            <option value="ft" selected>ft</option>
+            <option value="m">m</option>
+          </select>
+        </div>
+      </div>
+      <!-- RDH Input -->
+      <div>
+        <label class="block mb-1 font-medium text-gray-700">RDH</label>
+        <div class="flex">
+          <input id="rdh" type="number" placeholder="Enter RDH" class="w-full p-2 border border-gray-300 rounded-l-xl" />
+          <select id="rdhUnit" class="w-full p-2 border border-gray-300 rounded-r-xl">
+            <option value="ft" selected>ft</option>
+            <option value="m">m</option>
+          </select>
+        </div>
+      </div>
+      <!-- Glidepath Angle Input -->
+      <div>
+        <label class="block mb-1 font-medium text-gray-700">Glidepath Angle (°)</label>
+        <input id="glideAngle" type="number" step="0.01" placeholder="Angle" class="w-full p-2 border border-gray-300 rounded-xl" />
+      </div>
+    </div>
+    
+    <!-- Row for Point/Fix Type and FAP Altitude -->
+    <div class="grid grid-cols-2 gap-4 mt-4">
+      <!-- Point/Fix Type Selection -->
+      <div>
+        <label class="block mb-1 font-medium text-gray-700">Select Point/Fix Type</label>
+        <div class="flex space-x-2 mt-1">
+          <label class="flex items-center">
+            <input type="radio" name="calcType" value="FAP" checked class="mr-1" />
+            <span class="text-sm">FAP</span>
+          </label>
+          <label class="flex items-center">
+            <input type="radio" name="calcType" value="GP Verification Fix" class="mr-1" />
+            <span class="text-sm">GP Verification Fix</span>
+          </label>
+          <label class="flex items-center">
+            <input type="radio" name="calcType" value="Descent Fix" class="mr-1" />
+            <span class="text-sm">Descent Fix</span>
+          </label>
+        </div>
+      </div>
+      <!-- FAP Altitude Input -->
+      <div>
+        <label class="block mb-1 font-medium text-gray-700">FAP Altitude (in ft)</label>
+        <input id="fapAltitude" type="number" step="0.01" placeholder="Enter FAP Altitude" class="w-full p-2 border border-gray-300 rounded-xl" />
+      </div>
+    </div>
+    
+    <!-- Calculate Button -->
+    <div class="flex justify-center mt-6">
+      <button onclick="calculateBoth()"
+              class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-6 rounded-2xl shadow">
+        Calculate
+      </button>
+    </div>
+    
+    <!-- Results Output Section -->
+    <div id="resultsOutput" class="hidden bg-[#e6f4ea] p-4 rounded-xl border border-green-300 mt-6">
+      <h2 class="text-xl font-bold text-[#1f3b57] mb-4">Calculated Distance (in NM)</h2>
+      <p id="calcTypeOutput" class="mb-2 font-medium"></p>
+      <p id="resultMethodA">
+        <strong>Right Angle Computation:</strong>
+        <span id="distanceA"></span> NM
+      </p>
+      <p id="resultMethodB">
+        <strong>Considering Earth Curvature:</strong>
+        <span id="distanceB"></span> NM
+      </p>
+      <!-- RDH Adjustment output, if applicable -->
+      <p id="rdhAdjustment" class="hidden">
+        <strong>RDH &gt;15m Adjustment:</strong>
+        <span id="deltaHOutput"></span> ft
+      </p>
+      <div class="flex justify-end mt-4">
+        <button onclick="copyToWordDocument('both')"
+                class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
+          Copy to Word Document
+        </button>
+      </div>
+    </div>
+    
+    <!-- (Optional) You can add an SVG diagram here if needed -->
+    
+  </div>
+  <!-- End Main Container -->
+  
+  <!-- JavaScript Section -->
+  <script>
+    // Conversion constants:
+    const FT_PER_M = 1 / 0.3048; // ≈ 3.280839895...
+    const FT_PER_NM = 1852 / 0.3048; // ≈ 6076.1154855643 ft per NM
+
+    // In this app, we know the FAP altitude and need to solve for distance.
+    // Method A (Right Angle Computation):
+    // FAP_alt = THR + RDH + (NM * FT_PER_NM * tan(gp))
+    // → NM = (FAP_alt - THR - RDH) / (FT_PER_NM * tan(gp))
+    //
+    // Method B (Considering Earth Curvature):
+    // FAP_alt = THR + RDH + ΔH + (NM * FT_PER_NM * tan(gp)) + (0.8833 * NM²)
+    // where ΔH = (RDH - (15/0.3048)) if RDH > (15/0.3048), else 0.
+    // Rearranging gives a quadratic:
+    // 0.8833 * NM² + (FT_PER_NM * tan(gp)) * NM + (THR + RDH + ΔH - FAP_alt) = 0
+    // We solve for NM (choose the positive solution).
+
+    function calculateBoth() {
+      const calcType = document.querySelector('input[name="calcType"]:checked').value;
+      document.getElementById("calcTypeOutput").textContent = "Point/Fix Type: " + calcType;
+      
+      // Get THR Elevation:
+      const thrElevVal = parseFloat(document.getElementById("thrElev").value);
+      const thrElevUnit = document.getElementById("thrElevUnit").value;
+      if (isNaN(thrElevVal)) { alert("Please enter a valid THR Elevation."); return; }
+      const thrElev_ft = (thrElevUnit === "ft") ? thrElevVal : thrElevVal * FT_PER_M;
+      
+      // Get RDH:
+      const rdhVal = parseFloat(document.getElementById("rdh").value);
+      const rdhUnit = document.getElementById("rdhUnit").value;
+      if (isNaN(rdhVal)) { alert("Please enter a valid RDH."); return; }
+      const rdh_ft = (rdhUnit === "ft") ? rdhVal : rdhVal * FT_PER_M;
+      
+      // Get Glidepath Angle (in degrees):
+      const glideAngle = parseFloat(document.getElementById("glideAngle").value);
+      if (isNaN(glideAngle)) { alert("Please enter a valid Glidepath Angle."); return; }
+      const gp_rad = glideAngle * Math.PI / 180;
+      
+      // Get FAP Altitude (in ft) - input for this app:
+      const fap_alt = parseFloat(document.getElementById("fapAltitude").value);
+      if (isNaN(fap_alt)) { alert("Please enter a valid FAP Altitude."); return; }
+      
+      // Compute RDH adjustment:
+      const threshold_ft = 15 / 0.3048;  // ≈ 49.2126 ft
+      const deltaH_candidate = rdh_ft - threshold_ft;
+      const deltaH = (rdh_ft > threshold_ft && Math.abs(deltaH_candidate) >= 0.001) ? deltaH_candidate : 0;
+      
+      // Method A:
+      const numeratorA = fap_alt - thrElev_ft - rdh_ft;
+      const denominatorA = FT_PER_NM * Math.tan(gp_rad);
+      const NM_A = numeratorA / denominatorA;
+      
+      // Method B: Solve quadratic:
+      // Let A_coeff = 0.8833, B_coeff = FT_PER_NM * tan(gp_rad), C_coeff = (thrElev_ft + rdh_ft + deltaH - fap_alt)
+      const A_coeff = 0.8833;
+      const B_coeff = FT_PER_NM * Math.tan(gp_rad);
+      const C_coeff = (thrElev_ft + rdh_ft + deltaH) - fap_alt;
+      const discriminant = B_coeff * B_coeff - 4 * A_coeff * C_coeff;
+      let NM_B = NaN;
+      if (discriminant < 0) {
+        alert("No solution found for the given parameters (discriminant < 0).");
+        return;
+      } else {
+        NM_B = (-B_coeff + Math.sqrt(discriminant)) / (2 * A_coeff);
+      }
+      
+      document.getElementById("distanceA").textContent = NM_A.toFixed(4);
+      document.getElementById("distanceB").textContent = NM_B.toFixed(4);
+      
+      const rdhAdjustmentEl = document.getElementById("rdhAdjustment");
+      if (deltaH > 0) {
+        document.getElementById("deltaHOutput").textContent = deltaH.toFixed(4);
+        rdhAdjustmentEl.classList.remove("hidden");
+      } else {
+        rdhAdjustmentEl.classList.add("hidden");
+      }
+      
+      document.getElementById("resultsOutput").classList.remove("hidden");
+    }
+    
+    // --- Save & Load Functions ---
+    function saveParameters() {
+      const thrElev = document.getElementById("thrElev").value || "";
+      const thrElevUnit = document.getElementById("thrElevUnit").value || "ft";
+      const rdh = document.getElementById("rdh").value || "";
+      const rdhUnit = document.getElementById("rdhUnit").value || "ft";
+      const fapAltitude = document.getElementById("fapAltitude").value || "";
+      const glideAngle = document.getElementById("glideAngle").value || "";
+      const calcType = document.querySelector('input[name="calcType"]:checked')?.value || "";
+      
+      const data = {
+        "THR Elev": thrElev,
+        "thrElevUnit": thrElevUnit,
+        "RDH": rdh,
+        "rdhUnit": rdhUnit,
+        "FAP Altitude": fapAltitude,
+        "Glidepath Angle": glideAngle,
+        "calcType": calcType
+      };
+      
+      const now = new Date();
+      const timestamp = now.toISOString().replace(/[:.]/g, "-");
+      const filename = `${timestamp}_ils_distance.json`;
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+    }
+    
+    function loadParameters(event) {
+      const file = event.target.files[0];
+      if (!file) { alert("Please select a valid JSON file."); return; }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data["THR Elev"]) document.getElementById("thrElev").value = data["THR Elev"];
+          if (data["thrElevUnit"]) document.getElementById("thrElevUnit").value = data["thrElevUnit"];
+          if (data["RDH"]) document.getElementById("rdh").value = data["RDH"];
+          if (data["rdhUnit"]) document.getElementById("rdhUnit").value = data["rdhUnit"];
+          if (data["FAP Altitude"]) document.getElementById("fapAltitude").value = data["FAP Altitude"];
+          if (data["Glidepath Angle"]) document.getElementById("glideAngle").value = data["Glidepath Angle"];
+          if (data["calcType"]) {
+            const radioToCheck = document.querySelector('input[name="calcType"][value="'+ data["calcType"] +'"]');
+            if (radioToCheck) radioToCheck.checked = true;
+          }
+          alert("Parameters successfully loaded!");
+        } catch (err) {
+          alert("Invalid JSON file. Please upload a valid parameters file.");
+        }
+      };
+      reader.readAsText(file);
+    }
+    
+    // --- Copy to Word Function ---
+    function copyToWordDocument(type) {
+      let htmlContent = "";
+      if (type === "both") {
+        const calcType = document.querySelector('input[name="calcType"]:checked').value || "N/A";
+        const thrElev = document.getElementById("thrElev").value || "N/A";
+        const thrElevUnit = document.getElementById("thrElevUnit").value || "N/A";
+        const rdh = document.getElementById("rdh").value || "N/A";
+        const rdhUnit = document.getElementById("rdhUnit").value || "N/A";
+        const fapAltitude = document.getElementById("fapAltitude").value || "N/A";
+        const glideAngle = document.getElementById("glideAngle").value || "N/A";
+        const distanceA = document.getElementById("distanceA").textContent || "N/A";
+        const distanceB = document.getElementById("distanceB").textContent || "N/A";
+        let deltaHValue = document.getElementById("deltaHOutput").textContent || "0.0000";
+        htmlContent = `
+          <table border="1" style="border-collapse: collapse; width: 100%;">
+            <tr>
+              <th style="width:50%;">Parameter</th>
+              <th style="width:50%;">Value</th>
+            </tr>
+            <tr><td>Point/Fix Type</td><td>${calcType}</td></tr>
+            <tr><td>THR Elevation</td><td>${thrElev} ${thrElevUnit}</td></tr>
+            <tr><td>RDH</td><td>${rdh} ${rdhUnit}</td></tr>
+            <tr><td>FAP Altitude</td><td>${parseFloat(fapAltitude).toFixed(2)} ft</td></tr>
+            <tr><td>Glidepath Angle</td><td>${parseFloat(glideAngle).toFixed(2)}°</td></tr>
+            <tr><td>Right Angle Computation Distance</td><td>${distanceA} NM</td></tr>
+            <tr><td>Considering Earth Curvature Distance</td><td>${distanceB} NM</td></tr>`;
+        if (parseFloat(deltaHValue) > 0) {
+          htmlContent += `<tr><td>RDH &gt;15m Adjustment</td><td>${deltaHValue} ft</td></tr>`;
+        }
+        htmlContent += `</table>`;
+      }
+      const blob = new Blob([htmlContent], { type: "text/html" });
+      navigator.clipboard.write([new ClipboardItem({ "text/html": blob })])
+        .then(() => { alert("Results copied; paste into Word."); })
+        .catch(err => { console.error("Copy failed:", err); });
+    }
+  </script>
+</body>
+</html>
