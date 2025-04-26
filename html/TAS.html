@@ -47,7 +47,7 @@
       <label for="loadFile" class="text-gray-700 dark:text-gray-300 font-medium">
         Upload Saved ISA Parameters File
       </label>
-      <div>
+      <div class="flex gap-3 flex-wrap">
         <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
         <button onclick="document.getElementById('loadFile').click()" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -57,18 +57,38 @@
           </svg>
           Load Parameters
         </button>
+        <button onclick="saveParameters()" class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          Save Parameters
+        </button>
       </div>
     </div>
 
     <!-- Inputs for TAS Calculation -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
       <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">Indicated Airspeed (IAS) in knots</label>
-        <input id="ias" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter IAS" />
+        <label class="block font-medium text-gray-700 dark:text-gray-300">Indicated Airspeed (IAS)</label>
+        <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+          <input id="ias" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter IAS" />
+          <select id="iasUnit" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
+            <option value="knots" selected>knots</option>
+            <option value="km/h">km/h</option>
+          </select>
+        </div>
       </div>
       <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">Altitude (in feet)</label>
-        <input id="altitude" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter altitude" />
+        <label class="block font-medium text-gray-700 dark:text-gray-300">Altitude</label>
+        <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+          <input id="altitude" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter altitude" />
+          <select id="altitudeUnit" onchange="handleUnitChange('altitude', 'altitudeUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
+            <option value="ft" selected>ft</option>
+            <option value="m">m</option>
+          </select>
+        </div>
       </div>
       <div class="space-y-2">
         <label class="block font-medium text-gray-700 dark:text-gray-300">ISA Deviation (VAR) in °C</label>
@@ -97,7 +117,7 @@
         </div>
         <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
           <p class="text-sm text-gray-500 dark:text-gray-400">True Airspeed (TAS)</p>
-          <p class="text-lg font-semibold dark:text-white"><span id="tas"></span> knots</p>
+          <p class="text-lg font-semibold dark:text-white"><span id="tas"></span> <span id="tasUnit">knots</span></p>
         </div>
       </div>
       
@@ -124,7 +144,58 @@
       } catch (e) {
         console.log("Running in standalone mode");
       }
+      
+      // Initialize unit selectors
+      initializeUnitSelectors();
     });
+    
+    // Function to handle unit conversion when unit selector changes
+    function handleUnitChange(inputId, unitSelectId) {
+      const input = document.getElementById(inputId);
+      const unitSelect = document.getElementById(unitSelectId);
+      const currentValue = parseFloat(input.value);
+      
+      if (!isNaN(currentValue)) {
+        const oldUnit = unitSelect.dataset.lastUnit || unitSelect.value;
+        const newUnit = unitSelect.value;
+        
+        // Only convert if the unit has changed
+        if (oldUnit !== newUnit) {
+          if (oldUnit === "ft" && newUnit === "m") {
+            // Convert from feet to meters
+            input.value = (currentValue * 0.3048).toFixed(2);
+          } else if (oldUnit === "m" && newUnit === "ft") {
+            // Convert from meters to feet
+            input.value = (currentValue / 0.3048).toFixed(2);
+          } else if (oldUnit === "knots" && newUnit === "km/h") {
+            // Convert from knots to km/h
+            input.value = (currentValue * 1.852).toFixed(2);
+          } else if (oldUnit === "km/h" && newUnit === "knots") {
+            // Convert from km/h to knots
+            input.value = (currentValue / 1.852).toFixed(2);
+          }
+        }
+      }
+      
+      // Save the current unit for the next change
+      unitSelect.dataset.lastUnit = unitSelect.value;
+    }
+    
+    // Function to initialize all unit selectors
+    function initializeUnitSelectors() {
+      // Get all unit selectors
+      const unitSelectors = document.querySelectorAll('select[id$="Unit"]');
+      
+      unitSelectors.forEach(selector => {
+        // Save the initial unit
+        selector.dataset.lastUnit = selector.value;
+        
+        // Add event listener for unit changes
+        selector.addEventListener('change', function() {
+          handleUnitChange(selector.id.replace('Unit', ''), selector.id);
+        });
+      });
+    }
     
     let loadedDeviation = null; // Stores loaded ISA deviation
 
@@ -139,13 +210,41 @@
       reader.onload = function (e) {
         try {
           const data = JSON.parse(e.target.result);
-          if (data["ISA Deviation"]) {
+          
+          // Check for ISA Deviation in different formats
+          if (data["ISA Deviation"] !== undefined) {
             loadedDeviation = parseFloat(data["ISA Deviation"]);
-            alert(`ISA Deviation loaded: ${loadedDeviation} °C`);
-            document.getElementById("isaDeviation").value = loadedDeviation; // Populate input
-          } else {
-            alert("ISA Deviation not found in the file.");
+            document.getElementById("isaDeviation").value = loadedDeviation;
+          } else if (data["roundedDeltaISA"] !== undefined) {
+            loadedDeviation = parseFloat(data["roundedDeltaISA"]);
+            document.getElementById("isaDeviation").value = loadedDeviation;
+          } else if (data["deltaISA"] !== undefined) {
+            loadedDeviation = parseFloat(data["deltaISA"]);
+            document.getElementById("isaDeviation").value = loadedDeviation;
           }
+          
+          // Load other parameters if available
+          if (data["IAS"] !== undefined) {
+            document.getElementById("ias").value = data["IAS"];
+          }
+          
+          if (data["iasUnit"] !== undefined) {
+            const unitSelect = document.getElementById("iasUnit");
+            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+            unitSelect.value = data["iasUnit"];
+          }
+          
+          if (data["Altitude"] !== undefined) {
+            document.getElementById("altitude").value = data["Altitude"];
+          }
+          
+          if (data["altitudeUnit"] !== undefined) {
+            const unitSelect = document.getElementById("altitudeUnit");
+            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+            unitSelect.value = data["altitudeUnit"];
+          }
+          
+          alert("Parameters successfully loaded!");
         } catch (err) {
           alert("Invalid JSON file. Please upload a valid ISA parameters file.");
         }
@@ -153,14 +252,54 @@
       reader.readAsText(file);
     }
 
-    function calculateTAS() {
-      const ias = parseFloat(document.getElementById("ias").value);
-      const altitude = parseFloat(document.getElementById("altitude").value);
-      const isaDeviation = loadedDeviation !== null ? loadedDeviation : parseFloat(document.getElementById("isaDeviation").value);
+    function saveParameters() {
+      const ias = document.getElementById("ias").value || "";
+      const iasUnit = document.getElementById("iasUnit").value || "knots";
+      const altitude = document.getElementById("altitude").value || "";
+      const altitudeUnit = document.getElementById("altitudeUnit").value || "ft";
+      const isaDeviation = document.getElementById("isaDeviation").value || "";
+      
+      const data = {
+        "IAS": ias,
+        "iasUnit": iasUnit,
+        "Altitude": altitude,
+        "altitudeUnit": altitudeUnit,
+        "ISA Deviation": isaDeviation
+      };
+      
+      const now = new Date();
+      const timestamp = now.toISOString().replace(/[:.]/g, "-");
+      const filename = `${timestamp}_TAS_parameters.json`;
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+    }
 
-      if (isNaN(ias) || isNaN(altitude) || isNaN(isaDeviation)) {
+    function calculateTAS() {
+      const iasInput = parseFloat(document.getElementById("ias").value);
+      const iasUnit = document.getElementById("iasUnit").value;
+      const altitudeInput = parseFloat(document.getElementById("altitude").value);
+      const altitudeUnit = document.getElementById("altitudeUnit").value;
+      const isaDeviation = parseFloat(document.getElementById("isaDeviation").value);
+
+      if (isNaN(iasInput) || isNaN(altitudeInput) || isNaN(isaDeviation)) {
         alert("Please enter valid values for IAS, altitude, and ISA deviation.");
         return;
+      }
+      
+      // Convert IAS to knots if needed
+      let ias = iasInput;
+      if (iasUnit === "km/h") {
+        ias = iasInput / 1.852;
+      }
+      
+      // Convert altitude to feet if needed
+      let altitude = altitudeInput;
+      if (altitudeUnit === "m") {
+        altitude = altitudeInput / 0.3048;
       }
 
       // Calculate 'k' based on altitude and ISA deviation
@@ -168,7 +307,17 @@
                 Math.pow(288 - 0.00198 * altitude, 2.628);
 
       // Calculate True Airspeed
-      const tas = k * ias;
+      let tas = k * ias;
+      
+      // Convert TAS back to km/h if input was in km/h
+      let tasUnitText = "knots";
+      if (iasUnit === "km/h") {
+        tas = tas * 1.852;
+        tasUnitText = "km/h";
+      }
+      
+      // Update the TAS unit display
+      document.getElementById("tasUnit").textContent = tasUnitText;
 
       // Display results with 4 decimal places
       document.getElementById("kFactor").textContent = k.toFixed(4);
@@ -178,20 +327,23 @@
 
     function copyResultsToClipboard() {
       const ias = document.getElementById("ias").value || "N/A";
+      const iasUnit = document.getElementById("iasUnit").value || "knots";
       const altitude = document.getElementById("altitude").value || "N/A";
+      const altitudeUnit = document.getElementById("altitudeUnit").value || "ft";
       const isaDeviation = document.getElementById("isaDeviation").value || "N/A";
       const kFactor = document.getElementById("kFactor").textContent || "N/A";
       const tas = document.getElementById("tas").textContent || "N/A";
+      const tasUnit = document.getElementById("tasUnit").textContent || "knots";
 
       // Create a formatted Word-style table as HTML
       const htmlContent = `
         <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
           <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
-          <tr><td>Indicated Airspeed (IAS)</td><td>${ias} knots</td></tr>
-          <tr><td>Altitude</td><td>${altitude} feet</td></tr>
+          <tr><td>Indicated Airspeed (IAS)</td><td>${ias} ${iasUnit}</td></tr>
+          <tr><td>Altitude</td><td>${altitude} ${altitudeUnit}</td></tr>
           <tr><td>ISA Deviation (VAR)</td><td>${isaDeviation} °C</td></tr>
           <tr><td>k Factor</td><td>${kFactor}</td></tr>
-          <tr><td>True Airspeed (TAS)</td><td>${tas} knots</td></tr>
+          <tr><td>True Airspeed (TAS)</td><td>${tas} ${tasUnit}</td></tr>
         </table>
       `;
 
