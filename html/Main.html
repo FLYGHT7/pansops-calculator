@@ -1,141 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ISA Deviation, TAS, Rate of Turn, DME Tolerance & VSS/OCS</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            display: flex;
-            margin: 0;
-            height: 100vh;
-        }
-        .sidebar {
-            width: 80px;
-            background-color: #2c3e50;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 10px 0;
-            transition: width 0.3s ease; /* Smooth transition for expanding/collapsing */
-        }
-        .sidebar.expanded {
-            width: 200px; /* Expanded width to show text */
-        }
-        .sidebar button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.2em;
-            margin: 15px 0;
-            cursor: pointer;
-            height: 50px; /* Fixed height */
-            width: 100%; /* Adjust width to match sidebar */
-            display: flex;
-            justify-content: start; /* Align items to the left */
-            align-items: center; /* Icon stays vertically centered */
-            transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transitions */
-            padding-left: 10px; /* Space for icon and text */
-        }
-        .sidebar button:hover {
-            background-color: #34495e;
-        }
-        .sidebar button.active {
-            background-color: #1abc9c;
-            border-radius: 5px;
-            transform: scale(0.95); /* Depressed effect */
-        }
-        .sidebar .icon {
-            margin-right: 10px; /* Space between icon and text */
-        }
-        .sidebar .text {
-            display: none; /* Initially hide the text */
-        }
-        .sidebar.expanded .text {
-            display: inline-block; /* Show text when sidebar is expanded */
-            color: white;
-            font-size: 1em;
-        }
-        .hamburger {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5em;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-        .content {
-            flex-grow: 1;
-            position: relative;
-            overflow: hidden;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    ISA Deviation, TAS, Rate of Turn, DME Tolerance, VSS/OCS &amp; ILS
+  </title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+  />
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      position: relative;
+      display: flex;
+    }
+
+    /* Main Sidebar */
+    .sidebar {
+      width: 80px;
+      background-color: #2c3e50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 0;
+      transition: width 0.3s ease;
+      z-index: 2;
+    }
+    .sidebar.expanded {
+      width: 200px;
+    }
+    .sidebar button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2em;
+      margin: 15px 0;
+      cursor: pointer;
+      height: 50px;
+      width: 100%;
+      display: flex;
+      justify-content: start;
+      align-items: center;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      padding-left: 10px;
+    }
+    .sidebar button:hover {
+      background-color: #34495e;
+    }
+    .sidebar button.active {
+      background-color: #1abc9c;
+      border-radius: 5px;
+      transform: scale(0.95);
+    }
+    .sidebar .icon {
+      margin-right: 10px;
+    }
+    .sidebar .text {
+      display: none;
+    }
+    .sidebar.expanded .text {
+      display: inline-block;
+      color: white;
+      font-size: 1em;
+    }
+    .hamburger {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5em;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    /* ILS Submenu Panel – appears to the right of the main sidebar */
+    .ils-submenu-panel {
+      position: absolute;
+      top: 520px; /* Adjust this value to vertically align with your ILS button */
+      left: 80px;  /* When sidebar is collapsed */
+      width: 200px;
+      background-color: #2c3e50;
+      display: none;
+      flex-direction: column;
+      padding: 10px 0;
+      transition: left 0.3s ease;
+      z-index: 1;
+    }
+    /* When sidebar is expanded, shift the submenu further right */
+    .sidebar.expanded ~ .ils-submenu-panel {
+      left: 200px;
+    }
+    .ils-submenu-panel button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2em;
+      margin: 5px 0;
+      cursor: pointer;
+      height: 40px;
+      width: 100%;
+      display: flex;
+      justify-content: start;
+      align-items: center;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      padding-left: 30px;
+    }
+    .ils-submenu-panel button:hover {
+      background-color: #34495e;
+    }
+    .ils-submenu-panel button.active {
+      background-color: #1abc9c;
+      border-radius: 5px;
+      transform: scale(0.95);
+    }
+    .ils-submenu-panel .icon {
+      margin-right: 10px;
+    }
+    .ils-submenu-panel .text {
+      color: white;
+      font-size: 1em;
+    }
+
+    /* Content Area */
+    .content {
+      flex-grow: 1;
+      overflow: hidden;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
 </head>
 <body>
-    <div class="sidebar" id="sidebar">
-        <button class="hamburger" onclick="toggleSidebar()">
-            <i class="fas fa-bars"></i>
-        </button>
-        <button id="isaButton" class="active" onclick="loadPage('ISA_deviation.html', 'isaButton')">
-            <i class="fas fa-thermometer-half icon"></i>
-            <span class="text">ISA Deviation</span>
-        </button>
-        <button id="tasButton" onclick="loadPage('TAS.html', 'tasButton')">
-            <i class="fas fa-plane icon"></i>
-            <span class="text">TAS</span>
-        </button>
-        <button id="rateTurnButton" onclick="loadPage('rate_turn.html', 'rateTurnButton')">
-            <i class="fas fa-circle-notch icon"></i>
-            <span class="text">Rate of Turn</span>
-        </button>
-        <button id="dmeButton" onclick="loadPage('dme_tolerance.html', 'dmeButton')">
-            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="4" fill="white"></circle>
-                <circle cx="12" cy="12" r="8" stroke-dasharray="4 4"></circle>
-                <circle cx="12" cy="12" r="12" stroke-dasharray="4 4"></circle>
-            </svg>
-            <span class="text">DME Tolerance</span>
-        </button>
-        <button id="elevationButton" onclick="loadPage('Profile_Check.html', 'elevationButton')">
-            <i class="fas fa-chart-line icon"></i>
-            <span class="text">Max Altitude Estimate</span>
-        </button>
-        <button id="vssOcsButton" onclick="loadPage('VSS_OCS.html', 'vssOcsButton')">
-            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="6" y1="12" x2="18" y2="12" stroke-dasharray="4 2"></line> <!-- Dashed horizontal axis -->
-                <polygon points="6,6 18,12 6,18" fill="none"></polygon> <!-- Hollow reversed trapezoid -->
-            </svg>
-            <span class="text">VSS/OCS</span>
-        </button>
-    </div>
-    <div class="content">
-        <iframe id="iframe" src="ISA_deviation.html"></iframe>
-    </div>
+  <!-- Main Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <button class="hamburger" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i>
+    </button>
+    <button id="isaButton" class="active" onclick="loadPage('ISA_deviation.html', 'isaButton')">
+      <i class="fas fa-thermometer-half icon"></i>
+      <span class="text">ISA Deviation</span>
+    </button>
+    <button id="tasButton" onclick="loadPage('TAS.html', 'tasButton')">
+      <i class="fas fa-plane icon"></i>
+      <span class="text">TAS</span>
+    </button>
+    <button id="rateTurnButton" onclick="loadPage('rate_turn.html', 'rateTurnButton')">
+      <i class="fas fa-circle-notch icon"></i>
+      <span class="text">Rate of Turn</span>
+    </button>
+    <button id="dmeButton" onclick="loadPage('dme_tolerance.html', 'dmeButton')">
+      <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
+           viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4" fill="white"></circle>
+        <circle cx="12" cy="12" r="8" stroke-dasharray="4 4"></circle>
+        <circle cx="12" cy="12" r="12" stroke-dasharray="4 4"></circle>
+      </svg>
+      <span class="text">DME Tolerance</span>
+    </button>
+    <button id="elevationButton" onclick="loadPage('Profile_Check.html', 'elevationButton')">
+      <i class="fas fa-chart-line icon"></i>
+      <span class="text">Max Altitude Estimate</span>
+    </button>
+    <button id="vssOcsButton" onclick="loadPage('VSS_OCS.html', 'vssOcsButton')">
+      <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+         viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round">
+        <line x1="6" y1="12" x2="18" y2="12" stroke-dasharray="4 2"></line>
+        <polygon points="6,6 18,12 6,18" fill="none"></polygon>
+      </svg>
+      <span class="text">VSS/OCS</span>
+    </button>
+    <!-- ILS toggle button with custom ILS icon -->
+    <button id="ilsToggleButton" onclick="toggleILSSubMenu()">
+      <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+           viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+         <!-- Diagonal glide slope from bottom left to top right -->
+         <line x1="4" y1="20" x2="20" y2="4"></line>
+         <!-- Horizontal dashed line representing localizer -->
+         <line x1="4" y1="12" x2="20" y2="12" stroke-dasharray="3 2"></line>
+         <!-- Small triangular marker at runway threshold -->
+         <polygon points="4,20 8,20 6,16" fill="white"></polygon>
+      </svg>
+      <span class="text">ILS</span>
+      <i class="fas fa-caret-down" style="margin-left:auto;"></i>
+    </button>
+  </div>
 
-    <script>
-        function loadPage(pageUrl, buttonId) {
-            const iframe = document.getElementById('iframe');
-            iframe.src = pageUrl; // Instantly switch the iframe content
+  <!-- ILS Submenu Panel (pops out to the right of the sidebar) -->
+  <div class="ils-submenu-panel" id="ilsSubMenuPanel">
+    <button id="ilsHeightButton" onclick="loadILSPage('ILS_height_calculations.html', 'ilsHeightButton')">
+      <i class="fas fa-ruler-vertical icon"></i>
+      <span class="text">ILS Height</span>
+    </button>
+    <button id="ilsDistanceButton" onclick="loadILSPage('ILS_distance_calculations.html', 'ilsDistanceButton')">
+      <i class="fas fa-ruler-horizontal icon"></i>
+      <span class="text">ILS Distance</span>
+    </button>
+  </div>
 
-            // Remove active class from all buttons
-            document.querySelectorAll('.sidebar button').forEach(button => {
-                button.classList.remove('active');
-            });
+  <!-- Content Area -->
+  <div class="content">
+    <iframe id="iframe" src="ISA_deviation.html"></iframe>
+  </div>
 
-            // Add active class to the selected button
-            document.getElementById(buttonId).classList.add('active');
-        }
+  <script>
+    function loadPage(pageUrl, buttonId) {
+      const iframe = document.getElementById("iframe");
+      iframe.src = pageUrl; // Load new page in the iframe
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('expanded'); // Toggle the sidebar class
-        }
-    </script>
+      // Remove active class from all buttons (sidebar and ILS submenu)
+      const allButtons = document.querySelectorAll(".sidebar button, .ils-submenu-panel button");
+      allButtons.forEach(btn => btn.classList.remove("active"));
+
+      // Add active class to the selected button
+      const selectedButton = document.getElementById(buttonId);
+      if (selectedButton) {
+          selectedButton.classList.add("active");
+      }
+      // Hide the ILS submenu panel after selection, if desired
+      document.getElementById("ilsSubMenuPanel").style.display = "none";
+    }
+
+    // For ILS submenu buttons – reusing loadPage function here
+    function loadILSPage(pageUrl, buttonId) {
+      loadPage(pageUrl, buttonId);
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.classList.toggle("expanded");
+    }
+
+    function toggleILSSubMenu() {
+      const ilsPanel = document.getElementById("ilsSubMenuPanel");
+      if (ilsPanel.style.display === "flex") {
+        ilsPanel.style.display = "none";
+      } else {
+        ilsPanel.style.display = "flex";
+      }
+    }
+  </script>
 </body>
 </html>
