@@ -74,7 +74,7 @@
         <label class="block font-medium text-gray-700 dark:text-gray-300">THR Elevation</label>
         <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
           <input id="thrElev" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter THR Elev" />
-          <select id="thrElevUnit" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
+          <select id="thrElevUnit" onchange="handleUnitChange('thrElev', 'thrElevUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
             <option value="ft" selected>ft</option>
             <option value="m">m</option>
           </select>
@@ -85,7 +85,7 @@
         <label class="block font-medium text-gray-700 dark:text-gray-300">TCH</label>
         <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
           <input id="tch" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter TCH" />
-          <select id="tchUnit" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
+          <select id="tchUnit" onchange="handleUnitChange('tch', 'tchUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
             <option value="ft" selected>ft</option>
             <option value="m">m</option>
           </select>
@@ -159,7 +159,7 @@
       <div class="mt-6">
         <h3 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Profile Diagram:</h3>
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm overflow-auto">
-          <svg id="profileSvg" width="100%" height="400" viewBox="-20 0 520 400" xmlns="http://www.w3.org/2000/svg" class="mx-auto dark:text-white">
+          <svg id="profileSvg" width="100%" height="400" viewBox="-20 0 520 400" xmlns="http://www.w3.org/2000/svg" class="  width="100%" height="400" viewBox="-20 0 520 400" xmlns="http://www.w3.org/2000/svg" class="mx-auto dark:text-white">
             <!-- Polyline for profile -->
             <polyline id="profilePolyline" points="" stroke="#0284c7" class="dark:stroke-blue-400" stroke-width="3" fill="none" />
             <!-- Group for all grid lines, vertical markers, and annotations -->
@@ -191,7 +191,47 @@
       } catch (e) {
         console.log("Running in standalone mode");
       }
+      
+      // Initialize unit selectors
+      initializeUnitSelectors();
     });
+    
+    // Function to handle unit conversion when unit selector changes
+    function handleUnitChange(inputId, unitSelectId) {
+      const input = document.getElementById(inputId);
+      const unitSelect = document.getElementById(unitSelectId);
+      const currentValue = parseFloat(input.value);
+      
+      if (!isNaN(currentValue)) {
+        const oldUnit = unitSelect.dataset.lastUnit || unitSelect.value;
+        const newUnit = unitSelect.value;
+        
+        // Only convert if the unit has changed
+        if (oldUnit !== newUnit) {
+          if (oldUnit === "ft" && newUnit === "m") {
+            // Convert from feet to meters
+            input.value = (currentValue * 0.3048).toFixed(2);
+          } else if (oldUnit === "m" && newUnit === "ft") {
+            // Convert from meters to feet
+            input.value = (currentValue / 0.3048).toFixed(2);
+          }
+        }
+      }
+      
+      // Save the current unit for the next change
+      unitSelect.dataset.lastUnit = unitSelect.value;
+    }
+    
+    // Function to initialize all unit selectors
+    function initializeUnitSelectors() {
+      // Get all unit selectors
+      const unitSelectors = document.querySelectorAll('select[id$="Unit"]');
+      
+      unitSelectors.forEach(selector => {
+        // Save the initial unit
+        selector.dataset.lastUnit = selector.value;
+      });
+    }
     
     // Load parameters from a JSON file.
     function loadParameters(event) {
@@ -205,9 +245,17 @@
         try {
           const data = JSON.parse(e.target.result);
           if (data["THR Elev"]) document.getElementById("thrElev").value = data["THR Elev"];
-          if (data["thrElevUnit"]) document.getElementById("thrElevUnit").value = data["thrElevUnit"];
+          if (data["thrElevUnit"]) {
+            const unitSelect = document.getElementById("thrElevUnit");
+            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+            unitSelect.value = data["thrElevUnit"];
+          }
           if (data["TCH"]) document.getElementById("tch").value = data["TCH"];
-          if (data["tchUnit"]) document.getElementById("tchUnit").value = data["tchUnit"];
+          if (data["tchUnit"]) {
+            const unitSelect = document.getElementById("tchUnit");
+            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+            unitSelect.value = data["tchUnit"];
+          }
           if (data["VPA"]) document.getElementById("vpa").value = data["VPA"];
           if (data["Distance to FAF"]) document.getElementById("distToFaf").value = data["Distance to FAF"];
           if (data["Intermediate Length"]) document.getElementById("intermediateLength").value = data["Intermediate Length"];

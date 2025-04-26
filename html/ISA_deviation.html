@@ -40,7 +40,7 @@
         ISA Deviation Calculator
       </h1>
       <div class="flex gap-3 flex-wrap">
-        <button onclick="saveParameters()" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
+        <button onclick="saveParameters()" class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
             <polyline points="17 21 17 13 7 13 7 21"></polyline>
@@ -73,7 +73,7 @@
         </div>
         <div class="space-y-2">
           <label class="block font-medium text-gray-700 dark:text-gray-300">Unit</label>
-          <select id="elevationUnit" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+          <select id="elevationUnit" onchange="handleUnitChange('elevation', 'elevationUnit')" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
             <option value="ft">Feet</option>
             <option value="m">Meters</option>
           </select>
@@ -145,7 +145,47 @@
       } catch (e) {
         console.log("Running in standalone mode");
       }
+      
+      // Initialize unit selectors
+      initializeUnitSelectors();
     });
+    
+    // Function to handle unit conversion when unit selector changes
+    function handleUnitChange(inputId, unitSelectId) {
+      const input = document.getElementById(inputId);
+      const unitSelect = document.getElementById(unitSelectId);
+      const currentValue = parseFloat(input.value);
+      
+      if (!isNaN(currentValue)) {
+        const oldUnit = unitSelect.dataset.lastUnit || unitSelect.value;
+        const newUnit = unitSelect.value;
+        
+        // Only convert if the unit has changed
+        if (oldUnit !== newUnit) {
+          if (oldUnit === "ft" && newUnit === "m") {
+            // Convert from feet to meters
+            input.value = (currentValue * 0.3048).toFixed(2);
+          } else if (oldUnit === "m" && newUnit === "ft") {
+            // Convert from meters to feet
+            input.value = (currentValue / 0.3048).toFixed(2);
+          }
+        }
+      }
+      
+      // Save the current unit for the next change
+      unitSelect.dataset.lastUnit = unitSelect.value;
+    }
+    
+    // Function to initialize all unit selectors
+    function initializeUnitSelectors() {
+      // Get all unit selectors
+      const unitSelectors = document.querySelectorAll('select[id$="Unit"]');
+      
+      unitSelectors.forEach(selector => {
+        // Save the initial unit
+        selector.dataset.lastUnit = selector.value;
+      });
+    }
     
     function roundUpTo(value, step) {
       return Math.ceil(value / step) * step;
@@ -162,9 +202,16 @@
         return;
       }
 
+      // Convert elevation to feet if needed
       const elevationFt = unit === 'm' ? elevation / 0.3048 : elevation;
+      
+      // Calculate ISA temperature at the given elevation
       const tISA = 15 - 0.00198 * elevationFt;
+      
+      // Calculate the deviation from ISA
       const deltaISA = tRef - tISA;
+      
+      // Round up to the nearest step value
       const roundedDeltaISA = roundUpTo(deltaISA, roundStep);
 
       document.getElementById('tISA').textContent = tISA.toFixed(5);
@@ -202,10 +249,18 @@
         try {
           const data = JSON.parse(e.target.result);
           document.getElementById('elevation').value = data.elevation || '';
-          document.getElementById('elevationUnit').value = data.elevationUnit || 'ft';
+          
+          if (data.elevationUnit) {
+            const unitSelect = document.getElementById('elevationUnit');
+            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+            unitSelect.value = data.elevationUnit;
+          }
+          
           document.getElementById('tRef').value = data.tRef || '';
           document.getElementById('roundStep').value = data.roundStep || '5';
           document.getElementById('icaoCode').value = data.icaoCode || '';
+          
+          alert("Parameters successfully loaded!");
         } catch (err) {
           alert("Invalid JSON file.");
         }

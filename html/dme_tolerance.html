@@ -77,7 +77,7 @@
         <label class="block font-medium text-gray-700 dark:text-gray-300">Navaid Elevation</label>
         <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
           <input id="navaidElevation" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter Navaid Elevation" />
-          <select id="navaidUnit" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
+          <select id="navaidUnit" onchange="handleUnitChange('navaidElevation', 'navaidUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
             <option value="feet">Feet</option>
             <option value="meters">Meters</option>
           </select>
@@ -90,8 +90,14 @@
       </div>
       <!-- Aircraft Elevation -->
       <div class="space-y-2 md:col-span-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">Aircraft Elevation (in feet)</label>
-        <input id="aircraftElevation" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter Aircraft Elevation" />
+        <label class="block font-medium text-gray-700 dark:text-gray-300">Aircraft Elevation</label>
+        <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+          <input id="aircraftElevation" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter Aircraft Elevation" />
+          <select id="aircraftUnit" onchange="handleUnitChange('aircraftElevation', 'aircraftUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
+            <option value="feet">Feet</option>
+            <option value="meters">Meters</option>
+          </select>
+        </div>
       </div>
     </div>
     
@@ -201,7 +207,47 @@
       } catch (e) {
         console.log("Running in standalone mode");
       }
+      
+      // Initialize unit selectors
+      initializeUnitSelectors();
     });
+    
+    // Function to handle unit conversion when unit selector changes
+    function handleUnitChange(inputId, unitSelectId) {
+      const input = document.getElementById(inputId);
+      const unitSelect = document.getElementById(unitSelectId);
+      const currentValue = parseFloat(input.value);
+      
+      if (!isNaN(currentValue)) {
+        const oldUnit = unitSelect.dataset.lastUnit || unitSelect.value;
+        const newUnit = unitSelect.value;
+        
+        // Only convert if the unit has changed
+        if (oldUnit !== newUnit) {
+          if (oldUnit === "feet" && newUnit === "meters") {
+            // Convert from feet to meters
+            input.value = (currentValue * 0.3048).toFixed(2);
+          } else if (oldUnit === "meters" && newUnit === "feet") {
+            // Convert from meters to feet
+            input.value = (currentValue / 0.3048).toFixed(2);
+          }
+        }
+      }
+      
+      // Save the current unit for the next change
+      unitSelect.dataset.lastUnit = unitSelect.value;
+    }
+    
+    // Function to initialize all unit selectors
+    function initializeUnitSelectors() {
+      // Get all unit selectors
+      const unitSelectors = document.querySelectorAll('select[id$="Unit"]');
+      
+      unitSelectors.forEach(selector => {
+        // Save the initial unit
+        selector.dataset.lastUnit = selector.value;
+      });
+    }
     
     // --- Load/Save Functions ---
     function loadParameters(event) {
@@ -218,13 +264,20 @@
             document.getElementById("navaidElevation").value = data["Navaid Elevation"];
           }
           if (data["Navaid Unit"]) {
-            document.getElementById("navaidUnit").value = data["Navaid Unit"];
+            const unitSelect = document.getElementById("navaidUnit");
+            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+            unitSelect.value = data["Navaid Unit"];
           }
           if (data["Fix Ground Distance"]) {
             document.getElementById("groundDistance").value = data["Fix Ground Distance"];
           }
           if (data["Aircraft Elevation"]) {
             document.getElementById("aircraftElevation").value = data["Aircraft Elevation"];
+          }
+          if (data["Aircraft Unit"]) {
+            const unitSelect = document.getElementById("aircraftUnit");
+            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+            unitSelect.value = data["Aircraft Unit"];
           }
           alert("Parameters successfully loaded!");
         } catch (err) {
@@ -239,12 +292,16 @@
       const navaidUnit = document.getElementById("navaidUnit").value || "feet";
       const groundDistance = document.getElementById("groundDistance").value || "";
       const aircraftElevation = document.getElementById("aircraftElevation").value || "";
+      const aircraftUnit = document.getElementById("aircraftUnit").value || "feet";
+      
       const data = {
         "Navaid Elevation": navaidElevation,
         "Navaid Unit": navaidUnit,
         "Fix Ground Distance": groundDistance,
-        "Aircraft Elevation": aircraftElevation
+        "Aircraft Elevation": aircraftElevation,
+        "Aircraft Unit": aircraftUnit
       };
+      
       const now = new Date();
       const timestamp = now.toISOString().replace(/[:.]/g, "-");
       const filename = `${timestamp}_dmetolerance.json`;
@@ -260,15 +317,17 @@
       const navaidElevationInput = parseFloat(document.getElementById("navaidElevation").value);
       const navaidUnit = document.getElementById("navaidUnit").value;
       const groundDistance = parseFloat(document.getElementById("groundDistance").value);
-      const aircraftElevation = parseFloat(document.getElementById("aircraftElevation").value);
+      const aircraftElevationInput = parseFloat(document.getElementById("aircraftElevation").value);
+      const aircraftUnit = document.getElementById("aircraftUnit").value;
       
-      if (isNaN(navaidElevationInput) || isNaN(groundDistance) || isNaN(aircraftElevation)) {
+      if (isNaN(navaidElevationInput) || isNaN(groundDistance) || isNaN(aircraftElevationInput)) {
         alert("Please enter valid values for all inputs.");
         return;
       }
       
-      // Convert Navaid Elevation to feet if in meters (divide by 0.3048).
+      // Convert elevations to feet if in meters
       const navaidElevation = navaidUnit === "meters" ? navaidElevationInput / 0.3048 : navaidElevationInput;
+      const aircraftElevation = aircraftUnit === "meters" ? aircraftElevationInput / 0.3048 : aircraftElevationInput;
       
       // Conversion factor for NM to feet.
       const conversionFactor = 1852 / 0.3048;
@@ -301,6 +360,7 @@
       const navaidUnit = document.getElementById("navaidUnit").value || "N/A";
       const groundDistance = document.getElementById("groundDistance").value || "N/A";
       const aircraftElevation = document.getElementById("aircraftElevation").value || "N/A";
+      const aircraftUnit = document.getElementById("aircraftUnit").value || "N/A";
       const slantRange = document.getElementById("slantRange").textContent || "N/A";
       const dmeTolerance = document.getElementById("dmeTolerance").textContent || "N/A";
       const slantRangeMin = document.getElementById("slantRangeMin").textContent || "N/A";
@@ -311,7 +371,7 @@
           <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
           <tr><td>Navaid Elevation</td><td>${navaidElevation} ${navaidUnit}</td></tr>
           <tr><td>Fix Ground Distance</td><td>${groundDistance} NM</td></tr>
-          <tr><td>Aircraft Elevation</td><td>${aircraftElevation} ft</td></tr>
+          <tr><td>Aircraft Elevation</td><td>${aircraftElevation} ${aircraftUnit}</td></tr>
           <tr><td>Slant Range</td><td>${slantRange} NM</td></tr>
           <tr><td>DME Tolerance</td><td>±${dmeTolerance} NM</td></tr>
           <tr><td>Slant Range (Min)</td><td>${slantRangeMin} NM</td></tr>
