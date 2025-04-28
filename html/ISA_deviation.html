@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PANS OPS - ISA Deviation Calculator</title>
+  <title>ISA Deviation Calculator</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -32,53 +32,53 @@
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4">
   <div class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
-    <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
-      <h1 class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 sm:h-8 sm:w-8 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
-        </svg>
+    <!-- Header with title and buttons -->
+    <div class="flex flex-wrap justify-between items-center mb-6">
+      <h1 class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300">
         ISA Deviation Calculator
       </h1>
-      <div class="flex gap-3 flex-wrap">
-        <button onclick="saveParameters()" class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <div class="flex gap-3">
+        <button onclick="saveParameters()" class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
             <polyline points="17 21 17 13 7 13 7 21"></polyline>
             <polyline points="7 3 7 8 15 8"></polyline>
           </svg>
-          Save
+          Save Parameters
         </button>
         <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
-        <button onclick="document.getElementById('loadFile').click()" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button onclick="document.getElementById('loadFile').click()" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="17 8 12 3 7 8"></polyline>
             <line x1="12" y1="3" x2="12" y2="15"></line>
           </svg>
-          Load
+          Load Parameters
         </button>
       </div>
     </div>
 
-    <!-- Inputs -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300">ICAO Airport Code</label>
-          <input id="icaoCode" type="text" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter ICAO Code (e.g., MHLM)" />
-        </div>
-        <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300">Aerodrome Elevation</label>
-          <input id="elevation" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter elevation" />
-        </div>
-        <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300">Unit</label>
-          <select id="elevationUnit" onchange="handleUnitChange('elevation', 'elevationUnit')" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
-            <option value="ft">Feet</option>
-            <option value="m">Meters</option>
-          </select>
-        </div>
+    <!-- First row: ICAO, Elevation, Unit -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="space-y-2">
+        <label class="block font-medium text-gray-700 dark:text-gray-300">ICAO Airport Code</label>
+        <input id="icaoCode" type="text" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter ICAO Code (e.g., MHLM)" />
       </div>
+      <div class="space-y-2">
+        <label class="block font-medium text-gray-700 dark:text-gray-300">Aerodrome Elevation</label>
+        <input id="elevation" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter elevation" />
+      </div>
+      <div class="space-y-2">
+        <label class="block font-medium text-gray-700 dark:text-gray-300">Unit</label>
+        <select id="elevationUnit" onchange="handleUnitChange('elevation', 'elevationUnit')" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+          <option value="ft">Feet</option>
+          <option value="m">Meters</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Second row: Reference Temperature, Rounding Step -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
       <div class="space-y-2">
         <label class="block font-medium text-gray-700 dark:text-gray-300">Reference Temperature (T<sub>REF</sub>) °C</label>
         <input id="tRef" type="number" step="0.1" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter temperature" />
@@ -89,10 +89,13 @@
       </div>
     </div>
 
-    <div class="flex justify-end mt-6">
+    <!-- Calculate button aligned to the left -->
+    <div class="flex justify-start mt-6">
       <button onclick="calculateISA()" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+          <path d="M17 13H7"></path>
+          <path d="M12 8v10"></path>
         </svg>
         Calculate
       </button>
