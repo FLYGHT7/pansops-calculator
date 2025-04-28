@@ -5,93 +5,247 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TAS, Rate & Radius of Turn Calculator</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="dark-mode.css">
 </head>
-<body class="bg-[#f4f7f9] min-h-screen">
-  <div class="max-w-3xl mx-auto p-6 bg-white shadow-xl rounded-2xl mt-10 border border-gray-200">
-    <h1 class="text-3xl font-bold text-[#1f3b57] mb-6">TAS, Rate & Radius of Turn Calculator</h1>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
+    <h1 class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 sm:h-8 sm:w-8 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      TAS, Rate & Radius of Turn
+    </h1>
 
     <!-- Load/Save Parameters -->
-    <div class="flex justify-between items-center mb-6">
-      <label for="loadFile" class="block mb-1 font-medium text-gray-700">
+    <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
+      <label for="loadFile" class="text-gray-700 dark:text-gray-300 font-medium">
         Load Parameters File (JSON)
       </label>
-      <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
-      <button onclick="document.getElementById('loadFile').click()"
-              class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
-        Load Parameters
-      </button>
-      <button onclick="saveParameters()"
-              class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-2xl shadow">
-        Save Parameters
-      </button>
+      <div class="flex gap-3 flex-wrap">
+        <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
+        <button onclick="document.getElementById('loadFile').click()"
+                class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          Load
+        </button>
+        <button onclick="saveParameters()"
+                class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          Save
+        </button>
+      </div>
     </div>
 
     <!-- Inputs for TAS Calculation -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-      <div>
-        <label class="block mb-1 font-medium text-gray-700">
-          Indicated Airspeed (IAS) in knots
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div class="space-y-2">
+        <label class="block font-medium text-gray-700 dark:text-gray-300">
+          Indicated Airspeed (IAS)
         </label>
-        <input id="ias" type="number" class="w-full p-2 border border-gray-300 rounded-xl" placeholder="Enter IAS" />
+        <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+          <input id="ias" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter IAS" />
+          <select id="iasUnit" onchange="handleUnitChange('ias', 'iasUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
+            <option value="knots" selected>knots</option>
+            <option value="km/h">km/h</option>
+          </select>
+        </div>
       </div>
-      <div>
-        <label class="block mb-1 font-medium text-gray-700">
-          Altitude (in feet)
+      <div class="space-y-2">
+        <label class="block font-medium text-gray-700 dark:text-gray-300">
+          Altitude
         </label>
-        <input id="altitude" type="number" class="w-full p-2 border border-gray-300 rounded-xl" placeholder="Enter altitude" />
+        <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+          <input id="altitude" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter altitude" />
+          <select id="altitudeUnit" onchange="handleUnitChange('altitude', 'altitudeUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
+            <option value="ft" selected>ft</option>
+            <option value="m">m</option>
+          </select>
+        </div>
       </div>
-      <div>
-        <label class="block mb-1 font-medium text-gray-700">
+      <div class="space-y-2">
+        <label class="block font-medium text-gray-700 dark:text-gray-300">
           ISA Deviation (VAR) in °C
         </label>
-        <input id="isaDeviation" type="number" class="w-full p-2 border border-gray-300 rounded-xl" placeholder="Enter ISA Deviation" />
+        <input id="isaDeviation" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter ISA Deviation" />
       </div>
     </div>
 
     <!-- Inputs for Rate & Radius of Turn -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end mt-6">
-      <div>
-        <label class="block mb-1 font-medium text-gray-700">
+    <div class="mt-6">
+      <div class="space-y-2 max-w-xs">
+        <label class="block font-medium text-gray-700 dark:text-gray-300">
           Bank Angle (°)
         </label>
-        <input id="bankAngle" type="number" value="25" class="w-full p-2 border border-gray-300 rounded-xl" placeholder="Enter Bank Angle" />
+        <input id="bankAngle" type="number" value="25" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter Bank Angle" />
       </div>
     </div>
 
     <!-- Calculation Buttons -->
-    <div class="flex justify-end mt-6 space-x-4">
+    <div class="flex flex-wrap justify-end mt-6 gap-3">
       <button onclick="calculateTAS()"
-              class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
+              class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"></path>
+          <path d="M12 5v14"></path>
+        </svg>
         Calculate TAS
       </button>
       <button onclick="calculateTurn()"
-              class="bg-[#0078D4] hover:bg-[#005fa3] text-white font-semibold py-2 px-4 rounded-2xl shadow">
+              class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline  stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="8 12 12 16 16 12"></polyline>
+          <line x1="12" y1="8" x2="12" y2="16"></line>
+        </svg>
         Calculate Turn
       </button>
     </div>
 
     <!-- Results for TAS -->
-    <div id="tasResults" class="mt-6 hidden bg-[#e6f4ea] p-4 rounded-xl border border-green-300">
-      <p><strong>k Factor:</strong> <span id="kFactor"></span></p>
-      <p><strong>True Airspeed (TAS):</strong> <span id="tas"></span> knots</p>
+    <div id="tasResults" class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600">
+      <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">TAS Results</h2>
+      
+      <!-- Output values in a grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
+          <p class="text-sm text-gray-500 dark:text-gray-400">k Factor</p>
+          <p class="text-lg font-semibold dark:text-white"><span id="kFactor"></span></p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
+          <p class="text-sm text-gray-500 dark:text-gray-400">True Airspeed (TAS)</p>
+          <p class="text-lg font-semibold dark:text-white"><span id="tas"></span> <span id="tasUnit">knots</span></p>
+        </div>
+      </div>
     </div>
 
     <!-- Results for Rate & Radius of Turn -->
-    <div id="turnResults" class="mt-6 hidden bg-[#e6f4ea] p-4 rounded-xl border border-green-300">
-      <p><strong>Rate of Turn:</strong> <span id="rateOfTurn"></span></p>
-      <p id="uncappedRow" class="hidden">
-        <strong>Rate of Turn (Uncapped):</strong> <span id="uncappedRateOfTurn"></span>
-      </p>
-      <p><strong>Radius of Turn:</strong> <span id="radiusOfTurn"></span></p>
-      <p id="cappedMessage" class="text-red-500 font-medium"></p>
-      <button onclick="copyResultsToClipboard()"
-              class="mt-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-2xl shadow">
-        Copy Results as Table
-      </button>
+    <div id="turnResults" class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600">
+      <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">Turn Results</h2>
+      
+      <!-- Output values in a grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
+          <p class="text-sm text-gray-500 dark:text-gray-400">Rate of Turn</p>
+          <p class="text-lg font-semibold dark:text-white"><span id="rateOfTurn"></span></p>
+        </div>
+        <div id="uncappedRow" class="hidden bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
+          <p class="text-sm text-gray-500 dark:text-gray-400">Rate of Turn (Uncapped)</p>
+          <p class="text-lg font-semibold dark:text-white"><span id="uncappedRateOfTurn"></span></p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
+          <p class="text-sm text-gray-500 dark:text-gray-400">Radius of Turn</p>
+          <p class="text-lg font-semibold dark:text-white"><span id="radiusOfTurn"></span></p>
+        </div>
+      </div>
+      
+      <p id="cappedMessage" class="text-red-500 dark:text-red-400 font-medium mb-4"></p>
+      
+      <div class="mt-6 flex justify-end">
+        <button onclick="copyResultsToClipboard()"
+                class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+          </svg>
+          Copy Results as Table
+        </button>
+      </div>
     </div>
   </div>
 
   <script>
+    // Check for dark mode on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if parent has set dark mode
+      try {
+        if (window.parent && window.parent.document.documentElement.classList.contains('dark')) {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (e) {
+        console.log("Running in standalone mode");
+      }
+      
+      // Initialize unit selectors
+      initializeUnitSelectors();
+    });
+    
+    // Function to handle unit conversion when unit selector changes
+    function handleUnitChange(inputId, unitSelectId) {
+      const input = document.getElementById(inputId);
+      const unitSelect = document.getElementById(unitSelectId);
+      const currentValue = parseFloat(input.value);
+      
+      if (!isNaN(currentValue)) {
+        const oldUnit = unitSelect.dataset.lastUnit || unitSelect.value;
+        const newUnit = unitSelect.value;
+        
+        // Only convert if the unit has changed
+        if (oldUnit !== newUnit) {
+          if (oldUnit === "ft" && newUnit === "m") {
+            // Convert from feet to meters
+            input.value = (currentValue * 0.3048).toFixed(2);
+          } else if (oldUnit === "m" && newUnit === "ft") {
+            // Convert from meters to feet
+            input.value = (currentValue / 0.3048).toFixed(2);
+          } else if (oldUnit === "knots" && newUnit === "km/h") {
+            // Convert from knots to km/h
+            input.value = (currentValue * 1.852).toFixed(2);
+          } else if (oldUnit === "km/h" && newUnit === "knots") {
+            // Convert from km/h to knots
+            input.value = (currentValue / 1.852).toFixed(2);
+          }
+        }
+      }
+      
+      // Save the current unit for the next change
+      unitSelect.dataset.lastUnit = unitSelect.value;
+    }
+    
+    // Function to initialize all unit selectors
+    function initializeUnitSelectors() {
+      // Get all unit selectors
+      const unitSelectors = document.querySelectorAll('select[id$="Unit"]');
+      
+      unitSelectors.forEach(selector => {
+        // Save the initial unit
+        selector.dataset.lastUnit = selector.value;
+      });
+    }
+
     // Load parameters from a JSON file and populate input fields.
     function loadParameters(event) {
       const file = event.target.files[0];
@@ -106,8 +260,18 @@
           if (data["IAS"]) {
             document.getElementById("ias").value = data["IAS"];
           }
+          if (data["iasUnit"]) {
+            const unitSelect = document.getElementById("iasUnit");
+            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+            unitSelect.value = data["iasUnit"];
+          }
           if (data["Altitude"]) {
             document.getElementById("altitude").value = data["Altitude"];
+          }
+          if (data["altitudeUnit"]) {
+            const unitSelect = document.getElementById("altitudeUnit");
+            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+            unitSelect.value = data["altitudeUnit"];
           }
           if (data["ISA Deviation"]) {
             document.getElementById("isaDeviation").value = data["ISA Deviation"];
@@ -126,12 +290,16 @@
     // Save all input parameters with a timestamp in the filename.
     function saveParameters() {
       const ias = document.getElementById("ias").value || "";
+      const iasUnit = document.getElementById("iasUnit").value || "knots";
       const altitude = document.getElementById("altitude").value || "";
+      const altitudeUnit = document.getElementById("altitudeUnit").value || "ft";
       const isaDeviation = document.getElementById("isaDeviation").value || "";
       const bankAngle = document.getElementById("bankAngle").value || "";
       const data = {
         "IAS": ias,
+        "iasUnit": iasUnit,
         "Altitude": altitude,
+        "altitudeUnit": altitudeUnit,
         "ISA Deviation": isaDeviation,
         "Bank Angle": bankAngle
       };
@@ -147,35 +315,80 @@
 
     // Calculate TAS from IAS, Altitude, and ISA Deviation.
     function calculateTAS() {
-      const ias = parseFloat(document.getElementById("ias").value);
-      const altitude = parseFloat(document.getElementById("altitude").value);
+      const iasInput = parseFloat(document.getElementById("ias").value);
+      const iasUnit = document.getElementById("iasUnit").value;
+      const altitudeInput = parseFloat(document.getElementById("altitude").value);
+      const altitudeUnit = document.getElementById("altitudeUnit").value;
       const isaDeviation = parseFloat(document.getElementById("isaDeviation").value);
-      if (isNaN(ias) || isNaN(altitude) || isNaN(isaDeviation)) {
+      
+      if (isNaN(iasInput) || isNaN(altitudeInput) || isNaN(isaDeviation)) {
         alert("Please enter valid values for IAS, altitude, and ISA deviation.");
         return;
       }
+      
+      // Convert IAS to knots if needed
+      let ias = iasInput;
+      if (iasUnit === "km/h") {
+        ias = iasInput / 1.852;
+      }
+      
+      // Convert altitude to feet if needed
+      let altitude = altitudeInput;
+      if (altitudeUnit === "m") {
+        altitude = altitudeInput / 0.3048;
+      }
+      
       const k = (171233 * Math.sqrt((288 + isaDeviation) - 0.00198 * altitude)) /
                 Math.pow(288 - 0.00198 * altitude, 2.628);
-      const tas = k * ias;
+      
+      // Calculate True Airspeed
+      let tas = k * ias;
+      
+      // Convert TAS back to km/h if input was in km/h
+      let tasUnitText = "knots";
+      if (iasUnit === "km/h") {
+        tas = tas * 1.852;
+        tasUnitText = "km/h";
+      }
+      
+      // Update the TAS unit display
+      document.getElementById("tasUnit").textContent = tasUnitText;
+      
       document.getElementById("kFactor").textContent = k.toFixed(4);
       document.getElementById("tas").textContent = tas.toFixed(4);
       document.getElementById("tasResults").classList.remove("hidden");
+      
+      return tas;
     }
 
     // Calculate Rate of Turn (cap at 3°/s) and Radius of Turn.
     function calculateTurn() {
+      let tas;
+      
+      // Check if TAS has been calculated
       if (document.getElementById("tas").textContent === "") {
-        calculateTAS();
+        tas = calculateTAS();
+      } else {
+        tas = parseFloat(document.getElementById("tas").textContent);
+        const tasUnit = document.getElementById("tasUnit").textContent;
+        
+        // Convert TAS to knots if it's in km/h
+        if (tasUnit === "km/h") {
+          tas = tas / 1.852;
+        }
       }
-      const tas = parseFloat(document.getElementById("tas").textContent);
+      
       const bankAngle = parseFloat(document.getElementById("bankAngle").value);
+      
       if (isNaN(tas) || isNaN(bankAngle)) {
         alert("Please ensure TAS is calculated and enter a valid Bank Angle.");
         return;
       }
+      
       // Compute the uncapped rate.
       const uncappedRate = (3431 * Math.tan(bankAngle * Math.PI / 180)) / (Math.PI * tas);
       const cappedRate = Math.min(uncappedRate, 3);
+      
       // If the uncapped value exceeds 3, display both; otherwise, display only one.
       if (uncappedRate > 3) {
         document.getElementById("rateOfTurn").textContent = cappedRate.toFixed(4) + " °/s";
@@ -187,6 +400,7 @@
         document.getElementById("uncappedRow").classList.add("hidden");
         document.getElementById("cappedMessage").textContent = "";
       }
+      
       const radiusOfTurnNM = tas / (20 * Math.PI * cappedRate);
       document.getElementById("radiusOfTurn").textContent = radiusOfTurnNM.toFixed(4) + " NM";
       document.getElementById("turnResults").classList.remove("hidden");
@@ -195,33 +409,41 @@
     // Copy results as a formatted table to the clipboard.
     function copyResultsToClipboard() {
       const ias = document.getElementById("ias").value || "N/A";
+      const iasUnit = document.getElementById("iasUnit").value || "knots";
       const altitude = document.getElementById("altitude").value || "N/A";
+      const altitudeUnit = document.getElementById("altitudeUnit").value || "ft";
       const isaDeviation = document.getElementById("isaDeviation").value || "N/A";
       const bankAngle = document.getElementById("bankAngle").value || "N/A";
       const kFactor = document.getElementById("kFactor").textContent || "N/A";
       const tas = document.getElementById("tas").textContent || "N/A";
+      const tasUnit = document.getElementById("tasUnit").textContent || "knots";
       
       // Determine how to display Rate of Turn in the table.
       let rateRow = "";
-      const rawRate = (3431 * Math.tan(parseFloat(bankAngle) * Math.PI / 180)) / (Math.PI * parseFloat(tas));
-      if (rawRate > 3) {
-        const cappedRate = Math.min(rawRate, 3);
-        rateRow = `<tr><td>Rate of Turn (Capped)</td><td>${cappedRate.toFixed(4)} °/s</td></tr>
-                   <tr><td>Rate of Turn (Uncapped)</td><td>${rawRate.toFixed(4)} °/s</td></tr>`;
+      if (document.getElementById("turnResults").classList.contains("hidden")) {
+        rateRow = "";
       } else {
-        rateRow = `<tr><td>Rate of Turn</td><td>${rawRate.toFixed(4)} °/s</td></tr>`;
+        const rateOfTurn = document.getElementById("rateOfTurn").textContent || "N/A";
+        if (document.getElementById("uncappedRow").classList.contains("hidden")) {
+          rateRow = `<tr><td>Rate of Turn</td><td>${rateOfTurn}</td></tr>`;
+        } else {
+          const uncappedRateOfTurn = document.getElementById("uncappedRateOfTurn").textContent || "N/A";
+          rateRow = `<tr><td>Rate of Turn (Capped)</td><td>${rateOfTurn}</td></tr>
+                     <tr><td>Rate of Turn (Uncapped)</td><td>${uncappedRateOfTurn}</td></tr>`;
+        }
       }
+      
       const radiusOfTurn = document.getElementById("radiusOfTurn").textContent || "N/A";
       
       const htmlContent = `
         <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-          <tr><th>Parameter</th><th>Value</th></tr>
-          <tr><td>IAS</td><td>${ias} knots</td></tr>
-          <tr><td>Altitude</td><td>${altitude} ft</td></tr>
+          <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
+          <tr><td>IAS</td><td>${ias} ${iasUnit}</td></tr>
+          <tr><td>Altitude</td><td>${altitude} ${altitudeUnit}</td></tr>
           <tr><td>ISA Deviation (VAR)</td><td>${isaDeviation} °C</td></tr>
           <tr><td>Bank Angle</td><td>${bankAngle} °</td></tr>
           <tr><td>k Factor</td><td>${kFactor}</td></tr>
-          <tr><td>True Airspeed (TAS)</td><td>${tas} knots</td></tr>
+          <tr><td>True Airspeed (TAS)</td><td>${tas} ${tasUnit}</td></tr>
           ${rateRow}
           <tr><td>Radius of Turn</td><td>${radiusOfTurn}</td></tr>
         </table>
