@@ -12,8 +12,6 @@ An opensource PANS OPS web interface for doing calculations that normally you wo
 
 **GitHub Repository:** [https://github.com/FLYGHT7/pansops-calculator](https://github.com/FLYGHT7/pansops-calculator)
 
-![Aviation Calculators Demo](https://placeholder.svg?height=400&width=800&query=Aviation+Calculators+Suite+Dashboard+Screenshot)
-
 ## ⚠️ Disclaimer
 
 **Note:** This code is in development and provided as is, it may contain errors and you are solely responsible for using it. Any feedback is welcome. The implementation is done in a projected coordinate system and currently there is no intention to use a purely geodesic calculation.
@@ -166,14 +164,3 @@ Project Link: [https://github.com/FLYGHT7/pansops-calculator](https://github.com
 <p align="center">
   Made with ❤️ for the aviation community
 </p>
-\`\`\`
-
-I've updated the README.md with the additional information you provided:
-
-1. Added the description about it being an opensource PANS OPS web interface at the beginning
-2. Added the live demo URL and GitHub repository link at the top
-3. Added a dedicated Disclaimer section with the information about the code being in development
-4. Added a new "Calculation Methodology" section with details about the coordinate system and unit conversions
-5. Updated the GitHub repository links throughout the document to point to the correct repository
-
-The README now includes all the information you provided while maintaining the professional structure and formatting of the original version.
