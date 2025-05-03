@@ -83,3 +83,20 @@ html.dark *:focus {
 html.dark ::placeholder {
   color: #9ca3af;
 }
+
+/* Ensure proper result section styling in dark mode */
+html.dark .bg-green-50 {
+  background-color: #1f2937;
+}
+
+html.dark .text-green-800 {
+  color: #4ade80;
+}
+
+html.dark .border-green-200 {
+  border-color: #374151;
+}
+
+html.dark .border-green-100 {
+  border-color: #374151;
+}

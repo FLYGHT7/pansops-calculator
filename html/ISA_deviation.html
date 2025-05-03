@@ -1,289 +1,435 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ISA Deviation Calculator</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            primary: {
-              50: '#f0f9ff',
-              100: '#e0f2fe',
-              200: '#bae6fd',
-              300: '#7dd3fc',
-              400: '#38bdf8',
-              500: '#0ea5e9',
-              600: '#0284c7',
-              700: '#0369a1',
-              800: '#075985',
-              900: '#0c4a6e',
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ISA Deviation Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: "#f0f9ff",
+                100: "#e0f2fe",
+                200: "#bae6fd",
+                300: "#7dd3fc",
+                400: "#38bdf8",
+                500: "#0ea5e9",
+                600: "#0284c7",
+                700: "#0369a1",
+                800: "#075985",
+                900: "#0c4a6e",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="dark-mode.css" />
+  </head>
+  <body
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4"
+  >
+    <div
+      class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
+    >
+      <!-- Header with title and buttons -->
+      <div class="flex flex-wrap justify-between items-center mb-6">
+        <h1
+          class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300"
+        >
+          ISA Deviation Calculator
+        </h1>
+        <div class="flex gap-3">
+          <button
+            onclick="saveParameters()"
+            class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-2"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+              ></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            Save Parameters
+          </button>
+          <input
+            id="loadFile"
+            type="file"
+            accept=".json"
+            class="hidden"
+            onchange="loadParameters(event)"
+          />
+          <button
+            onclick="document.getElementById('loadFile').click()"
+            class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-2"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Load Parameters
+          </button>
+        </div>
+      </div>
+
+      <!-- First row: ICAO, Elevation, Unit -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="space-y-2">
+          <label class="block font-medium text-gray-700 dark:text-gray-300"
+            >ICAO Airport Code</label
+          >
+          <input
+            id="icaoCode"
+            type="text"
+            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            placeholder="Enter ICAO Code (e.g., MHLM)"
+          />
+        </div>
+        <div class="space-y-2">
+          <label class="block font-medium text-gray-700 dark:text-gray-300"
+            >Aerodrome Elevation</label
+          >
+          <input
+            id="elevation"
+            type="number"
+            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            placeholder="Enter elevation"
+          />
+        </div>
+        <div class="space-y-2">
+          <label class="block font-medium text-gray-700 dark:text-gray-300"
+            >Unit</label
+          >
+          <select
+            id="elevationUnit"
+            onchange="handleUnitChange('elevation', 'elevationUnit')"
+            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+          >
+            <option value="ft">Feet</option>
+            <option value="m">Meters</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Second row: Reference Temperature, Rounding Step -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="space-y-2">
+          <label class="block font-medium text-gray-700 dark:text-gray-300"
+            >Reference Temperature (T<sub>REF</sub>) °C</label
+          >
+          <input
+            id="tRef"
+            type="number"
+            step="0.1"
+            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            placeholder="Enter temperature"
+          />
+        </div>
+        <div class="space-y-2">
+          <label class="block font-medium text-gray-700 dark:text-gray-300"
+            >Rounding Step (default 5)</label
+          >
+          <input
+            id="roundStep"
+            type="number"
+            value="5"
+            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+      </div>
+
+      <!-- Calculate button aligned to the left -->
+      <div class="flex justify-end mt-6">
+        <button
+          onclick="calculateISA()"
+          class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+            ></path>
+            <path d="M17 13H7"></path>
+            <path d="M12 8v10"></path>
+          </svg>
+          Calculate
+        </button>
+      </div>
+
+      <!-- Results -->
+      <div
+        id="results"
+        class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600"
+      >
+        <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">
+          ISA Deviation Results
+        </h2>
+
+        <!-- Output values in a grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              T<sub>ISA</sub>
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="tISA"></span> °C
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">ΔISA</p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="deltaISA"></span> °C
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">Rounded ΔISA</p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="roundedDeltaISA"></span> °C
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              ISA + ΔISA (for calculations)
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="finalISA"></span>
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button
+            onclick="copyResultsToClipboard()"
+            class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-2"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+              ></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+            Copy Results as Table
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Check for dark mode on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check if parent has set dark mode
+        try {
+          if (
+            window.parent &&
+            window.parent.document.documentElement.classList.contains("dark")
+          ) {
+            document.documentElement.classList.add("dark");
+          }
+        } catch (e) {
+          console.log("Running in standalone mode");
+        }
+
+        // Initialize unit selectors
+        initializeUnitSelectors();
+      });
+
+      // Function to handle unit conversion when unit selector changes
+      function handleUnitChange(inputId, unitSelectId) {
+        const input = document.getElementById(inputId);
+        const unitSelect = document.getElementById(unitSelectId);
+        const currentValue = parseFloat(input.value);
+
+        if (!isNaN(currentValue)) {
+          const oldUnit = unitSelect.dataset.lastUnit || unitSelect.value;
+          const newUnit = unitSelect.value;
+
+          // Only convert if the unit has changed
+          if (oldUnit !== newUnit) {
+            if (oldUnit === "ft" && newUnit === "m") {
+              // Convert from feet to meters
+              input.value = (currentValue * 0.3048).toFixed(2);
+            } else if (oldUnit === "m" && newUnit === "ft") {
+              // Convert from meters to feet
+              input.value = (currentValue / 0.3048).toFixed(2);
             }
           }
         }
+
+        // Save the current unit for the next change
+        unitSelect.dataset.lastUnit = unitSelect.value;
       }
-    }
-  </script>
-  <link rel="stylesheet" href="dark-mode.css">
-</head>
-<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4">
-  <div class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
-    <!-- Header with title and buttons -->
-    <div class="flex flex-wrap justify-between items-center mb-6">
-      <h1 class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300">
-        ISA Deviation Calculator
-      </h1>
-      <div class="flex gap-3">
-        <button onclick="saveParameters()" class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-            <polyline points="17 21 17 13 7 13 7 21"></polyline>
-            <polyline points="7 3 7 8 15 8"></polyline>
-          </svg>
-          Save Parameters
-        </button>
-        <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
-        <button onclick="document.getElementById('loadFile').click()" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="17 8 12 3 7 8"></polyline>
-            <line x1="12" y1="3" x2="12" y2="15"></line>
-          </svg>
-          Load Parameters
-        </button>
-      </div>
-    </div>
 
-    <!-- First row: ICAO, Elevation, Unit -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">ICAO Airport Code</label>
-        <input id="icaoCode" type="text" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter ICAO Code (e.g., MHLM)" />
-      </div>
-      <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">Aerodrome Elevation</label>
-        <input id="elevation" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter elevation" />
-      </div>
-      <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">Unit</label>
-        <select id="elevationUnit" onchange="handleUnitChange('elevation', 'elevationUnit')" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
-          <option value="ft">Feet</option>
-          <option value="m">Meters</option>
-        </select>
-      </div>
-    </div>
+      // Function to initialize all unit selectors
+      function initializeUnitSelectors() {
+        // Get all unit selectors
+        const unitSelectors = document.querySelectorAll('select[id$="Unit"]');
 
-    <!-- Second row: Reference Temperature, Rounding Step -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-      <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">Reference Temperature (T<sub>REF</sub>) °C</label>
-        <input id="tRef" type="number" step="0.1" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter temperature" />
-      </div>
-      <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">Rounding Step (default 5)</label>
-        <input id="roundStep" type="number" value="5" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" />
-      </div>
-    </div>
+        unitSelectors.forEach((selector) => {
+          // Save the initial unit
+          selector.dataset.lastUnit = selector.value;
+        });
+      }
 
-    <!-- Calculate button aligned to the left -->
-    <div class="flex justify-start mt-6">
-      <button onclick="calculateISA()" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-          <path d="M17 13H7"></path>
-          <path d="M12 8v10"></path>
-        </svg>
-        Calculate
-      </button>
-    </div>
+      function roundUpTo(value, step) {
+        return Math.ceil(value / step) * step;
+      }
 
-    <!-- Results -->
-    <div id="results" class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600">
-      <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">ISA Deviation Results</h2>
-      
-      <!-- Output values in a grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400">T<sub>ISA</sub></p>
-          <p class="text-lg font-semibold dark:text-white"><span id="tISA"></span> °C</p>
-        </div>
-        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400">ΔISA</p>
-          <p class="text-lg font-semibold dark:text-white"><span id="deltaISA"></span> °C</p>
-        </div>
-        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400">Rounded ΔISA</p>
-          <p class="text-lg font-semibold dark:text-white"><span id="roundedDeltaISA"></span> °C</p>
-        </div>
-        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400">ISA + ΔISA (for calculations)</p>
-          <p class="text-lg font-semibold dark:text-white"><span id="finalISA"></span></p>
-        </div>
-      </div>
-      
-      <div class="mt-6 flex justify-end">
-        <button onclick="copyResultsToClipboard()" class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-          </svg>
-          Copy Results as Table
-        </button>
-      </div>
-    </div>
-  </div>
+      function calculateISA() {
+        const elevation = parseFloat(
+          document.getElementById("elevation").value
+        );
+        const unit = document.getElementById("elevationUnit").value;
+        const tRef = parseFloat(document.getElementById("tRef").value);
+        const roundStep = parseInt(
+          document.getElementById("roundStep").value || 5
+        );
 
-  <script>
-    // Check for dark mode on page load
-    document.addEventListener('DOMContentLoaded', function() {
-      // Check if parent has set dark mode
-      try {
-        if (window.parent && window.parent.document.documentElement.classList.contains('dark')) {
-          document.documentElement.classList.add('dark');
+        if (isNaN(elevation) || isNaN(tRef)) {
+          alert(
+            "Please enter valid values for both Aerodrome Elevation and Reference Temperature."
+          );
+          return;
         }
-      } catch (e) {
-        console.log("Running in standalone mode");
+
+        // Convert elevation to feet if needed
+        const elevationFt = unit === "m" ? elevation / 0.3048 : elevation;
+
+        // Calculate ISA temperature at the given elevation
+        const tISA = 15 - 0.00198 * elevationFt;
+
+        // Calculate the deviation from ISA
+        const deltaISA = tRef - tISA;
+
+        // Round up to the nearest step value
+        const roundedDeltaISA = roundUpTo(deltaISA, roundStep);
+
+        document.getElementById("tISA").textContent = tISA.toFixed(5);
+        document.getElementById("deltaISA").textContent = deltaISA.toFixed(5);
+        document.getElementById("roundedDeltaISA").textContent =
+          roundedDeltaISA;
+        document.getElementById(
+          "finalISA"
+        ).textContent = `ISA + ${roundedDeltaISA}`;
+
+        document.getElementById("results").classList.remove("hidden");
       }
-      
-      // Initialize unit selectors
-      initializeUnitSelectors();
-    });
-    
-    // Function to handle unit conversion when unit selector changes
-    function handleUnitChange(inputId, unitSelectId) {
-      const input = document.getElementById(inputId);
-      const unitSelect = document.getElementById(unitSelectId);
-      const currentValue = parseFloat(input.value);
-      
-      if (!isNaN(currentValue)) {
-        const oldUnit = unitSelect.dataset.lastUnit || unitSelect.value;
-        const newUnit = unitSelect.value;
-        
-        // Only convert if the unit has changed
-        if (oldUnit !== newUnit) {
-          if (oldUnit === "ft" && newUnit === "m") {
-            // Convert from feet to meters
-            input.value = (currentValue * 0.3048).toFixed(2);
-          } else if (oldUnit === "m" && newUnit === "ft") {
-            // Convert from meters to feet
-            input.value = (currentValue / 0.3048).toFixed(2);
+
+      function saveParameters() {
+        const params = {
+          elevation: document.getElementById("elevation").value,
+          elevationUnit: document.getElementById("elevationUnit").value,
+          tRef: document.getElementById("tRef").value,
+          roundStep: document.getElementById("roundStep").value,
+          icaoCode: document.getElementById("icaoCode").value,
+        };
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+        const filename = `${timestamp}_${
+          params.icaoCode || "ICAO"
+        }_ISA_Calculation.json`;
+
+        const blob = new Blob([JSON.stringify(params, null, 2)], {
+          type: "application/json",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+      }
+
+      function loadParameters(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const data = JSON.parse(e.target.result);
+            document.getElementById("elevation").value = data.elevation || "";
+
+            if (data.elevationUnit) {
+              const unitSelect = document.getElementById("elevationUnit");
+              unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+              unitSelect.value = data.elevationUnit;
+            }
+
+            document.getElementById("tRef").value = data.tRef || "";
+            document.getElementById("roundStep").value = data.roundStep || "5";
+            document.getElementById("icaoCode").value = data.icaoCode || "";
+
+            alert("Parameters successfully loaded!");
+          } catch (err) {
+            alert("Invalid JSON file.");
           }
-        }
-      }
-      
-      // Save the current unit for the next change
-      unitSelect.dataset.lastUnit = unitSelect.value;
-    }
-    
-    // Function to initialize all unit selectors
-    function initializeUnitSelectors() {
-      // Get all unit selectors
-      const unitSelectors = document.querySelectorAll('select[id$="Unit"]');
-      
-      unitSelectors.forEach(selector => {
-        // Save the initial unit
-        selector.dataset.lastUnit = selector.value;
-      });
-    }
-    
-    function roundUpTo(value, step) {
-      return Math.ceil(value / step) * step;
-    }
-
-    function calculateISA() {
-      const elevation = parseFloat(document.getElementById('elevation').value);
-      const unit = document.getElementById('elevationUnit').value;
-      const tRef = parseFloat(document.getElementById('tRef').value);
-      const roundStep = parseInt(document.getElementById('roundStep').value || 5);
-
-      if (isNaN(elevation) || isNaN(tRef)) {
-        alert("Please enter valid values for both Aerodrome Elevation and Reference Temperature.");
-        return;
+        };
+        reader.readAsText(file);
       }
 
-      // Convert elevation to feet if needed
-      const elevationFt = unit === 'm' ? elevation / 0.3048 : elevation;
-      
-      // Calculate ISA temperature at the given elevation
-      const tISA = 15 - 0.00198 * elevationFt;
-      
-      // Calculate the deviation from ISA
-      const deltaISA = tRef - tISA;
-      
-      // Round up to the nearest step value
-      const roundedDeltaISA = roundUpTo(deltaISA, roundStep);
+      function copyResultsToClipboard() {
+        const icaoCode = document.getElementById("icaoCode").value || "N/A";
+        const elevation = document.getElementById("elevation").value || "N/A";
+        const elevationUnit =
+          document.getElementById("elevationUnit").value || "N/A";
+        const tRef = document.getElementById("tRef").value || "N/A";
+        const roundStep = document.getElementById("roundStep").value || "N/A";
+        const tISA = document.getElementById("tISA").textContent || "N/A";
+        const deltaISA =
+          document.getElementById("deltaISA").textContent || "N/A";
+        const roundedDeltaISA =
+          document.getElementById("roundedDeltaISA").textContent || "N/A";
+        const finalISA =
+          document.getElementById("finalISA").textContent || "N/A";
 
-      document.getElementById('tISA').textContent = tISA.toFixed(5);
-      document.getElementById('deltaISA').textContent = deltaISA.toFixed(5);
-      document.getElementById('roundedDeltaISA').textContent = roundedDeltaISA;
-      document.getElementById('finalISA').textContent = `ISA + ${roundedDeltaISA}`;
-
-      document.getElementById('results').classList.remove('hidden');
-    }
-
-    function saveParameters() {
-      const params = {
-        elevation: document.getElementById('elevation').value,
-        elevationUnit: document.getElementById('elevationUnit').value,
-        tRef: document.getElementById('tRef').value,
-        roundStep: document.getElementById('roundStep').value,
-        icaoCode: document.getElementById('icaoCode').value
-      };
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `${timestamp}_${params.icaoCode || 'ICAO'}_ISA_Calculation.json`;
-
-      const blob = new Blob([JSON.stringify(params, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = filename;
-      a.click();
-    }
-
-    function loadParameters(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const data = JSON.parse(e.target.result);
-          document.getElementById('elevation').value = data.elevation || '';
-          
-          if (data.elevationUnit) {
-            const unitSelect = document.getElementById('elevationUnit');
-            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
-            unitSelect.value = data.elevationUnit;
-          }
-          
-          document.getElementById('tRef').value = data.tRef || '';
-          document.getElementById('roundStep').value = data.roundStep || '5';
-          document.getElementById('icaoCode').value = data.icaoCode || '';
-          
-          alert("Parameters successfully loaded!");
-        } catch (err) {
-          alert("Invalid JSON file.");
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function copyResultsToClipboard() {
-      const icaoCode = document.getElementById('icaoCode').value || 'N/A';
-      const elevation = document.getElementById('elevation').value || 'N/A';
-      const elevationUnit = document.getElementById('elevationUnit').value || 'N/A';
-      const tRef = document.getElementById('tRef').value || 'N/A';
-      const roundStep = document.getElementById('roundStep').value || 'N/A';
-      const tISA = document.getElementById('tISA').textContent || 'N/A';
-      const deltaISA = document.getElementById('deltaISA').textContent || 'N/A';
-      const roundedDeltaISA = document.getElementById('roundedDeltaISA').textContent || 'N/A';
-      const finalISA = document.getElementById('finalISA').textContent || 'N/A';
-
-      // Create a formatted Word-style table as HTML
-      const htmlContent = `
+        // Create a formatted Word-style table as HTML
+        const htmlContent = `
         <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
           <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
           <tr><td>ICAO Airport Code</td><td>${icaoCode}</td></tr>
@@ -297,18 +443,21 @@
         </table>
       `;
 
-      // Create a Blob for the content
-      const blob = new Blob([htmlContent], { type: "text/html" });
-      
-      // Use Clipboard API to copy the Blob contents
-      navigator.clipboard.write([
-        new ClipboardItem({ [blob.type]: blob })
-      ]).then(() => {
-        alert("Formatted table copied to clipboard! You can paste it into Word.");
-      }).catch(err => {
-        console.error("Error copying content to clipboard:", err);
-      });
-    }
-  </script>
-</body>
+        // Create a Blob for the content
+        const blob = new Blob([htmlContent], { type: "text/html" });
+
+        // Use Clipboard API to copy the Blob contents
+        navigator.clipboard
+          .write([new ClipboardItem({ [blob.type]: blob })])
+          .then(() => {
+            alert(
+              "Formatted table copied to clipboard! You can paste it into Word."
+            );
+          })
+          .catch((err) => {
+            console.error("Error copying content to clipboard:", err);
+          });
+      }
+    </script>
+  </body>
 </html>
