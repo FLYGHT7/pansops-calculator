@@ -1,413 +1,642 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ILS Distance Calculations</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            primary: {
-              50: '#f0f9ff',
-              100: '#e0f2fe',
-              200: '#bae6fd',
-              300: '#7dd3fc',
-              400: '#38bdf8',
-              500: '#0ea5e9',
-              600: '#0284c7',
-              700: '#0369a1',
-              800: '#075985',
-              900: '#0c4a6e',
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ILS Distance Calculations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: "#f0f9ff",
+                100: "#e0f2fe",
+                200: "#bae6fd",
+                300: "#7dd3fc",
+                400: "#38bdf8",
+                500: "#0ea5e9",
+                600: "#0284c7",
+                700: "#0369a1",
+                800: "#075985",
+                900: "#0c4a6e",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="dark-mode.css" />
+    <style>
+      /* Styles for the SVG (if any additional styling is needed later) */
+      .axis {
+        stroke: #333;
+        stroke-width: 1;
+      }
+      .grid-line {
+        stroke: #ccc;
+        stroke-width: 0.5;
+      }
+
+      /* Dark mode specific SVG styles */
+      html.dark .axis {
+        stroke: #ccc;
+      }
+      html.dark .grid-line {
+        stroke: #555;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4"
+  >
+    <!-- Main Container -->
+    <div
+      class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
+    >
+      <h1
+        class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-7 w-7 sm:h-8 sm:w-8 mr-2"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M2 12h20M2 12l10-10M2 12l10 10"></path>
+        </svg>
+        ILS Distance Calculations
+      </h1>
+
+      <!-- Global Load/Save Buttons -->
+      <div class="flex flex-wrap justify-end mb-6 gap-3">
+        <input
+          id="loadFile"
+          type="file"
+          accept=".json"
+          class="hidden"
+          onchange="loadParameters(event)"
+        />
+        <button
+          onclick="saveParameters()"
+          class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-1"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+            ></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          Save Parameters
+        </button>
+        <button
+          onclick="document.getElementById('loadFile').click()"
+          class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-1"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          Load Parameters
+        </button>
+      </div>
+
+      <!-- Row for THR Elevation, RDH, and Glidepath Angle -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <!-- THR Elevation Input -->
+        <div class="space-y-2">
+          <label class="block font-medium text-gray-700 dark:text-gray-300"
+            >THR Elevation</label
+          >
+          <div
+            class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+          >
+            <input
+              id="thrElev"
+              type="number"
+              class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="Enter THR Elevation"
+            />
+            <select
+              id="thrElevUnit"
+              onchange="handleUnitChange('thrElev', 'thrElevUnit')"
+              class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+            >
+              <option value="ft" selected>ft</option>
+              <option value="m">m</option>
+            </select>
+          </div>
+        </div>
+        <!-- RDH Input -->
+        <div class="space-y-2">
+          <label class="block font-medium text-gray-700 dark:text-gray-300"
+            >RDH</label
+          >
+          <div
+            class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+          >
+            <input
+              id="rdh"
+              type="number"
+              class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="Enter RDH"
+            />
+            <select
+              id="rdhUnit"
+              onchange="handleUnitChange('rdh', 'rdhUnit')"
+              class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+            >
+              <option value="ft" selected>ft</option>
+              <option value="m">m</option>
+            </select>
+          </div>
+        </div>
+        <!-- Glidepath Angle Input -->
+        <div class="space-y-2">
+          <label class="block font-medium text-gray-700 dark:text-gray-300"
+            >Glidepath Angle (°)</label
+          >
+          <input
+            id="glideAngle"
+            type="number"
+            step="0.01"
+            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            placeholder="Enter angle"
+          />
+        </div>
+      </div>
+
+      <!-- Row for Point/Fix Type and FAP Altitude -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <!-- Point/Fix Type Selection -->
+        <div class="space-y-2">
+          <label class="block font-medium text-gray-700 dark:text-gray-300"
+            >Select Point/Fix Type</label
+          >
+          <div class="flex flex-wrap gap-4 mt-1">
+            <label class="flex items-center">
+              <input
+                type="radio"
+                name="calcType"
+                value="FAP"
+                checked
+                class="mr-2 text-primary-600 focus:ring-primary-500 dark:bg-gray-700"
+              />
+              <span class="text-gray-700 dark:text-gray-300">FAP</span>
+            </label>
+            <label class="flex items-center">
+              <input
+                type="radio"
+                name="calcType"
+                value="GP Verification Fix"
+                class="mr-2 text-primary-600 focus:ring-primary-500 dark:bg-gray-700"
+              />
+              <span class="text-gray-700 dark:text-gray-300"
+                >GP Verification Fix</span
+              >
+            </label>
+            <label class="flex items-center">
+              <input
+                type="radio"
+                name="calcType"
+                value="Descent Fix"
+                class="mr-2 text-primary-600 focus:ring-primary-500 dark:bg-gray-700"
+              />
+              <span class="text-gray-700 dark:text-gray-300">Descent Fix</span>
+            </label>
+          </div>
+        </div>
+        <!-- FAP Altitude Input -->
+        <div class="space-y-2">
+          <label class="block font-medium text-gray-700 dark:text-gray-300"
+            >FAP Altitude (in ft)</label
+          >
+          <input
+            id="fapAltitude"
+            type="number"
+            step="0.01"
+            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            placeholder="Enter FAP Altitude"
+          />
+        </div>
+      </div>
+
+      <!-- Calculate Button -->
+      <div class="flex justify-end mt-6">
+        <button
+          onclick="calculateBoth()"
+          class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          Calculate
+        </button>
+      </div>
+
+      <!-- Results Output Section -->
+      <div
+        id="resultsOutput"
+        class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600"
+      >
+        <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">
+          Calculated Distance (in NM)
+        </h2>
+        <p id="calcTypeOutput" class="mb-2 font-medium dark:text-white"></p>
+
+        <!-- Output values in a grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Right Angle Computation
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="distanceA"></span> NM
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Considering Earth Curvature
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="distanceB"></span> NM
+            </p>
+          </div>
+        </div>
+
+        <!-- RDH Adjustment output, if applicable -->
+        <div
+          id="rdhAdjustment"
+          class="hidden bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm mb-6"
+        >
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            RDH &gt;15m Adjustment
+          </p>
+          <p class="text-lg font-semibold dark:text-white">
+            <span id="deltaHOutput"></span> ft
+          </p>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button
+            onclick="copyToWordDocument('both')"
+            class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-2"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+              ></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+            Copy Results as Table
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- End Main Container -->
+
+    <!-- JavaScript Section -->
+    <script>
+      // Check for dark mode on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check if parent has set dark mode
+        try {
+          if (
+            window.parent &&
+            window.parent.document.documentElement.classList.contains("dark")
+          ) {
+            document.documentElement.classList.add("dark");
+          }
+        } catch (e) {
+          console.log("Running in standalone mode");
+        }
+
+        // Initialize unit selectors
+        initializeUnitSelectors();
+      });
+
+      // Function to handle unit conversion when unit selector changes
+      function handleUnitChange(inputId, unitSelectId) {
+        const input = document.getElementById(inputId);
+        const unitSelect = document.getElementById(unitSelectId);
+        const currentValue = parseFloat(input.value);
+
+        if (!isNaN(currentValue)) {
+          const oldUnit = unitSelect.dataset.lastUnit || unitSelect.value;
+          const newUnit = unitSelect.value;
+
+          // Only convert if the unit has changed
+          if (oldUnit !== newUnit) {
+            if (oldUnit === "ft" && newUnit === "m") {
+              // Convert from feet to meters
+              input.value = (currentValue * 0.3048).toFixed(2);
+            } else if (oldUnit === "m" && newUnit === "ft") {
+              // Convert from meters to feet
+              input.value = (currentValue / 0.3048).toFixed(2);
             }
           }
         }
-      }
-    }
-  </script>
-  <link rel="stylesheet" href="dark-mode.css">
-  <style>
-    /* Styles for the SVG (if any additional styling is needed later) */
-    .axis { stroke: #333; stroke-width: 1; }
-    .grid-line { stroke: #ccc; stroke-width: 0.5; }
-    
-    /* Dark mode specific SVG styles */
-    html.dark .axis { stroke: #ccc; }
-    html.dark .grid-line { stroke: #555; }
-  </style>
-</head>
-<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4">
-  <!-- Main Container -->
-  <div class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
-    <h1 class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 sm:h-8 sm:w-8 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M2 12h20M2 12l10-10M2 12l10 10"></path>
-      </svg>
-      ILS Distance Calculations
-    </h1>
-    
-    <!-- Global Load/Save Buttons -->
-    <div class="flex flex-wrap justify-end mb-6 gap-3">
-      <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
-      <button onclick="document.getElementById('loadFile').click()" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="17 8 12 3 7 8"></polyline>
-          <line x1="12" y1="3" x2="12" y2="15"></line>
-        </svg>
-        Load Parameters
-      </button>
-      <button onclick="saveParameters()" class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-          <polyline points="17 21 17 13 7 13 7 21"></polyline>
-          <polyline points="7 3 7 8 15 8"></polyline>
-        </svg>
-        Save Parameters
-      </button>
-    </div>
-    
-    <!-- Row for THR Elevation, RDH, and Glidepath Angle -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-      <!-- THR Elevation Input -->
-      <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">THR Elevation</label>
-        <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
-          <input id="thrElev" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter THR Elevation" />
-          <select id="thrElevUnit" onchange="handleUnitChange('thrElev', 'thrElevUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
-            <option value="ft" selected>ft</option>
-            <option value="m">m</option>
-          </select>
-        </div>
-      </div>
-      <!-- RDH Input -->
-      <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">RDH</label>
-        <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
-          <input id="rdh" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter RDH" />
-          <select id="rdhUnit" onchange="handleUnitChange('rdh', 'rdhUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
-            <option value="ft" selected>ft</option>
-            <option value="m">m</option>
-          </select>
-        </div>
-      </div>
-      <!-- Glidepath Angle Input -->
-      <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">Glidepath Angle (°)</label>
-        <input id="glideAngle" type="number" step="0.01" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter angle" />
-      </div>
-    </div>
-    
-    <!-- Row for Point/Fix Type and FAP Altitude -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <!-- Point/Fix Type Selection -->
-      <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">Select Point/Fix Type</label>
-        <div class="flex flex-wrap gap-4 mt-1">
-          <label class="flex items-center">
-            <input type="radio" name="calcType" value="FAP" checked class="mr-2 text-primary-600 focus:ring-primary-500 dark:bg-gray-700" />
-            <span class="text-gray-700 dark:text-gray-300">FAP</span>
-          </label>
-          <label class="flex items-center">
-            <input type="radio" name="calcType" value="GP Verification Fix" class="mr-2 text-primary-600 focus:ring-primary-500 dark:bg-gray-700" />
-            <span class="text-gray-700 dark:text-gray-300">GP Verification Fix</span>
-          </label>
-          <label class="flex items-center">
-            <input type="radio" name="calcType" value="Descent Fix" class="mr-2 text-primary-600 focus:ring-primary-500 dark:bg-gray-700" />
-            <span class="text-gray-700 dark:text-gray-300">Descent Fix</span>
-          </label>
-        </div>
-      </div>
-      <!-- FAP Altitude Input -->
-      <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">FAP Altitude (in ft)</label>
-        <input id="fapAltitude" type="number" step="0.01" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter FAP Altitude" />
-      </div>
-    </div>
-    
-    <!-- Calculate Button -->
-    <div class="flex justify-center mt-6">
-      <button onclick="calculateBoth()" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-        </svg>
-        Calculate
-      </button>
-    </div>
-    
-    <!-- Results Output Section -->
-    <div id="resultsOutput" class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600">
-      <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">Calculated Distance (in NM)</h2>
-      <p id="calcTypeOutput" class="mb-2 font-medium dark:text-white"></p>
-      
-      <!-- Output values in a grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400">Right Angle Computation</p>
-          <p class="text-lg font-semibold dark:text-white"><span id="distanceA"></span> NM</p>
-        </div>
-        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400">Considering Earth Curvature</p>
-          <p class="text-lg font-semibold dark:text-white"><span id="distanceB"></span> NM</p>
-        </div>
-      </div>
-      
-      <!-- RDH Adjustment output, if applicable -->
-      <div id="rdhAdjustment" class="hidden bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm mb-6">
-        <p class="text-sm text-gray-500 dark:text-gray-400">RDH &gt;15m Adjustment</p>
-        <p class="text-lg font-semibold dark:text-white"><span id="deltaHOutput"></span> ft</p>
-      </div>
-      
-      <div class="mt-6 flex justify-end">
-        <button onclick="copyToWordDocument('both')" class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-          </svg>
-          Copy Results as Table
-        </button>
-      </div>
-    </div>
-  </div>
-  <!-- End Main Container -->
-  
-  <!-- JavaScript Section -->
-  <script>
-    // Check for dark mode on page load
-    document.addEventListener('DOMContentLoaded', function() {
-      // Check if parent has set dark mode
-      try {
-        if (window.parent && window.parent.document.documentElement.classList.contains('dark')) {
-          document.documentElement.classList.add('dark');
-        }
-      } catch (e) {
-        console.log("Running in standalone mode");
-      }
-      
-      // Initialize unit selectors
-      initializeUnitSelectors();
-    });
-    
-    // Function to handle unit conversion when unit selector changes
-    function handleUnitChange(inputId, unitSelectId) {
-      const input = document.getElementById(inputId);
-      const unitSelect = document.getElementById(unitSelectId);
-      const currentValue = parseFloat(input.value);
-      
-      if (!isNaN(currentValue)) {
-        const oldUnit = unitSelect.dataset.lastUnit || unitSelect.value;
-        const newUnit = unitSelect.value;
-        
-        // Only convert if the unit has changed
-        if (oldUnit !== newUnit) {
-          if (oldUnit === "ft" && newUnit === "m") {
-            // Convert from feet to meters
-            input.value = (currentValue * 0.3048).toFixed(2);
-          } else if (oldUnit === "m" && newUnit === "ft") {
-            // Convert from meters to feet
-            input.value = (currentValue / 0.3048).toFixed(2);
-          }
-        }
-      }
-      
-      // Save the current unit for the next change
-      unitSelect.dataset.lastUnit = unitSelect.value;
-    }
-    
-    // Function to initialize all unit selectors
-    function initializeUnitSelectors() {
-      // Get all unit selectors
-      const unitSelectors = document.querySelectorAll('select[id$="Unit"]');
-      
-      unitSelectors.forEach(selector => {
-        // Save the initial unit
-        selector.dataset.lastUnit = selector.value;
-      });
-    }
 
-    // Conversion constants:
-    const FT_PER_M = 1 / 0.3048; // ≈ 3.280839895...
-    const FT_PER_NM = 1852 / 0.3048; // ≈ 6076.1154855643 ft per NM
-
-    // In this app, we know the FAP altitude and need to solve for distance.
-    // Method A (Right Angle Computation):
-    // FAP_alt = THR + RDH + (NM * FT_PER_NM * tan(gp))
-    // → NM = (FAP_alt - THR - RDH) / (FT_PER_NM * tan(gp))
-    //
-    // Method B (Considering Earth Curvature):
-    // FAP_alt = THR + RDH + ΔH + (NM * FT_PER_NM * tan(gp)) + (0.8833 * NM²)
-    // where ΔH = (RDH - (15/0.3048)) if RDH > (15/0.3048), else 0.
-    // Rearranging gives a quadratic:
-    // 0.8833 * NM² + (FT_PER_NM * tan(gp)) * NM + (THR + RDH + ΔH - FAP_alt) = 0
-    // We solve for NM (choose the positive solution).
-
-    function calculateBoth() {
-      const calcType = document.querySelector('input[name="calcType"]:checked').value;
-      document.getElementById("calcTypeOutput").textContent = "Point/Fix Type: " + calcType;
-      
-      // Get THR Elevation:
-      const thrElevVal = parseFloat(document.getElementById("thrElev").value);
-      const thrElevUnit = document.getElementById("thrElevUnit").value;
-      if (isNaN(thrElevVal)) { alert("Please enter a valid THR Elevation."); return; }
-      const thrElev_ft = (thrElevUnit === "ft") ? thrElevVal : thrElevVal * FT_PER_M;
-      
-      // Get RDH:
-      const rdhVal = parseFloat(document.getElementById("rdh").value);
-      const rdhUnit = document.getElementById("rdhUnit").value;
-      if (isNaN(rdhVal)) { alert("Please enter a valid RDH."); return; }
-      const rdh_ft = (rdhUnit === "ft") ? rdhVal : rdhVal * FT_PER_M;
-      
-      // Get Glidepath Angle (in degrees):
-      const glideAngle = parseFloat(document.getElementById("glideAngle").value);
-      if (isNaN(glideAngle)) { alert("Please enter a valid Glidepath Angle."); return; }
-      const gp_rad = glideAngle * Math.PI / 180;
-      
-      // Get FAP Altitude (in ft) - input for this app:
-      const fap_alt = parseFloat(document.getElementById("fapAltitude").value);
-      if (isNaN(fap_alt)) { alert("Please enter a valid FAP Altitude."); return; }
-      
-      // Compute RDH adjustment:
-      const threshold_ft = 15 / 0.3048;  // ≈ 49.2126 ft
-      const deltaH_candidate = rdh_ft - threshold_ft;
-      const deltaH = (rdh_ft > threshold_ft && Math.abs(deltaH_candidate) >= 0.001) ? deltaH_candidate : 0;
-      
-      // Method A:
-      const numeratorA = fap_alt - thrElev_ft - rdh_ft;
-      const denominatorA = FT_PER_NM * Math.tan(gp_rad);
-      const NM_A = numeratorA / denominatorA;
-      
-      // Method B: Solve quadratic:
-      // Let A_coeff = 0.8833, B_coeff = FT_PER_NM * tan(gp_rad), C_coeff = (thrElev_ft + rdh_ft + deltaH - fap_alt)
-      const A_coeff = 0.8833;
-      const B_coeff = FT_PER_NM * Math.tan(gp_rad);
-      const C_coeff = (thrElev_ft + rdh_ft + deltaH) - fap_alt;
-      const discriminant = B_coeff * B_coeff - 4 * A_coeff * C_coeff;
-      let NM_B = NaN;
-      if (discriminant < 0) {
-        alert("No solution found for the given parameters (discriminant < 0).");
-        return;
-      } else {
-        NM_B = (-B_coeff + Math.sqrt(discriminant)) / (2 * A_coeff);
+        // Save the current unit for the next change
+        unitSelect.dataset.lastUnit = unitSelect.value;
       }
-      
-      document.getElementById("distanceA").textContent = NM_A.toFixed(4);
-      document.getElementById("distanceB").textContent = NM_B.toFixed(4);
-      
-      const rdhAdjustmentEl = document.getElementById("rdhAdjustment");
-      if (deltaH > 0) {
-        document.getElementById("deltaHOutput").textContent = deltaH.toFixed(4);
-        rdhAdjustmentEl.classList.remove("hidden");
-      } else {
-        rdhAdjustmentEl.classList.add("hidden");
+
+      // Function to initialize all unit selectors
+      function initializeUnitSelectors() {
+        // Get all unit selectors
+        const unitSelectors = document.querySelectorAll('select[id$="Unit"]');
+
+        unitSelectors.forEach((selector) => {
+          // Save the initial unit
+          selector.dataset.lastUnit = selector.value;
+        });
       }
-      
-      document.getElementById("resultsOutput").classList.remove("hidden");
-    }
-    
-    // --- Save & Load Functions ---
-    function saveParameters() {
-      const thrElev = document.getElementById("thrElev").value || "";
-      const thrElevUnit = document.getElementById("thrElevUnit").value || "ft";
-      const rdh = document.getElementById("rdh").value || "";
-      const rdhUnit = document.getElementById("rdhUnit").value || "ft";
-      const fapAltitude = document.getElementById("fapAltitude").value || "";
-      const glideAngle = document.getElementById("glideAngle").value || "";
-      const calcType = document.querySelector('input[name="calcType"]:checked')?.value || "";
-      
-      const data = {
-        "THR Elev": thrElev,
-        "thrElevUnit": thrElevUnit,
-        "RDH": rdh,
-        "rdhUnit": rdhUnit,
-        "FAP Altitude": fapAltitude,
-        "Glidepath Angle": glideAngle,
-        "calcType": calcType
-      };
-      
-      const now = new Date();
-      const timestamp = now.toISOString().replace(/[:.]/g, "-");
-      const filename = `${timestamp}_ils_distance.json`;
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = filename;
-      a.click();
-    }
-    
-    function loadParameters(event) {
-      const file = event.target.files[0];
-      if (!file) { alert("Please select a valid JSON file."); return; }
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const data = JSON.parse(e.target.result);
-          if (data["THR Elev"]) document.getElementById("thrElev").value = data["THR Elev"];
-          if (data["thrElevUnit"]) {
-            const unitSelect = document.getElementById("thrElevUnit");
-            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
-            unitSelect.value = data["thrElevUnit"];
-          }
-          if (data["RDH"]) document.getElementById("rdh").value = data["RDH"];
-          if (data["rdhUnit"]) {
-            const unitSelect = document.getElementById("rdhUnit");
-            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
-            unitSelect.value = data["rdhUnit"];
-          }
-          if (data["FAP Altitude"]) document.getElementById("fapAltitude").value = data["FAP Altitude"];
-          if (data["Glidepath Angle"]) document.getElementById("glideAngle").value = data["Glidepath Angle"];
-          if (data["calcType"]) {
-            const radioToCheck = document.querySelector('input[name="calcType"][value="'+ data["calcType"] +'"]');
-            if (radioToCheck) radioToCheck.checked = true;
-          }
-          alert("Parameters successfully loaded!");
-        } catch (err) {
-          alert("Invalid JSON file. Please upload a valid parameters file.");
+
+      // Conversion constants:
+      const FT_PER_M = 1 / 0.3048; // ≈ 3.280839895...
+      const FT_PER_NM = 1852 / 0.3048; // ≈ 6076.1154855643 ft per NM
+
+      // In this app, we know the FAP altitude and need to solve for distance.
+      // Method A (Right Angle Computation):
+      // FAP_alt = THR + RDH + (NM * FT_PER_NM * tan(gp))
+      // → NM = (FAP_alt - THR - RDH) / (FT_PER_NM * tan(gp))
+      //
+      // Method B (Considering Earth Curvature):
+      // FAP_alt = THR + RDH + ΔH + (NM * FT_PER_NM * tan(gp)) + (0.8833 * NM²)
+      // where ΔH = (RDH - (15/0.3048)) if RDH > (15/0.3048), else 0.
+      // Rearranging gives a quadratic:
+      // 0.8833 * NM² + (FT_PER_NM * tan(gp)) * NM + (THR + RDH + ΔH - FAP_alt) = 0
+      // We solve for NM (choose the positive solution).
+
+      function calculateBoth() {
+        const calcType = document.querySelector(
+          'input[name="calcType"]:checked'
+        ).value;
+        document.getElementById("calcTypeOutput").textContent =
+          "Point/Fix Type: " + calcType;
+
+        // Get THR Elevation:
+        const thrElevVal = parseFloat(document.getElementById("thrElev").value);
+        const thrElevUnit = document.getElementById("thrElevUnit").value;
+        if (isNaN(thrElevVal)) {
+          alert("Please enter a valid THR Elevation.");
+          return;
         }
-      };
-      reader.readAsText(file);
-    }
-    
-    // --- Copy to Word Function ---
-    function copyToWordDocument(type) {
-      let htmlContent = "";
-      if (type === "both") {
-        const calcType = document.querySelector('input[name="calcType"]:checked').value || "N/A";
-        const thrElev = document.getElementById("thrElev").value || "N/A";
-        const thrElevUnit = document.getElementById("thrElevUnit").value || "N/A";
-        const rdh = document.getElementById("rdh").value || "N/A";
-        const rdhUnit = document.getElementById("rdhUnit").value || "N/A";
-        const fapAltitude = document.getElementById("fapAltitude").value || "N/A";
-        const glideAngle = document.getElementById("glideAngle").value || "N/A";
-        const distanceA = document.getElementById("distanceA").textContent || "N/A";
-        const distanceB = document.getElementById("distanceB").textContent || "N/A";
-        let deltaHValue = document.getElementById("deltaHOutput").textContent || "0.0000";
-        
-        htmlContent = `
+        const thrElev_ft =
+          thrElevUnit === "ft" ? thrElevVal : thrElevVal * FT_PER_M;
+
+        // Get RDH:
+        const rdhVal = parseFloat(document.getElementById("rdh").value);
+        const rdhUnit = document.getElementById("rdhUnit").value;
+        if (isNaN(rdhVal)) {
+          alert("Please enter a valid RDH.");
+          return;
+        }
+        const rdh_ft = rdhUnit === "ft" ? rdhVal : rdhVal * FT_PER_M;
+
+        // Get Glidepath Angle (in degrees):
+        const glideAngle = parseFloat(
+          document.getElementById("glideAngle").value
+        );
+        if (isNaN(glideAngle)) {
+          alert("Please enter a valid Glidepath Angle.");
+          return;
+        }
+        const gp_rad = (glideAngle * Math.PI) / 180;
+
+        // Get FAP Altitude (in ft) - input for this app:
+        const fap_alt = parseFloat(
+          document.getElementById("fapAltitude").value
+        );
+        if (isNaN(fap_alt)) {
+          alert("Please enter a valid FAP Altitude.");
+          return;
+        }
+
+        // Compute RDH adjustment:
+        const threshold_ft = 15 / 0.3048; // ≈ 49.2126 ft
+        const deltaH_candidate = rdh_ft - threshold_ft;
+        const deltaH =
+          rdh_ft > threshold_ft && Math.abs(deltaH_candidate) >= 0.001
+            ? deltaH_candidate
+            : 0;
+
+        // Method A:
+        const numeratorA = fap_alt - thrElev_ft - rdh_ft;
+        const denominatorA = FT_PER_NM * Math.tan(gp_rad);
+        const NM_A = numeratorA / denominatorA;
+
+        // Method B: Solve quadratic:
+        // Let A_coeff = 0.8833, B_coeff = FT_PER_NM * tan(gp_rad), C_coeff = (thrElev_ft + rdh_ft + deltaH - fap_alt)
+        const A_coeff = 0.8833;
+        const B_coeff = FT_PER_NM * Math.tan(gp_rad);
+        const C_coeff = thrElev_ft + rdh_ft + deltaH - fap_alt;
+        const discriminant = B_coeff * B_coeff - 4 * A_coeff * C_coeff;
+        let NM_B = NaN;
+        if (discriminant < 0) {
+          alert(
+            "No solution found for the given parameters (discriminant < 0)."
+          );
+          return;
+        } else {
+          NM_B = (-B_coeff + Math.sqrt(discriminant)) / (2 * A_coeff);
+        }
+
+        document.getElementById("distanceA").textContent = NM_A.toFixed(4);
+        document.getElementById("distanceB").textContent = NM_B.toFixed(4);
+
+        const rdhAdjustmentEl = document.getElementById("rdhAdjustment");
+        if (deltaH > 0) {
+          document.getElementById("deltaHOutput").textContent =
+            deltaH.toFixed(4);
+          rdhAdjustmentEl.classList.remove("hidden");
+        } else {
+          rdhAdjustmentEl.classList.add("hidden");
+        }
+
+        document.getElementById("resultsOutput").classList.remove("hidden");
+      }
+
+      // --- Save & Load Functions ---
+      function saveParameters() {
+        const thrElev = document.getElementById("thrElev").value || "";
+        const thrElevUnit =
+          document.getElementById("thrElevUnit").value || "ft";
+        const rdh = document.getElementById("rdh").value || "";
+        const rdhUnit = document.getElementById("rdhUnit").value || "ft";
+        const fapAltitude = document.getElementById("fapAltitude").value || "";
+        const glideAngle = document.getElementById("glideAngle").value || "";
+        const calcType =
+          document.querySelector('input[name="calcType"]:checked')?.value || "";
+
+        const data = {
+          "THR Elev": thrElev,
+          thrElevUnit: thrElevUnit,
+          RDH: rdh,
+          rdhUnit: rdhUnit,
+          "FAP Altitude": fapAltitude,
+          "Glidepath Angle": glideAngle,
+          calcType: calcType,
+        };
+
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[:.]/g, "-");
+        const filename = `${timestamp}_ils_distance.json`;
+        const blob = new Blob([JSON.stringify(data, null, 2)], {
+          type: "application/json",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+      }
+
+      function loadParameters(event) {
+        const file = event.target.files[0];
+        if (!file) {
+          alert("Please select a valid JSON file.");
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const data = JSON.parse(e.target.result);
+            if (data["THR Elev"])
+              document.getElementById("thrElev").value = data["THR Elev"];
+            if (data["thrElevUnit"]) {
+              const unitSelect = document.getElementById("thrElevUnit");
+              unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+              unitSelect.value = data["thrElevUnit"];
+            }
+            if (data["RDH"]) document.getElementById("rdh").value = data["RDH"];
+            if (data["rdhUnit"]) {
+              const unitSelect = document.getElementById("rdhUnit");
+              unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+              unitSelect.value = data["rdhUnit"];
+            }
+            if (data["FAP Altitude"])
+              document.getElementById("fapAltitude").value =
+                data["FAP Altitude"];
+            if (data["Glidepath Angle"])
+              document.getElementById("glideAngle").value =
+                data["Glidepath Angle"];
+            if (data["calcType"]) {
+              const radioToCheck = document.querySelector(
+                'input[name="calcType"][value="' + data["calcType"] + '"]'
+              );
+              if (radioToCheck) radioToCheck.checked = true;
+            }
+            alert("Parameters successfully loaded!");
+          } catch (err) {
+            alert("Invalid JSON file. Please upload a valid parameters file.");
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      // --- Copy to Word Function ---
+      function copyToWordDocument(type) {
+        let htmlContent = "";
+        if (type === "both") {
+          const calcType =
+            document.querySelector('input[name="calcType"]:checked').value ||
+            "N/A";
+          const thrElev = document.getElementById("thrElev").value || "N/A";
+          const thrElevUnit =
+            document.getElementById("thrElevUnit").value || "N/A";
+          const rdh = document.getElementById("rdh").value || "N/A";
+          const rdhUnit = document.getElementById("rdhUnit").value || "N/A";
+          const fapAltitude =
+            document.getElementById("fapAltitude").value || "N/A";
+          const glideAngle =
+            document.getElementById("glideAngle").value || "N/A";
+          const distanceA =
+            document.getElementById("distanceA").textContent || "N/A";
+          const distanceB =
+            document.getElementById("distanceB").textContent || "N/A";
+          let deltaHValue =
+            document.getElementById("deltaHOutput").textContent || "0.0000";
+
+          htmlContent = `
           <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
             <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
             <tr><td>Point/Fix Type</td><td>${calcType}</td></tr>
             <tr><td>THR Elevation</td><td>${thrElev} ${thrElevUnit}</td></tr>
             <tr><td>RDH</td><td>${rdh} ${rdhUnit}</td></tr>
-            <tr><td>FAP Altitude</td><td>${parseFloat(fapAltitude).toFixed(2)} ft</td></tr>
-            <tr><td>Glidepath Angle</td><td>${parseFloat(glideAngle).toFixed(2)}°</td></tr>
+            <tr><td>FAP Altitude</td><td>${parseFloat(fapAltitude).toFixed(
+              2
+            )} ft</td></tr>
+            <tr><td>Glidepath Angle</td><td>${parseFloat(glideAngle).toFixed(
+              2
+            )}°</td></tr>
             <tr><td>Right Angle Computation Distance</td><td>${distanceA} NM</td></tr>
             <tr><td>Considering Earth Curvature Distance</td><td>${distanceB} NM</td></tr>`;
-        
-        if (parseFloat(deltaHValue) > 0) {
-          htmlContent += `<tr><td>RDH &gt;15m Adjustment</td><td>${deltaHValue} ft</td></tr>`;
+
+          if (parseFloat(deltaHValue) > 0) {
+            htmlContent += `<tr><td>RDH &gt;15m Adjustment</td><td>${deltaHValue} ft</td></tr>`;
+          }
+
+          htmlContent += `</table>`;
         }
-        
-        htmlContent += `</table>`;
+
+        const blob = new Blob([htmlContent], { type: "text/html" });
+        navigator.clipboard
+          .write([new ClipboardItem({ "text/html": blob })])
+          .then(() => {
+            alert("Results copied; paste into Word.");
+          })
+          .catch((err) => {
+            console.error("Copy failed:", err);
+          });
       }
-      
-      const blob = new Blob([htmlContent], { type: "text/html" });
-      navigator.clipboard.write([new ClipboardItem({ "text/html": blob })])
-        .then(() => { alert("Results copied; paste into Word."); })
-        .catch(err => { console.error("Copy failed:", err); });
-    }
-  </script>
-</body>
+    </script>
+  </body>
 </html>

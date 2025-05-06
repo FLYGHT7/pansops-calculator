@@ -46,6 +46,15 @@
         Load Parameters File (JSON)
       </label>
       <div class="flex gap-3 flex-wrap">
+        <button onclick="saveParameters()"
+                class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          Save Parameters
+        </button>
         <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
         <button onclick="document.getElementById('loadFile').click()"
                 class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
@@ -54,16 +63,7 @@
             <polyline points="17 8 12 3 7 8"></polyline>
             <line x1="12" y1="3" x2="12" y2="15"></line>
           </svg>
-          Load
-        </button>
-        <button onclick="saveParameters()"
-                class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-            <polyline points="17 21 17 13 7 13 7 21"></polyline>
-            <polyline points="7 3 7 8 15 8"></polyline>
-          </svg>
-          Save
+          Load Parameters
         </button>
       </div>
     </div>
@@ -76,10 +76,9 @@
         </label>
         <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
           <input id="ias" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter IAS" />
-          <select id="iasUnit" onchange="handleUnitChange('ias', 'iasUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
-            <option value="knots" selected>knots</option>
-            <option value="km/h">km/h</option>
-          </select>
+          <div class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center">
+            <span class="text-gray-700 dark:text-white">knots</span>
+          </div>
         </div>
       </div>
       <div class="space-y-2">
@@ -147,7 +146,7 @@
         </div>
         <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
           <p class="text-sm text-gray-500 dark:text-gray-400">True Airspeed (TAS)</p>
-          <p class="text-lg font-semibold dark:text-white"><span id="tas"></span> <span id="tasUnit">knots</span></p>
+          <p class="text-lg font-semibold dark:text-white"><span id="tas"></span> knots</p>
         </div>
       </div>
     </div>
@@ -221,12 +220,6 @@
           } else if (oldUnit === "m" && newUnit === "ft") {
             // Convert from meters to feet
             input.value = (currentValue / 0.3048).toFixed(2);
-          } else if (oldUnit === "knots" && newUnit === "km/h") {
-            // Convert from knots to km/h
-            input.value = (currentValue * 1.852).toFixed(2);
-          } else if (oldUnit === "km/h" && newUnit === "knots") {
-            // Convert from km/h to knots
-            input.value = (currentValue / 1.852).toFixed(2);
           }
         }
       }
@@ -260,11 +253,6 @@
           if (data["IAS"]) {
             document.getElementById("ias").value = data["IAS"];
           }
-          if (data["iasUnit"]) {
-            const unitSelect = document.getElementById("iasUnit");
-            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
-            unitSelect.value = data["iasUnit"];
-          }
           if (data["Altitude"]) {
             document.getElementById("altitude").value = data["Altitude"];
           }
@@ -290,14 +278,13 @@
     // Save all input parameters with a timestamp in the filename.
     function saveParameters() {
       const ias = document.getElementById("ias").value || "";
-      const iasUnit = document.getElementById("iasUnit").value || "knots";
       const altitude = document.getElementById("altitude").value || "";
       const altitudeUnit = document.getElementById("altitudeUnit").value || "ft";
       const isaDeviation = document.getElementById("isaDeviation").value || "";
       const bankAngle = document.getElementById("bankAngle").value || "";
       const data = {
         "IAS": ias,
-        "iasUnit": iasUnit,
+        "iasUnit": "knots", // Always knots
         "Altitude": altitude,
         "altitudeUnit": altitudeUnit,
         "ISA Deviation": isaDeviation,
@@ -316,7 +303,6 @@
     // Calculate TAS from IAS, Altitude, and ISA Deviation.
     function calculateTAS() {
       const iasInput = parseFloat(document.getElementById("ias").value);
-      const iasUnit = document.getElementById("iasUnit").value;
       const altitudeInput = parseFloat(document.getElementById("altitude").value);
       const altitudeUnit = document.getElementById("altitudeUnit").value;
       const isaDeviation = parseFloat(document.getElementById("isaDeviation").value);
@@ -326,11 +312,8 @@
         return;
       }
       
-      // Convert IAS to knots if needed
+      // IAS is always in knots now
       let ias = iasInput;
-      if (iasUnit === "km/h") {
-        ias = iasInput / 1.852;
-      }
       
       // Convert altitude to feet if needed
       let altitude = altitudeInput;
@@ -343,16 +326,6 @@
       
       // Calculate True Airspeed
       let tas = k * ias;
-      
-      // Convert TAS back to km/h if input was in km/h
-      let tasUnitText = "knots";
-      if (iasUnit === "km/h") {
-        tas = tas * 1.852;
-        tasUnitText = "km/h";
-      }
-      
-      // Update the TAS unit display
-      document.getElementById("tasUnit").textContent = tasUnitText;
       
       document.getElementById("kFactor").textContent = k.toFixed(4);
       document.getElementById("tas").textContent = tas.toFixed(4);
@@ -370,12 +343,6 @@
         tas = calculateTAS();
       } else {
         tas = parseFloat(document.getElementById("tas").textContent);
-        const tasUnit = document.getElementById("tasUnit").textContent;
-        
-        // Convert TAS to knots if it's in km/h
-        if (tasUnit === "km/h") {
-          tas = tas / 1.852;
-        }
       }
       
       const bankAngle = parseFloat(document.getElementById("bankAngle").value);
@@ -409,14 +376,12 @@
     // Copy results as a formatted table to the clipboard.
     function copyResultsToClipboard() {
       const ias = document.getElementById("ias").value || "N/A";
-      const iasUnit = document.getElementById("iasUnit").value || "knots";
       const altitude = document.getElementById("altitude").value || "N/A";
       const altitudeUnit = document.getElementById("altitudeUnit").value || "ft";
       const isaDeviation = document.getElementById("isaDeviation").value || "N/A";
       const bankAngle = document.getElementById("bankAngle").value || "N/A";
       const kFactor = document.getElementById("kFactor").textContent || "N/A";
       const tas = document.getElementById("tas").textContent || "N/A";
-      const tasUnit = document.getElementById("tasUnit").textContent || "knots";
       
       // Determine how to display Rate of Turn in the table.
       let rateRow = "";
@@ -438,12 +403,12 @@
       const htmlContent = `
         <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
           <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
-          <tr><td>IAS</td><td>${ias} ${iasUnit}</td></tr>
+          <tr><td>IAS</td><td>${ias} knots</td></tr>
           <tr><td>Altitude</td><td>${altitude} ${altitudeUnit}</td></tr>
           <tr><td>ISA Deviation (VAR)</td><td>${isaDeviation} °C</td></tr>
           <tr><td>Bank Angle</td><td>${bankAngle} °</td></tr>
           <tr><td>k Factor</td><td>${kFactor}</td></tr>
-          <tr><td>True Airspeed (TAS)</td><td>${tas} ${tasUnit}</td></tr>
+          <tr><td>True Airspeed (TAS)</td><td>${tas} knots</td></tr>
           ${rateRow}
           <tr><td>Radius of Turn</td><td>${radiusOfTurn}</td></tr>
         </table>
