@@ -1,1033 +1,1576 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VSS/OCS Parameters</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            primary: {
-              50: '#f0f9ff',
-              100: '#e0f2fe',
-              200: '#bae6fd',
-              300: '#7dd3fc',
-              400: '#38bdf8',
-              500: '#0ea5e9',
-              600: '#0284c7',
-              700: '#0369a1',
-              800: '#075985',
-              900: '#0c4a6e',
-            }
-          }
-        }
-      }
-    }
-  </script>
-  <link rel="stylesheet" href="dark-mode.css">
-</head>
-<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4">
-  <!-- Main Container -->
-  <div class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
-  
-    <h1 class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 sm:h-8 sm:w-8 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="6" y1="12" x2="18" y2="12" stroke-dasharray="4 2"></line>
-        <polygon points="6,6 18,12 6,18" fill="none"></polygon>
-      </svg>
-      VSS/OCS Parameters
-    </h1>
-    
-    <!-- Dropdown to select approach type -->
-    <div class="mb-6">
-      <label for="approachType" class="block mb-2 font-medium text-gray-700 dark:text-gray-300">Select Approach Type</label>
-      <select id="approachType" onchange="updateApproach()" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
-        <option value="" disabled selected>Select an option</option>
-        <option value="straightInNpa">Straight-in NPA</option>
-        <option value="ilsApvLoc">ILS, APV I, LOC Only</option>
-      </select>
-    </div>
-    
-    <!-- Dynamic Container -->
-    <div id="dynamicContainer" class="hidden">
-      <!-- Option A: Straight-in NPA Form -->
-      <div id="optionAContainer">
-        <!-- Load/Save Parameter Buttons -->
-        <div class="flex flex-wrap justify-end mb-6 gap-3">
-          <button onclick="document.getElementById('loadFile').click()"
-            class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm dark:bg-primary-700 dark:hover:bg-primary-800">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="17 8 12 3 7 8"></polyline>
-              <line x1="12" y1="3" x2="12" y2="15"></line>
-            </svg>
-            Load Parameters
-          </button>
-          <button onclick="saveParameters()"
-            class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm dark:bg-green-700 dark:hover:bg-green-800">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-              <polyline points="17 21 17 13 7 13 7 21"></polyline>
-              <polyline points="7 3 7 8 15 8"></polyline>
-            </svg>
-            Save Parameters
-          </button>
-          <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
-        </div>
-        
-        <!-- Input Section -->
-        <!-- Row 1: THR Elevation & RDH -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <!-- THR Elevation -->
-          <div class="space-y-2">
-            <label class="block font-medium text-gray-700 dark:text-gray-300">THR Elevation</label>
-            <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
-              <input id="thrElev" type="number" placeholder="Enter THR Elevation" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"/>
-              <select id="thrElevUnit" onchange="handleUnitChange('thrElev', 'thrElevUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
-                <option value="ft">ft</option>
-                <option value="m">m</option>
-              </select>
-            </div>
-          </div>
-          <!-- RDH -->
-          <div class="space-y-2">
-            <label class="block font-medium text-gray-700 dark:text-gray-300">RDH</label>
-            <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
-              <input id="rdh" type="number" placeholder="Enter RDH" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"/>
-              <select id="rdhUnit" onchange="handleUnitChange('rdh', 'rdhUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
-                <option value="m" selected>m</option>
-                <option value="ft">ft</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Row 2: VPA & OCH -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <!-- VPA -->
-          <div class="space-y-2">
-            <label class="block font-medium text-gray-700 dark:text-gray-300">Vertical Path Angle (°)</label>
-            <input id="vpa" type="number" step="0.01" placeholder="Enter VPA" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"/>
-          </div>
-          <!-- OCH -->
-          <div class="space-y-2">
-            <label class="block font-medium text-gray-700 dark:text-gray-300">Obstacle Clearance Height (OCH)</label>
-            <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
-              <input id="och" type="number" step="0.001" placeholder="Enter OCH" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"/>
-              <select id="ochUnit" onchange="handleUnitChange('och', 'ochUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
-                <option value="m" selected>m</option>
-                <option value="ft">ft</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Calculation Buttons (aligned to right) -->
-        <div class="flex flex-wrap justify-end gap-3 mt-6">
-          <button onclick="calculateDVSS()"
-            class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center dark:bg-primary-700 dark:hover:bg-primary-800">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-            </svg>
-            Calculate VSS Distance
-          </button>
-          <button onclick="calculateOCS()"
-            class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center dark:bg-primary-700 dark:hover:bg-primary-800">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-            </svg>
-            Calculate OCS
-          </button>
-        </div>
-        
-        <!-- Results Section for VSS Distance -->
-        <div id="resultsDVSS" class="hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600 mt-8">
-          <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">VSS Distance Results</h2>
-          
-          <!-- Output values in a grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">VSS Distance</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="dvssOutput"></span></p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">THR Elevation</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="thrElevOutput"></span></p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">RDH</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="rdhOutput"></span></p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">VPA</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="vpaOutput"></span>°</p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm md:col-span-2">
-              <p class="text-sm text-gray-500 dark:text-gray-400">OCH</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="ochOutput"></span></p>
-            </div>
-          </div>
-          
-          <div class="flex justify-end mt-6">
-            <button onclick="copyToWordDocument('dvss')"
-              class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center dark:bg-green-700 dark:hover:bg-green-800">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-              </svg>
-              Copy to Word Document
-            </button>
-          </div>
-        </div>
-        
-        <!-- Results Section for OCS -->
-        <div id="resultsOCS" class="hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600 mt-8">
-          <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">OCS Results</h2>
-          
-          <!-- Output values in a grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">OCS Length</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="ocsLengthOutput"></span></p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">OCS E (Lateral)</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="ocsEOutput"></span></p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">OCS Elevation</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="ocsElevOutput"></span> m</p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">OCS θ</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="ocsThetaOutput"></span>°</p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm md:col-span-2">
-              <p class="text-sm text-gray-500 dark:text-gray-400">OCS Elevation Adjustment</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="ocsAdjustOutput"></span> m</p>
-            </div>
-          </div>
-          
-          <div class="flex justify-end mt-6">
-            <button onclick="copyToWordDocument('ocs')"
-              class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center dark:bg-green-700 dark:hover:bg-green-800">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-              </svg>
-              Copy to Word Document
-            </button>
-          </div>
-        </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VSS/OCS Parameters</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: "#f0f9ff",
+                100: "#e0f2fe",
+                200: "#bae6fd",
+                300: "#7dd3fc",
+                400: "#38bdf8",
+                500: "#0ea5e9",
+                600: "#0284c7",
+                700: "#0369a1",
+                800: "#075985",
+                900: "#0c4a6e",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="dark-mode.css" />
+  </head>
+  <body
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4"
+  >
+    <!-- Main Container -->
+    <div
+      class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
+    >
+      <h1
+        class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-7 w-7 sm:h-8 sm:w-8 mr-2"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="6" y1="12" x2="18" y2="12" stroke-dasharray="4 2"></line>
+          <polygon points="6,6 18,12 6,18" fill="none"></polygon>
+        </svg>
+        VSS/OCS Parameters
+      </h1>
+
+      <!-- Dropdown to select approach type -->
+      <div class="mb-6">
+        <label
+          for="approachType"
+          class="block mb-2 font-medium text-gray-700 dark:text-gray-300"
+          >Select Approach Type</label
+        >
+        <select
+          id="approachType"
+          onchange="updateApproach()"
+          class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+        >
+          <option value="" disabled selected>Select an option</option>
+          <option value="straightInNpa">Straight-in NPA</option>
+          <option value="ilsApvLoc">ILS, APV I, LOC Only</option>
+        </select>
       </div>
-      <!-- End Option A Container -->
-      
-      <!-- Option B: ILS, APV I, LOC Only -->
-      <div id="optionBContainer" class="hidden">
-        <!-- Load/Save Parameter Buttons -->
-        <div class="flex flex-wrap justify-end mb-6 gap-3">
-          <button onclick="document.getElementById('loadFileB').click()"
-            class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm dark:bg-primary-700 dark:hover:bg-primary-800">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="17 8 12 3 7 8"></polyline>
-              <line x1="12" y1="3" x2="12" y2="15"></line>
-            </svg>
-            Load Parameters
-          </button>
-          <button onclick="saveParametersB()"
-            class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm dark:bg-green-700 dark:hover:bg-green-800">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-              <polyline points="17 21 17 13 7 13 7 21"></polyline>
-              <polyline points="7 3 7 8 15 8"></polyline>
-            </svg>
-            Save Parameters
-          </button>
-          <input id="loadFileB" type="file" accept=".json" class="hidden" onchange="loadParametersB(event)" />
+
+      <!-- Dynamic Container -->
+      <div id="dynamicContainer" class="hidden">
+        <!-- Option A: Straight-in NPA Form -->
+        <div id="optionAContainer">
+          <!-- Load/Save Parameter Buttons -->
+          <div class="flex flex-wrap justify-end mb-6 gap-3">
+            <button
+              onclick="document.getElementById('loadFile').click()"
+              class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm dark:bg-primary-700 dark:hover:bg-primary-800"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-1"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              Load Parameters
+            </button>
+            <button
+              onclick="saveParameters()"
+              class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm dark:bg-green-700 dark:hover:bg-green-800"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-1"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+                ></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              Save Parameters
+            </button>
+            <input
+              id="loadFile"
+              type="file"
+              accept=".json"
+              class="hidden"
+              onchange="loadParameters(event)"
+            />
+          </div>
+
+          <!-- Input Section -->
+          <!-- Row 1: THR Elevation & RDH -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- THR Elevation -->
+            <div class="space-y-2">
+              <label class="block font-medium text-gray-700 dark:text-gray-300"
+                >THR Elevation</label
+              >
+              <div
+                class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+              >
+                <input
+                  id="thrElev"
+                  type="number"
+                  placeholder="Enter THR Elevation"
+                  class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                />
+                <select
+                  id="thrElevUnit"
+                  onchange="handleUnitChange('thrElev', 'thrElevUnit')"
+                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+                >
+                  <option value="ft">ft</option>
+                  <option value="m">m</option>
+                </select>
+              </div>
+            </div>
+            <!-- RDH -->
+            <div class="space-y-2">
+              <label class="block font-medium text-gray-700 dark:text-gray-300"
+                >RDH</label
+              >
+              <div
+                class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+              >
+                <input
+                  id="rdh"
+                  type="number"
+                  placeholder="Enter RDH"
+                  class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                />
+                <select
+                  id="rdhUnit"
+                  onchange="handleUnitChange('rdh', 'rdhUnit')"
+                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+                >
+                  <option value="m" selected>m</option>
+                  <option value="ft">ft</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: VPA & OCH -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- VPA -->
+            <div class="space-y-2">
+              <label class="block font-medium text-gray-700 dark:text-gray-300"
+                >Vertical Path Angle (°)</label
+              >
+              <input
+                id="vpa"
+                type="number"
+                step="0.01"
+                placeholder="Enter VPA"
+                class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+            <!-- OCH -->
+            <div class="space-y-2">
+              <label class="block font-medium text-gray-700 dark:text-gray-300"
+                >Obstacle Clearance Height (OCH)</label
+              >
+              <div
+                class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+              >
+                <input
+                  id="och"
+                  type="number"
+                  step="0.001"
+                  placeholder="Enter OCH"
+                  class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                />
+                <select
+                  id="ochUnit"
+                  onchange="handleUnitChange('och', 'ochUnit')"
+                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+                >
+                  <option value="m" selected>m</option>
+                  <option value="ft">ft</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Calculation Buttons (aligned to right) -->
+          <div class="flex flex-wrap justify-end gap-3 mt-6">
+            <button
+              onclick="calculateDVSS()"
+              class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center dark:bg-primary-700 dark:hover:bg-primary-800"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-2"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+              Calculate VSS Distance
+            </button>
+            <button
+              onclick="calculateOCS()"
+              class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center dark:bg-primary-700 dark:hover:bg-primary-800"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-2"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+              Calculate OCS
+            </button>
+          </div>
+
+          <!-- Results Section for VSS Distance -->
+          <div
+            id="resultsDVSS"
+            class="hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600 mt-8"
+          >
+            <h2
+              class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
+            >
+              VSS Distance Results
+            </h2>
+
+            <!-- Output values in a grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  VSS Distance
+                </p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="dvssOutput"></span>
+                </p>
+              </div>
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  THR Elevation
+                </p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="thrElevOutput"></span>
+                </p>
+              </div>
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">RDH</p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="rdhOutput"></span>
+                </p>
+              </div>
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">VPA</p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="vpaOutput"></span>°
+                </p>
+              </div>
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm md:col-span-2"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">OCH</p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="ochOutput"></span>
+                </p>
+              </div>
+            </div>
+
+            <div class="flex justify-end mt-6">
+              <button
+                onclick="copyToWordDocument('dvss')"
+                class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center dark:bg-green-700 dark:hover:bg-green-800"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+                  ></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+                Copy to Word Document
+              </button>
+            </div>
+          </div>
+
+          <!-- Results Section for OCS -->
+          <div
+            id="resultsOCS"
+            class="hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600 mt-8"
+          >
+            <h2
+              class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
+            >
+              OCS Results
+            </h2>
+
+            <!-- Output values in a grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  OCS Length
+                </p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="ocsLengthOutput"></span>
+                </p>
+              </div>
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  OCS E (Lateral)
+                </p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="ocsEOutput"></span>
+                </p>
+              </div>
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  OCS Elevation
+                </p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="ocsElevOutput"></span> m
+                </p>
+              </div>
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">OCS θ</p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="ocsThetaOutput"></span>°
+                </p>
+              </div>
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm md:col-span-2"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  OCS Elevation Adjustment
+                </p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="ocsAdjustOutput"></span> m
+                </p>
+              </div>
+            </div>
+
+            <div class="flex justify-end mt-6">
+              <button
+                onclick="copyToWordDocument('ocs')"
+                class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center dark:bg-green-700 dark:hover:bg-green-800"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+                  ></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+                Copy to Word Document
+              </button>
+            </div>
+          </div>
         </div>
-        
-        <!-- Common Fields for ILS/APV/LOC -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <!-- THR Elevation -->
-          <div class="space-y-2">
-            <label class="block font-medium text-gray-700 dark:text-gray-300">THR Elevation</label>
-            <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
-              <input id="thrElevB" type="number" placeholder="Enter THR Elevation" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"/>
-              <select id="thrElevUnitB" onchange="handleUnitChange('thrElevB', 'thrElevUnitB')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
-                <option value="ft">ft</option>
-                <option value="m">m</option>
+        <!-- End Option A Container -->
+
+        <!-- Option B: ILS, APV I, LOC Only -->
+        <div id="optionBContainer" class="hidden">
+          <!-- Load/Save Parameter Buttons -->
+          <div class="flex flex-wrap justify-end mb-6 gap-3">
+            <button
+              onclick="document.getElementById('loadFileB').click()"
+              class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm dark:bg-primary-700 dark:hover:bg-primary-800"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-1"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              Load Parameters
+            </button>
+            <button
+              onclick="saveParametersB()"
+              class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm dark:bg-green-700 dark:hover:bg-green-800"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-1"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+                ></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              Save Parameters
+            </button>
+            <input
+              id="loadFileB"
+              type="file"
+              accept=".json"
+              class="hidden"
+              onchange="loadParametersB(event)"
+            />
+          </div>
+
+          <!-- Common Fields for ILS/APV/LOC -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- THR Elevation -->
+            <div class="space-y-2">
+              <label class="block font-medium text-gray-700 dark:text-gray-300"
+                >THR Elevation</label
+              >
+              <div
+                class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+              >
+                <input
+                  id="thrElevB"
+                  type="number"
+                  placeholder="Enter THR Elevation"
+                  class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                />
+                <select
+                  id="thrElevUnitB"
+                  onchange="handleUnitChange('thrElevB', 'thrElevUnitB')"
+                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+                >
+                  <option value="ft">ft</option>
+                  <option value="m">m</option>
+                </select>
+              </div>
+            </div>
+            <!-- RDH -->
+            <div class="space-y-2">
+              <label class="block font-medium text-gray-700 dark:text-gray-300"
+                >RDH</label
+              >
+              <div
+                class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+              >
+                <input
+                  id="rdhB"
+                  type="number"
+                  placeholder="Enter RDH"
+                  class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                />
+                <select
+                  id="rdhUnitB"
+                  onchange="handleUnitChange('rdhB', 'rdhUnitB')"
+                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+                >
+                  <option value="m" selected>m</option>
+                  <option value="ft">ft</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Approach Type Specific Fields -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- GP/VGSI Angle -->
+            <div class="space-y-2">
+              <label class="block font-medium text-gray-700 dark:text-gray-300"
+                >GP/VGSI Angle (°)</label
+              >
+              <input
+                id="gpAngle"
+                type="number"
+                step="0.01"
+                placeholder="Enter GP/VGSI Angle"
+                class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+            <!-- Aircraft Category -->
+            <div class="space-y-2">
+              <label class="block font-medium text-gray-700 dark:text-gray-300"
+                >Aircraft Category</label
+              >
+              <select
+                id="aircraftCategory"
+                class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              >
+                <option value="A">Category A</option>
+                <option value="B">Category B</option>
+                <option value="C">Category C</option>
+                <option value="D">Category D</option>
+                <option value="E">Category E</option>
               </select>
             </div>
           </div>
-          <!-- RDH -->
-          <div class="space-y-2">
-            <label class="block font-medium text-gray-700 dark:text-gray-300">RDH</label>
-            <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
-              <input id="rdhB" type="number" placeholder="Enter RDH" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"/>
-              <select id="rdhUnitB" onchange="handleUnitChange('rdhB', 'rdhUnitB')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
-                <option value="m" selected>m</option>
-                <option value="ft">ft</option>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- DA/DH -->
+            <div class="space-y-2">
+              <label class="block font-medium text-gray-700 dark:text-gray-300"
+                >DA/DH</label
+              >
+              <div
+                class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+              >
+                <input
+                  id="daDh"
+                  type="number"
+                  placeholder="Enter DA/DH"
+                  class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                />
+                <select
+                  id="daDhUnit"
+                  onchange="handleUnitChange('daDh', 'daDhUnit')"
+                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+                >
+                  <option value="ft">ft</option>
+                  <option value="m">m</option>
+                </select>
+              </div>
+            </div>
+            <!-- Approach Type Specific -->
+            <div class="space-y-2">
+              <label class="block font-medium text-gray-700 dark:text-gray-300"
+                >Approach Type</label
+              >
+              <select
+                id="specificApproachType"
+                onchange="updateApproachFields()"
+                class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              >
+                <option value="ils">ILS</option>
+                <option value="apv">APV I</option>
+                <option value="loc">LOC Only</option>
               </select>
             </div>
           </div>
-        </div>
-        
-        <!-- Approach Type Specific Fields -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <!-- GP/VGSI Angle -->
-          <div class="space-y-2">
-            <label class="block font-medium text-gray-700 dark:text-gray-300">GP/VGSI Angle (°)</label>
-            <input id="gpAngle" type="number" step="0.01" placeholder="Enter GP/VGSI Angle" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"/>
-          </div>
-          <!-- Aircraft Category -->
-          <div class="space-y-2">
-            <label class="block font-medium text-gray-700 dark:text-gray-300">Aircraft Category</label>
-            <select id="aircraftCategory" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
-              <option value="A">Category A</option>
-              <option value="B">Category B</option>
-              <option value="C">Category C</option>
-              <option value="D">Category D</option>
-              <option value="E">Category E</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <!-- DA/DH -->
-          <div class="space-y-2">
-            <label class="block font-medium text-gray-700 dark:text-gray-300">DA/DH</label>
-            <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
-              <input id="daDh" type="number" placeholder="Enter DA/DH" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"/>
-              <select id="daDhUnit" onchange="handleUnitChange('daDh', 'daDhUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
-                <option value="ft">ft</option>
-                <option value="m">m</option>
+
+          <!-- ILS Specific Fields -->
+          <div
+            id="ilsSpecificFields"
+            class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"
+          >
+            <div class="space-y-2">
+              <label class="block font-medium text-gray-700 dark:text-gray-300"
+                >ILS Category</label
+              >
+              <select
+                id="ilsCategory"
+                class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              >
+                <option value="I">CAT I</option>
+                <option value="II">CAT II</option>
+                <option value="III">CAT III</option>
               </select>
             </div>
           </div>
-          <!-- Approach Type Specific -->
-          <div class="space-y-2">
-            <label class="block font-medium text-gray-700 dark:text-gray-300">Approach Type</label>
-            <select id="specificApproachType" onchange="updateApproachFields()" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
-              <option value="ils">ILS</option>
-              <option value="apv">APV I</option>
-              <option value="loc">LOC Only</option>
-            </select>
+
+          <!-- APV Specific Fields -->
+          <div
+            id="apvSpecificFields"
+            class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 hidden"
+          >
+            <div class="space-y-2">
+              <label class="block font-medium text-gray-700 dark:text-gray-300"
+                >APV Type</label
+              >
+              <select
+                id="apvType"
+                class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              >
+                <option value="I">APV I</option>
+                <option value="II">APV II</option>
+              </select>
+            </div>
           </div>
-        </div>
-        
-        <!-- ILS Specific Fields -->
-        <div id="ilsSpecificFields" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div class="space-y-2">
-            <label class="block font-medium text-gray-700 dark:text-gray-300">ILS Category</label>
-            <select id="ilsCategory" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
-              <option value="I">CAT I</option>
-              <option value="II">CAT II</option>
-              <option value="III">CAT III</option>
-            </select>
+
+          <!-- LOC Specific Fields -->
+          <div
+            id="locSpecificFields"
+            class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 hidden"
+          >
+            <div class="space-y-2">
+              <label class="block font-medium text-gray-700 dark:text-gray-300"
+                >LOC Sensitivity</label
+              >
+              <input
+                id="locSensitivity"
+                type="number"
+                step="0.01"
+                placeholder="Enter LOC Sensitivity"
+                class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              />
+            </div>
           </div>
-        </div>
-        
-        <!-- APV Specific Fields -->
-        <div id="apvSpecificFields" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 hidden">
-          <div class="space-y-2">
-            <label class="block font-medium text-gray-700 dark:text-gray-300">APV Type</label>
-            <select id="apvType" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
-              <option value="I">APV I</option>
-              <option value="II">APV II</option>
-            </select>
-          </div>
-        </div>
-        
-        <!-- LOC Specific Fields -->
-        <div id="locSpecificFields" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 hidden">
-          <div class="space-y-2">
-            <label class="block font-medium text-gray-700 dark:text-gray-300">LOC Sensitivity</label>
-            <input id="locSensitivity" type="number" step="0.01" placeholder="Enter LOC Sensitivity" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"/>
-          </div>
-        </div>
-        
-        <!-- Calculation Buttons -->
-        <div class="flex flex-wrap justify-end gap-3 mt-6">
-          <button onclick="calculateApproachParameters()"
-            class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center dark:bg-primary-700 dark:hover:bg-primary-800">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+          <!-- Calculation Buttons -->
+          <div class="flex flex-wrap justify-end gap-3 mt-6">
+            <button
+              onclick="calculateApproachParameters()"
+              class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center dark:bg-primary-700 dark:hover:bg-primary-800"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-2"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-            </svg>
-            Calculate Parameters
-          </button>
-        </div>
-        
-        <!-- Results for ILS -->
-        <div id="resultsILS" class="hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600 mt-8">
-          <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">ILS OAS Results</h2>
-          
-          <!-- Output values in a grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">OAS Height</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="oasHeightOutput"></span></p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">OAS Length</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="oasLengthOutput"></span></p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">OAS Width</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="oasWidthOutput"></span></p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">ILS Category</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="ilsCategoryOutput"></span></p>
-            </div>
-          </div>
-          
-          <div class="flex justify-end mt-6">
-            <button onclick="copyToWordDocument('ils')"
-              class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center dark:bg-green-700 dark:hover:bg-green-800">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
               </svg>
-              Copy to Word Document
+              Calculate Parameters
             </button>
           </div>
-        </div>
-        
-        <!-- Results for APV -->
-        <div id="resultsAPV" class="hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600 mt-8">
-          <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">APV OAS Results</h2>
-          
-          <!-- Output values in a grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">OAS Height</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="apvOasHeightOutput"></span></p>
+
+          <!-- Results for ILS -->
+          <div
+            id="resultsILS"
+            class="hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600 mt-8"
+          >
+            <h2
+              class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
+            >
+              ILS OAS Results
+            </h2>
+
+            <!-- Output values in a grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  OAS Height
+                </p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="oasHeightOutput"></span>
+                </p>
+              </div>
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  OAS Length
+                </p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="oasLengthOutput"></span>
+                </p>
+              </div>
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  OAS Width
+                </p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="oasWidthOutput"></span>
+                </p>
+              </div>
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  ILS Category
+                </p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="ilsCategoryOutput"></span>
+                </p>
+              </div>
             </div>
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">OAS Length</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="apvOasLengthOutput"></span></p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">OAS Width</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="apvOasWidthOutput"></span></p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">APV Type</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="apvTypeOutput"></span></p>
+
+            <div class="flex justify-end mt-6">
+              <button
+                onclick="copyToWordDocument('ils')"
+                class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center dark:bg-green-700 dark:hover:bg-green-800"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+                  ></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+                Copy to Word Document
+              </button>
             </div>
           </div>
-          
-          <div class="flex justify-end mt-6">
-            <button onclick="copyToWordDocument('apv')"
-              class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center dark:bg-green-700 dark:hover:bg-green-800">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-              </svg>
-              Copy to Word Document
-            </button>
+
+          <!-- Results for APV -->
+          <div
+            id="resultsAPV"
+            class="hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600 mt-8"
+          >
+            <h2
+              class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
+            >
+              APV OAS Results
+            </h2>
+
+            <!-- Output values in a grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  OAS Height
+                </p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="apvOasHeightOutput"></span>
+                </p>
+              </div>
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  OAS Length
+                </p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="apvOasLengthOutput"></span>
+                </p>
+              </div>
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  OAS Width
+                </p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="apvOasWidthOutput"></span>
+                </p>
+              </div>
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">APV Type</p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="apvTypeOutput"></span>
+                </p>
+              </div>
+            </div>
+
+            <div class="flex justify-end mt-6">
+              <button
+                onclick="copyToWordDocument('apv')"
+                class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center dark:bg-green-700 dark:hover:bg-green-800"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+                  ></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+                Copy to Word Document
+              </button>
+            </div>
           </div>
-        </div>
-        
-        <!-- Results for LOC -->
-        <div id="resultsLOC" class="hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600 mt-8">
-          <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">LOC OAS Results</h2>
-          
-          <!-- Output values in a grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">OAS Height</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="locOasHeightOutput"></span></p>
+
+          <!-- Results for LOC -->
+          <div
+            id="resultsLOC"
+            class="hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600 mt-8"
+          >
+            <h2
+              class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
+            >
+              LOC OAS Results
+            </h2>
+
+            <!-- Output values in a grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  OAS Height
+                </p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="locOasHeightOutput"></span>
+                </p>
+              </div>
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  OAS Length
+                </p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="locOasLengthOutput"></span>
+                </p>
+              </div>
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  OAS Width
+                </p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="locOasWidthOutput"></span>
+                </p>
+              </div>
+              <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+              >
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  LOC Sensitivity
+                </p>
+                <p class="text-lg font-semibold dark:text-white">
+                  <span id="locSensitivityOutput"></span>
+                </p>
+              </div>
             </div>
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">OAS Length</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="locOasLengthOutput"></span></p>
+
+            <div class="flex justify-end mt-6">
+              <button
+                onclick="copyToWordDocument('loc')"
+                class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center dark:bg-green-700 dark:hover:bg-green-800"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+                  ></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+                Copy to Word Document
+              </button>
             </div>
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">OAS Width</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="locOasWidthOutput"></span></p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-              <p class="text-sm text-gray-500 dark:text-gray-400">LOC Sensitivity</p>
-              <p class="text-lg font-semibold dark:text-white"><span id="locSensitivityOutput"></span></p>
-            </div>
-          </div>
-          
-          <div class="flex justify-end mt-6">
-            <button onclick="copyToWordDocument('loc')"
-              class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center dark:bg-green-700 dark:hover:bg-green-800">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-              </svg>
-              Copy to Word Document
-            </button>
           </div>
         </div>
       </div>
+      <!-- End Dynamic Container -->
     </div>
-    <!-- End Dynamic Container -->
-  </div>
-  <!-- End Main Container -->
-  
-  <script>
-    // Check for dark mode on page load
-    document.addEventListener('DOMContentLoaded', function() {
-      // Check if parent has set dark mode
-      try {
-        if (window.parent && window.parent.document.documentElement.classList.contains('dark')) {
-          document.documentElement.classList.add('dark');
-        }
-      } catch (e) {
-        console.log("Running in standalone mode");
-      }
-      
-      // Initialize approach fields
-      updateApproachFields();
-      
-      // Initialize unit selectors
-      initializeUnitSelectors();
-    });
-    
-    // Function to handle unit conversion when unit selector changes
-    function handleUnitChange(inputId, unitSelectId) {
-      const input = document.getElementById(inputId);
-      const unitSelect = document.getElementById(unitSelectId);
-      const currentValue = parseFloat(input.value);
-      
-      if (!isNaN(currentValue)) {
-        const oldUnit = unitSelect.dataset.lastUnit || unitSelect.value;
-        const newUnit = unitSelect.value;
-        
-        // Only convert if the unit has changed
-        if (oldUnit !== newUnit) {
-          if (oldUnit === "ft" && newUnit === "m") {
-            // Convert from feet to meters
-            input.value = (currentValue * 0.3048).toFixed(2);
-          } else if (oldUnit === "m" && newUnit === "ft") {
-            // Convert from meters to feet
-            input.value = (currentValue / 0.3048).toFixed(2);
+    <!-- End Main Container -->
+
+    <script>
+      // Check for dark mode on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check if parent has set dark mode
+        try {
+          if (
+            window.parent &&
+            window.parent.document.documentElement.classList.contains("dark")
+          ) {
+            document.documentElement.classList.add("dark");
           }
+        } catch (e) {
+          console.log("Running in standalone mode");
         }
-      }
-      
-      // Save the current unit for the next change
-      unitSelect.dataset.lastUnit = unitSelect.value;
-    }
-    
-    // Function to initialize all unit selectors
-    function initializeUnitSelectors() {
-      // Get all unit selectors
-      const unitSelectors = document.querySelectorAll('select[id$="Unit"]');
-      
-      unitSelectors.forEach(selector => {
-        // Save the initial unit
-        selector.dataset.lastUnit = selector.value;
+
+        // Initialize approach fields
+        updateApproachFields();
+
+        // Initialize unit selectors
+        initializeUnitSelectors();
       });
-    }
-    
-    // Update displayed container based on selected approach.
-    function updateApproach() {
-      const approach = document.getElementById("approachType").value;
-      const dynamicContainer = document.getElementById("dynamicContainer");
-      if (approach === "straightInNpa") {
-        dynamicContainer.classList.remove("hidden");
-        document.getElementById("optionAContainer").classList.remove("hidden");
-        document.getElementById("optionBContainer").classList.add("hidden");
-      } else if (approach === "ilsApvLoc") {
-        dynamicContainer.classList.remove("hidden");
-        document.getElementById("optionAContainer").classList.add("hidden");
-        document.getElementById("optionBContainer").classList.remove("hidden");
+
+      // Function to handle unit conversion when unit selector changes
+      function handleUnitChange(inputId, unitSelectId) {
+        const unitSelect = document.getElementById(unitSelectId);
+
+        // Just update the last unit - no conversion in the UI
+        unitSelect.dataset.lastUnit = unitSelect.value;
+
+        // No need to convert the value in the input field
+        // The conversion will happen only during calculations
       }
-    }
-    
-    // Update fields based on specific approach type
-    function updateApproachFields() {
-      const approachType = document.getElementById("specificApproachType").value;
-      
-      // Hide all specific fields
-      document.getElementById("ilsSpecificFields").classList.add("hidden");
-      document.getElementById("apvSpecificFields").classList.add("hidden");
-      document.getElementById("locSpecificFields").classList.add("hidden");
-      
-      // Show fields based on selected approach type
-      if (approachType === "ils") {
-        document.getElementById("ilsSpecificFields").classList.remove("hidden");
-      } else if (approachType === "apv") {
-        document.getElementById("apvSpecificFields").classList.remove("hidden");
-      } else if (approachType === "loc") {
-        document.getElementById("locSpecificFields").classList.remove("hidden");
+
+      // Function to initialize all unit selectors
+      function initializeUnitSelectors() {
+        // Get all unit selectors
+        const unitSelectors = document.querySelectorAll('select[id$="Unit"]');
+
+        unitSelectors.forEach((selector) => {
+          // Save the initial unit
+          selector.dataset.lastUnit = selector.value;
+        });
       }
-    }
-    
-    // Function to calculate VSS Distance.
-    // VSS Distance = OCH / tan(radians(VPA - 1.12))
-    function calculateDVSS() {
-      // Hide OCS results.
-      document.getElementById("resultsOCS").classList.add("hidden");
-      
-      const och = parseFloat(document.getElementById("och").value);
-      const vpa = parseFloat(document.getElementById("vpa").value);
-      const thrElev = parseFloat(document.getElementById("thrElev").value);
-      const rdh = parseFloat(document.getElementById("rdh").value);
-      const ochUnit = document.getElementById("ochUnit").value;
-      
-      if (isNaN(och) || isNaN(vpa) || isNaN(thrElev) || isNaN(rdh)) {
-        alert("Please enter valid values for OCH, VPA, THR Elevation, and RDH.");
-        return;
-      }
-      
-      // Convert OCH to meters if needed
-      let och_m = och;
-      if (ochUnit === "ft") {
-        och_m = och * 0.3048;
-      }
-      
-      // Calculate VSS Distance in meters.
-      const vssDistance_m = och_m / Math.tan((Math.PI / 180) * (vpa - 1.12));
-      const vssDistance_nm = vssDistance_m / 1852;
-      
-      document.getElementById("dvssOutput").textContent =
-        vssDistance_nm.toFixed(2) + " NM (" + vssDistance_m.toFixed(4) + " m)";
-      
-      // Display input values.
-      document.getElementById("thrElevOutput").textContent =
-        thrElev + " " + document.getElementById("thrElevUnit").value;
-      document.getElementById("rdhOutput").textContent =
-        rdh + " " + document.getElementById("rdhUnit").value;
-      document.getElementById("vpaOutput").textContent = vpa.toFixed(2);
-      document.getElementById("ochOutput").textContent =
-        parseFloat(och).toFixed(4) + " " + ochUnit;
-      
-      // Show the VSS Distance results section.
-      document.getElementById("resultsDVSS").classList.remove("hidden");
-    }
-    
-    // Function to calculate OCS parameters.
-    function calculateOCS() {
-      // Hide VSS Distance results.
-      document.getElementById("resultsDVSS").classList.add("hidden");
-      
-      const och = parseFloat(document.getElementById("och").value);
-      const rdh = parseFloat(document.getElementById("rdh").value);
-      const vpa = parseFloat(document.getElementById("vpa").value);
-      const thrElevInput = parseFloat(document.getElementById("thrElev").value);
-      const thrElevUnit = document.getElementById("thrElevUnit").value;
-      const ochUnit = document.getElementById("ochUnit").value;
-      const rdhUnit = document.getElementById("rdhUnit").value;
-      
-      if (isNaN(och) || isNaN(rdh) || isNaN(vpa) || isNaN(thrElevInput)) {
-        alert("Please enter valid values for OCH, RDH, VPA, and THR Elevation.");
-        return;
-      }
-      
-      // Convert values to meters if needed
-      let och_m = och;
-      if (ochUnit === "ft") {
-        och_m = och * 0.3048;
-      }
-      
-      let rdh_m = rdh;
-      if (rdhUnit === "ft") {
-        rdh_m = rdh * 0.3048;
-      }
-      
-      // Calculate OCS Length in meters.
-      const ocsLength_m = (och_m - rdh_m) / Math.tan((Math.PI / 180) * vpa);
-      const ocsLength_nm = ocsLength_m / 1852;
-      
-      // Calculate OCS E (Lateral) in meters.
-      const ocsE_m = ocsLength_m * Math.tan((Math.PI / 180) * 2) + 120;
-      const ocsE_nm = ocsE_m / 1852;
-      
-      // Convert THR Elevation to meters if needed.
-      let thrElev_m;
-      if (thrElevUnit === "ft") {
-        thrElev_m = thrElevInput * 0.3048;
-      } else {
-        thrElev_m = thrElevInput;
-      }
-      
-      // Calculate OCS Elevation:
-      // If RDH <= 15 m, OCS Elevation is THR Elevation (in m),
-      // otherwise, OCS Elevation = THR Elevation_m + (RDH - 15)
-      let ocsElev;
-      let adjustment;
-      if (rdh_m <= 15) {
-        ocsElev = thrElev_m;
-        adjustment = 0;
-      } else {
-        adjustment = rdh_m - 15;
-        ocsElev = thrElev_m + adjustment;
-      }
-      
-      // Calculate OCS θ = VPA - 1°
-      const ocsTheta = vpa - 1;
-      
-      document.getElementById("ocsLengthOutput").textContent =
-        ocsLength_nm.toFixed(2) + " NM (" + ocsLength_m.toFixed(4) + " m)";
-      document.getElementById("ocsEOutput").textContent =
-        ocsE_nm.toFixed(2) + " NM (" + ocsE_m.toFixed(4) + " m)";
-      
-      document.getElementById("ocsElevOutput").textContent = ocsElev.toFixed(4);
-      document.getElementById("ocsThetaOutput").textContent = ocsTheta.toFixed(2);
-      
-      // Output the RDH adjustment if any.
-      document.getElementById("ocsAdjustOutput").textContent =
-        adjustment.toFixed(4);
-      
-      // Show the OCS results section.
-      document.getElementById("resultsOCS").classList.remove("hidden");
-    }
-    
-    // Function to calculate parameters for ILS, APV, or LOC
-    function calculateApproachParameters() {
-      // Hide all result sections
-      document.getElementById("resultsILS").classList.add("hidden");
-      document.getElementById("resultsAPV").classList.add("hidden");
-      document.getElementById("resultsLOC").classList.add("hidden");
-      
-      const approachType = document.getElementById("specificApproachType").value;
-      const thrElevInput = parseFloat(document.getElementById("thrElevB").value);
-      const thrElevUnit = document.getElementById("thrElevUnitB").value;
-      const rdh = parseFloat(document.getElementById("rdhB").value);
-      const rdhUnit = document.getElementById("rdhUnitB").value;
-      const gpAngle = parseFloat(document.getElementById("gpAngle").value);
-      const aircraftCategory = document.getElementById("aircraftCategory").value;
-      const daDhInput = parseFloat(document.getElementById("daDh").value);
-      const daDhUnit = document.getElementById("daDhUnit").value;
-      
-      if (isNaN(thrElevInput) || isNaN(rdh) || isNaN(gpAngle) || isNaN(daDhInput)) {
-        alert("Please enter valid values for all required fields.");
-        return;
-      }
-      
-      // Convert values to meters if needed
-      let thrElev_m;
-      if (thrElevUnit === "ft") {
-        thrElev_m = thrElevInput * 0.3048;
-      } else {
-        thrElev_m = thrElevInput;
-      }
-      
-      let rdh_m = rdh;
-      if (rdhUnit === "ft") {
-        rdh_m = rdh * 0.3048;
-      }
-      
-      // Convert DA/DH to meters if needed
-      let daDh_m;
-      if (daDhUnit === "ft") {
-        daDh_m = daDhInput * 0.3048;
-      } else {
-        daDh_m = daDhInput;
-      }
-      
-      if (approachType === "ils") {
-        calculateILS(thrElev_m, rdh_m, gpAngle, aircraftCategory, daDh_m);
-      } else if (approachType === "apv") {
-        calculateAPV(thrElev_m, rdh_m, gpAngle, aircraftCategory, daDh_m);
-      } else if (approachType === "loc") {
-        calculateLOC(thrElev_m, rdh_m, gpAngle, aircraftCategory, daDh_m);
-      }
-    }
-    
-    // Function to calculate ILS parameters
-    function calculateILS(thrElev_m, rdh, gpAngle, aircraftCategory, daDh_m) {
-      const ilsCategory = document.getElementById("ilsCategory").value;
-      
-      // Calculate OAS Height (using DA/DH)
-      const oasHeight = daDh_m;
-      
-      // Calculate OAS Length
-      const oasLength = oasHeight / Math.tan((Math.PI / 180) * gpAngle);
-      
-      // Calculate OAS Width (varies by ILS category)
-      let oasWidth;
-      if (ilsCategory === "I") {
-        oasWidth = oasLength * Math.tan((Math.PI / 180) * 2.5) + 150;
-      } else if (ilsCategory === "II") {
-        oasWidth = oasLength * Math.tan((Math.PI / 180) * 2.0) + 120;
-      } else { // CAT III
-        oasWidth = oasLength * Math.tan((Math.PI / 180) * 1.5) + 90;
-      }
-      
-      // Display results
-      document.getElementById("oasHeightOutput").textContent = 
-        oasHeight.toFixed(2) + " m";
-      document.getElementById("oasLengthOutput").textContent = 
-        (oasLength / 1852).toFixed(2) + " NM (" + oasLength.toFixed(2) + " m)";
-      document.getElementById("oasWidthOutput").textContent = 
-        (oasWidth / 1852).toFixed(2) + " NM (" + oasWidth.toFixed(2) + " m)";
-      document.getElementById("ilsCategoryOutput").textContent = 
-        "CAT " + ilsCategory;
-      
-      // Show results section
-      document.getElementById("resultsILS").classList.remove("hidden");
-    }
-    
-    // Function to calculate APV parameters
-    function calculateAPV(thrElev_m, rdh, gpAngle, aircraftCategory, daDh_m) {
-      const apvType = document.getElementById("apvType").value;
-      
-      // Calculate OAS Height (using DA/DH)
-      const oasHeight = daDh_m;
-      
-      // Calculate OAS Length
-      const oasLength = oasHeight / Math.tan((Math.PI / 180) * gpAngle);
-      
-      // Calculate OAS Width (varies by APV type)
-      let oasWidth;
-      if (apvType === "I") {
-        oasWidth = oasLength * Math.tan((Math.PI / 180) * 3.0) + 180;
-      } else { // APV II
-        oasWidth = oasLength * Math.tan((Math.PI / 180) * 2.5) + 150;
-      }
-      
-      // Display results
-      document.getElementById("apvOasHeightOutput").textContent = 
-        oasHeight.toFixed(2) + " m";
-      document.getElementById("apvOasLengthOutput").textContent = 
-        (oasLength / 1852).toFixed(2) + " NM (" + oasLength.toFixed(2) + " m)";
-      document.getElementById("apvOasWidthOutput").textContent = 
-        (oasWidth / 1852).toFixed(2) + " NM (" + oasWidth.toFixed(2) + " m)";
-      document.getElementById("apvTypeOutput").textContent = 
-        "APV " + apvType;
-      
-      // Show results section
-      document.getElementById("resultsAPV").classList.remove("hidden");
-    }
-    
-    // Function to calculate LOC parameters
-    function calculateLOC(thrElev_m, rdh, gpAngle, aircraftCategory, daDh_m) {
-      const locSensitivity = parseFloat(document.getElementById("locSensitivity").value);
-      
-      if (isNaN(locSensitivity)) {
-        alert("Please enter a valid LOC Sensitivity value.");
-        return;
-      }
-      
-      // Calculate OAS Height (using DA/DH)
-      const oasHeight = daDh_m;
-      
-      // Calculate OAS Length
-      const oasLength = oasHeight / Math.tan((Math.PI / 180) * gpAngle);
-      
-      // Calculate OAS Width (based on LOC sensitivity)
-      const oasWidth = oasLength * Math.tan((Math.PI / 180) * 3.5) + 200;
-      
-      // Display results
-      document.getElementById("locOasHeightOutput").textContent = 
-        oasHeight.toFixed(2) + " m";
-      document.getElementById("locOasLengthOutput").textContent = 
-        (oasLength / 1852).toFixed(2) + " NM (" + oasLength.toFixed(2) + " m)";
-      document.getElementById("locOasWidthOutput").textContent = 
-        (oasWidth / 1852).toFixed(2) + " NM (" + oasWidth.toFixed(2) + " m)";
-      document.getElementById("locSensitivityOutput").textContent = 
-        locSensitivity.toFixed(2);
-      
-      // Show results section
-      document.getElementById("resultsLOC").classList.remove("hidden");
-    }
-    
-    // Function to load parameters from a JSON file.
-    function loadParameters(event) {
-      const file = event.target.files[0];
-      if (!file) {
-        alert("Please select a valid JSON file.");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const data = JSON.parse(e.target.result);
-          if (data["THR Elev"]) document.getElementById("thrElev").value = data["THR Elev"];
-          if (data["thrElevUnit"]) {
-            const unitSelect = document.getElementById("thrElevUnit");
-            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
-            unitSelect.value = data["thrElevUnit"];
-          }
-          if (data["RDH"]) document.getElementById("rdh").value = data["RDH"];
-          if (data["rdhUnit"]) {
-            const unitSelect = document.getElementById("rdhUnit");
-            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
-            unitSelect.value = data["rdhUnit"];
-          }
-          if (data["VPA"]) document.getElementById("vpa").value = data["VPA"];
-          if (data["OCH"]) document.getElementById("och").value = data["OCH"];
-          if (data["ochUnit"]) {
-            const unitSelect = document.getElementById("ochUnit");
-            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
-            unitSelect.value = data["ochUnit"];
-          }
-          alert("Parameters successfully loaded!");
-        } catch (err) {
-          alert("Invalid JSON file. Please upload a valid parameters file.");
+
+      // Update displayed container based on selected approach.
+      function updateApproach() {
+        const approach = document.getElementById("approachType").value;
+        const dynamicContainer = document.getElementById("dynamicContainer");
+        if (approach === "straightInNpa") {
+          dynamicContainer.classList.remove("hidden");
+          document
+            .getElementById("optionAContainer")
+            .classList.remove("hidden");
+          document.getElementById("optionBContainer").classList.add("hidden");
+        } else if (approach === "ilsApvLoc") {
+          dynamicContainer.classList.remove("hidden");
+          document.getElementById("optionAContainer").classList.add("hidden");
+          document
+            .getElementById("optionBContainer")
+            .classList.remove("hidden");
         }
-      };
-      reader.readAsText(file);
-    }
-    
-    // Function to load parameters for ILS/APV/LOC
-    function loadParametersB(event) {
-      const file = event.target.files[0];
-      if (!file) {
-        alert("Please select a valid JSON file.");
-        return;
       }
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const data = JSON.parse(e.target.result);
-          if (data["THR Elev"]) document.getElementById("thrElevB").value = data["THR Elev"];
-          if (data["thrElevUnit"]) {
-            const unitSelect = document.getElementById("thrElevUnitB");
-            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
-            unitSelect.value = data["thrElevUnit"];
-          }
-          if (data["RDH"]) document.getElementById("rdhB").value = data["RDH"];
-          if (data["rdhUnit"]) {
-            const unitSelect = document.getElementById("rdhUnitB");
-            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
-            unitSelect.value = data["rdhUnit"];
-          }
-          if (data["GP Angle"]) document.getElementById("gpAngle").value = data["GP Angle"];
-          if (data["Aircraft Category"]) document.getElementById("aircraftCategory").value = data["Aircraft Category"];
-          if (data["DA/DH"]) document.getElementById("daDh").value = data["DA/DH"];
-          if (data["daDhUnit"]) {
-            const unitSelect = document.getElementById("daDhUnit");
-            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
-            unitSelect.value = data["daDhUnit"];
-          }
-          if (data["Approach Type"]) {
-            document.getElementById("specificApproachType").value = data["Approach Type"];
-            updateApproachFields();
-          }
-          if (data["ILS Category"]) document.getElementById("ilsCategory").value = data["ILS Category"];
-          if (data["APV Type"]) document.getElementById("apvType").value = data["APV Type"];
-          if (data["LOC Sensitivity"]) document.getElementById("locSensitivity").value = data["LOC Sensitivity"];
-          alert("Parameters successfully loaded!");
-        } catch (err) {
-          alert("Invalid JSON file. Please upload a valid parameters file.");
+
+      // Update fields based on specific approach type
+      function updateApproachFields() {
+        const approachType = document.getElementById(
+          "specificApproachType"
+        ).value;
+
+        // Hide all specific fields
+        document.getElementById("ilsSpecificFields").classList.add("hidden");
+        document.getElementById("apvSpecificFields").classList.add("hidden");
+        document.getElementById("locSpecificFields").classList.add("hidden");
+
+        // Show fields based on selected approach type
+        if (approachType === "ils") {
+          document
+            .getElementById("ilsSpecificFields")
+            .classList.remove("hidden");
+        } else if (approachType === "apv") {
+          document
+            .getElementById("apvSpecificFields")
+            .classList.remove("hidden");
+        } else if (approachType === "loc") {
+          document
+            .getElementById("locSpecificFields")
+            .classList.remove("hidden");
         }
-      };
-      reader.readAsText(file);
-    }
-    
-    // Function to save parameters to a JSON file.
-    function saveParameters() {
-      const thrElev = document.getElementById("thrElev").value || "";
-      const thrElevUnit = document.getElementById("thrElevUnit").value || "ft";
-      const rdh = document.getElementById("rdh").value || "";
-      const rdhUnit = document.getElementById("rdhUnit").value || "m";
-      const vpa = document.getElementById("vpa").value || "";
-      const och = document.getElementById("och").value || "";
-      const ochUnit = document.getElementById("ochUnit").value || "m";
-      
-      const data = {
-        "THR Elev": thrElev,
-        "thrElevUnit": thrElevUnit,
-        "RDH": rdh,
-        "rdhUnit": rdhUnit,
-        "VPA": vpa,
-        "OCH": och,
-        "ochUnit": ochUnit
-      };
-      
-      const now = new Date();
-      const timestamp = now.toISOString().replace(/[:.]/g, "-");
-      const filename = `${timestamp}_vssocs.json`;
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = filename;
-      a.click();
-    }
-    
-    // Function to save parameters for ILS/APV/LOC
-    function saveParametersB() {
-      const thrElev = document.getElementById("thrElevB").value || "";
-      const thrElevUnit = document.getElementById("thrElevUnitB").value || "ft";
-      const rdh = document.getElementById("rdhB").value || "";
-      const rdhUnit = document.getElementById("rdhUnitB").value || "m";
-      const gpAngle = document.getElementById("gpAngle").value || "";
-      const aircraftCategory = document.getElementById("aircraftCategory").value || "";
-      const daDh = document.getElementById("daDh").value || "";
-      const daDhUnit = document.getElementById("daDhUnit").value || "ft";
-      const approachType = document.getElementById("specificApproachType").value || "";
-      
-      const data = {
-        "THR Elev": thrElev,
-        "thrElevUnit": thrElevUnit,
-        "RDH": rdh,
-        "rdhUnit": rdhUnit,
-        "GP Angle": gpAngle,
-        "Aircraft Category": aircraftCategory,
-        "DA/DH": daDh,
-        "daDhUnit": daDhUnit,
-        "Approach Type": approachType
-      };
-      
-      // Add approach-specific parameters
-      if (approachType === "ils") {
-        data["ILS Category"] = document.getElementById("ilsCategory").value || "";
-      } else if (approachType === "apv") {
-        data["APV Type"] = document.getElementById("apvType").value || "";
-      } else if (approachType === "loc") {
-        data["LOC Sensitivity"] = document.getElementById("locSensitivity").value || "";
       }
-      
-      const now = new Date();
-      const timestamp = now.toISOString().replace(/[:.]/g, "-");
-      const filename = `${timestamp}_ilsapvloc.json`;
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = filename;
-      a.click();
-    }
-    
-    // Function to copy results as an HTML table for Word.
-    // 'type' is either "dvss", "ocs", "ils", "apv", or "loc". Each table will have two columns with 50% width.
-    function copyToWordDocument(type) {
-      let htmlContent = "";
-      if (type === "dvss") {
-        const thrElev = document.getElementById("thrElev").value || "N/A";
-        const thrElevUnit = document.getElementById("thrElevUnit").value || "N/A";
-        const rdh = document.getElementById("rdh").value || "N/A";
-        const rdhUnit = document.getElementById("rdhUnit").value || "N/A";
-        const vpa = document.getElementById("vpa").value || "N/A";
-        const och = document.getElementById("och").value || "N/A";
-        const ochUnit = document.getElementById("ochUnit").value || "N/A";
-        const vssDistance = document.getElementById("dvssOutput").textContent || "N/A";
-        
-        htmlContent = `
+
+      // Function to calculate VSS Distance.
+      // VSS Distance = OCH / tan(radians(VPA - 1.12))
+      function calculateDVSS() {
+        // Hide OCS results.
+        document.getElementById("resultsOCS").classList.add("hidden");
+
+        const och = parseFloat(document.getElementById("och").value);
+        const vpa = parseFloat(document.getElementById("vpa").value);
+        const thrElev = parseFloat(document.getElementById("thrElev").value);
+        const rdh = parseFloat(document.getElementById("rdh").value);
+        const ochUnit = document.getElementById("ochUnit").value;
+
+        if (isNaN(och) || isNaN(vpa) || isNaN(thrElev) || isNaN(rdh)) {
+          alert(
+            "Please enter valid values for OCH, VPA, THR Elevation, and RDH."
+          );
+          return;
+        }
+
+        // Convert OCH to meters if needed
+        let och_m = och;
+        if (ochUnit === "ft") {
+          och_m = och * 0.3048;
+        }
+
+        // Convert THR Elevation and RDH to meters
+        let thrElev_m = thrElev;
+        if (document.getElementById("thrElevUnit").value === "ft") {
+          thrElev_m = thrElev * 0.3048;
+        }
+
+        let rdh_m = rdh;
+        if (document.getElementById("rdhUnit").value === "ft") {
+          rdh_m = rdh * 0.3048;
+        }
+
+        // Calculate VSS Distance in meters.
+        const vssDistance_m = och_m / Math.tan((Math.PI / 180) * (vpa - 1.12));
+        const vssDistance_nm = vssDistance_m / 1852;
+
+        document.getElementById("dvssOutput").textContent =
+          vssDistance_nm.toFixed(2) +
+          " NM (" +
+          vssDistance_m.toFixed(4) +
+          " m)";
+
+        // Display input values.
+        document.getElementById("thrElevOutput").textContent =
+          thrElev + " " + document.getElementById("thrElevUnit").value;
+        document.getElementById("rdhOutput").textContent =
+          rdh + " " + document.getElementById("rdhUnit").value;
+        document.getElementById("vpaOutput").textContent = vpa.toFixed(2);
+        document.getElementById("ochOutput").textContent =
+          parseFloat(och).toFixed(4) + " " + ochUnit;
+
+        // Show the VSS Distance results section.
+        document.getElementById("resultsDVSS").classList.remove("hidden");
+      }
+
+      // Function to calculate OCS parameters.
+      function calculateOCS() {
+        // Hide VSS Distance results.
+        document.getElementById("resultsDVSS").classList.add("hidden");
+
+        const och = parseFloat(document.getElementById("och").value);
+        const rdh = parseFloat(document.getElementById("rdh").value);
+        const vpa = parseFloat(document.getElementById("vpa").value);
+        const thrElevInput = parseFloat(
+          document.getElementById("thrElev").value
+        );
+        const thrElevUnit = document.getElementById("thrElevUnit").value;
+        const ochUnit = document.getElementById("ochUnit").value;
+        const rdhUnit = document.getElementById("rdhUnit").value;
+
+        if (isNaN(och) || isNaN(rdh) || isNaN(vpa) || isNaN(thrElevInput)) {
+          alert(
+            "Please enter valid values for OCH, RDH, VPA, and THR Elevation."
+          );
+          return;
+        }
+
+        // Convert values to meters if needed
+        let och_m = och;
+        if (ochUnit === "ft") {
+          och_m = och * 0.3048;
+        }
+
+        let rdh_m = rdh;
+        if (rdhUnit === "ft") {
+          rdh_m = rdh * 0.3048;
+        }
+
+        let thrElev_m = thrElevInput;
+        if (thrElevUnit === "ft") {
+          thrElev_m = thrElevInput * 0.3048;
+        }
+
+        // Calculate OCS Length in meters.
+        const ocsLength_m = (och_m - rdh_m) / Math.tan((Math.PI / 180) * vpa);
+        const ocsLength_nm = ocsLength_m / 1852;
+
+        // Calculate OCS E (Lateral) in meters.
+        const ocsE_m = ocsLength_m * Math.tan((Math.PI / 180) * 2) + 120;
+        const ocsE_nm = ocsE_m / 1852;
+
+        // Calculate OCS Elevation:
+        // If RDH <= 15 m, OCS Elevation is THR Elevation (in m),
+        // otherwise, OCS Elevation = THR Elevation_m + (RDH - 15)
+        let ocsElev;
+        let adjustment;
+        if (rdh_m <= 15) {
+          ocsElev = thrElev_m;
+          adjustment = 0;
+        } else {
+          adjustment = rdh_m - 15;
+          ocsElev = thrElev_m + adjustment;
+        }
+
+        // Calculate OCS θ = VPA - 1°
+        const ocsTheta = vpa - 1;
+
+        document.getElementById("ocsLengthOutput").textContent =
+          ocsLength_nm.toFixed(2) + " NM (" + ocsLength_m.toFixed(4) + " m)";
+        document.getElementById("ocsEOutput").textContent =
+          ocsE_nm.toFixed(2) + " NM (" + ocsE_m.toFixed(4) + " m)";
+
+        document.getElementById("ocsElevOutput").textContent =
+          ocsElev.toFixed(4);
+        document.getElementById("ocsThetaOutput").textContent =
+          ocsTheta.toFixed(2);
+
+        // Output the RDH adjustment if any.
+        document.getElementById("ocsAdjustOutput").textContent =
+          adjustment.toFixed(4);
+
+        // Show the OCS results section.
+        document.getElementById("resultsOCS").classList.remove("hidden");
+      }
+
+      // Function to calculate parameters for ILS, APV, or LOC
+      function calculateApproachParameters() {
+        // Hide all result sections
+        document.getElementById("resultsILS").classList.add("hidden");
+        document.getElementById("resultsAPV").classList.add("hidden");
+        document.getElementById("resultsLOC").classList.add("hidden");
+
+        const approachType = document.getElementById(
+          "specificApproachType"
+        ).value;
+        const thrElevInput = parseFloat(
+          document.getElementById("thrElevB").value
+        );
+        const thrElevUnit = document.getElementById("thrElevUnitB").value;
+        const rdh = parseFloat(document.getElementById("rdhB").value);
+        const rdhUnit = document.getElementById("rdhUnitB").value;
+        const gpAngle = parseFloat(document.getElementById("gpAngle").value);
+        const aircraftCategory =
+          document.getElementById("aircraftCategory").value;
+        const daDhInput = parseFloat(document.getElementById("daDh").value);
+        const daDhUnit = document.getElementById("daDhUnit").value;
+
+        if (
+          isNaN(thrElevInput) ||
+          isNaN(rdh) ||
+          isNaN(gpAngle) ||
+          isNaN(daDhInput)
+        ) {
+          alert("Please enter valid values for all required fields.");
+          return;
+        }
+
+        // Convert values to meters if needed
+        let thrElev_m;
+        if (thrElevUnit === "ft") {
+          thrElev_m = thrElevInput * 0.3048;
+        } else {
+          thrElev_m = thrElevInput;
+        }
+
+        let rdh_m = rdh;
+        if (rdhUnit === "ft") {
+          rdh_m = rdh * 0.3048;
+        }
+
+        // Convert DA/DH to meters if needed
+        let daDh_m;
+        if (daDhUnit === "ft") {
+          daDh_m = daDhInput * 0.3048;
+        } else {
+          daDh_m = daDhInput;
+        }
+
+        if (approachType === "ils") {
+          calculateILS(thrElev_m, rdh_m, gpAngle, aircraftCategory, daDh_m);
+        } else if (approachType === "apv") {
+          calculateAPV(thrElev_m, rdh_m, gpAngle, aircraftCategory, daDh_m);
+        } else if (approachType === "loc") {
+          calculateLOC(thrElev_m, rdh_m, gpAngle, aircraftCategory, daDh_m);
+        }
+      }
+
+      // Function to calculate ILS parameters
+      function calculateILS(thrElev_m, rdh, gpAngle, aircraftCategory, daDh_m) {
+        const ilsCategory = document.getElementById("ilsCategory").value;
+
+        // Calculate OAS Height (using DA/DH)
+        const oasHeight = daDh_m;
+
+        // Calculate OAS Length
+        const oasLength = oasHeight / Math.tan((Math.PI / 180) * gpAngle);
+
+        // Calculate OAS Width (varies by ILS category)
+        let oasWidth;
+        if (ilsCategory === "I") {
+          oasWidth = oasLength * Math.tan((Math.PI / 180) * 2.5) + 150;
+        } else if (ilsCategory === "II") {
+          oasWidth = oasLength * Math.tan((Math.PI / 180) * 2.0) + 120;
+        } else {
+          // CAT III
+          oasWidth = oasLength * Math.tan((Math.PI / 180) * 1.5) + 90;
+        }
+
+        // Display results
+        document.getElementById("oasHeightOutput").textContent =
+          oasHeight.toFixed(2) + " m";
+        document.getElementById("oasLengthOutput").textContent =
+          (oasLength / 1852).toFixed(2) +
+          " NM (" +
+          oasLength.toFixed(2) +
+          " m)";
+        document.getElementById("oasWidthOutput").textContent =
+          (oasWidth / 1852).toFixed(2) + " NM (" + oasWidth.toFixed(2) + " m)";
+        document.getElementById("ilsCategoryOutput").textContent =
+          "CAT " + ilsCategory;
+
+        // Show results section
+        document.getElementById("resultsILS").classList.remove("hidden");
+      }
+
+      // Function to calculate APV parameters
+      function calculateAPV(thrElev_m, rdh, gpAngle, aircraftCategory, daDh_m) {
+        const apvType = document.getElementById("apvType").value;
+
+        // Calculate OAS Height (using DA/DH)
+        const oasHeight = daDh_m;
+
+        // Calculate OAS Length
+        const oasLength = oasHeight / Math.tan((Math.PI / 180) * gpAngle);
+
+        // Calculate OAS Width (varies by APV type)
+        let oasWidth;
+        if (apvType === "I") {
+          oasWidth = oasLength * Math.tan((Math.PI / 180) * 3.0) + 180;
+        } else {
+          // APV II
+          oasWidth = oasLength * Math.tan((Math.PI / 180) * 2.5) + 150;
+        }
+
+        // Display results
+        document.getElementById("apvOasHeightOutput").textContent =
+          oasHeight.toFixed(2) + " m";
+        document.getElementById("apvOasLengthOutput").textContent =
+          (oasLength / 1852).toFixed(2) +
+          " NM (" +
+          oasLength.toFixed(2) +
+          " m)";
+        document.getElementById("apvOasWidthOutput").textContent =
+          (oasWidth / 1852).toFixed(2) + " NM (" + oasWidth.toFixed(2) + " m)";
+        document.getElementById("apvTypeOutput").textContent = "APV " + apvType;
+
+        // Show results section
+        document.getElementById("resultsAPV").classList.remove("hidden");
+      }
+
+      // Function to calculate LOC parameters
+      function calculateLOC(thrElev_m, rdh, gpAngle, aircraftCategory, daDh_m) {
+        const locSensitivity = parseFloat(
+          document.getElementById("locSensitivity").value
+        );
+
+        if (isNaN(locSensitivity)) {
+          alert("Please enter a valid LOC Sensitivity value.");
+          return;
+        }
+
+        // Calculate OAS Height (using DA/DH)
+        const oasHeight = daDh_m;
+
+        // Calculate OAS Length
+        const oasLength = oasHeight / Math.tan((Math.PI / 180) * gpAngle);
+
+        // Calculate OAS Width (based on LOC sensitivity)
+        const oasWidth = oasLength * Math.tan((Math.PI / 180) * 3.5) + 200;
+
+        // Display results
+        document.getElementById("locOasHeightOutput").textContent =
+          oasHeight.toFixed(2) + " m";
+        document.getElementById("locOasLengthOutput").textContent =
+          (oasLength / 1852).toFixed(2) +
+          " NM (" +
+          oasLength.toFixed(2) +
+          " m)";
+        document.getElementById("locOasWidthOutput").textContent =
+          (oasWidth / 1852).toFixed(2) + " NM (" + oasWidth.toFixed(2) + " m)";
+        document.getElementById("locSensitivityOutput").textContent =
+          locSensitivity.toFixed(2);
+
+        // Show results section
+        document.getElementById("resultsLOC").classList.remove("hidden");
+      }
+
+      // Function to load parameters from a JSON file.
+      function loadParameters(event) {
+        const file = event.target.files[0];
+        if (!file) {
+          alert("Please select a valid JSON file.");
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const data = JSON.parse(e.target.result);
+            if (data["THR Elev"])
+              document.getElementById("thrElev").value = data["THR Elev"];
+            if (data["thrElevUnit"]) {
+              const unitSelect = document.getElementById("thrElevUnit");
+              unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+              unitSelect.value = data["thrElevUnit"];
+            }
+            if (data["RDH"]) document.getElementById("rdh").value = data["RDH"];
+            if (data["rdhUnit"]) {
+              const unitSelect = document.getElementById("rdhUnit");
+              unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+              unitSelect.value = data["rdhUnit"];
+            }
+            if (data["VPA"]) document.getElementById("vpa").value = data["VPA"];
+            if (data["OCH"]) document.getElementById("och").value = data["OCH"];
+            if (data["ochUnit"]) {
+              const unitSelect = document.getElementById("ochUnit");
+              unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+              unitSelect.value = data["ochUnit"];
+            }
+            alert("Parameters successfully loaded!");
+          } catch (err) {
+            alert("Invalid JSON file. Please upload a valid parameters file.");
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      // Function to load parameters for ILS/APV/LOC
+      function loadParametersB(event) {
+        const file = event.target.files[0];
+        if (!file) {
+          alert("Please select a valid JSON file.");
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const data = JSON.parse(e.target.result);
+            if (data["THR Elev"])
+              document.getElementById("thrElevB").value = data["THR Elev"];
+            if (data["thrElevUnit"]) {
+              const unitSelect = document.getElementById("thrElevUnitB");
+              unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+              unitSelect.value = data["thrElevUnit"];
+            }
+            if (data["RDH"])
+              document.getElementById("rdhB").value = data["RDH"];
+            if (data["rdhUnit"]) {
+              const unitSelect = document.getElementById("rdhUnitB");
+              unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+              unitSelect.value = data["rdhUnit"];
+            }
+            if (data["GP Angle"])
+              document.getElementById("gpAngle").value = data["GP Angle"];
+            if (data["Aircraft Category"])
+              document.getElementById("aircraftCategory").value =
+                data["Aircraft Category"];
+            if (data["DA/DH"])
+              document.getElementById("daDh").value = data["DA/DH"];
+            if (data["daDhUnit"]) {
+              const unitSelect = document.getElementById("daDhUnit");
+              unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+              unitSelect.value = data["daDhUnit"];
+            }
+            if (data["Approach Type"]) {
+              document.getElementById("specificApproachType").value =
+                data["Approach Type"];
+              updateApproachFields();
+            }
+            if (data["ILS Category"])
+              document.getElementById("ilsCategory").value =
+                data["ILS Category"];
+            if (data["APV Type"])
+              document.getElementById("apvType").value = data["APV Type"];
+            if (data["LOC Sensitivity"])
+              document.getElementById("locSensitivity").value =
+                data["LOC Sensitivity"];
+            alert("Parameters successfully loaded!");
+          } catch (err) {
+            alert("Invalid JSON file. Please upload a valid parameters file.");
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      // Function to save parameters to a JSON file.
+      function saveParameters() {
+        const thrElev = document.getElementById("thrElev").value || "";
+        const thrElevUnit =
+          document.getElementById("thrElevUnit").value || "ft";
+        const rdh = document.getElementById("rdh").value || "";
+        const rdhUnit = document.getElementById("rdhUnit").value || "m";
+        const vpa = document.getElementById("vpa").value || "";
+        const och = document.getElementById("och").value || "";
+        const ochUnit = document.getElementById("ochUnit").value || "m";
+
+        const data = {
+          "THR Elev": thrElev,
+          thrElevUnit: thrElevUnit,
+          RDH: rdh,
+          rdhUnit: rdhUnit,
+          VPA: vpa,
+          OCH: och,
+          ochUnit: ochUnit,
+        };
+
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[:.]/g, "-");
+        const filename = `${timestamp}_vssocs.json`;
+        const blob = new Blob([JSON.stringify(data, null, 2)], {
+          type: "application/json",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+      }
+
+      // Function to save parameters for ILS/APV/LOC
+      function saveParametersB() {
+        const thrElev = document.getElementById("thrElevB").value || "";
+        const thrElevUnit =
+          document.getElementById("thrElevUnitB").value || "ft";
+        const rdh = document.getElementById("rdhB").value || "";
+        const rdhUnit = document.getElementById("rdhUnitB").value || "m";
+        const gpAngle = document.getElementById("gpAngle").value || "";
+        const aircraftCategory =
+          document.getElementById("aircraftCategory").value || "";
+        const daDh = document.getElementById("daDh").value || "";
+        const daDhUnit = document.getElementById("daDhUnit").value || "ft";
+        const approachType =
+          document.getElementById("specificApproachType").value || "";
+
+        const data = {
+          "THR Elev": thrElev,
+          thrElevUnit: thrElevUnit,
+          RDH: rdh,
+          rdhUnit: rdhUnit,
+          "GP Angle": gpAngle,
+          "Aircraft Category": aircraftCategory,
+          "DA/DH": daDh,
+          daDhUnit: daDhUnit,
+          "Approach Type": approachType,
+        };
+
+        // Add approach-specific parameters
+        if (approachType === "ils") {
+          data["ILS Category"] =
+            document.getElementById("ilsCategory").value || "";
+        } else if (approachType === "apv") {
+          data["APV Type"] = document.getElementById("apvType").value || "";
+        } else if (approachType === "loc") {
+          data["LOC Sensitivity"] =
+            document.getElementById("locSensitivity").value || "";
+        }
+
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[:.]/g, "-");
+        const filename = `${timestamp}_ilsapvloc.json`;
+        const blob = new Blob([JSON.stringify(data, null, 2)], {
+          type: "application/json",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+      }
+
+      // Function to copy results as an HTML table for Word.
+      // 'type' is either "dvss", "ocs", "ils", "apv", or "loc". Each table will have two columns with 50% width.
+      function copyToWordDocument(type) {
+        let htmlContent = "";
+        if (type === "dvss") {
+          const thrElev = document.getElementById("thrElev").value || "N/A";
+          const thrElevUnit =
+            document.getElementById("thrElevUnit").value || "N/A";
+          const rdh = document.getElementById("rdh").value || "N/A";
+          const rdhUnit = document.getElementById("rdhUnit").value || "N/A";
+          const vpa = document.getElementById("vpa").value || "N/A";
+          const och = document.getElementById("och").value || "N/A";
+          const ochUnit = document.getElementById("ochUnit").value || "N/A";
+          const vssDistance =
+            document.getElementById("dvssOutput").textContent || "N/A";
+
+          htmlContent = `
           <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
             <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
             <tr><td>THR Elev</td><td>${thrElev} ${thrElevUnit}</td></tr>
             <tr><td>RDH</td><td>${rdh} ${rdhUnit}</td></tr>
             <tr><td>VPA (°)</td><td>${parseFloat(vpa).toFixed(2)}</td></tr>
-            <tr><td>OCH</td><td>${parseFloat(och).toFixed(4)} ${ochUnit}</td></tr>
+            <tr><td>OCH</td><td>${parseFloat(och).toFixed(
+              4
+            )} ${ochUnit}</td></tr>
             <tr><td>VSS Distance</td><td>${vssDistance}</td></tr>
           </table>
         `;
-      } else if (type === "ocs") {
-        const och = document.getElementById("och").value || "N/A";
-        const rdh = document.getElementById("rdh").value || "N/A";
-        const vpa = document.getElementById("vpa").value || "N/A";
-        const ocsLength = document.getElementById("ocsLengthOutput").textContent || "N/A";
-        const ocsE = document.getElementById("ocsEOutput").textContent || "N/A";
-        const ocsElev = document.getElementById("ocsElevOutput").textContent || "N/A";
-        const ocsTheta = document.getElementById("ocsThetaOutput").textContent || "N/A";
-        const ocsAdjust = document.getElementById("ocsAdjustOutput").textContent || "N/A";
-        
-        htmlContent = `
+        } else if (type === "ocs") {
+          const och = document.getElementById("och").value || "N/A";
+          const rdh = document.getElementById("rdh").value || "N/A";
+          const vpa = document.getElementById("vpa").value || "N/A";
+          const ocsLength =
+            document.getElementById("ocsLengthOutput").textContent || "N/A";
+          const ocsE =
+            document.getElementById("ocsEOutput").textContent || "N/A";
+          const ocsElev =
+            document.getElementById("ocsElevOutput").textContent || "N/A";
+          const ocsTheta =
+            document.getElementById("ocsThetaOutput").textContent || "N/A";
+          const ocsAdjust =
+            document.getElementById("ocsAdjustOutput").textContent || "N/A";
+
+          htmlContent = `
           <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
             <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
             <tr><td>OCH</td><td>${parseFloat(och).toFixed(4)} m</td></tr>
@@ -1035,29 +1578,40 @@
             <tr><td>VPA (°)</td><td>${parseFloat(vpa).toFixed(2)}</td></tr>
             <tr><td>OCS Length</td><td>${ocsLength}</td></tr>
             <tr><td>OCS E (Lateral)</td><td>${ocsE}</td></tr>
-            <tr><td>OCS Elevation</td><td>${parseFloat(ocsElev).toFixed(4)} m</td></tr>
+            <tr><td>OCS Elevation</td><td>${parseFloat(ocsElev).toFixed(
+              4
+            )} m</td></tr>
             <tr><td>OCS θ</td><td>${parseFloat(ocsTheta).toFixed(2)}°</td></tr>
-            <tr><td>OCS Elevation Adjustment</td><td>${parseFloat(ocsAdjust).toFixed(4)} m</td></tr>
+            <tr><td>OCS Elevation Adjustment</td><td>${parseFloat(
+              ocsAdjust
+            ).toFixed(4)} m</td></tr>
           </table>
         `;
-      } else if (type === "ils") {
-        const thrElev = document.getElementById("thrElevB").value || "N/A";
-        const thrElevUnit = document.getElementById("thrElevUnitB").value || "N/A";
-        const rdh = document.getElementById("rdhB").value || "N/A";
-        const gpAngle = document.getElementById("gpAngle").value || "N/A";
-        const daDh = document.getElementById("daDh").value || "N/A";
-        const daDhUnit = document.getElementById("daDhUnit").value || "N/A";
-        const ilsCategory = document.getElementById("ilsCategory").value || "N/A";
-        const oasHeight = document.getElementById("oasHeightOutput").textContent || "N/A";
-        const oasLength = document.getElementById("oasLengthOutput").textContent || "N/A";
-        const oasWidth = document.getElementById("oasWidthOutput").textContent || "N/A";
-        
-        htmlContent = `
+        } else if (type === "ils") {
+          const thrElev = document.getElementById("thrElevB").value || "N/A";
+          const thrElevUnit =
+            document.getElementById("thrElevUnitB").value || "N/A";
+          const rdh = document.getElementById("rdhB").value || "N/A";
+          const gpAngle = document.getElementById("gpAngle").value || "N/A";
+          const daDh = document.getElementById("daDh").value || "N/A";
+          const daDhUnit = document.getElementById("daDhUnit").value || "N/A";
+          const ilsCategory =
+            document.getElementById("ilsCategory").value || "N/A";
+          const oasHeight =
+            document.getElementById("oasHeightOutput").textContent || "N/A";
+          const oasLength =
+            document.getElementById("oasLengthOutput").textContent || "N/A";
+          const oasWidth =
+            document.getElementById("oasWidthOutput").textContent || "N/A";
+
+          htmlContent = `
           <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
             <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
             <tr><td>THR Elev</td><td>${thrElev} ${thrElevUnit}</td></tr>
             <tr><td>RDH</td><td>${rdh} m</td></tr>
-            <tr><td>GP Angle (°)</td><td>${parseFloat(gpAngle).toFixed(2)}</td></tr>
+            <tr><td>GP Angle (°)</td><td>${parseFloat(gpAngle).toFixed(
+              2
+            )}</td></tr>
             <tr><td>DA/DH</td><td>${daDh} ${daDhUnit}</td></tr>
             <tr><td>ILS Category</td><td>CAT ${ilsCategory}</td></tr>
             <tr><td>OAS Height</td><td>${oasHeight}</td></tr>
@@ -1065,24 +1619,30 @@
             <tr><td>OAS Width</td><td>${oasWidth}</td></tr>
           </table>
         `;
-      } else if (type === "apv") {
-        const thrElev = document.getElementById("thrElevB").value || "N/A";
-        const thrElevUnit = document.getElementById("thrElevUnitB").value || "N/A";
-        const rdh = document.getElementById("rdhB").value || "N/A";
-        const gpAngle = document.getElementById("gpAngle").value || "N/A";
-        const daDh = document.getElementById("daDh").value || "N/A";
-        const daDhUnit = document.getElementById("daDhUnit").value || "N/A";
-        const apvType = document.getElementById("apvType").value || "N/A";
-        const oasHeight = document.getElementById("apvOasHeightOutput").textContent || "N/A";
-        const oasLength = document.getElementById("apvOasLengthOutput").textContent || "N/A";
-        const oasWidth = document.getElementById("apvOasWidthOutput").textContent || "N/A";
-        
-        htmlContent = `
+        } else if (type === "apv") {
+          const thrElev = document.getElementById("thrElevB").value || "N/A";
+          const thrElevUnit =
+            document.getElementById("thrElevUnitB").value || "N/A";
+          const rdh = document.getElementById("rdhB").value || "N/A";
+          const gpAngle = document.getElementById("gpAngle").value || "N/A";
+          const daDh = document.getElementById("daDh").value || "N/A";
+          const daDhUnit = document.getElementById("daDhUnit").value || "N/A";
+          const apvType = document.getElementById("apvType").value || "N/A";
+          const oasHeight =
+            document.getElementById("apvOasHeightOutput").textContent || "N/A";
+          const oasLength =
+            document.getElementById("apvOasLengthOutput").textContent || "N/A";
+          const oasWidth =
+            document.getElementById("apvOasWidthOutput").textContent || "N/A";
+
+          htmlContent = `
           <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
             <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
             <tr><td>THR Elev</td><td>${thrElev} ${thrElevUnit}</td></tr>
             <tr><td>RDH</td><td>${rdh} m</td></tr>
-            <tr><td>GP Angle (°)</td><td>${parseFloat(gpAngle).toFixed(2)}</td></tr>
+            <tr><td>GP Angle (°)</td><td>${parseFloat(gpAngle).toFixed(
+              2
+            )}</td></tr>
             <tr><td>DA/DH</td><td>${daDh} ${daDhUnit}</td></tr>
             <tr><td>APV Type</td><td>APV ${apvType}</td></tr>
             <tr><td>OAS Height</td><td>${oasHeight}</td></tr>
@@ -1090,38 +1650,52 @@
             <tr><td>OAS Width</td><td>${oasWidth}</td></tr>
           </table>
         `;
-      } else if (type === "loc") {
-        const thrElev = document.getElementById("thrElevB").value || "N/A";
-        const thrElevUnit = document.getElementById("thrElevUnitB").value || "N/A";
-        const rdh = document.getElementById("rdhB").value || "N/A";
-        const gpAngle = document.getElementById("gpAngle").value || "N/A";
-        const daDh = document.getElementById("daDh").value || "N/A";
-        const daDhUnit = document.getElementById("daDhUnit").value || "N/A";
-        const locSensitivity = document.getElementById("locSensitivity").value || "N/A";
-        const oasHeight = document.getElementById("locOasHeightOutput").textContent || "N/A";
-        const oasLength = document.getElementById("locOasLengthOutput").textContent || "N/A";
-        const oasWidth = document.getElementById("locOasWidthOutput").textContent || "N/A";
-        
-        htmlContent = `
+        } else if (type === "loc") {
+          const thrElev = document.getElementById("thrElevB").value || "N/A";
+          const thrElevUnit =
+            document.getElementById("thrElevUnitB").value || "N/A";
+          const rdh = document.getElementById("rdhB").value || "N/A";
+          const gpAngle = document.getElementById("gpAngle").value || "N/A";
+          const daDh = document.getElementById("daDh").value || "N/A";
+          const daDhUnit = document.getElementById("daDhUnit").value || "N/A";
+          const locSensitivity =
+            document.getElementById("locSensitivity").value || "N/A";
+          const oasHeight =
+            document.getElementById("locOasHeightOutput").textContent || "N/A";
+          const oasLength =
+            document.getElementById("locOasLengthOutput").textContent || "N/A";
+          const oasWidth =
+            document.getElementById("locOasWidthOutput").textContent || "N/A";
+
+          htmlContent = `
           <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
             <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
             <tr><td>THR Elev</td><td>${thrElev} ${thrElevUnit}</td></tr>
             <tr><td>RDH</td><td>${rdh} m</td></tr>
-            <tr><td>GP Angle (°)</td><td>${parseFloat(gpAngle).toFixed(2)}</td></tr>
+            <tr><td>GP Angle (°)</td><td>${parseFloat(gpAngle).toFixed(
+              2
+            )}</td></tr>
             <tr><td>DA/DH</td><td>${daDh} ${daDhUnit}</td></tr>
-            <tr><td>LOC Sensitivity</td><td>${parseFloat(locSensitivity).toFixed(2)}</td></tr>
+            <tr><td>LOC Sensitivity</td><td>${parseFloat(
+              locSensitivity
+            ).toFixed(2)}</td></tr>
             <tr><td>OAS Height</td><td>${oasHeight}</td></tr>
             <tr><td>OAS Length</td><td>${oasLength}</td></tr>
             <tr><td>OAS Width</td><td>${oasWidth}</td></tr>
           </table>
         `;
+        }
+
+        const blob = new Blob([htmlContent], { type: "text/html" });
+        navigator.clipboard
+          .write([new ClipboardItem({ "text/html": blob })])
+          .then(() => {
+            alert("Results copied; paste into Word.");
+          })
+          .catch((err) => {
+            console.error("Copy failed:", err);
+          });
       }
-      
-      const blob = new Blob([htmlContent], { type: "text/html" });
-      navigator.clipboard.write([new ClipboardItem({ "text/html": blob })])
-        .then(() => { alert("Results copied; paste into Word."); })
-        .catch(err => { console.error("Copy failed:", err); });
-    }
-  </script>
-</body>
+    </script>
+  </body>
 </html>
