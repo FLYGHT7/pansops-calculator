@@ -198,13 +198,28 @@
     
     // Function to handle unit conversion when unit selector changes
     function handleUnitChange(inputId, unitSelectId) {
+      const input = document.getElementById(inputId);
       const unitSelect = document.getElementById(unitSelectId);
+      const currentValue = parseFloat(input.value);
       
-      // Just update the last unit - no conversion in the UI
+      if (!isNaN(currentValue)) {
+        const oldUnit = unitSelect.dataset.lastUnit || unitSelect.value;
+        const newUnit = unitSelect.value;
+        
+        // Only convert if the unit has changed
+        if (oldUnit !== newUnit) {
+          if (oldUnit === "ft" && newUnit === "m") {
+            // Convert from feet to meters
+            input.value = (currentValue * 0.3048).toFixed(2);
+          } else if (oldUnit === "m" && newUnit === "ft") {
+            // Convert from meters to feet
+            input.value = (currentValue / 0.3048).toFixed(2);
+          }
+        }
+      }
+      
+      // Save the current unit for the next change
       unitSelect.dataset.lastUnit = unitSelect.value;
-      
-      // No need to convert the value in the input field
-      // The conversion will happen only during calculations
     }
     
     // Function to initialize all unit selectors
@@ -302,14 +317,12 @@
       }
       
       // Convert THR Elev and TCH to feet if needed.
-      let thrElev_ft = thrElev;
-      let tch_ft = tch;
-      if (thrElevUnit === "m") { thrElev_ft = thrElev / 0.3048; }
-      if (tchUnit === "m") { tch_ft = tch / 0.3048; }
+      if (thrElevUnit === "m") { thrElev = thrElev / 0.3048; }
+      if (tchUnit === "m") { tch = tch / 0.3048; }
       
       // Set output values for THR Elev and TCH.
-      document.getElementById("outputThrElev").textContent = thrElev_ft.toFixed(2);
-      document.getElementById("outputTch").textContent = tch_ft.toFixed(2);
+      document.getElementById("outputThrElev").textContent = thrElev.toFixed(2);
+      document.getElementById("outputTch").textContent = tch.toFixed(2);
       
       // Compute slope from VPA in degrees.
       const slope = Math.tan(vpa * (Math.PI / 180));
@@ -318,7 +331,7 @@
       const nmToFt = (1852 / 0.3048);
       
       // Base elevation is the sum of THR Elev and TCH.
-      const baseElevation = thrElev_ft + tch_ft;
+      const baseElevation = thrElev + tch;
       
       // Calculate elevations.
       const fafElevation = baseElevation + (distToFaf * slope * nmToFt);
