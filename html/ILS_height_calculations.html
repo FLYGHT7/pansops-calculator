@@ -402,13 +402,28 @@
 
       // Function to handle unit conversion when unit selector changes
       function handleUnitChange(inputId, unitSelectId) {
+        const input = document.getElementById(inputId);
         const unitSelect = document.getElementById(unitSelectId);
+        const currentValue = parseFloat(input.value);
 
-        // Just update the last unit - no conversion in the UI
+        if (!isNaN(currentValue)) {
+          const oldUnit = unitSelect.dataset.lastUnit || unitSelect.value;
+          const newUnit = unitSelect.value;
+
+          // Only convert if the unit has changed
+          if (oldUnit !== newUnit) {
+            if (oldUnit === "ft" && newUnit === "m") {
+              // Convert from feet to meters
+              input.value = (currentValue * 0.3048).toFixed(2);
+            } else if (oldUnit === "m" && newUnit === "ft") {
+              // Convert from meters to feet
+              input.value = (currentValue / 0.3048).toFixed(2);
+            }
+          }
+        }
+
+        // Save the current unit for the next change
         unitSelect.dataset.lastUnit = unitSelect.value;
-
-        // No need to convert the value in the input field
-        // The conversion will happen only during calculations
       }
 
       // Function to initialize all unit selectors
@@ -452,11 +467,8 @@
           alert("Please enter a valid THR Elevation.");
           return;
         }
-        // Convert to feet if needed
-        let thrElev_ft = thrElevVal;
-        if (thrElevUnit === "m") {
-          thrElev_ft = thrElevVal * FT_PER_M;
-        }
+        const thrElev_ft =
+          thrElevUnit === "ft" ? thrElevVal : thrElevVal * FT_PER_M;
 
         // Get RDH:
         const rdhVal = parseFloat(document.getElementById("rdh").value);
@@ -465,11 +477,7 @@
           alert("Please enter a valid RDH.");
           return;
         }
-        // Convert to feet if needed
-        let rdh_ft = rdhVal;
-        if (rdhUnit === "m") {
-          rdh_ft = rdhVal * FT_PER_M;
-        }
+        const rdh_ft = rdhUnit === "ft" ? rdhVal : rdhVal * FT_PER_M;
 
         // Get Glidepath Angle (in degrees):
         const glideAngle = parseFloat(
