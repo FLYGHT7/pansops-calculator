@@ -1,5 +1,899 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NPA SOC Calculation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: "#f0f9ff",
+                100: "#e0f2fe",
+                200: "#bae6fd",
+                300: "#7dd3fc",
+                400: "#38bdf8",
+                500: "#0ea5e9",
+                600: "#0284c7",
+                700: "#0369a1",
+                800: "#075985",
+                900: "#0c4a6e",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="dark-mode.css" />
+    <script src="aviation-utils.js"></script>
+  </head>
+  <body
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4"
+  >
+    <!-- Main Container -->
+    <div
+      class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
+    >
+      <h1
+        class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-7 w-7 sm:h-8 sm:w-8 mr-2"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="6" y1="12" x2="18" y2="12" stroke-dasharray="4 2"></line>
+          <polygon points="6,6 18,12 6,18" fill="none"></polygon>
+        </svg>
+        NPA SOC Calculation
+      </h1>
+
+      <!-- Global Load/Save Buttons -->
+      <div class="flex flex-wrap justify-end mb-6 gap-3">
+        <input
+          id="loadFile"
+          type="file"
+          accept=".json"
+          class="hidden"
+          onchange="loadParameters(event)"
+        />
+        <button
+          onclick="saveParameters()"
+          class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-1"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+            ></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          Save Parameters
+        </button>
+        <button
+          onclick="document.getElementById('loadFile').click()"
+          class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-1"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          Load Parameters
+        </button>
+      </div>
+
+      <!-- 1. Approach Type (First Input) -->
+      <div class="mt-4">
+        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-300"
+          >Select Approach Type</label
+        >
+        <div class="flex space-x-2 mt-1">
+          <label class="flex items-center">
+            <input
+              type="radio"
+              name="approachType"
+              value="PBN"
+              checked
+              class="mr-1 text-primary-600 focus:ring-primary-500 dark:bg-gray-700"
+            />
+            <span class="text-sm text-gray-700 dark:text-gray-300"
+              >PBN (RNP APCH)</span
+            >
+          </label>
+          <label class="flex items-center">
+            <input
+              type="radio"
+              name="approachType"
+              value="CONV"
+              class="mr-1 text-primary-600 focus:ring-primary-500 dark:bg-gray-700"
+            />
+            <span class="text-sm text-gray-700 dark:text-gray-300">CONV</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 2. Flight Input Fields -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <!-- Aerodrome Elevation -->
+        <div>
+          <label class="block mb-1 font-medium text-gray-700 dark:text-gray-300"
+            >Aerodrome Elevation</label
+          >
+          <div
+            class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+          >
+            <input
+              id="aeroElev"
+              type="number"
+              placeholder="Enter Aero Elevation"
+              class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            />
+            <select
+              id="aeroElevUnit"
+              onchange="handleUnitChange('aeroElev', 'aeroElevUnit')"
+              class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white rounded-r-lg"
+            >
+              <option value="ft" selected>ft</option>
+              <option value="m">m</option>
+            </select>
+          </div>
+        </div>
+        <!-- ISA Deviation -->
+        <div>
+          <label class="block mb-1 font-medium text-gray-700 dark:text-gray-300"
+            >ISA Deviation (°C)</label
+          >
+          <input
+            id="var"
+            type="number"
+            step="0.1"
+            placeholder="Enter VAR"
+            class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+        <!-- IAS -->
+        <div>
+          <label class="block mb-1 font-medium text-gray-700 dark:text-gray-300"
+            >IAS (knots)</label
+          >
+          <input
+            id="ias"
+            type="number"
+            step="0.1"
+            placeholder="Enter IAS"
+            class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+      </div>
+
+      <!-- 3. Altitude Override Section -->
+      <div class="mt-4">
+        <div class="flex items-center">
+          <input
+            type="checkbox"
+            id="overrideAltitude"
+            class="mr-2 text-primary-600 focus:ring-primary-500 dark:bg-gray-700"
+          />
+          <label
+            for="overrideAltitude"
+            class="font-medium text-gray-700 dark:text-gray-300"
+            >Override Altitude</label
+          >
+        </div>
+        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-300"
+          >Altitude (ft)</label
+        >
+        <input
+          id="altitude"
+          type="number"
+          step="0.1"
+          placeholder="Altitude (ft)"
+          class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+          disabled
+        />
+        <p
+          id="altitudeNote"
+          class="text-sm text-gray-500 dark:text-gray-400"
+        ></p>
+      </div>
+
+      <!-- 4. Wind Input -->
+      <div class="mt-4">
+        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-300"
+          >Wind (kts)</label
+        >
+        <input
+          id="wind"
+          type="number"
+          step="0.1"
+          placeholder="Default 10"
+          value="10"
+          class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+        />
+      </div>
+
+      <!-- 5. ATT Input (with Override for PBN) -->
+      <div class="grid grid-cols-1 gap-4 mt-4">
+        <label class="block mb-1 font-medium text-gray-700 dark:text-gray-300"
+          >ATT (NM)</label
+        >
+        <div class="flex items-center">
+          <input
+            id="att"
+            type="number"
+            step="0.0001"
+            placeholder="Enter ATT"
+            value="0.2400"
+            class="w-24 p-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            readonly
+          />
+          <div id="overrideAttDiv" class="ml-2">
+            <input
+              type="checkbox"
+              id="overrideAtt"
+              class="mr-1 text-primary-600 focus:ring-primary-500 dark:bg-gray-700"
+            />
+            <label
+              for="overrideAtt"
+              class="text-sm text-gray-700 dark:text-gray-300"
+              >Override ATT</label
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Calculate Button -->
+      <div class="flex justify-center mt-6">
+        <button
+          onclick="calculateSOC()"
+          class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          Calculate
+        </button>
+      </div>
+
+      <!-- Results Output Section -->
+      <div
+        id="resultsOutput"
+        class="hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600 mt-8"
+      >
+        <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">
+          Calculated Values
+        </h2>
+
+        <!-- Output values in a grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Approach Type
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="calcTypeOutput"></span>
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Aerodrome Elevation
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="aeroElevOutput"></span>
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              ISA Deviation
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="varOutput"></span>
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">IAS</p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="iasOutput"></span>
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">Altitude</p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="altitudeOutput"></span>
+            </p>
+          </div>
+          <div
+            id="overrideOutput"
+            class="hidden bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Overridden Altitude
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="overriddenValue"></span> ft
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 italic">
+              Default: <span id="originalAltitude"></span> ft
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">k Factor</p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="kFactorOutput"></span>
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">TAS</p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="tasOutput"></span>
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">TAS + Wind</p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="tasWindOutput"></span>
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Transitional Distance (X)
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="transDistOutput"></span>
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Flight Distance (d)
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="flightDistOutput"></span>
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">d + X</p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="sumDistOutput"></span>
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">ATT</p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="attOutput"></span>
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm md:col-span-2"
+          >
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              MAPt to SOC Distance
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="maptSocOutput"></span>
+            </p>
+          </div>
+        </div>
+
+        <div class="flex justify-end mt-6">
+          <button
+            onclick="copyResultsToWord()"
+            class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-2"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+              ></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+            Copy Results as Table
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- End Main Container -->
+
+    <!-- JavaScript Section -->
+    <script>
+      // Initialize on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check for dark mode
+        checkDarkMode();
+
+        // Initialize unit selectors
+        initializeUnitSelectors();
+
+        // Set up event listeners
+        setupEventListeners();
+      });
+
+      // Set up event listeners
+      function setupEventListeners() {
+        // Aerodrome Elevation to Altitude sync
+        const aeroInput = document.getElementById("aeroElev");
+        const altitudeInput = document.getElementById("altitude");
+
+        // Set initial altitude value
+        altitudeInput.value = aeroInput.value;
+
+        // Update altitude when aerodrome elevation changes
+        aeroInput.addEventListener("input", function () {
+          const overrideChk =
+            document.getElementById("overrideAltitude").checked;
+          if (!overrideChk) {
+            altitudeInput.value = aeroInput.value;
+            document.getElementById("altitudeNote").textContent = "";
+          }
+        });
+
+        // Handle altitude override checkbox
+        document
+          .getElementById("overrideAltitude")
+          .addEventListener("change", function () {
+            const altInput = document.getElementById("altitude");
+            if (this.checked) {
+              altInput.disabled = false;
+              document.getElementById("altitudeNote").textContent =
+                "You have overridden the default altitude.";
+            } else {
+              altInput.disabled = true;
+              altInput.value = document.getElementById("aeroElev").value;
+              document.getElementById("altitudeNote").textContent = "";
+            }
+          });
+
+        // Handle approach type radio buttons
+        const approachRadios = document.querySelectorAll(
+          'input[name="approachType"]'
+        );
+        approachRadios.forEach((radio) => {
+          radio.addEventListener("change", function () {
+            if (this.value === "CONV") {
+              document.getElementById("att").readOnly = false;
+              document.getElementById("overrideAttDiv").style.display = "none";
+            } else {
+              document.getElementById("att").readOnly = true;
+              document.getElementById("overrideAttDiv").style.display = "block";
+              document.getElementById("overrideAtt").checked = false;
+            }
+          });
+        });
+
+        // Handle ATT override checkbox
+        document
+          .getElementById("overrideAtt")
+          .addEventListener("change", function () {
+            const attInput = document.getElementById("att");
+            if (this.checked) {
+              attInput.readOnly = false;
+            } else {
+              attInput.readOnly = true;
+              attInput.value = "0.2400"; // Reset to default value
+            }
+          });
+      }
+
+      // Function to handle unit conversion when unit selector changes
+      function handleUnitChange(inputId, unitSelectId) {
+        const input = document.getElementById(inputId);
+        const unitSelect = document.getElementById(unitSelectId);
+        const currentValue = parseFloat(input.value);
+
+        if (!isNaN(currentValue)) {
+          const oldUnit = unitSelect.dataset.lastUnit || unitSelect.value;
+          const newUnit = unitSelect.value;
+
+          // Only convert if the unit has changed
+          if (oldUnit !== newUnit) {
+            if (oldUnit === "ft" && newUnit === "m") {
+              // Convert from feet to meters
+              input.value = (currentValue * 0.3048).toFixed(2);
+            } else if (oldUnit === "m" && newUnit === "ft") {
+              // Convert from meters to feet
+              input.value = (currentValue / 0.3048).toFixed(2);
+            }
+          }
+        }
+
+        // Save the current unit for the next change
+        unitSelect.dataset.lastUnit = unitSelect.value;
+      }
+
+      // Function to initialize all unit selectors
+      function initializeUnitSelectors() {
+        // Get all unit selectors
+        const unitSelectors = document.querySelectorAll('select[id$="Unit"]');
+
+        unitSelectors.forEach((selector) => {
+          // Save the initial unit
+          selector.dataset.lastUnit = selector.value;
+        });
+      }
+
+      // Main calculation function
+      function calculateSOC() {
+        // Get Aerodrome Elevation
+        const aeroElevVal = parseFloat(
+          document.getElementById("aeroElev").value
+        );
+        const aeroElevUnit = document.getElementById("aeroElevUnit").value;
+
+        if (isNaN(aeroElevVal)) {
+          alert("Please enter a valid Aerodrome Elevation.");
+          return;
+        }
+
+        // Convert to feet if needed
+        const aeroElev_ft =
+          aeroElevUnit === "ft" ? aeroElevVal : metersToFeet(aeroElevVal);
+
+        // Get Altitude (either default or overridden)
+        const overrideChk = document.getElementById("overrideAltitude").checked;
+        let altitude_ft;
+
+        if (overrideChk) {
+          altitude_ft = parseFloat(document.getElementById("altitude").value);
+          if (isNaN(altitude_ft)) {
+            alert("Please enter a valid Altitude.");
+            return;
+          }
+
+          // Update override display
+          document.getElementById("overriddenValue").textContent =
+            altitude_ft.toFixed(4);
+          document.getElementById("originalAltitude").textContent =
+            aeroElev_ft.toFixed(4);
+          document.getElementById("overrideOutput").classList.remove("hidden");
+        } else {
+          altitude_ft = aeroElev_ft;
+          document.getElementById("overrideOutput").classList.add("hidden");
+        }
+
+        // Get ISA Deviation
+        const isaDeviation = parseFloat(document.getElementById("var").value);
+        if (isNaN(isaDeviation)) {
+          alert("Please enter a valid ISA Deviation.");
+          return;
+        }
+
+        // Get IAS
+        const ias = parseFloat(document.getElementById("ias").value);
+        if (isNaN(ias)) {
+          alert("Please enter a valid IAS.");
+          return;
+        }
+
+        // Calculate k Factor using the utility function
+        const kFactor = calculateKFactor(altitude_ft, isaDeviation);
+        document.getElementById("kFactorOutput").textContent =
+          kFactor.toFixed(4);
+
+        // Calculate TAS using the utility function
+        const tas = calculateTAS(ias, kFactor);
+        document.getElementById("tasOutput").textContent =
+          tas.toFixed(4) + " kts";
+
+        // Get Wind
+        const wind = parseFloat(document.getElementById("wind").value) || 10;
+
+        // Calculate TAS + Wind
+        const tasPlusWind = tas + wind;
+        document.getElementById("tasWindOutput").textContent =
+          tasPlusWind.toFixed(4) + " kts";
+
+        // Calculate Transitional Distance (X) using the utility function
+        const transDist = calculateTransitionalDistance(tasPlusWind);
+        document.getElementById("transDistOutput").textContent =
+          transDist.toFixed(4) + " NM";
+
+        // Calculate Flight Distance (d) using the utility function
+        const flightDist = calculateFlightDistance(tasPlusWind);
+        document.getElementById("flightDistOutput").textContent =
+          flightDist.toFixed(4) + " NM";
+
+        // Calculate d + X
+        const sumDist = transDist + flightDist;
+        document.getElementById("sumDistOutput").textContent =
+          sumDist.toFixed(4) + " NM";
+
+        // Get ATT
+        const att_input = parseFloat(document.getElementById("att").value);
+        if (isNaN(att_input)) {
+          alert("Please enter a valid ATT.");
+          return;
+        }
+
+        // Format ATT output based on approach type
+        let attOutputStr = "";
+        const approachTypeVal = document.querySelector(
+          'input[name="approachType"]:checked'
+        ).value;
+
+        if (approachTypeVal === "CONV") {
+          attOutputStr = att_input.toFixed(4) + " NM (measured)";
+        } else {
+          if (Math.abs(att_input - 0.24) > 0.0001) {
+            attOutputStr =
+              "Overridden ATT: " +
+              att_input.toFixed(4) +
+              " NM<br>Default ATT: 0.2400 NM";
+          } else {
+            attOutputStr = att_input.toFixed(4) + " NM";
+          }
+        }
+        document.getElementById("attOutput").innerHTML = attOutputStr;
+
+        // Calculate MAPt to SOC Distance
+        const maptSoc = att_input + sumDist;
+        document.getElementById("maptSocOutput").textContent =
+          maptSoc.toFixed(4) + " NM";
+
+        // Update static outputs
+        document.getElementById("aeroElevOutput").textContent =
+          aeroElev_ft.toFixed(4) + " ft";
+        document.getElementById("varOutput").textContent =
+          isaDeviation.toFixed(4) + " °C";
+        document.getElementById("iasOutput").textContent =
+          ias.toFixed(4) + " kts";
+        document.getElementById("altitudeOutput").textContent =
+          altitude_ft.toFixed(4) + " ft";
+
+        // Display Approach Type on output
+        const approachTypeDisplay =
+          approachTypeVal === "PBN" ? "PBN (RNP APCH)" : "CONV (measured)";
+        document.getElementById("calcTypeOutput").textContent =
+          approachTypeDisplay;
+
+        // Display results
+        document.getElementById("resultsOutput").classList.remove("hidden");
+      }
+
+      // Save parameters to a JSON file
+      function saveParameters() {
+        const data = {
+          "Aerodrome Elev": document.getElementById("aeroElev").value || "",
+          aeroElevUnit: document.getElementById("aeroElevUnit").value || "ft",
+          "ISA Deviation": document.getElementById("var").value || "",
+          IAS: document.getElementById("ias").value || "",
+          Altitude: document.getElementById("altitude").value || "",
+          Override: document.getElementById("overrideAltitude").checked,
+          Wind: document.getElementById("wind").value || "",
+          ATT: document.getElementById("att").value || "",
+          approachType:
+            document.querySelector('input[name="approachType"]:checked')
+              ?.value || "",
+        };
+
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[:.]/g, "-");
+        const filename = `${timestamp}_npa_soc.json`;
+        const blob = new Blob([JSON.stringify(data, null, 2)], {
+          type: "application/json",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+      }
+
+      // Load parameters from a JSON file
+      function loadParameters(event) {
+        const file = event.target.files[0];
+        if (!file) {
+          alert("Please select a valid JSON file.");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const data = JSON.parse(e.target.result);
+
+            // Load all parameters
+            if (data["Aerodrome Elev"]) {
+              document.getElementById("aeroElev").value =
+                data["Aerodrome Elev"];
+            }
+
+            if (data["aeroElevUnit"]) {
+              const unitSelect = document.getElementById("aeroElevUnit");
+              unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
+              unitSelect.value = data["aeroElevUnit"];
+            }
+
+            if (data["ISA Deviation"]) {
+              document.getElementById("var").value = data["ISA Deviation"];
+            }
+
+            if (data["IAS"]) {
+              document.getElementById("ias").value = data["IAS"];
+            }
+
+            if (data["Altitude"]) {
+              document.getElementById("altitude").value = data["Altitude"];
+            }
+
+            if (data["Override"] !== undefined) {
+              document.getElementById("overrideAltitude").checked =
+                data["Override"];
+              document.getElementById("altitude").disabled = !data["Override"];
+            }
+
+            if (data["Wind"]) {
+              document.getElementById("wind").value = data["Wind"];
+            }
+
+            if (data["ATT"]) {
+              document.getElementById("att").value = data["ATT"];
+            }
+
+            if (data["approachType"]) {
+              const radioToCheck = document.querySelector(
+                'input[name="approachType"][value="' +
+                  data["approachType"] +
+                  '"]'
+              );
+              if (radioToCheck) radioToCheck.checked = true;
+
+              // Update ATT input based on approach type
+              if (data["approachType"] === "CONV") {
+                document.getElementById("att").readOnly = false;
+                document.getElementById("overrideAttDiv").style.display =
+                  "none";
+              } else {
+                document.getElementById("att").readOnly = true;
+                document.getElementById("overrideAttDiv").style.display =
+                  "block";
+                document.getElementById("overrideAtt").checked = false;
+              }
+            }
+
+            alert("Parameters successfully loaded!");
+          } catch (err) {
+            alert("Invalid JSON file. Please upload a valid parameters file.");
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      // Copy results to Word document
+      function copyResultsToWord() {
+        // Get approach type
+        const approachTypeVal =
+          document.querySelector('input[name="approachType"]:checked').value ||
+          "N/A";
+        const approachTypeDisplay =
+          approachTypeVal === "PBN" ? "PBN (RNP APCH)" : "CONV (measured)";
+
+        // Create data object for the table
+        const tableData = {
+          "Approach Type": approachTypeDisplay,
+          "Aerodrome Elevation":
+            document.getElementById("aeroElevOutput").textContent,
+          "ISA Deviation": document.getElementById("varOutput").textContent,
+          IAS: document.getElementById("iasOutput").textContent,
+        };
+
+        // Add altitude (either default or overridden)
+        if (document.getElementById("overrideAltitude").checked) {
+          tableData["Overridden Altitude"] =
+            document.getElementById("overriddenValue").textContent + " ft";
+          tableData["Default Altitude"] =
+            document.getElementById("originalAltitude").textContent + " ft";
+        } else {
+          tableData["Altitude"] =
+            document.getElementById("altitudeOutput").textContent;
+        }
+
+        // Add wind
+        tableData["Wind"] =
+          parseFloat(document.getElementById("wind").value).toFixed(4) + " kts";
+
+        // Add ATT (format depends on approach type)
+        const att_input = parseFloat(document.getElementById("att").value);
+        if (approachTypeVal === "CONV") {
+          tableData["ATT"] = att_input.toFixed(4) + " NM (measured)";
+        } else if (Math.abs(att_input - 0.24) > 0.0001) {
+          tableData["Overridden ATT"] = att_input.toFixed(4) + " NM";
+          tableData["Default ATT"] = "0.2400 NM";
+        } else {
+          tableData["ATT"] = att_input.toFixed(4) + " NM";
+        }
+
+        // Add calculation results
+        tableData["k Factor"] =
+          document.getElementById("kFactorOutput").textContent;
+        tableData["TAS"] = document.getElementById("tasOutput").textContent;
+        tableData["TAS + Wind"] =
+          document.getElementById("tasWindOutput").textContent;
+        tableData["Transitional Distance (X)"] =
+          document.getElementById("transDistOutput").textContent;
+        tableData["Flight Distance (d)"] =
+          document.getElementById("flightDistOutput").textContent;
+        tableData["d + X"] =
+          document.getElementById("sumDistOutput").textContent;
+        tableData["MAPt to SOC Distance"] =
+          document.getElementById("maptSocOutput").textContent;
+
+        // Create HTML table and copy to clipboard
+        const htmlContent = createHTMLTable(
+          tableData,
+          "NPA SOC Calculation Results"
+        );
+        copyToClipboard(htmlContent);
+      }
+    </script>
+  </body>
+=======
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
