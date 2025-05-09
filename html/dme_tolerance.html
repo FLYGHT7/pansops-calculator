@@ -420,28 +420,13 @@
 
       // Function to handle unit conversion when unit selector changes
       function handleUnitChange(inputId, unitSelectId) {
-        const input = document.getElementById(inputId);
         const unitSelect = document.getElementById(unitSelectId);
-        const currentValue = parseFloat(input.value);
 
-        if (!isNaN(currentValue)) {
-          const oldUnit = unitSelect.dataset.lastUnit || unitSelect.value;
-          const newUnit = unitSelect.value;
-
-          // Only convert if the unit has changed
-          if (oldUnit !== newUnit) {
-            if (oldUnit === "feet" && newUnit === "meters") {
-              // Convert from feet to meters
-              input.value = (currentValue * 0.3048).toFixed(2);
-            } else if (oldUnit === "meters" && newUnit === "feet") {
-              // Convert from meters to feet
-              input.value = (currentValue / 0.3048).toFixed(2);
-            }
-          }
-        }
-
-        // Save the current unit for the next change
+        // Just update the last unit - no conversion in the UI
         unitSelect.dataset.lastUnit = unitSelect.value;
+
+        // No need to convert the value in the input field
+        // The conversion will happen only during calculations
       }
 
       // Function to initialize all unit selectors
@@ -552,14 +537,14 @@
         }
 
         // Convert elevations to feet if in meters
-        const navaidElevation =
-          navaidUnit === "meters"
-            ? navaidElevationInput / 0.3048
-            : navaidElevationInput;
-        const aircraftElevation =
-          aircraftUnit === "meters"
-            ? aircraftElevationInput / 0.3048
-            : aircraftElevationInput;
+        let navaidElevation = navaidElevationInput;
+        let aircraftElevation = aircraftElevationInput;
+        if (navaidUnit === "meters") {
+          navaidElevation = navaidElevationInput / 0.3048;
+        }
+        if (aircraftUnit === "meters") {
+          aircraftElevation = aircraftElevationInput / 0.3048;
+        }
 
         // Conversion factor for NM to feet.
         const conversionFactor = 1852 / 0.3048;
