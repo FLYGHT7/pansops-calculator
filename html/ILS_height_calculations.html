@@ -439,109 +439,128 @@
       // We solve for NM (choose the positive solution).
 
       function calculateBoth() {
-  const calcType = document.querySelector('input[name="calcType"]:checked').value;
-  document.getElementById("calcTypeOutput").textContent = "Point/Fix Type: " + calcType;
+        const calcType = document.querySelector(
+          'input[name="calcType"]:checked'
+        ).value;
+        document.getElementById("calcTypeOutput").textContent =
+          "Point/Fix Type: " + calcType;
 
-  // Get THR Elevation:
-  const thrElevVal = parseFloat(document.getElementById("thrElev").value);
-  const thrElevUnit = document.getElementById("thrElevUnit").value;
-  if (isNaN(thrElevVal)) {
-    alert("Please enter a valid THR Elevation.");
-    return;
-  }
-  // Convert to feet if needed
-  let thrElev_ft = thrElevVal;
-  if (thrElevUnit === "m") {
-    thrElev_ft = thrElevVal * FT_PER_M;
-  }
+        // Get THR Elevation:
+        const thrElevVal = parseFloat(document.getElementById("thrElev").value);
+        const thrElevUnit = document.getElementById("thrElevUnit").value;
+        if (isNaN(thrElevVal)) {
+          alert("Please enter a valid THR Elevation.");
+          return;
+        }
+        // Convert to feet if needed
+        let thrElev_ft = thrElevVal;
+        if (thrElevUnit === "m") {
+          thrElev_ft = thrElevVal * FT_PER_M;
+        }
 
-  // Get RDH:
-  const rdhVal = parseFloat(document.getElementById("rdh").value);
-  const rdhUnit = document.getElementById("rdhUnit").value;
-  if (isNaN(rdhVal)) {
-    alert("Please enter a valid RDH.");
-    return;
-  }
-  // Convert to feet if needed
-  let rdh_ft = rdhVal;
-  if (rdhUnit === "m") {
-    rdh_ft = rdhVal * FT_PER_M;
-  }
+        // Get RDH:
+        const rdhVal = parseFloat(document.getElementById("rdh").value);
+        const rdhUnit = document.getElementById("rdhUnit").value;
+        if (isNaN(rdhVal)) {
+          alert("Please enter a valid RDH.");
+          return;
+        }
+        // Convert to feet if needed
+        let rdh_ft = rdhVal;
+        if (rdhUnit === "m") {
+          rdh_ft = rdhVal * FT_PER_M;
+        }
 
-  // Get Glidepath Angle (in degrees):
-  const glideAngle = parseFloat(document.getElementById("glideAngle").value);
-  if (isNaN(glideAngle)) {
-    alert("Please enter a valid Glidepath Angle.");
-    return;
-  }
-  const gp_rad = (glideAngle * Math.PI) / 180;
+        // Get Glidepath Angle (in degrees):
+        const glideAngle = parseFloat(
+          document.getElementById("glideAngle").value
+        );
+        if (isNaN(glideAngle)) {
+          alert("Please enter a valid Glidepath Angle.");
+          return;
+        }
+        const gp_rad = (glideAngle * Math.PI) / 180;
 
-  // Get Distance to FAP/Fix (in NM):
-  const distFAP = parseFloat(document.getElementById("distFAP").value);
-  if (isNaN(distFAP)) {
-    alert("Please enter a valid distance.");
-    return;
-  }
+        // Get Distance to FAP/Fix (in NM):
+        const distFAP = parseFloat(document.getElementById("distFAP").value);
+        if (isNaN(distFAP)) {
+          alert("Please enter a valid distance.");
+          return;
+        }
 
-  // Compute RDH adjustment:
-  const threshold_ft = 15 / 0.3048; // ≈ 49.2126 ft
-  const deltaH_candidate = rdh_ft - threshold_ft;
-  const deltaH = rdh_ft > threshold_ft && Math.abs(deltaH_candidate) >= 0.001 ? deltaH_candidate : 0;
+        // Compute RDH adjustment:
+        const threshold_ft = 15 / 0.3048; // ≈ 49.2126 ft
+        const deltaH_candidate = rdh_ft - threshold_ft;
+        const deltaH =
+          rdh_ft > threshold_ft && Math.abs(deltaH_candidate) >= 0.001
+            ? deltaH_candidate
+            : 0;
 
-  // Method A (Right Angle Computation):
-  const fapAltitudeA = thrElev_ft + rdh_ft + (distFAP * FT_PER_NM * Math.tan(gp_rad));
+        // Method A (Right Angle Computation):
+        const fapAltitudeA =
+          thrElev_ft + rdh_ft + distFAP * FT_PER_NM * Math.tan(gp_rad);
 
-  // Method B (Considering Earth Curvature):
-  const fapAltitudeB = thrElev_ft + rdh_ft + deltaH + (distFAP * FT_PER_NM * Math.tan(gp_rad)) + (0.8833 * distFAP * distFAP);
+        // Method B (Considering Earth Curvature):
+        const fapAltitudeB =
+          thrElev_ft +
+          rdh_ft +
+          deltaH +
+          distFAP * FT_PER_NM * Math.tan(gp_rad) +
+          0.8833 * distFAP * distFAP;
 
-  document.getElementById("fapAltitudeA").textContent = fapAltitudeA.toFixed(2);
-  document.getElementById("fapAltitudeB").textContent = fapAltitudeB.toFixed(2);
+        document.getElementById("fapAltitudeA").textContent =
+          fapAltitudeA.toFixed(2);
+        document.getElementById("fapAltitudeB").textContent =
+          fapAltitudeB.toFixed(2);
 
-  const rdhAdjustmentEl = document.getElementById("rdhAdjustment");
-  if (deltaH > 0) {
-    document.getElementById("deltaHOutput").textContent = deltaH.toFixed(4);
-    rdhAdjustmentEl.classList.remove("hidden");
-  } else {
-    rdhAdjustmentEl.classList.add("hidden");
-  }
+        const rdhAdjustmentEl = document.getElementById("rdhAdjustment");
+        if (deltaH > 0) {
+          document.getElementById("deltaHOutput").textContent =
+            deltaH.toFixed(4);
+          rdhAdjustmentEl.classList.remove("hidden");
+        } else {
+          rdhAdjustmentEl.classList.add("hidden");
+        }
 
-  document.getElementById("resultsOutput").classList.remove("hidden");
+        document.getElementById("resultsOutput").classList.remove("hidden");
 
-  // Update the diagram with current values
-  drawDiagram(thrElev_ft, rdh_ft, gp_rad);
-}
+        // Update the diagram with current values
+        drawDiagram(thrElev_ft, rdh_ft, gp_rad);
+      }
 
       // --- Save & Load Functions ---
       function saveParameters() {
-  const thrElev = document.getElementById("thrElev").value || "";
-  const thrElevUnit = document.getElementById("thrElevUnit").value || "ft";
-  const rdh = document.getElementById("rdh").value || "";
-  const rdhUnit = document.getElementById("rdhUnit").value || "ft";
-  const distFAP = document.getElementById("distFAP").value || "";
-  const glideAngle = document.getElementById("glideAngle").value || "";
-  const calcType = document.querySelector('input[name="calcType"]:checked')?.value || "";
+        const thrElev = document.getElementById("thrElev").value || "";
+        const thrElevUnit =
+          document.getElementById("thrElevUnit").value || "ft";
+        const rdh = document.getElementById("rdh").value || "";
+        const rdhUnit = document.getElementById("rdhUnit").value || "ft";
+        const distFAP = document.getElementById("distFAP").value || "";
+        const glideAngle = document.getElementById("glideAngle").value || "";
+        const calcType =
+          document.querySelector('input[name="calcType"]:checked')?.value || "";
 
-  const data = {
-    "THR Elev": thrElev,
-    thrElevUnit: thrElevUnit,
-    RDH: rdh,
-    rdhUnit: rdhUnit,
-    "Distance to FAP": distFAP,
-    "Glidepath Angle": glideAngle,
-    calcType: calcType,
-  };
+        const data = {
+          "THR Elev": thrElev,
+          thrElevUnit: thrElevUnit,
+          RDH: rdh,
+          rdhUnit: rdhUnit,
+          "Distance to FAP": distFAP,
+          "Glidepath Angle": glideAngle,
+          calcType: calcType,
+        };
 
-  const now = new Date();
-  const timestamp = now.toISOString().replace(/[:.]/g, "-");
-  const filename = `${timestamp}_ils_height.json`;
-  const blob = new Blob([JSON.stringify(data, null, 2)], {
-    type: "application/json",
-  });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
-}
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[:.]/g, "-");
+        const filename = `${timestamp}_ils_height.json`;
+        const blob = new Blob([JSON.stringify(data, null, 2)], {
+          type: "application/json",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+      }
 
       function loadParameters(event) {
         const file = event.target.files[0];
@@ -690,165 +709,173 @@
         return topPadding + (yMax_nm - alt_nm) * verticalScale;
       }
 
-function drawDiagram(thrElev = fixed_THR, rdh = fixed_RDH_ft, gpRad = (3 * Math.PI) / 180) {
-  const svgNS = "http://www.w3.org/2000/svg";
-  const svg = document.getElementById("diagram");
-  svg.setAttribute(
-    "viewBox",
-    `0 0 ${svgWidth} ${viewBoxHeight.toFixed(0)}`
-  );
-  svg.innerHTML = "";
+      function drawDiagram(
+        thrElev = fixed_THR,
+        rdh = fixed_RDH_ft,
+        gpRad = (3 * Math.PI) / 180
+      ) {
+        const svgNS = "http://www.w3.org/2000/svg";
+        const svg = document.getElementById("diagram");
+        svg.setAttribute(
+          "viewBox",
+          `0 0 ${svgWidth} ${viewBoxHeight.toFixed(0)}`
+        );
+        svg.innerHTML = "";
 
-  // Calculate the base height (THR + RDH)
-  const baseHeight = thrElev + rdh;
-  const tanGP = Math.tan(gpRad);
-  
-  // Functions to calculate altitudes with current values
-  function currentAltTriangle(x_nm) {
-    return baseHeight + FT_PER_NM * tanGP * x_nm;
-  }
-  
-  function currentAltCurvature(x_nm) {
-    return currentAltTriangle(x_nm) + 0.8833 * x_nm * x_nm;
-  }
+        // Calculate the base height (THR + RDH)
+        const baseHeight = thrElev + rdh;
+        const tanGP = Math.tan(gpRad);
 
-  // Draw vertical grid lines every 2 NM:
-  for (let x = xMin; x <= xMax; x += 2) {
-    const x_px = getXPixel(x);
-    const vLine = document.createElementNS(svgNS, "line");
-    vLine.setAttribute("x1", x_px);
-    vLine.setAttribute("y1", 0);
-    vLine.setAttribute("x2", x_px);
-    vLine.setAttribute("y2", viewBoxHeight);
-    vLine.setAttribute("class", "grid-line");
-    svg.appendChild(vLine);
-    // Label x-axis at the bottom:
-    const xText = document.createElementNS(svgNS, "text");
-    xText.setAttribute("x", x_px);
-    xText.setAttribute("y", viewBoxHeight - 5);
-    xText.setAttribute("font-size", "10");
-    xText.setAttribute("text-anchor", "middle");
-    xText.textContent = x.toFixed(1) + " NM";
-    svg.appendChild(xText);
-  }
+        // Functions to calculate altitudes with current values
+        function currentAltTriangle(x_nm) {
+          return baseHeight + FT_PER_NM * tanGP * x_nm;
+        }
 
-  // Draw horizontal grid lines every 500 ft:
-  for (let alt_ft = yMin_ft; alt_ft <= yMax_ft; alt_ft += 500) {
-    const y_px = getYPixel(alt_ft);
-    const hLine = document.createElementNS(svgNS, "line");
-    hLine.setAttribute("x1", marginLeft);
-    hLine.setAttribute("y1", y_px);
-    hLine.setAttribute("x2", svgWidth - marginRight);
-    hLine.setAttribute("y2", y_px);
-    hLine.setAttribute("class", "grid-line");
-    svg.appendChild(hLine);
-    // Label horizontal grid line:
-    const yText = document.createElementNS(svgNS, "text");
-    yText.setAttribute("x", marginLeft - 5);
-    yText.setAttribute("y", y_px + 3);
-    yText.setAttribute("font-size", "10");
-    yText.setAttribute("text-anchor", "end");
-    yText.textContent = Math.round(alt_ft) + " ft";
-    svg.appendChild(yText);
-  }
+        function currentAltCurvature(x_nm) {
+          return currentAltTriangle(x_nm) + 0.8833 * x_nm * x_nm;
+        }
 
-  // Build point arrays for the polylines (increment = 0.1 NM):
-  let trianglePoints = "";
-  let curvaturePoints = "";
-  for (let x = xMin; x <= xMax; x += 0.1) {
-    const x_px = getXPixel(x);
-    const y_tri = getYPixel(currentAltTriangle(x));
-    const y_curv = getYPixel(currentAltCurvature(x));
-    trianglePoints += `${x_px},${y_tri} `;
-    curvaturePoints += `${x_px},${y_curv} `;
-  }
+        // Draw vertical grid lines every 2 NM:
+        for (let x = xMin; x <= xMax; x += 2) {
+          const x_px = getXPixel(x);
+          const vLine = document.createElementNS(svgNS, "line");
+          vLine.setAttribute("x1", x_px);
+          vLine.setAttribute("y1", 0);
+          vLine.setAttribute("x2", x_px);
+          vLine.setAttribute("y2", viewBoxHeight);
+          vLine.setAttribute("class", "grid-line");
+          svg.appendChild(vLine);
+          // Label x-axis at the bottom:
+          const xText = document.createElementNS(svgNS, "text");
+          xText.setAttribute("x", x_px);
+          xText.setAttribute("y", viewBoxHeight - 5);
+          xText.setAttribute("font-size", "10");
+          xText.setAttribute("text-anchor", "middle");
+          xText.textContent = x.toFixed(1) + " NM";
+          svg.appendChild(xText);
+        }
 
-  // Create red polyline for Right Triangle:
-  const triangleLine = document.createElementNS(svgNS, "polyline");
-  triangleLine.setAttribute("points", trianglePoints.trim());
-  triangleLine.setAttribute("stroke", "red");
-  triangleLine.setAttribute("stroke-width", "2");
-  triangleLine.setAttribute("fill", "none");
-  svg.appendChild(triangleLine);
+        // Draw horizontal grid lines every 500 ft:
+        for (let alt_ft = yMin_ft; alt_ft <= yMax_ft; alt_ft += 500) {
+          const y_px = getYPixel(alt_ft);
+          const hLine = document.createElementNS(svgNS, "line");
+          hLine.setAttribute("x1", marginLeft);
+          hLine.setAttribute("y1", y_px);
+          hLine.setAttribute("x2", svgWidth - marginRight);
+          hLine.setAttribute("y2", y_px);
+          hLine.setAttribute("class", "grid-line");
+          svg.appendChild(hLine);
+          // Label horizontal grid line:
+          const yText = document.createElementNS(svgNS, "text");
+          yText.setAttribute("x", marginLeft - 5);
+          yText.setAttribute("y", y_px + 3);
+          yText.setAttribute("font-size", "10");
+          yText.setAttribute("text-anchor", "end");
+          yText.textContent = Math.round(alt_ft) + " ft";
+          svg.appendChild(yText);
+        }
 
-  // Create green polyline for Earth Curvature:
-  const curvatureLine = document.createElementNS(svgNS, "polyline");
-  curvatureLine.setAttribute("points", curvaturePoints.trim());
-  curvatureLine.setAttribute("stroke", "green");
-  curvatureLine.setAttribute("stroke-width", "2");
-  curvatureLine.setAttribute("fill", "none");
-  svg.appendChild(curvatureLine);
+        // Build point arrays for the polylines (increment = 0.1 NM):
+        let trianglePoints = "";
+        let curvaturePoints = "";
+        for (let x = xMin; x <= xMax; x += 0.1) {
+          const x_px = getXPixel(x);
+          const y_tri = getYPixel(currentAltTriangle(x));
+          const y_curv = getYPixel(currentAltCurvature(x));
+          trianglePoints += `${x_px},${y_tri} `;
+          curvaturePoints += `${x_px},${y_curv} `;
+        }
 
-  // Place the "Earth Curvature" label at 4 NM and 2000 ft:
-  const greenLabel = document.createElementNS(svgNS, "text");
-  const greenX = getXPixel(4);
-  const greenY = getYPixel(currentAltCurvature(4) - 100); // Offset label slightly above the line
-  greenLabel.setAttribute("x", greenX);
-  greenLabel.setAttribute("y", greenY);
-  greenLabel.setAttribute("fill", "green");
-  greenLabel.setAttribute("font-size", "12");
-  greenLabel.textContent = "Earth Curvature";
-  svg.appendChild(greenLabel);
+        // Create red polyline for Right Triangle:
+        const triangleLine = document.createElementNS(svgNS, "polyline");
+        triangleLine.setAttribute("points", trianglePoints.trim());
+        triangleLine.setAttribute("stroke", "red");
+        triangleLine.setAttribute("stroke-width", "2");
+        triangleLine.setAttribute("fill", "none");
+        svg.appendChild(triangleLine);
 
-  // Place the "Right Triangle" label at 6 NM and 1500 ft:
-  const redLabel = document.createElementNS(svgNS, "text");
-  const redX = getXPixel(6);
-  const redY = getYPixel(currentAltTriangle(6) + 100); // Offset label slightly below the line
-  redLabel.setAttribute("x", redX);
-  redLabel.setAttribute("y", redY);
-  redLabel.setAttribute("fill", "red");
-  redLabel.setAttribute("font-size", "12");
-  redLabel.setAttribute("text-anchor", "middle");
-  redLabel.textContent = "Right Triangle";
-  svg.appendChild(redLabel);
-  
-  // Add a marker for the FAP/Fix point if distance is available
-  const distFAP = parseFloat(document.getElementById("distFAP").value);
-  if (!isNaN(distFAP) && distFAP > 0 && distFAP <= xMax) {
-    // Draw vertical line at the FAP/Fix distance
-    const fapX = getXPixel(distFAP);
-    const fapLine = document.createElementNS(svgNS, "line");
-    fapLine.setAttribute("x1", fapX);
-    fapLine.setAttribute("y1", 0);
-    fapLine.setAttribute("x2", fapX);
-    fapLine.setAttribute("y2", viewBoxHeight);
-    fapLine.setAttribute("stroke", "blue");
-    fapLine.setAttribute("stroke-width", "1.5");
-    fapLine.setAttribute("stroke-dasharray", "5,5");
-    svg.appendChild(fapLine);
-    
-    // Add markers at the calculated altitudes
-    const triY = getYPixel(currentAltTriangle(distFAP));
-    const curvY = getYPixel(currentAltCurvature(distFAP));
-    
-    // Triangle marker (red circle)
-    const triMarker = document.createElementNS(svgNS, "circle");
-    triMarker.setAttribute("cx", fapX);
-    triMarker.setAttribute("cy", triY);
-    triMarker.setAttribute("r", "5");
-    triMarker.setAttribute("fill", "red");
-    svg.appendChild(triMarker);
-    
-    // Curvature marker (green circle)
-    const curvMarker = document.createElementNS(svgNS, "circle");
-    curvMarker.setAttribute("cx", fapX);
-    curvMarker.setAttribute("cy", curvY);
-    curvMarker.setAttribute("r", "5");
-    curvMarker.setAttribute("fill", "green");
-    svg.appendChild(curvMarker);
-    
-    // Add FAP/Fix label
-    const calcType = document.querySelector('input[name="calcType"]:checked').value;
-    const fapLabel = document.createElementNS(svgNS, "text");
-    fapLabel.setAttribute("x", fapX);
-    fapLabel.setAttribute("y", viewBoxHeight - 25);
-    fapLabel.setAttribute("font-size", "12");
-    fapLabel.setAttribute("fill", "blue");
-    fapLabel.setAttribute("text-anchor", "middle");
-    fapLabel.textContent = calcType;
-    svg.appendChild(fapLabel);
-  }
-}
+        // Create green polyline for Earth Curvature:
+        const curvatureLine = document.createElementNS(svgNS, "polyline");
+        curvatureLine.setAttribute("points", curvaturePoints.trim());
+        curvatureLine.setAttribute("stroke", "green");
+        curvatureLine.setAttribute("stroke-width", "2");
+        curvatureLine.setAttribute("fill", "none");
+        svg.appendChild(curvatureLine);
+
+        // Place the "Earth Curvature" label at 4 NM and 2000 ft:
+        const greenLabel = document.createElementNS(svgNS, "text");
+        const greenX = getXPixel(4);
+        const greenY = getYPixel(currentAltCurvature(4) - 100); // Offset label slightly above the line
+        greenLabel.setAttribute("x", greenX);
+        greenLabel.setAttribute("y", greenY);
+        greenLabel.setAttribute("fill", "green");
+        greenLabel.setAttribute("font-size", "12");
+        greenLabel.textContent = "Earth Curvature";
+        svg.appendChild(greenLabel);
+
+        // Place the "Right Triangle" label at 6 NM and 1500 ft:
+        const redLabel = document.createElementNS(svgNS, "text");
+        const redX = getXPixel(6);
+        const redY = getYPixel(currentAltTriangle(6) + 100); // Offset label slightly below the line
+        redLabel.setAttribute("x", redX);
+        redLabel.setAttribute("y", redY);
+        redLabel.setAttribute("fill", "red");
+        redLabel.setAttribute("font-size", "12");
+        redLabel.setAttribute("text-anchor", "middle");
+        redLabel.textContent = "Right Triangle";
+        svg.appendChild(redLabel);
+
+        // Add a marker for the FAP/Fix point if distance is available
+        const distFAPElement = document.getElementById("distFAP");
+        const distFAP = distFAPElement ? parseFloat(distFAPElement.value) : NaN;
+        if (!isNaN(distFAP) && distFAP > 0 && distFAP <= xMax) {
+          // Draw vertical line at the FAP/Fix distance
+          const fapX = getXPixel(distFAP);
+          const fapLine = document.createElementNS(svgNS, "line");
+          fapLine.setAttribute("x1", fapX);
+          fapLine.setAttribute("y1", 0);
+          fapLine.setAttribute("x2", fapX);
+          fapLine.setAttribute("y2", viewBoxHeight);
+          fapLine.setAttribute("stroke", "blue");
+          fapLine.setAttribute("stroke-width", "1.5");
+          fapLine.setAttribute("stroke-dasharray", "5,5");
+          svg.appendChild(fapLine);
+
+          // Add markers at the calculated altitudes
+          const triY = getYPixel(currentAltTriangle(distFAP));
+          const curvY = getYPixel(currentAltCurvature(distFAP));
+
+          // Triangle marker (red circle)
+          const triMarker = document.createElementNS(svgNS, "circle");
+          triMarker.setAttribute("cx", fapX);
+          triMarker.setAttribute("cy", triY);
+          triMarker.setAttribute("r", "5");
+          triMarker.setAttribute("fill", "red");
+          svg.appendChild(triMarker);
+
+          // Curvature marker (green circle)
+          const curvMarker = document.createElementNS(svgNS, "circle");
+          curvMarker.setAttribute("cx", fapX);
+          curvMarker.setAttribute("cy", curvY);
+          curvMarker.setAttribute("r", "5");
+          curvMarker.setAttribute("fill", "green");
+          svg.appendChild(curvMarker);
+
+          // Add FAP/Fix label
+          const calcTypeElement = document.querySelector(
+            'input[name="calcType"]:checked'
+          );
+          const calcType = calcTypeElement ? calcTypeElement.value : "FAP";
+          const fapLabel = document.createElementNS(svgNS, "text");
+          fapLabel.setAttribute("x", fapX);
+          fapLabel.setAttribute("y", viewBoxHeight - 25);
+          fapLabel.setAttribute("font-size", "12");
+          fapLabel.setAttribute("fill", "blue");
+          fapLabel.setAttribute("text-anchor", "middle");
+          fapLabel.textContent = calcType;
+          svg.appendChild(fapLabel);
+        }
+      }
     </script>
   </body>
 </html>
