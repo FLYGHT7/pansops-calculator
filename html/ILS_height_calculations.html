@@ -685,29 +685,6 @@
       const xMin = 0,
         xMax = 10; // Horizontal domain in NM
       const scaleX = drawWidth / (xMax - xMin); // 650/10 = 65 px per NM
-      // We want to cover altitudes from 0 ft to 4000 ft.
-      const yMax_ft = 4000; // top (highest altitude) in ft
-      const yMin_ft = 0; // bottom in ft
-      const yMax_nm = yMax_ft / FT_PER_NM;
-      const yMin_nm = yMin_ft / FT_PER_NM;
-      // Vertical exaggeration factor = 20× horizontal scale:
-      const verticalExaggeration = 20;
-      const verticalScale = verticalExaggeration * scaleX; // 20 * 65 = 1300 px per NM (model scale)
-      const idealVerticalSpan = (yMax_nm - yMin_nm) * verticalScale; // ≈ (4000/6076.1155)*1300 ≈ 855 px.
-      // Add extra top & bottom padding in model units (we add 20 px each to viewBox height)
-      const topPadding = 20,
-        bottomPadding = 20;
-      const viewBoxHeight = idealVerticalSpan + topPadding + bottomPadding; // 855 + 40 = 895
-
-      // Conversion functions:
-      function getXPixel(x_nm) {
-        return marginLeft + (x_nm - xMin) * scaleX;
-      }
-      function getYPixel(alt_ft) {
-        // Map altitude in ft to model NM value then to px, with topPadding added.
-        const alt_nm = alt_ft / FT_PER_NM;
-        return topPadding + (yMax_nm - alt_nm) * verticalScale;
-      }
 
       function drawDiagram(
         thrElev = fixed_THR,
@@ -716,11 +693,6 @@
       ) {
         const svgNS = "http://www.w3.org/2000/svg";
         const svg = document.getElementById("diagram");
-        svg.setAttribute(
-          "viewBox",
-          `0 0 ${svgWidth} ${viewBoxHeight.toFixed(0)}`
-        );
-        svg.innerHTML = "";
 
         // Calculate the base height (THR + RDH)
         const baseHeight = thrElev + rdh;
@@ -733,6 +705,53 @@
 
         function currentAltCurvature(x_nm) {
           return currentAltTriangle(x_nm) + 0.8833 * x_nm * x_nm;
+        }
+
+        // Calculate the minimum and maximum altitudes for the diagram
+        const distFAPElement = document.getElementById("distFAP");
+        const distFAP = distFAPElement ? parseFloat(distFAPElement.value) : 10;
+        const maxDistance =
+          isNaN(distFAP) || distFAP <= 0 ? 10 : Math.min(distFAP * 1.5, 10);
+
+        // Calculate the altitude at the maximum distance
+        const maxAltitude = currentAltCurvature(maxDistance);
+
+        // Find the lowest multiple of 500 ft below the base height
+        const yMin_ft = Math.floor(baseHeight / 500) * 500;
+
+        // Find the highest multiple of 500 ft above the maximum altitude
+        const yMax_ft = Math.ceil(maxAltitude / 500) * 500;
+
+        // Convert to NM for scaling
+        const yMin_nm = yMin_ft / FT_PER_NM;
+        const yMax_nm = yMax_ft / FT_PER_NM;
+
+        // Vertical exaggeration factor = 20× horizontal scale:
+        const verticalExaggeration = 20;
+        const verticalScale = verticalExaggeration * scaleX; // 20 * 65 = 1300 px per NM (model scale)
+        const idealVerticalSpan = (yMax_nm - yMin_nm) * verticalScale;
+
+        // Add extra top & bottom padding in model units
+        const topPadding = 20,
+          bottomPadding = 20;
+        const viewBoxHeight = idealVerticalSpan + topPadding + bottomPadding;
+
+        // Set the SVG viewBox
+        svg.setAttribute(
+          "viewBox",
+          `0 0 ${svgWidth} ${viewBoxHeight.toFixed(0)}`
+        );
+        svg.innerHTML = "";
+
+        // Conversion functions:
+        function getXPixel(x_nm) {
+          return marginLeft + (x_nm - xMin) * scaleX;
+        }
+
+        function getYPixel(alt_ft) {
+          // Map altitude in ft to model NM value then to px, with topPadding added.
+          const alt_nm = alt_ft / FT_PER_NM;
+          return topPadding + (yMax_nm - alt_nm) * verticalScale;
         }
 
         // Draw vertical grid lines every 2 NM:
@@ -804,8 +823,10 @@
 
         // Place the "Earth Curvature" label at 4 NM and 2000 ft:
         const greenLabel = document.createElementNS(svgNS, "text");
-        const greenX = getXPixel(4);
-        const greenY = getYPixel(currentAltCurvature(4) - 100); // Offset label slightly above the line
+        const greenX = getXPixel(Math.min(4, maxDistance * 0.6));
+        const greenY = getYPixel(
+          currentAltCurvature(Math.min(4, maxDistance * 0.6)) - 100
+        ); // Offset label slightly above the line
         greenLabel.setAttribute("x", greenX);
         greenLabel.setAttribute("y", greenY);
         greenLabel.setAttribute("fill", "green");
@@ -815,8 +836,10 @@
 
         // Place the "Right Triangle" label at 6 NM and 1500 ft:
         const redLabel = document.createElementNS(svgNS, "text");
-        const redX = getXPixel(6);
-        const redY = getYPixel(currentAltTriangle(6) + 100); // Offset label slightly below the line
+        const redX = getXPixel(Math.min(6, maxDistance * 0.8));
+        const redY = getYPixel(
+          currentAltTriangle(Math.min(6, maxDistance * 0.8)) + 100
+        ); // Offset label slightly below the line
         redLabel.setAttribute("x", redX);
         redLabel.setAttribute("y", redY);
         redLabel.setAttribute("fill", "red");
@@ -826,8 +849,6 @@
         svg.appendChild(redLabel);
 
         // Add a marker for the FAP/Fix point if distance is available
-        const distFAPElement = document.getElementById("distFAP");
-        const distFAP = distFAPElement ? parseFloat(distFAPElement.value) : NaN;
         if (!isNaN(distFAP) && distFAP > 0 && distFAP <= xMax) {
           // Draw vertical line at the FAP/Fix distance
           const fapX = getXPixel(distFAP);
