@@ -596,6 +596,7 @@
       // --- Copy to Word Function ---
       function copyToWordDocument(type) {
         let htmlContent = "";
+        let textRows = [];
         if (type === "both") {
           const calcType =
             document.querySelector('input[name="calcType"]:checked').value ||
@@ -613,7 +614,7 @@
             document.getElementById("distanceA").textContent || "N/A";
           const distanceB =
             document.getElementById("distanceB").textContent || "N/A";
-          let deltaHValue =
+          const deltaHValue =
             document.getElementById("deltaHOutput").textContent || "0.0000";
 
           htmlContent = `
@@ -636,24 +637,24 @@
           }
 
           htmlContent += `</table>`;
+
+          textRows = [
+            ["Parameter", "Value"],
+            ["Point/Fix Type", `${calcType}`],
+            ["THR Elevation", `${thrElev} ${thrElevUnit}`],
+            ["RDH", `${rdh} ${rdhUnit}`],
+            ["FAP Altitude", `${parseFloat(fapAltitude).toFixed(2)} ft`],
+            ["Glidepath Angle", `${parseFloat(glideAngle).toFixed(2)}°`],
+            ["Right Angle Computation Distance", `${distanceA} NM`],
+            ["Considering Earth Curvature Distance", `${distanceB} NM`],
+          ];
+          if (parseFloat(deltaHValue) > 0) {
+            textRows.push(["RDH >15m Adjustment", `${deltaHValue} ft`]);
+          }
         }
 
         const blob = new Blob([htmlContent], { type: "text/html" });
-        // Plain-text fallback
-        const rows = [
-          ["Parameter", "Value"],
-          ["Point/Fix Type", `${calcType}`],
-          ["THR Elevation", `${thrElev} ${thrElevUnit}`],
-          ["RDH", `${rdh} ${rdhUnit}`],
-          ["FAP Altitude", `${parseFloat(fapAltitude).toFixed(2)} ft`],
-          ["Glidepath Angle", `${parseFloat(glideAngle).toFixed(2)}°`],
-          ["Right Angle Computation Distance", `${distanceA} NM`],
-          ["Considering Earth Curvature Distance", `${distanceB} NM`],
-        ];
-        if (parseFloat(deltaHValue) > 0) {
-          rows.push(["RDH >15m Adjustment", `${deltaHValue} ft`]);
-        }
-        const textContent = rows.map((r) => r.join("\t")).join("\n");
+        const textContent = textRows.map((r) => r.join("\t")).join("\n");
         const textBlob = new Blob([textContent], { type: "text/plain" });
         navigator.clipboard
           .write([

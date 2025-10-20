@@ -630,6 +630,7 @@
       // --- Copy to Word Function ---
       function copyToWordDocument(type) {
         let htmlContent = "";
+        let textRows = [];
         if (type === "both") {
           const calcType =
             document.querySelector('input[name="calcType"]:checked').value ||
@@ -646,7 +647,7 @@
             document.getElementById("fapAltitudeA").textContent || "N/A";
           const methodB =
             document.getElementById("fapAltitudeB").textContent || "N/A";
-          let deltaHValue =
+          const deltaHValue =
             document.getElementById("deltaHOutput").textContent || "0.0000";
 
           htmlContent = `
@@ -669,27 +670,28 @@
           }
 
           htmlContent += `</table>`;
+
+          // Construct a plain-text version from the same values
+          textRows = [
+            ["Parameter", "Value"],
+            ["Point/Fix Type", `${calcType}`],
+            ["THR Elevation", `${thrElev} ${thrElevUnit}`],
+            ["RDH", `${rdh} ${rdhUnit}`],
+            [
+              `Distance to the ${calcType}`,
+              `${parseFloat(distFAP).toFixed(2)} NM`,
+            ],
+            ["Glidepath Angle", `${parseFloat(glideAngle).toFixed(2)}°`],
+            ["Right Angle Computation FAP Altitude", `${methodA} ft`],
+            ["Considering Earth Curvature FAP Altitude", `${methodB} ft`],
+          ];
+          if (parseFloat(deltaHValue) > 0) {
+            textRows.push(["RDH >15m Adjustment", `${deltaHValue} ft`]);
+          }
         }
 
         const blob = new Blob([htmlContent], { type: "text/html" });
-        // Construct a plain-text version from the same values
-        const rows = [
-          ["Parameter", "Value"],
-          ["Point/Fix Type", `${calcType}`],
-          ["THR Elevation", `${thrElev} ${thrElevUnit}`],
-          ["RDH", `${rdh} ${rdhUnit}`],
-          [
-            "Distance to the ${calcType}",
-            `${parseFloat(distFAP).toFixed(2)} NM`,
-          ],
-          ["Glidepath Angle", `${parseFloat(glideAngle).toFixed(2)}°`],
-          ["Right Angle Computation FAP Altitude", `${methodA} ft`],
-          ["Considering Earth Curvature FAP Altitude", `${methodB} ft`],
-        ];
-        if (parseFloat(deltaHValue) > 0) {
-          rows.push(["RDH >15m Adjustment", `${deltaHValue} ft`]);
-        }
-        const textContent = rows.map((r) => r.join("\t")).join("\n");
+        const textContent = textRows.map((r) => r.join("\t")).join("\n");
         const textBlob = new Blob([textContent], { type: "text/plain" });
         navigator.clipboard
           .write([
