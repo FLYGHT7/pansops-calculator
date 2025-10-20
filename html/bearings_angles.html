@@ -1,429 +1,788 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Azimuth/Bearing Calculations</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            primary: {
-              50: "#f0f9ff",
-              100: "#e0f2fe",
-              200: "#bae6fd",
-              300: "#7dd3fc",
-              400: "#38bdf8",
-              500: "#0ea5e9",
-              600: "#0284c7",
-              700: "#0369a1",
-              800: "#075985",
-              900: "#0c4a6e",
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Azimuth/Bearing Calculations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: "#f0f9ff",
+                100: "#e0f2fe",
+                200: "#bae6fd",
+                300: "#7dd3fc",
+                400: "#38bdf8",
+                500: "#0ea5e9",
+                600: "#0284c7",
+                700: "#0369a1",
+                800: "#075985",
+                900: "#0c4a6e",
+              },
             },
           },
         },
-      },
-    };
-  </script>
-  <link rel="stylesheet" href="dark-mode.css" />
-  <style>
-    /* Styles for the SVG axes and grid lines */
-    .axis {
-      stroke: #333;
-      stroke-width: 1;
-    }
-    .grid-line {
-      stroke: #ccc;
-      stroke-width: 0.5;
-    }
+      };
+    </script>
+    <link rel="stylesheet" href="dark-mode.css" />
+    <style>
+      /* Styles for the SVG axes and grid lines */
+      .axis {
+        stroke: #333;
+        stroke-width: 1;
+      }
+      .grid-line {
+        stroke: #ccc;
+        stroke-width: 0.5;
+      }
 
-    /* Dark mode specific SVG styles */
-    html.dark .axis {
-      stroke: #ccc;
-    }
-    html.dark .grid-line {
-      stroke: #555;
-    }
-  </style>
-</head>
-<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4">
-  <!-- Main Container -->
-  <div class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
-    <h1 class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 sm:h-8 sm:w-8 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <polyline points="16.2 7.8 12 12 8 16"></polyline>
-        <line x1="2" y1="12" x2="22" y2="12"></line>
-        <line x1="12" y1="2" x2="12" y2="22"></line>
-      </svg>
-      Azimuth/Bearing Calculations
-    </h1>
-    
-    <!-- Global Load/Save Buttons -->
-    <div class="flex flex-wrap justify-end mb-6 gap-3">
-      <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
-      <button onclick="saveParameters()" class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-          <polyline points="17 21 17 13 7 13 7 21"></polyline>
-          <polyline points="7 3 7 8 15 8"></polyline>
+      /* Dark mode specific SVG styles */
+      html.dark .axis {
+        stroke: #ccc;
+      }
+      html.dark .grid-line {
+        stroke: #555;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4"
+  >
+    <!-- Main Container -->
+    <div
+      class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
+    >
+      <h1
+        class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-7 w-7 sm:h-8 sm:w-8 mr-2"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="16.2 7.8 12 12 8 16"></polyline>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <line x1="12" y1="2" x2="12" y2="22"></line>
         </svg>
-        Save Parameters
-      </button>
-      <button onclick="document.getElementById('loadFile').click()" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="17 8 12 3 7 8"></polyline>
-          <line x1="12" y1="3" x2="12" y2="15"></line>
-        </svg>
-        Load Parameters
-      </button>
-    </div>
-    
-    <!-- 1. Input Type and Bearing Input -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">Select Input Type</label>
-        <div class="flex flex-col space-y-2 mt-1">
-          <label class="inline-flex items-center">
-            <input type="radio" name="inputType" value="magnetic" checked class="h-5 w-5 text-primary-600 focus:ring-primary-500 dark:bg-gray-700" />
-            <span class="ml-2 text-gray-700 dark:text-gray-300">Magnetic Bearing</span>
-          </label>
-          <label class="inline-flex items-center">
-            <input type="radio" name="inputType" value="true" class="h-5 w-5 text-primary-600 focus:ring-primary-500 dark:bg-gray-700" />
-            <span class="ml-2 text-gray-700 dark:text-gray-300">True Azimuth</span>
-          </label>
-        </div>
-      </div>
-      <div class="space-y-2">
-        <label id="bearingLabel" class="block font-medium text-gray-700 dark:text-gray-300">Magnetic Bearing (°)</label>
-        <input id="bearing" type="number" step="0.0001" placeholder="Enter bearing" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" />
-      </div>
-    </div>
-    
-    <!-- 2. Magnetic Variation and Date -->
-    <div class="mt-6">
-      <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">Magnetic Variation</h2>
-      <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300">Degrees</label>
-          <input id="var_deg" type="number" step="1" placeholder="deg" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" />
-        </div>
-        <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300">Minutes</label>
-          <input id="var_min" type="number" step="1" placeholder="min (opt.)" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" />
-        </div>
-        <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300">Seconds</label>
-          <input id="var_sec" type="number" step="0.01" placeholder="sec (opt.)" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" />
-        </div>
-        <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300">Direction</label>
-          <select id="var_dir" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
-            <option value="E" selected>E</option>
-            <option value="W">W</option>
-          </select>
-        </div>
-        <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300">Date (YYYY-MM-DD)</label>
-          <input id="var_date" type="text" placeholder="YYYY-MM-DD" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" />
-        </div>
-      </div>
-    </div>
-    
-    <!-- 3. Option to Include QGIS Angle -->
-    <div class="mt-4 flex items-center">
-      <input type="checkbox" id="includeQGIS" checked class="h-5 w-5 text-primary-600 focus:ring-primary-500 dark:bg-gray-700 mr-2" />
-      <label for="includeQGIS" class="font-medium text-gray-700 dark:text-gray-300">Include QGIS Angle</label>
-    </div>
-    
-    <!-- 4. Calculate Button -->
-    <div class="flex justify-center mt-6">
-      <button id="calcBtn" onclick="calculateBearing()" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-        </svg>
-        Calculate True Azimuth
-      </button>
-    </div>
-    
-    <!-- 5. Results Output Section -->
-    <div id="resultsOutput" class="hidden mt-8 bg-gray-50 dark:bg-gray-800/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-      <h2 class="text-xl font-bold text-green-600 dark:text-green-400 mb-4">Results</h2>
-      
-      <!-- Output values in a grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div id="magneticBlock">
-          <div class="bg-white dark:bg-gray-800/80 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Magnetic Bearing (Input)</p>
-            <p class="text-lg font-semibold dark:text-white"><span id="magneticBearing"></span>°</p>
-          </div>
-          <div class="bg-white dark:bg-gray-800/80 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm mt-4">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Calculated True Azimuth</p>
-            <p class="text-lg font-semibold dark:text-white"><span id="trueAzimuth"></span>°</p>
-          </div>
-        </div>
-        
-        <div id="trueBlock" class="hidden">
-          <div class="bg-white dark:bg-gray-800/80 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-            <p class="text-sm text-gray-500 dark:text-gray-400">True Azimuth (Input)</p>
-            <p class="text-lg font-semibold dark:text-white"><span id="trueAzimuthInput"></span>°</p>
-          </div>
-          <div class="bg-white dark:bg-gray-800/80 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm mt-4">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Calculated Magnetic Bearing</p>
-            <p class="text-lg font-semibold dark:text-white"><span id="magneticBearingCalc"></span>°</p>
-          </div>
-        </div>
-      </div>
-      
-      <div id="qgisRow" class="bg-white dark:bg-gray-800/80 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-        <p class="text-sm text-gray-500 dark:text-gray-400">QGIS Angle</p>
-        <p class="text-lg font-semibold dark:text-white"><span id="qgisAngle"></span>°</p>
-      </div>
-      
-      <div class="mt-6 flex justify-end">
-        <button onclick="copyToWordDocument('both')" class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+        <span data-i18n="bearings.title">Azimuth/Bearing Calculations</span>
+      </h1>
+
+      <!-- Global Load/Save Buttons -->
+      <div class="flex flex-wrap justify-end mb-6 gap-3">
+        <input
+          id="loadFile"
+          type="file"
+          accept=".json"
+          class="hidden"
+          onchange="loadParameters(event)"
+        />
+        <button
+          onclick="saveParameters()"
+          class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-1"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+            ></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
           </svg>
-          Copy Results as Table
+          <span data-i18n="common.save">Save Parameters</span>
+        </button>
+        <button
+          onclick="document.getElementById('loadFile').click()"
+          class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-1"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <span data-i18n="common.load">Load Parameters</span>
         </button>
       </div>
+
+      <!-- 1. Input Type and Bearing Input -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="space-y-2">
+          <label
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="bearings.inputType"
+            >Select Input Type</label
+          >
+          <div class="flex flex-col space-y-2 mt-1">
+            <label class="inline-flex items-center">
+              <input
+                type="radio"
+                name="inputType"
+                value="magnetic"
+                checked
+                class="h-5 w-5 text-primary-600 focus:ring-primary-500 dark:bg-gray-700"
+              />
+              <span
+                class="ml-2 text-gray-700 dark:text-gray-300"
+                data-i18n="bearings.magneticBearingInput"
+                >Magnetic Bearing (Input)</span
+              >
+            </label>
+            <label class="inline-flex items-center">
+              <input
+                type="radio"
+                name="inputType"
+                value="true"
+                class="h-5 w-5 text-primary-600 focus:ring-primary-500 dark:bg-gray-700"
+              />
+              <span
+                class="ml-2 text-gray-700 dark:text-gray-300"
+                data-i18n="bearings.trueAzimuthInput"
+                >True Azimuth (Input)</span
+              >
+            </label>
+          </div>
+        </div>
+        <div class="space-y-2">
+          <label
+            id="bearingLabel"
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            >Magnetic Bearing (°)</label
+          >
+          <input
+            id="bearing"
+            type="number"
+            step="0.0001"
+            placeholder="Enter bearing"
+            data-i18n="bearings.phEnterBearing"
+            data-i18n-attr="placeholder"
+            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+      </div>
+
+      <!-- 2. Magnetic Variation and Date -->
+      <div class="mt-6">
+        <h2
+          class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2"
+          data-i18n="bearings.variation"
+        >
+          Magnetic Variation
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div class="space-y-2">
+            <label
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="bearings.degrees"
+              >Degrees</label
+            >
+            <input
+              id="var_deg"
+              type="number"
+              step="1"
+              placeholder="deg"
+              data-i18n="bearings.phDeg"
+              data-i18n-attr="placeholder"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+          <div class="space-y-2">
+            <label
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="bearings.minutes"
+              >Minutes</label
+            >
+            <input
+              id="var_min"
+              type="number"
+              step="1"
+              placeholder="min (opt.)"
+              data-i18n="bearings.phMinOpt"
+              data-i18n-attr="placeholder"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+          <div class="space-y-2">
+            <label
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="bearings.seconds"
+              >Seconds</label
+            >
+            <input
+              id="var_sec"
+              type="number"
+              step="0.01"
+              placeholder="sec (opt.)"
+              data-i18n="bearings.phSecOpt"
+              data-i18n-attr="placeholder"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+          <div class="space-y-2">
+            <label
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="bearings.variationDirection"
+              >Direction</label
+            >
+            <select
+              id="var_dir"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            >
+              <option value="E" selected>E</option>
+              <option value="W">W</option>
+            </select>
+          </div>
+          <div class="space-y-2">
+            <label
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="bearings.date"
+              >Date (YYYY-MM-DD)</label
+            >
+            <input
+              id="var_date"
+              type="text"
+              placeholder="YYYY-MM-DD"
+              data-i18n="bearings.phDate"
+              data-i18n-attr="placeholder"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Option to Include QGIS Angle -->
+      <div class="mt-4 flex items-center">
+        <input
+          type="checkbox"
+          id="includeQGIS"
+          checked
+          class="h-5 w-5 text-primary-600 focus:ring-primary-500 dark:bg-gray-700 mr-2"
+        />
+        <label
+          for="includeQGIS"
+          class="font-medium text-gray-700 dark:text-gray-300"
+          data-i18n="bearings.includeQgis"
+          >Include QGIS Angle</label
+        >
+      </div>
+
+      <!-- 4. Calculate Button -->
+      <div class="flex justify-center mt-6">
+        <button
+          id="calcBtn"
+          onclick="calculateBearing()"
+          class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          <span id="calcBtnText" data-i18n="bearings.calcTrueAzimuth"
+            >Calculate True Azimuth</span
+          >
+        </button>
+      </div>
+
+      <!-- 5. Results Output Section -->
+      <div
+        id="resultsOutput"
+        class="hidden mt-8 bg-gray-50 dark:bg-gray-800/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700"
+      >
+        <h2
+          class="text-xl font-bold text-green-600 dark:text-green-400 mb-4"
+          data-i18n="bearings.resultsTitle"
+        >
+          Results
+        </h2>
+
+        <!-- Output values in a grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div id="magneticBlock">
+            <div
+              class="bg-white dark:bg-gray-800/80 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm"
+            >
+              <p
+                class="text-sm text-gray-500 dark:text-gray-400"
+                data-i18n="bearings.magneticBearingInput"
+              >
+                Magnetic Bearing (Input)
+              </p>
+              <p class="text-lg font-semibold dark:text-white">
+                <span id="magneticBearing"></span>°
+              </p>
+            </div>
+            <div
+              class="bg-white dark:bg-gray-800/80 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm mt-4"
+            >
+              <p
+                class="text-sm text-gray-500 dark:text-gray-400"
+                data-i18n="bearings.calculatedTrueAzimuth"
+              >
+                Calculated True Azimuth
+              </p>
+              <p class="text-lg font-semibold dark:text-white">
+                <span id="trueAzimuth"></span>°
+              </p>
+            </div>
+          </div>
+
+          <div id="trueBlock" class="hidden">
+            <div
+              class="bg-white dark:bg-gray-800/80 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm"
+            >
+              <p
+                class="text-sm text-gray-500 dark:text-gray-400"
+                data-i18n="bearings.trueAzimuthInput"
+              >
+                True Azimuth (Input)
+              </p>
+              <p class="text-lg font-semibold dark:text-white">
+                <span id="trueAzimuthInput"></span>°
+              </p>
+            </div>
+            <div
+              class="bg-white dark:bg-gray-800/80 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm mt-4"
+            >
+              <p
+                class="text-sm text-gray-500 dark:text-gray-400"
+                data-i18n="bearings.calculatedMagneticBearing"
+              >
+                Calculated Magnetic Bearing
+              </p>
+              <p class="text-lg font-semibold dark:text-white">
+                <span id="magneticBearingCalc"></span>°
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="qgisRow"
+          class="bg-white dark:bg-gray-800/80 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm"
+        >
+          <p
+            class="text-sm text-gray-500 dark:text-gray-400"
+            data-i18n="bearings.qgisAngle"
+          >
+            QGIS Angle
+          </p>
+          <p class="text-lg font-semibold dark:text-white">
+            <span id="qgisAngle"></span>°
+          </p>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button
+            onclick="copyToWordDocument('both')"
+            class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-2"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+              ></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+            <span data-i18n="common.copyTable">Copy Results as Table</span>
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
-  <!-- End Main Container -->
-  
-  <!-- JavaScript Section -->
-  <script>
-    // Check for dark mode on page load
-    document.addEventListener("DOMContentLoaded", function () {
-      // Check if parent has set dark mode
-      try {
-        if (window.parent && window.parent.document.documentElement.classList.contains("dark")) {
-          document.documentElement.classList.add("dark");
-        }
-      } catch (e) {
-        console.log("Running in standalone mode");
-      }
-    });
-    
-    // Normalize an angle to [0, 360)
-    function normalizeAngle(angle) {
-      return ((angle % 360) + 360) % 360;
-    }
-    
-    // Process the date input: if only a 4-digit year is provided, assume YYYY-01-01.
-    function processDate(inputStr) {
-      const trimmed = inputStr.trim();
-      if(trimmed === "") return "";
-      if(trimmed.length === 4 && /^\d{4}$/.test(trimmed)) {
-        return trimmed + "-01-01";
-      }
-      return trimmed;
-    }
-    
-    // Update the Bearing label and Calculate button text based on selected Input Type.
-    function updateBearingLabelAndButton() {
-      const inputType = document.querySelector('input[name="inputType"]:checked').value;
-      const bearingLabel = document.getElementById("bearingLabel");
-      const calcBtn = document.getElementById("calcBtn");
-      const magneticBlock = document.getElementById("magneticBlock");
-      const trueBlock = document.getElementById("trueBlock");
-      if (inputType === "magnetic") {
-        bearingLabel.textContent = "Magnetic Bearing (°)";
-        calcBtn.textContent = "Calculate True Azimuth";
-        magneticBlock.classList.remove("hidden");
-        trueBlock.classList.add("hidden");
-      } else {
-        bearingLabel.textContent = "True Azimuth (°)";
-        calcBtn.textContent = "Calculate Magnetic Bearing";
-        magneticBlock.classList.add("hidden");
-        trueBlock.classList.remove("hidden");
-      }
-    }
-    
-    // Attach event listeners for input type changes.
-    document.querySelectorAll('input[name="inputType"]').forEach(radio => {
-      radio.addEventListener("change", updateBearingLabelAndButton);
-    });
-    updateBearingLabelAndButton();
-    
-    // Main calculation function for bearing conversion.
-    function calculateBearing() {
-      const inputType = document.querySelector('input[name="inputType"]:checked').value;
-      const bearingInput = parseFloat(document.getElementById("bearing").value);
-      if (isNaN(bearingInput)) {
-        alert("Please enter a valid bearing value.");
-        return;
-      }
-      
-      const varDeg = parseFloat(document.getElementById("var_deg").value) || 0;
-      const varMin = parseFloat(document.getElementById("var_min").value) || 0;
-      const varSec = parseFloat(document.getElementById("var_sec").value) || 0;
-      const variation = varDeg + (varMin / 60) + (varSec / 3600);
-      
-      const varDir = document.getElementById("var_dir").value;
-      const signedVariation = (varDir === "W") ? -variation : variation;
-      
-      let magneticBearing, trueAzimuth;
-      if (inputType === "magnetic") {
-        magneticBearing = bearingInput;
-        trueAzimuth = normalizeAngle(bearingInput + signedVariation);
-      } else {
-        trueAzimuth = bearingInput;
-        magneticBearing = normalizeAngle(bearingInput - signedVariation);
-      }
-      
-      let diff = Math.abs(trueAzimuth - 450);
-      let qgisAngle = (diff < 360 ? diff : diff - 360);
-      qgisAngle = normalizeAngle(qgisAngle);
-      
-      if (inputType === "magnetic") {
-        document.getElementById("magneticBearing").textContent = magneticBearing.toFixed(4);
-        document.getElementById("trueAzimuth").textContent = trueAzimuth.toFixed(4);
-      } else {
-        document.getElementById("trueAzimuthInput").textContent = trueAzimuth.toFixed(4);
-        document.getElementById("magneticBearingCalc").textContent = magneticBearing.toFixed(4);
-      }
-      document.getElementById("qgisAngle").textContent = qgisAngle.toFixed(4);
-      
-      // Show/hide QGIS row based on checkbox
-      if (document.getElementById("includeQGIS").checked) {
-        document.getElementById("qgisRow").classList.remove("hidden");
-      } else {
-        document.getElementById("qgisRow").classList.add("hidden");
-      }
-      
-      // Reveal the results
-      document.getElementById("resultsOutput").classList.remove("hidden");
-    }
-    
-    // Save parameters as JSON.
-    function saveParameters() {
-      const params = {
-        "var_deg": document.getElementById("var_deg").value || "",
-        "var_min": document.getElementById("var_min").value || "",
-        "var_sec": document.getElementById("var_sec").value || "",
-        "var_dir": document.getElementById("var_dir").value || "E",
-        "var_date": processDate(document.getElementById("var_date").value || ""),
-        "bearing": document.getElementById("bearing").value || "",
-        "inputType": document.querySelector('input[name="inputType"]:checked').value || "magnetic",
-        "includeQGIS": document.getElementById("includeQGIS").checked
-      };
-      const now = new Date();
-      const timestamp = now.toISOString().replace(/[:.]/g, "-");
-      const filename = `${timestamp}_bearings_angles.json`;
-      const blob = new Blob([JSON.stringify(params, null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = filename;
-      a.click();
-    }
-    
-    // Load parameters from JSON.
-    function loadParameters(event) {
-      const file = event.target.files[0];
-      if (!file) {
-        alert("Please select a valid JSON file.");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = function(e) {
+    <!-- End Main Container -->
+
+    <!-- JavaScript Section -->
+    <script>
+      // Check for dark mode on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check if parent has set dark mode
         try {
-          const data = JSON.parse(e.target.result);
-          if (data["var_deg"] !== undefined) document.getElementById("var_deg").value = data["var_deg"];
-          if (data["var_min"] !== undefined) document.getElementById("var_min").value = data["var_min"];
-          if (data["var_sec"] !== undefined) document.getElementById("var_sec").value = data["var_sec"];
-          if (data["var_dir"] !== undefined) document.getElementById("var_dir").value = data["var_dir"];
-          if (data["var_date"] !== undefined) document.getElementById("var_date").value = data["var_date"];
-          if (data["bearing"] !== undefined) document.getElementById("bearing").value = data["bearing"];
-          if (data["inputType"] !== undefined) {
-            const radioToCheck = document.querySelector(`input[name="inputType"][value="${data["inputType"]}"]`);
-            if (radioToCheck) {
-              radioToCheck.checked = true;
-            }
+          if (
+            window.parent &&
+            window.parent.document.documentElement.classList.contains("dark")
+          ) {
+            document.documentElement.classList.add("dark");
           }
-          if (data["includeQGIS"] !== undefined) {
-            document.getElementById("includeQGIS").checked = data["includeQGIS"];
-          }
-          updateBearingLabelAndButton();
-          alert("Parameters successfully loaded!");
-        } catch (err) {
-          alert("Invalid JSON file. Please upload a valid parameters file.");
+        } catch (e) {
+          console.log("Running in standalone mode");
         }
-      };
-      reader.readAsText(file);
-    }
-    
-    // Copy results as an HTML table for pasting into Word.
-    function copyToWordDocument(type) {
-      let htmlContent = "";
-      if (type === "both") {
-        const inputType = document.querySelector('input[name="inputType"]:checked').value;
-        const bearingVal = parseFloat(document.getElementById("bearing").value) || 0;
-  
-        // Compute variation.
-        const var_deg = parseFloat(document.getElementById("var_deg").value) || 0;
-        const var_min = parseFloat(document.getElementById("var_min").value) || 0;
-        const var_sec = parseFloat(document.getElementById("var_sec").value) || 0;
-        let variation = var_deg + (var_min / 60) + (var_sec / 3600);
-        const var_dir = document.getElementById("var_dir").value;
-        if (var_dir === "W") { variation = -variation; }
-  
+      });
+
+      // Normalize an angle to [0, 360)
+      function normalizeAngle(angle) {
+        return ((angle % 360) + 360) % 360;
+      }
+
+      // Process the date input: if only a 4-digit year is provided, assume YYYY-01-01.
+      function processDate(inputStr) {
+        const trimmed = inputStr.trim();
+        if (trimmed === "") return "";
+        if (trimmed.length === 4 && /^\d{4}$/.test(trimmed)) {
+          return trimmed + "-01-01";
+        }
+        return trimmed;
+      }
+
+      // Update the Bearing label and Calculate button text based on selected Input Type.
+      function updateBearingLabelAndButton() {
+        const inputType = document.querySelector(
+          'input[name="inputType"]:checked'
+        ).value;
+        const bearingLabel = document.getElementById("bearingLabel");
+        const calcBtn = document.getElementById("calcBtn");
+        const magneticBlock = document.getElementById("magneticBlock");
+        const trueBlock = document.getElementById("trueBlock");
+        if (inputType === "magnetic") {
+          bearingLabel.textContent =
+            window.I18N && I18N.get
+              ? I18N.get(
+                  "bearings.bearingLabelMagnetic",
+                  "Magnetic Bearing (°)"
+                )
+              : "Magnetic Bearing (°)";
+          const btnText = document.getElementById("calcBtnText");
+          if (btnText)
+            btnText.textContent =
+              window.I18N && I18N.get
+                ? I18N.get("bearings.calcTrueAzimuth", "Calculate True Azimuth")
+                : "Calculate True Azimuth";
+          magneticBlock.classList.remove("hidden");
+          trueBlock.classList.add("hidden");
+        } else {
+          bearingLabel.textContent =
+            window.I18N && I18N.get
+              ? I18N.get("bearings.bearingLabelTrue", "True Azimuth (°)")
+              : "True Azimuth (°)";
+          const btnText = document.getElementById("calcBtnText");
+          if (btnText)
+            btnText.textContent =
+              window.I18N && I18N.get
+                ? I18N.get(
+                    "bearings.calcMagneticBearing",
+                    "Calculate Magnetic Bearing"
+                  )
+                : "Calculate Magnetic Bearing";
+          magneticBlock.classList.add("hidden");
+          trueBlock.classList.remove("hidden");
+        }
+      }
+
+      // Attach event listeners for input type changes.
+      document.querySelectorAll('input[name="inputType"]').forEach((radio) => {
+        radio.addEventListener("change", updateBearingLabelAndButton);
+      });
+      updateBearingLabelAndButton();
+
+      // Main calculation function for bearing conversion.
+      function calculateBearing() {
+        const inputType = document.querySelector(
+          'input[name="inputType"]:checked'
+        ).value;
+        const bearingInput = parseFloat(
+          document.getElementById("bearing").value
+        );
+        if (isNaN(bearingInput)) {
+          alert(
+            window.I18N && I18N.get
+              ? I18N.get(
+                  "messages.invalidBearing",
+                  "Please enter a valid bearing value."
+                )
+              : "Please enter a valid bearing value."
+          );
+          return;
+        }
+
+        const varDeg =
+          parseFloat(document.getElementById("var_deg").value) || 0;
+        const varMin =
+          parseFloat(document.getElementById("var_min").value) || 0;
+        const varSec =
+          parseFloat(document.getElementById("var_sec").value) || 0;
+        const variation = varDeg + varMin / 60 + varSec / 3600;
+
+        const varDir = document.getElementById("var_dir").value;
+        const signedVariation = varDir === "W" ? -variation : variation;
+
         let magneticBearing, trueAzimuth;
         if (inputType === "magnetic") {
-          magneticBearing = bearingVal;
-          trueAzimuth = normalizeAngle(bearingVal + variation);
+          magneticBearing = bearingInput;
+          trueAzimuth = normalizeAngle(bearingInput + signedVariation);
         } else {
-          trueAzimuth = bearingVal;
-          magneticBearing = normalizeAngle(bearingVal - variation);
+          trueAzimuth = bearingInput;
+          magneticBearing = normalizeAngle(bearingInput - signedVariation);
         }
-        magneticBearing = normalizeAngle(magneticBearing);
-        trueAzimuth = normalizeAngle(trueAzimuth);
-  
-        // Compute QGIS Angle.
+
         let diff = Math.abs(trueAzimuth - 450);
-        let qgisAngle = (diff < 360 ? diff : diff - 360);
+        let qgisAngle = diff < 360 ? diff : diff - 360;
         qgisAngle = normalizeAngle(qgisAngle);
-  
-        // Process the date.
-        let varDate = processDate(document.getElementById("var_date").value || "");
-  
-        let tableRows = "";
+
         if (inputType === "magnetic") {
-          tableRows += `<tr><td>Input Type</td><td>Magnetic Bearing</td></tr>`;
-          tableRows += `<tr><td>Magnetic Bearing (Input)</td><td>${bearingVal.toFixed(4)}°</td></tr>`;
-          tableRows += `<tr><td>Calculated True Azimuth</td><td>${trueAzimuth.toFixed(4)}°</td></tr>`;
+          document.getElementById("magneticBearing").textContent =
+            magneticBearing.toFixed(4);
+          document.getElementById("trueAzimuth").textContent =
+            trueAzimuth.toFixed(4);
         } else {
-          tableRows += `<tr><td>Input Type</td><td>True Azimuth</td></tr>`;
-          tableRows += `<tr><td>True Azimuth (Input)</td><td>${trueAzimuth.toFixed(4)}°</td></tr>`;
-          tableRows += `<tr><td>Calculated Magnetic Bearing</td><td>${magneticBearing.toFixed(4)}°</td></tr>`;
+          document.getElementById("trueAzimuthInput").textContent =
+            trueAzimuth.toFixed(4);
+          document.getElementById("magneticBearingCalc").textContent =
+            magneticBearing.toFixed(4);
         }
-        tableRows += `<tr><td>Magnetic Variation</td><td>${variation.toFixed(4)}°</td></tr>`;
-        tableRows += `<tr><td>Variation Direction</td><td>${var_dir}</td></tr>`;
-        if (varDate) {
-          tableRows += `<tr><td>Date</td><td>${varDate}</td></tr>`;
-        }
+        document.getElementById("qgisAngle").textContent = qgisAngle.toFixed(4);
+
+        // Show/hide QGIS row based on checkbox
         if (document.getElementById("includeQGIS").checked) {
-          tableRows += `<tr><td>QGIS Angle</td><td>${qgisAngle.toFixed(4)}°</td></tr>`;
+          document.getElementById("qgisRow").classList.remove("hidden");
+        } else {
+          document.getElementById("qgisRow").classList.add("hidden");
         }
-  
-        htmlContent = `
+
+        // Reveal the results
+        document.getElementById("resultsOutput").classList.remove("hidden");
+      }
+
+      // Save parameters as JSON.
+      function saveParameters() {
+        const params = {
+          var_deg: document.getElementById("var_deg").value || "",
+          var_min: document.getElementById("var_min").value || "",
+          var_sec: document.getElementById("var_sec").value || "",
+          var_dir: document.getElementById("var_dir").value || "E",
+          var_date: processDate(
+            document.getElementById("var_date").value || ""
+          ),
+          bearing: document.getElementById("bearing").value || "",
+          inputType:
+            document.querySelector('input[name="inputType"]:checked').value ||
+            "magnetic",
+          includeQGIS: document.getElementById("includeQGIS").checked,
+        };
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[:.]/g, "-");
+        const filename = `${timestamp}_bearings_angles.json`;
+        const blob = new Blob([JSON.stringify(params, null, 2)], {
+          type: "application/json",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+      }
+
+      // Load parameters from JSON.
+      function loadParameters(event) {
+        const file = event.target.files[0];
+        if (!file) {
+          alert("Please select a valid JSON file.");
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const data = JSON.parse(e.target.result);
+            if (data["var_deg"] !== undefined)
+              document.getElementById("var_deg").value = data["var_deg"];
+            if (data["var_min"] !== undefined)
+              document.getElementById("var_min").value = data["var_min"];
+            if (data["var_sec"] !== undefined)
+              document.getElementById("var_sec").value = data["var_sec"];
+            if (data["var_dir"] !== undefined)
+              document.getElementById("var_dir").value = data["var_dir"];
+            if (data["var_date"] !== undefined)
+              document.getElementById("var_date").value = data["var_date"];
+            if (data["bearing"] !== undefined)
+              document.getElementById("bearing").value = data["bearing"];
+            if (data["inputType"] !== undefined) {
+              const radioToCheck = document.querySelector(
+                `input[name="inputType"][value="${data["inputType"]}"]`
+              );
+              if (radioToCheck) {
+                radioToCheck.checked = true;
+              }
+            }
+            if (data["includeQGIS"] !== undefined) {
+              document.getElementById("includeQGIS").checked =
+                data["includeQGIS"];
+            }
+            updateBearingLabelAndButton();
+            alert("Parameters successfully loaded!");
+          } catch (err) {
+            alert("Invalid JSON file. Please upload a valid parameters file.");
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      // Copy results as an HTML table for pasting into Word.
+      function copyToWordDocument(type) {
+        let htmlContent = "";
+        if (type === "both") {
+          const inputType = document.querySelector(
+            'input[name="inputType"]:checked'
+          ).value;
+          const bearingVal =
+            parseFloat(document.getElementById("bearing").value) || 0;
+
+          // Compute variation.
+          const var_deg =
+            parseFloat(document.getElementById("var_deg").value) || 0;
+          const var_min =
+            parseFloat(document.getElementById("var_min").value) || 0;
+          const var_sec =
+            parseFloat(document.getElementById("var_sec").value) || 0;
+          let variation = var_deg + var_min / 60 + var_sec / 3600;
+          const var_dir = document.getElementById("var_dir").value;
+          if (var_dir === "W") {
+            variation = -variation;
+          }
+
+          let magneticBearing, trueAzimuth;
+          if (inputType === "magnetic") {
+            magneticBearing = bearingVal;
+            trueAzimuth = normalizeAngle(bearingVal + variation);
+          } else {
+            trueAzimuth = bearingVal;
+            magneticBearing = normalizeAngle(bearingVal - variation);
+          }
+          magneticBearing = normalizeAngle(magneticBearing);
+          trueAzimuth = normalizeAngle(trueAzimuth);
+
+          // Compute QGIS Angle.
+          let diff = Math.abs(trueAzimuth - 450);
+          let qgisAngle = diff < 360 ? diff : diff - 360;
+          qgisAngle = normalizeAngle(qgisAngle);
+
+          // Process the date.
+          let varDate = processDate(
+            document.getElementById("var_date").value || ""
+          );
+
+          let tableRows = "";
+          if (inputType === "magnetic") {
+            tableRows += `<tr><td>Input Type</td><td>Magnetic Bearing</td></tr>`;
+            tableRows += `<tr><td>Magnetic Bearing (Input)</td><td>${bearingVal.toFixed(
+              4
+            )}°</td></tr>`;
+            tableRows += `<tr><td>Calculated True Azimuth</td><td>${trueAzimuth.toFixed(
+              4
+            )}°</td></tr>`;
+          } else {
+            tableRows += `<tr><td>Input Type</td><td>True Azimuth</td></tr>`;
+            tableRows += `<tr><td>True Azimuth (Input)</td><td>${trueAzimuth.toFixed(
+              4
+            )}°</td></tr>`;
+            tableRows += `<tr><td>Calculated Magnetic Bearing</td><td>${magneticBearing.toFixed(
+              4
+            )}°</td></tr>`;
+          }
+          tableRows += `<tr><td>Magnetic Variation</td><td>${variation.toFixed(
+            4
+          )}°</td></tr>`;
+          tableRows += `<tr><td>Variation Direction</td><td>${var_dir}</td></tr>`;
+          if (varDate) {
+            tableRows += `<tr><td>Date</td><td>${varDate}</td></tr>`;
+          }
+          if (document.getElementById("includeQGIS").checked) {
+            tableRows += `<tr><td>QGIS Angle</td><td>${qgisAngle.toFixed(
+              4
+            )}°</td></tr>`;
+          }
+
+          htmlContent = `
           <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
             <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
             ${tableRows}
           </table>
         `;
+        }
+        const blob = new Blob([htmlContent], { type: "text/html" });
+        // Create a simple plain-text version stripping HTML tags from rows
+        const plainRows = tableRows
+          .replace(/<tr>/g, "")
+          .replace(/<\/tr>/g, "\n")
+          .replace(/<td>/g, "")
+          .replace(/<\/td>/g, "\t")
+          .replace(/\t\n/g, "\n")
+          .trim();
+        const textContent = ["Parameter\tValue", plainRows].join("\n");
+        const textBlob = new Blob([textContent], { type: "text/plain" });
+        navigator.clipboard
+          .write([
+            new ClipboardItem({ "text/html": blob, "text/plain": textBlob }),
+          ])
+          .then(() => {
+            alert(
+              window.I18N && I18N.get
+                ? I18N.get(
+                    "messages.copied",
+                    "Formatted table copied to clipboard! You can paste it into Word or any text editor."
+                  )
+                : "Results copied; paste into Word or a text editor."
+            );
+          })
+          .catch((err) => {
+            console.error("Copy failed:", err);
+          });
       }
-      const blob = new Blob([htmlContent], { type: "text/html" });
-      navigator.clipboard.write([new ClipboardItem({ "text/html": blob })])
-          .then(() => { alert("Results copied; paste into Word."); })
-          .catch(err => { console.error("Copy failed:", err); });
-    }
-  </script>
-</body>
+    </script>
+    <script src="i18n/i18n.js"></script>
+    <script>
+      (function () {
+        function initI18n() {
+          if (window.I18N) {
+            I18N.init({
+              defaultLang: "en",
+              supported: ["en", "es"],
+              path: "i18n",
+            }).catch(console.error);
+          }
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", initI18n);
+        } else {
+          initI18n();
+        }
+      })();
+    </script>
+  </body>
 </html>

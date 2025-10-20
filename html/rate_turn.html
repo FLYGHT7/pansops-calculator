@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TAS, Rate & Radius of Turn Calculator</title>
+  <title data-i18n="rateTurn.title">TAS, Rate & Radius of Turn Calculator</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -32,17 +32,17 @@
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4">
   <div class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
-    <h1 class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center">
+  <h1 class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 sm:h-8 sm:w-8 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"></circle>
         <polyline points="12 6 12 12 16 14"></polyline>
       </svg>
-      TAS, Rate & Radius of Turn
+      <span data-i18n="rateTurn.title">TAS, Rate & Radius of Turn</span>
     </h1>
 
     <!-- Load/Save Parameters -->
     <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
-      <label for="loadFile" class="text-gray-700 dark:text-gray-300 font-medium">
+      <label for="loadFile" class="text-gray-700 dark:text-gray-300 font-medium" data-i18n="rateTurn.loadParamsFile">
         Load Parameters File (JSON)
       </label>
       <div class="flex gap-3 flex-wrap">
@@ -53,7 +53,7 @@
             <polyline points="17 21 17 13 7 13 7 21"></polyline>
             <polyline points="7 3 7 8 15 8"></polyline>
           </svg>
-          Save Parameters
+          <span data-i18n="common.save">Save Parameters</span>
         </button>
         <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
         <button onclick="document.getElementById('loadFile').click()"
@@ -63,7 +63,7 @@
             <polyline points="17 8 12 3 7 8"></polyline>
             <line x1="12" y1="3" x2="12" y2="15"></line>
           </svg>
-          Load Parameters
+          <span data-i18n="common.load">Load Parameters</span>
         </button>
       </div>
     </div>
@@ -71,43 +71,43 @@
     <!-- Inputs for TAS Calculation -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
       <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">
+        <label class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="tas.ias">
           Indicated Airspeed (IAS)
         </label>
         <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
-          <input id="ias" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter IAS" />
+          <input id="ias" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter IAS" data-i18n="tas.phEnterIAS" data-i18n-attr="placeholder" />
           <div class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center">
-            <span class="text-gray-700 dark:text-white">knots</span>
+            <span class="text-gray-700 dark:text-white" data-i18n="common.knots">knots</span>
           </div>
         </div>
       </div>
       <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">
+        <label class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="tas.altitude">
           Altitude
         </label>
         <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
-          <input id="altitude" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter altitude" />
+          <input id="altitude" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter altitude" data-i18n="tas.phEnterAltitude" data-i18n-attr="placeholder" />
           <select id="altitudeUnit" onchange="handleUnitChange('altitude', 'altitudeUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
-            <option value="ft" selected>ft</option>
-            <option value="m">m</option>
+            <option value="ft" selected data-i18n="common.feet">ft</option>
+            <option value="m" data-i18n="common.meters">m</option>
           </select>
         </div>
       </div>
       <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">
+        <label class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="tas.isaDeviationVar">
           ISA Deviation (VAR) in °C
         </label>
-        <input id="isaDeviation" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter ISA Deviation" />
+        <input id="isaDeviation" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter ISA Deviation" data-i18n="tas.phEnterIsaDeviation" data-i18n-attr="placeholder" />
       </div>
     </div>
 
     <!-- Inputs for Rate & Radius of Turn -->
     <div class="mt-6">
       <div class="space-y-2 max-w-xs">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">
+        <label class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="tas.bankAngle">
           Bank Angle (°)
         </label>
-        <input id="bankAngle" type="number" value="25" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter Bank Angle" />
+        <input id="bankAngle" type="number" value="25" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter Bank Angle" data-i18n="tas.phEnterBankAngle" data-i18n-attr="placeholder" />
       </div>
     </div>
 
@@ -119,7 +119,7 @@
           <path d="M5 12h14"></path>
           <path d="M12 5v14"></path>
         </svg>
-        Calculate TAS
+        <span data-i18n="tas.calcTas">Calculate TAS</span>
       </button>
       <button onclick="calculateTurn()"
               class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center">
@@ -130,43 +130,43 @@
           <polyline points="8 12 12 16 16 12"></polyline>
           <line x1="12" y1="8" x2="12" y2="16"></line>
         </svg>
-        Calculate Turn
+        <span data-i18n="tas.calcTurn">Calculate Turn</span>
       </button>
     </div>
 
     <!-- Results for TAS -->
     <div id="tasResults" class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600">
-      <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">TAS Results</h2>
+  <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4" data-i18n="tas.tasResultsTitle">TAS Results</h2>
       
       <!-- Output values in a grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400">k Factor</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="tas.kFactor">k Factor</p>
           <p class="text-lg font-semibold dark:text-white"><span id="kFactor"></span></p>
         </div>
         <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400">True Airspeed (TAS)</p>
-          <p class="text-lg font-semibold dark:text-white"><span id="tas"></span> knots</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="tas.trueAirspeed">True Airspeed (TAS)</p>
+          <p class="text-lg font-semibold dark:text-white"><span id="tas"></span> <span data-i18n="common.knots">knots</span></p>
         </div>
       </div>
     </div>
 
     <!-- Results for Rate & Radius of Turn -->
     <div id="turnResults" class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600">
-      <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">Turn Results</h2>
+  <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4" data-i18n="tas.turnResultsTitle">Turn Results</h2>
       
       <!-- Output values in a grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400">Rate of Turn</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="tas.rateOfTurn">Rate of Turn</p>
           <p class="text-lg font-semibold dark:text-white"><span id="rateOfTurn"></span></p>
         </div>
         <div id="uncappedRow" class="hidden bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400">Rate of Turn (Uncapped)</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="tas.rateOfTurnUncapped">Rate of Turn (Uncapped)</p>
           <p class="text-lg font-semibold dark:text-white"><span id="uncappedRateOfTurn"></span></p>
         </div>
         <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400">Radius of Turn</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="tas.radiusOfTurn">Radius of Turn</p>
           <p class="text-lg font-semibold dark:text-white"><span id="radiusOfTurn"></span></p>
         </div>
       </div>
@@ -180,7 +180,7 @@
             <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
             <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
           </svg>
-          Copy Results as Table
+          <span data-i18n="common.copyTable">Copy Results as Table</span>
         </button>
       </div>
     </div>
@@ -398,15 +398,56 @@
           <tr><td>Radius of Turn</td><td>${radiusOfTurn}</td></tr>
         </table>
       `;
-      const blob = new Blob([htmlContent], { type: "text/html" });
+
+      // Build a plain-text fallback. If rateRow contained two rows, reflect them too.
+      const rows = [
+        ["Parameter", "Value"],
+        ["IAS", `${ias} knots`],
+        ["Altitude", `${altitude} ${altitudeUnit}`],
+        ["ISA Deviation (VAR)", `${isaDeviation} °C`],
+        ["Bank Angle", `${bankAngle} °`],
+        ["k Factor", `${kFactor}`],
+        ["True Airspeed (TAS)", `${tas} knots`],
+      ];
+      if (!document.getElementById("turnResults").classList.contains("hidden")) {
+        const rateOfTurn = document.getElementById("rateOfTurn").textContent || "N/A";
+        if (document.getElementById("uncappedRow").classList.contains("hidden")) {
+          rows.push(["Rate of Turn", `${rateOfTurn}`]);
+        } else {
+          const uncappedRateOfTurn = document.getElementById("uncappedRateOfTurn").textContent || "N/A";
+          rows.push(["Rate of Turn (Capped)", `${rateOfTurn}`]);
+          rows.push(["Rate of Turn (Uncapped)", `${uncappedRateOfTurn}`]);
+        }
+      }
+      rows.push(["Radius of Turn", `${radiusOfTurn}`]);
+
+      const textContent = rows.map(r => r.join("\t")).join("\n");
+
+      const htmlBlob = new Blob([htmlContent], { type: "text/html" });
+      const textBlob = new Blob([textContent], { type: "text/plain" });
       navigator.clipboard.write([
-        new ClipboardItem({ "text/html": blob })
+        new ClipboardItem({ "text/html": htmlBlob, "text/plain": textBlob })
       ]).then(() => {
         alert("Results copied as table to clipboard!");
       }).catch(err => {
         console.error("Copy failed: ", err);
       });
     }
+  </script>
+  <script src="i18n/i18n.js"></script>
+  <script>
+    (function(){
+      function initI18n(){
+        if (window.I18N) {
+          I18N.init({ defaultLang: 'en', supported: ['en','es'], path: 'i18n' }).catch(console.error);
+        }
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initI18n);
+      } else {
+        initI18n();
+      }
+    })();
   </script>
 </body>
 </html>

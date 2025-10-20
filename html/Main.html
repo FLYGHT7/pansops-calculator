@@ -3,12 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aviation Calculators Suite</title>
+    <title data-i18n="common.suiteName">Aviation Calculators Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <script src="i18n/i18n.js"></script>
     <script>
       tailwind.config = {
         darkMode: "class",
@@ -173,7 +174,11 @@
                 d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"
               ></path>
             </svg>
-            <span class="text-lg font-semibold text-white">Aviation Tools</span>
+            <span
+              class="text-lg font-semibold text-white"
+              data-i18n="common.appName"
+              >Aviation Tools</span
+            >
           </div>
           <button
             id="closeSidebarBtn"
@@ -209,7 +214,7 @@
                   <i
                     class="fas fa-thermometer-half text-primary-400 text-xl w-5 h-5 mr-3"
                   ></i>
-                  <span>ISA Deviation</span>
+                  <span data-i18n="isa.title">ISA Deviation Calculator</span>
                 </button>
               </li>
               <li>
@@ -221,7 +226,9 @@
                   <i
                     class="fas fa-plane text-primary-400 text-xl w-5 h-5 mr-3"
                   ></i>
-                  <span>TAS Calculator</span>
+                  <span data-i18n="tas.title"
+                    >True Airspeed (TAS) Calculator</span
+                  >
                 </button>
               </li>
               <li>
@@ -233,7 +240,9 @@
                   <i
                     class="fas fa-circle-notch text-primary-400 text-xl w-5 h-5 mr-3"
                   ></i>
-                  <span>Rate & Radius of Turn</span>
+                  <span data-i18n="rateTurn.title"
+                    >TAS, Rate & Radius of Turn</span
+                  >
                 </button>
               </li>
               <li>
@@ -266,7 +275,7 @@
                       stroke-dasharray="4 4"
                     ></circle>
                   </svg>
-                  <span>DME Tolerance</span>
+                  <span data-i18n="dme.title">DME Tolerance</span>
                 </button>
               </li>
               <li>
@@ -278,7 +287,7 @@
                   <i
                     class="fas fa-chart-line text-primary-400 text-xl w-5 h-5 mr-3"
                   ></i>
-                  <span>Profile Estimator</span>
+                  <span data-i18n="profile.title">Profile Estimator</span>
                 </button>
               </li>
               <li>
@@ -306,7 +315,7 @@
                     ></line>
                     <polygon points="6,6 18,12 6,18" fill="none"></polygon>
                   </svg>
-                  <span>NPA SOC Calcularion</span>
+                  <span data-i18n="npaSoc.title">NPA SOC Calculation</span>
                 </button>
               </li>
               <li>
@@ -334,7 +343,7 @@
                     ></line>
                     <polygon points="6,6 18,12 6,18" fill="none"></polygon>
                   </svg>
-                  <span>VSS/OCS Parameters</span>
+                  <span data-i18n="vssOcs.title">VSS/OCS Parameters</span>
                 </button>
               </li>
               <!-- New ILS Height Calculations Button -->
@@ -356,7 +365,9 @@
                   >
                     <path d="M2 12h20M2 12l10-10M2 12l10 10"></path>
                   </svg>
-                  <span>ILS Height Calculations</span>
+                  <span data-i18n="ilsHeight.title"
+                    >ILS Height Calculations</span
+                  >
                 </button>
               </li>
               <!-- New ILS Distance Calculations Button -->
@@ -378,7 +389,9 @@
                   >
                     <path d="M2 12h20M2 12l10-10M2 12l10 10"></path>
                   </svg>
-                  <span>ILS Distance Calculations</span>
+                  <span data-i18n="ilsDistance.title"
+                    >ILS Distance Calculations</span
+                  >
                 </button>
               </li>
               <!--New bearings_angles Button-->
@@ -388,18 +401,26 @@
                   onclick="loadPage('bearings_angles.html', this)"
                   class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-primary-600 dark:text-primary-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-3 text-primary-600 dark:text-primary-400"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
                     <circle cx="12" cy="12" r="10"></circle>
                     <polyline points="16.2 7.8 12 12 8 16"></polyline>
                     <line x1="2" y1="12" x2="22" y2="12"></line>
                     <line x1="12" y1="2" x2="12" y2="22"></line>
                   </svg>
-                  <span>Bearings Angles</span>
+                  <span data-i18n="bearings.title">Bearings Angles</span>
                 </button>
               </li>
             </ul>
           </nav>
-          
 
           <div class="px-4 mt-6 mb-4">
             <!-- Dark Mode Toggle -->
@@ -411,7 +432,7 @@
                 <i
                   class="fas fa-moon text-primary-400 text-xl w-5 h-5 mr-3"
                 ></i>
-                <span>Dark Mode</span>
+                <span data-i18n="common.darkMode">Dark Mode</span>
               </div>
               <div
                 class="relative inline-block w-10 h-5 transition duration-200 ease-in-out rounded-full"
@@ -426,8 +447,34 @@
               </div>
             </button>
 
+            <!-- Language Selector -->
+            <div
+              class="w-full flex items-center justify-between p-3 text-gray-300 rounded-lg hover:bg-gray-700 mb-4 transition-colors"
+            >
+              <div class="flex items-center">
+                <i
+                  class="fas fa-globe text-primary-400 text-xl w-5 h-5 mr-3"
+                ></i>
+                <label
+                  for="langSelectGlobal"
+                  class="mr-2"
+                  data-i18n="common.language"
+                  >Language</label
+                >
+              </div>
+              <select
+                id="langSelectGlobal"
+                class="bg-gray-700 text-gray-200 rounded px-2 py-1 border border-gray-600"
+              >
+                <option value="en">English</option>
+                <option value="es">Español</option>
+              </select>
+            </div>
+
             <div class="flex items-center space-x-2 text-sm text-gray-400">
-              <span>Aviation Calculators Suite</span>
+              <span data-i18n="common.suiteName"
+                >Aviation Calculators Suite</span
+              >
               <span>v0.1</span>
             </div>
           </div>
@@ -455,7 +502,9 @@
                 d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"
               ></path>
             </svg>
-            <span class="font-semibold">Aviation Tools</span>
+            <span class="font-semibold" data-i18n="common.appName"
+              >Aviation Tools</span
+            >
           </div>
           <button
             id="openSidebarBtn"
@@ -481,16 +530,30 @@
 
         <!-- Content Area -->
         <div class="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900">
-          <iframe
-            id="iframe"
-            src="ISA_deviation.html"
-            class="w-full h-full border-none"
-          ></iframe>
+          <iframe id="iframe" class="w-full h-full border-none"></iframe>
         </div>
       </div>
     </div>
 
     <script>
+      // Initialize i18n for Main shell (sidebar labels, headings)
+      (function () {
+        function initI18n() {
+          if (window.I18N && typeof I18N.init === "function") {
+            I18N.init({
+              defaultLang: "en",
+              supported: ["en", "es"],
+              path: "i18n",
+            }).catch(console.error);
+          }
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", initI18n);
+        } else {
+          initI18n();
+        }
+      })();
+
       // Check if we're on mobile
       const isMobile = () => window.innerWidth < 768;
 
@@ -662,51 +725,60 @@
         }
       }
 
-      // Load page in iframe and update active button
+      // Load page in iframe and update active button - OPTIMIZED
       function loadPage(pageUrl, buttonElement) {
         const iframe = document.getElementById("iframe");
 
-        // Add loading class to fade out
-        iframe.classList.add("loading");
+        // Save state immediately (synchronous)
+        localStorage.setItem("lastPage", pageUrl);
+        localStorage.setItem("lastButtonId", buttonElement.id);
 
-        // Close sidebar on mobile when a page is selected
-        if (isMobile()) {
+        // Update UI immediately (no delay)
+        document.querySelectorAll(".sidebar-item").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        buttonElement.classList.add("active");
+
+        // Close sidebar on mobile
+        if (window.innerWidth < 768) {
           closeSidebar();
         }
 
-        // Short timeout to allow fade out before changing src
-        setTimeout(() => {
-          iframe.src = pageUrl;
+        // Load page with language parameter
+        const lang = localStorage.getItem("lang") || "en";
+        const url = new URL(pageUrl, window.location.href);
+        url.searchParams.set("lang", lang);
+        iframe.src = url.toString();
 
-          // Remove loading class after the new page has loaded
-          iframe.onload = function () {
-            iframe.classList.remove("loading");
+        // Setup onload handler (single responsibility)
+        iframe.onload = function () {
+          const isDark = document.documentElement.classList.contains("dark");
 
-            // Apply dark mode immediately if needed
+          try {
+            const iframeDoc =
+              iframe.contentDocument || iframe.contentWindow.document;
+
+            // Apply dark mode
+            if (isDark) {
+              iframeDoc.documentElement.classList.add("dark");
+            }
+
+            // Also force-set language inside the iframe in case the page ignores ?lang
             try {
-              if (document.documentElement.classList.contains("dark")) {
-                const iframeDoc =
-                  iframe.contentDocument || iframe.contentWindow.document;
-                iframeDoc.documentElement.classList.add("dark");
+              const iw = iframe.contentWindow;
+              if (iw && iw.I18N && typeof iw.I18N.setLanguage === "function") {
+                iw.I18N.setLanguage(lang).catch(() => {});
               }
-            } catch (e) {
-              console.error("Error applying dark mode to iframe:", e);
-            }
+            } catch {}
+          } catch (e) {
+            console.error("Error setting iframe properties:", e);
+          }
 
-            // Add haptic feedback when page loads
-            if (navigator.vibrate) {
-              navigator.vibrate(15);
-            }
-          };
-
-          // Remove active class from all buttons
-          document.querySelectorAll(".sidebar-item").forEach((button) => {
-            button.classList.remove("active");
-          });
-
-          // Add active class to the clicked button
-          buttonElement.classList.add("active");
-        }, 150); // Short delay for the fade effect
+          // Haptic feedback
+          if (navigator.vibrate) {
+            navigator.vibrate(15);
+          }
+        };
       }
 
       // Dark mode functionality
@@ -715,78 +787,159 @@
         const darkModeIndicator = document.getElementById("darkModeIndicator");
         const html = document.documentElement;
         const iframe = document.getElementById("iframe");
+        const langSelectGlobal = document.getElementById("langSelectGlobal");
 
-        // Check for saved theme preference or use system preference
+        // Restore last active page - OPTIMIZED
+        (function restoreLastPage() {
+          const lastPage = localStorage.getItem("lastPage");
+          const lastButtonId = localStorage.getItem("lastButtonId");
+
+          if (lastPage && lastButtonId) {
+            const button = document.getElementById(lastButtonId);
+            if (button) {
+              // Update UI
+              document.querySelectorAll(".sidebar-item").forEach((btn) => {
+                btn.classList.remove("active");
+              });
+              button.classList.add("active");
+
+              // Load saved page with language
+              const lang = localStorage.getItem("lang") || "en";
+              const url = new URL(lastPage, window.location.href);
+              url.searchParams.set("lang", lang);
+              // Mirror dark mode to iframe when it loads for the first time
+              iframe.onload = function () {
+                try {
+                  if (document.documentElement.classList.contains("dark")) {
+                    const idoc =
+                      iframe.contentDocument || iframe.contentWindow.document;
+                    idoc?.documentElement?.classList?.add("dark");
+                  }
+                  // Force-set language inside the iframe as an extra safeguard
+                  try {
+                    const iw = iframe.contentWindow;
+                    if (
+                      iw &&
+                      iw.I18N &&
+                      typeof iw.I18N.setLanguage === "function"
+                    ) {
+                      iw.I18N.setLanguage(lang).catch(() => {});
+                    }
+                  } catch {}
+                } catch {}
+              };
+              iframe.src = url.toString();
+              return; // Exit early
+            }
+          }
+
+          // Default: load ISA
+          const lang = localStorage.getItem("lang") || "en";
+          const url = new URL("ISA_deviation.html", window.location.href);
+          url.searchParams.set("lang", lang);
+          iframe.onload = function () {
+            try {
+              if (document.documentElement.classList.contains("dark")) {
+                const idoc =
+                  iframe.contentDocument || iframe.contentWindow.document;
+                idoc?.documentElement?.classList?.add("dark");
+              }
+              // Force-set language inside the iframe as an extra safeguard
+              try {
+                const iw = iframe.contentWindow;
+                if (
+                  iw &&
+                  iw.I18N &&
+                  typeof iw.I18N.setLanguage === "function"
+                ) {
+                  iw.I18N.setLanguage(lang).catch(() => {});
+                }
+              } catch {}
+            } catch {}
+          };
+          iframe.src = url.toString();
+        })(); // Dark mode - OPTIMIZED
         const savedTheme = localStorage.getItem("theme");
         const prefersDark = window.matchMedia(
           "(prefers-color-scheme: dark)"
         ).matches;
 
+        // Apply initial theme
         if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-          enableDarkMode();
-        } else {
-          disableDarkMode();
+          html.classList.add("dark");
+          darkModeIndicator.style.transform = "translateX(100%)";
         }
 
         // Toggle dark mode
         darkModeToggle.addEventListener("click", function () {
-          if (html.classList.contains("dark")) {
-            disableDarkMode();
-          } else {
-            enableDarkMode();
-          }
+          const isDark = html.classList.toggle("dark");
+          darkModeIndicator.style.transform = isDark
+            ? "translateX(100%)"
+            : "translateX(0)";
+          localStorage.setItem("theme", isDark ? "dark" : "light");
 
-          // Add haptic feedback for toggle
+          // Apply to iframe immediately
+          try {
+            const iframeDoc =
+              iframe.contentDocument || iframe.contentWindow.document;
+            if (iframeDoc?.documentElement) {
+              if (isDark) {
+                iframeDoc.documentElement.classList.add("dark");
+              } else {
+                iframeDoc.documentElement.classList.remove("dark");
+              }
+            }
+          } catch (e) {}
+
+          // Haptic feedback
           if (navigator.vibrate) {
             navigator.vibrate(20);
           }
         });
 
-        function enableDarkMode() {
-          html.classList.add("dark");
-          darkModeIndicator.style.transform = "translateX(100%)";
-          localStorage.setItem("theme", "dark");
-          updateIframeDarkMode(true);
-        }
+        // Initialize and handle language changes globally - OPTIMIZED
+        (function initLanguage() {
+          const savedLang = localStorage.getItem("lang") || "en";
 
-        function disableDarkMode() {
-          html.classList.remove("dark");
-          darkModeIndicator.style.transform = "translateX(0)";
-          localStorage.setItem("theme", "light");
-          updateIframeDarkMode(false);
-        }
+          if (langSelectGlobal) {
+            langSelectGlobal.value = savedLang;
+            langSelectGlobal.addEventListener("change", function (e) {
+              const lang = e.target.value;
+              localStorage.setItem("lang", lang);
 
-        // Update iframe dark mode
-        function updateIframeDarkMode(isDark) {
-          try {
-            const iframe = document.getElementById("iframe");
-
-            // Function to apply dark mode to the iframe document
-            const applyDarkMode = () => {
+              // Update Main shell translations immediately
               try {
-                const iframeDoc =
-                  iframe.contentDocument || iframe.contentWindow.document;
-                const iframeHtml = iframeDoc.documentElement;
-
-                if (isDark) {
-                  iframeHtml.classList.add("dark");
-                } else {
-                  iframeHtml.classList.remove("dark");
+                if (window.I18N && typeof I18N.setLanguage === "function") {
+                  I18N.setLanguage(lang).catch(console.error);
                 }
-              } catch (e) {
-                console.error("Error updating iframe dark mode:", e);
+              } catch (e) {}
+
+              // Simply reload the iframe with new lang parameter
+              const currentSrc = iframe.src;
+              const url = new URL(currentSrc);
+              url.searchParams.set("lang", lang);
+              // Assign new URL and also set language after load to ensure immediate update
+              iframe.onload = function () {
+                try {
+                  const iw = iframe.contentWindow;
+                  if (
+                    iw &&
+                    iw.I18N &&
+                    typeof iw.I18N.setLanguage === "function"
+                  ) {
+                    iw.I18N.setLanguage(lang).catch(() => {});
+                  }
+                } catch {}
+              };
+              iframe.src = url.toString();
+
+              // Haptic feedback
+              if (navigator.vibrate) {
+                navigator.vibrate(10);
               }
-            };
-
-            // Apply immediately if possible
-            applyDarkMode();
-
-            // Also apply when iframe loads
-            iframe.onload = applyDarkMode;
-          } catch (e) {
-            console.error("Error accessing iframe:", e);
+            });
           }
-        }
+        })();
       });
 
       // Prevent iframe content from scrolling the main page on tablets

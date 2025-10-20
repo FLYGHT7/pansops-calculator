@@ -71,7 +71,7 @@
         >
           <path d="M2 12h20M2 12l10-10M2 12l10 10"></path>
         </svg>
-        ILS Distance Calculations
+        <span data-i18n="ilsDistance.title">ILS Distance Calculations</span>
       </h1>
 
       <!-- Global Load/Save Buttons -->
@@ -103,7 +103,7 @@
             <polyline points="17 21 17 13 7 13 7 21"></polyline>
             <polyline points="7 3 7 8 15 8"></polyline>
           </svg>
-          Save Parameters
+          <span data-i18n="common.save">Save Parameters</span>
         </button>
         <button
           onclick="document.getElementById('loadFile').click()"
@@ -123,7 +123,7 @@
             <polyline points="17 8 12 3 7 8"></polyline>
             <line x1="12" y1="3" x2="12" y2="15"></line>
           </svg>
-          Load Parameters
+          <span data-i18n="common.load">Load Parameters</span>
         </button>
       </div>
 
@@ -131,7 +131,9 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <!-- THR Elevation Input -->
         <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300"
+          <label
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="ilsDistance.thrElevation"
             >THR Elevation</label
           >
           <div
@@ -155,7 +157,9 @@
         </div>
         <!-- RDH Input -->
         <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300"
+          <label
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="ilsDistance.rdh"
             >RDH</label
           >
           <div
@@ -179,8 +183,10 @@
         </div>
         <!-- Glidepath Angle Input -->
         <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300"
-            >Glidepath Angle (°)</label
+          <label
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="ilsDistance.glidepathAngle"
+            >Glidepath Angle</label
           >
           <input
             id="glideAngle"
@@ -196,7 +202,9 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <!-- Point/Fix Type Selection -->
         <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300"
+          <label
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="ilsDistance.pointFixType"
             >Select Point/Fix Type</label
           >
           <div class="flex flex-wrap gap-4 mt-1">
@@ -234,8 +242,10 @@
         </div>
         <!-- FAP Altitude Input -->
         <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300"
-            >FAP Altitude (in ft)</label
+          <label
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="ilsDistance.fapAltitude"
+            >FAP Altitude</label
           >
           <input
             id="fapAltitude"
@@ -265,7 +275,7 @@
           >
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
           </svg>
-          Calculate
+          <span data-i18n="common.calculate">Calculate</span>
         </button>
       </div>
 
@@ -284,8 +294,11 @@
           <div
             class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
           >
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              Right Angle Computation
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="ilsDistance.rightAngleDistance"
+            >
+              Right Angle Computation Distance
             </p>
             <p class="text-lg font-semibold dark:text-white">
               <span id="distanceA"></span> NM
@@ -294,8 +307,11 @@
           <div
             class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
           >
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              Considering Earth Curvature
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="ilsDistance.earthCurvatureDistance"
+            >
+              Considering Earth Curvature Distance
             </p>
             <p class="text-lg font-semibold dark:text-white">
               <span id="distanceB"></span> NM
@@ -308,7 +324,10 @@
           id="rdhAdjustment"
           class="hidden bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm mb-6"
         >
-          <p class="text-sm text-gray-500 dark:text-gray-400">
+          <p
+            class="text-sm text-gray-500 dark:text-gray-400"
+            data-i18n="ilsDistance.rdhAdjustment"
+          >
             RDH &gt;15m Adjustment
           </p>
           <p class="text-lg font-semibold dark:text-white">
@@ -336,7 +355,7 @@
               ></path>
               <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
             </svg>
-            Copy Results as Table
+            <span data-i18n="common.copyTable">Copy Results as Table</span>
           </button>
         </div>
       </div>
@@ -620,15 +639,52 @@
         }
 
         const blob = new Blob([htmlContent], { type: "text/html" });
+        // Plain-text fallback
+        const rows = [
+          ["Parameter", "Value"],
+          ["Point/Fix Type", `${calcType}`],
+          ["THR Elevation", `${thrElev} ${thrElevUnit}`],
+          ["RDH", `${rdh} ${rdhUnit}`],
+          ["FAP Altitude", `${parseFloat(fapAltitude).toFixed(2)} ft`],
+          ["Glidepath Angle", `${parseFloat(glideAngle).toFixed(2)}°`],
+          ["Right Angle Computation Distance", `${distanceA} NM`],
+          ["Considering Earth Curvature Distance", `${distanceB} NM`],
+        ];
+        if (parseFloat(deltaHValue) > 0) {
+          rows.push(["RDH >15m Adjustment", `${deltaHValue} ft`]);
+        }
+        const textContent = rows.map((r) => r.join("\t")).join("\n");
+        const textBlob = new Blob([textContent], { type: "text/plain" });
         navigator.clipboard
-          .write([new ClipboardItem({ "text/html": blob })])
+          .write([
+            new ClipboardItem({ "text/html": blob, "text/plain": textBlob }),
+          ])
           .then(() => {
-            alert("Results copied; paste into Word.");
+            alert("Results copied; paste into Word or a text editor.");
           })
           .catch((err) => {
             console.error("Copy failed:", err);
           });
       }
+    </script>
+    <script src="i18n/i18n.js"></script>
+    <script>
+      (function () {
+        function initI18n() {
+          if (window.I18N) {
+            I18N.init({
+              defaultLang: "en",
+              supported: ["en", "es"],
+              path: "i18n",
+            }).catch(console.error);
+          }
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", initI18n);
+        } else {
+          initI18n();
+        }
+      })();
     </script>
   </body>
 </html>
