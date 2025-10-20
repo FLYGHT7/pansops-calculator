@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VSS/OCS Parameters</title>
+    <title data-i18n="vssOcs.title">VSS/OCS Parameters</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -53,7 +53,7 @@
           <line x1="6" y1="12" x2="18" y2="12" stroke-dasharray="4 2"></line>
           <polygon points="6,6 18,12 6,18" fill="none"></polygon>
         </svg>
-        VSS/OCS Parameters
+        <span data-i18n="vssOcs.title">VSS/OCS Parameters</span>
       </h1>
 
       <!-- Dropdown to select approach type -->
@@ -61,6 +61,7 @@
         <label
           for="approachType"
           class="block mb-2 font-medium text-gray-700 dark:text-gray-300"
+          data-i18n="vssOcs.selectApproachType"
           >Select Approach Type</label
         >
         <select
@@ -69,8 +70,12 @@
           class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
         >
           <option value="" disabled selected>Select an option</option>
-          <option value="straightInNpa">Straight-in NPA</option>
-          <option value="ilsApvLoc">ILS, APV I, LOC Only</option>
+          <option value="straightInNpa" data-i18n="vssOcs.optStraightInNpa">
+            Straight-in NPA
+          </option>
+          <option value="ilsApvLoc" data-i18n="vssOcs.optIlsApvLoc">
+            ILS, APV I, LOC Only
+          </option>
         </select>
       </div>
 
@@ -98,7 +103,7 @@
                 <polyline points="17 8 12 3 7 8"></polyline>
                 <line x1="12" y1="3" x2="12" y2="15"></line>
               </svg>
-              Load Parameters
+              <span data-i18n="common.load">Load Parameters</span>
             </button>
             <button
               onclick="saveParameters()"
@@ -120,7 +125,7 @@
                 <polyline points="17 21 17 13 7 13 7 21"></polyline>
                 <polyline points="7 3 7 8 15 8"></polyline>
               </svg>
-              Save Parameters
+              <span data-i18n="common.save">Save Parameters</span>
             </button>
             <input
               id="loadFile"
@@ -136,8 +141,10 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <!-- THR Elevation -->
             <div class="space-y-2">
-              <label class="block font-medium text-gray-700 dark:text-gray-300"
-                >THR Elevation</label
+              <label
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="vssOcs.thrElev"
+                >THR Elev</label
               >
               <div
                 class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
@@ -153,14 +160,16 @@
                   onchange="handleUnitChange('thrElev', 'thrElevUnit')"
                   class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
                 >
-                  <option value="ft">ft</option>
-                  <option value="m">m</option>
+                  <option value="ft" data-i18n="common.feet">ft</option>
+                  <option value="m" data-i18n="common.meters">m</option>
                 </select>
               </div>
             </div>
             <!-- RDH -->
             <div class="space-y-2">
-              <label class="block font-medium text-gray-700 dark:text-gray-300"
+              <label
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="vssOcs.rdh"
                 >RDH</label
               >
               <div
@@ -177,8 +186,10 @@
                   onchange="handleUnitChange('rdh', 'rdhUnit')"
                   class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
                 >
-                  <option value="m" selected>m</option>
-                  <option value="ft">ft</option>
+                  <option value="m" selected data-i18n="common.meters">
+                    m
+                  </option>
+                  <option value="ft" data-i18n="common.feet">ft</option>
                 </select>
               </div>
             </div>
@@ -188,8 +199,10 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <!-- VPA -->
             <div class="space-y-2">
-              <label class="block font-medium text-gray-700 dark:text-gray-300"
-                >Vertical Path Angle (°)</label
+              <label
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="profile.vpa"
+                >VPA (°)</label
               >
               <input
                 id="vpa"
@@ -201,7 +214,9 @@
             </div>
             <!-- OCH -->
             <div class="space-y-2">
-              <label class="block font-medium text-gray-700 dark:text-gray-300"
+              <label
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="vssOcs.och"
                 >Obstacle Clearance Height (OCH)</label
               >
               <div
@@ -219,8 +234,10 @@
                   onchange="handleUnitChange('och', 'ochUnit')"
                   class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
                 >
-                  <option value="m" selected>m</option>
-                  <option value="ft">ft</option>
+                  <option value="m" selected data-i18n="common.meters">
+                    m
+                  </option>
+                  <option value="ft" data-i18n="common.feet">ft</option>
                 </select>
               </div>
             </div>
@@ -244,7 +261,7 @@
               >
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
               </svg>
-              Calculate VSS Distance
+              <span data-i18n="vssOcs.calcVss">Calculate VSS Distance</span>
             </button>
             <button
               onclick="calculateOCS()"
@@ -262,7 +279,7 @@
               >
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
               </svg>
-              Calculate OCS
+              <span data-i18n="vssOcs.calcOcs">Calculate OCS</span>
             </button>
           </div>
 
@@ -273,6 +290,7 @@
           >
             <h2
               class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
+              data-i18n="vssOcs.vssResultsTitle"
             >
               VSS Distance Results
             </h2>
@@ -282,7 +300,10 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.vssDistance"
+                >
                   VSS Distance
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
@@ -292,8 +313,11 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">
-                  THR Elevation
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.thrElev"
+                >
+                  THR Elev
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
                   <span id="thrElevOutput"></span>
@@ -302,7 +326,12 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">RDH</p>
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.rdh"
+                >
+                  RDH
+                </p>
                 <p class="text-lg font-semibold dark:text-white">
                   <span id="rdhOutput"></span>
                 </p>
@@ -310,7 +339,12 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">VPA</p>
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="profile.vpa"
+                >
+                  VPA (°)
+                </p>
                 <p class="text-lg font-semibold dark:text-white">
                   <span id="vpaOutput"></span>°
                 </p>
@@ -318,7 +352,12 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm md:col-span-2"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">OCH</p>
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.och"
+                >
+                  Obstacle Clearance Height (OCH)
+                </p>
                 <p class="text-lg font-semibold dark:text-white">
                   <span id="ochOutput"></span>
                 </p>
@@ -345,7 +384,7 @@
                   ></path>
                   <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                 </svg>
-                Copy to Word Document
+                <span data-i18n="common.copyToWord">Copy to Word Document</span>
               </button>
             </div>
           </div>
@@ -357,6 +396,7 @@
           >
             <h2
               class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
+              data-i18n="vssOcs.ocsResultsTitle"
             >
               OCS Results
             </h2>
@@ -366,7 +406,10 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.ocsLength"
+                >
                   OCS Length
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
@@ -376,7 +419,10 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.ocsELateral"
+                >
                   OCS E (Lateral)
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
@@ -386,7 +432,10 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.ocsElevation"
+                >
                   OCS Elevation
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
@@ -396,7 +445,12 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">OCS θ</p>
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.ocsTheta"
+                >
+                  OCS θ
+                </p>
                 <p class="text-lg font-semibold dark:text-white">
                   <span id="ocsThetaOutput"></span>°
                 </p>
@@ -404,7 +458,10 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm md:col-span-2"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.ocsElevAdjustment"
+                >
                   OCS Elevation Adjustment
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
@@ -433,7 +490,7 @@
                   ></path>
                   <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                 </svg>
-                Copy to Word Document
+                <span data-i18n="common.copyToWord">Copy to Word Document</span>
               </button>
             </div>
           </div>
@@ -462,7 +519,7 @@
                 <polyline points="17 8 12 3 7 8"></polyline>
                 <line x1="12" y1="3" x2="12" y2="15"></line>
               </svg>
-              Load Parameters
+              <span data-i18n="common.load">Load Parameters</span>
             </button>
             <button
               onclick="saveParametersB()"
@@ -484,7 +541,7 @@
                 <polyline points="17 21 17 13 7 13 7 21"></polyline>
                 <polyline points="7 3 7 8 15 8"></polyline>
               </svg>
-              Save Parameters
+              <span data-i18n="common.save">Save Parameters</span>
             </button>
             <input
               id="loadFileB"
@@ -499,8 +556,10 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <!-- THR Elevation -->
             <div class="space-y-2">
-              <label class="block font-medium text-gray-700 dark:text-gray-300"
-                >THR Elevation</label
+              <label
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="vssOcs.thrElev"
+                >THR Elev</label
               >
               <div
                 class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
@@ -516,14 +575,16 @@
                   onchange="handleUnitChange('thrElevB', 'thrElevUnitB')"
                   class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
                 >
-                  <option value="ft">ft</option>
-                  <option value="m">m</option>
+                  <option value="ft" data-i18n="common.feet">ft</option>
+                  <option value="m" data-i18n="common.meters">m</option>
                 </select>
               </div>
             </div>
             <!-- RDH -->
             <div class="space-y-2">
-              <label class="block font-medium text-gray-700 dark:text-gray-300"
+              <label
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="vssOcs.rdh"
                 >RDH</label
               >
               <div
@@ -540,8 +601,10 @@
                   onchange="handleUnitChange('rdhB', 'rdhUnitB')"
                   class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
                 >
-                  <option value="m" selected>m</option>
-                  <option value="ft">ft</option>
+                  <option value="m" selected data-i18n="common.meters">
+                    m
+                  </option>
+                  <option value="ft" data-i18n="common.feet">ft</option>
                 </select>
               </div>
             </div>
@@ -551,8 +614,10 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <!-- GP/VGSI Angle -->
             <div class="space-y-2">
-              <label class="block font-medium text-gray-700 dark:text-gray-300"
-                >GP/VGSI Angle (°)</label
+              <label
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="vssOcs.gpAngle"
+                >GP Angle (°)</label
               >
               <input
                 id="gpAngle"
@@ -564,7 +629,9 @@
             </div>
             <!-- Aircraft Category -->
             <div class="space-y-2">
-              <label class="block font-medium text-gray-700 dark:text-gray-300"
+              <label
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="vssOcs.aircraftCategory"
                 >Aircraft Category</label
               >
               <select
@@ -583,7 +650,9 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <!-- DA/DH -->
             <div class="space-y-2">
-              <label class="block font-medium text-gray-700 dark:text-gray-300"
+              <label
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="vssOcs.daDh"
                 >DA/DH</label
               >
               <div
@@ -600,14 +669,16 @@
                   onchange="handleUnitChange('daDh', 'daDhUnit')"
                   class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
                 >
-                  <option value="ft">ft</option>
-                  <option value="m">m</option>
+                  <option value="ft" data-i18n="common.feet">ft</option>
+                  <option value="m" data-i18n="common.meters">m</option>
                 </select>
               </div>
             </div>
             <!-- Approach Type Specific -->
             <div class="space-y-2">
-              <label class="block font-medium text-gray-700 dark:text-gray-300"
+              <label
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="vssOcs.approachType"
                 >Approach Type</label
               >
               <select
@@ -628,7 +699,9 @@
             class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"
           >
             <div class="space-y-2">
-              <label class="block font-medium text-gray-700 dark:text-gray-300"
+              <label
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="vssOcs.ilsCategory"
                 >ILS Category</label
               >
               <select
@@ -648,7 +721,9 @@
             class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 hidden"
           >
             <div class="space-y-2">
-              <label class="block font-medium text-gray-700 dark:text-gray-300"
+              <label
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="vssOcs.apvType"
                 >APV Type</label
               >
               <select
@@ -667,7 +742,9 @@
             class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 hidden"
           >
             <div class="space-y-2">
-              <label class="block font-medium text-gray-700 dark:text-gray-300"
+              <label
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="vssOcs.locSensitivity"
                 >LOC Sensitivity</label
               >
               <input
@@ -699,7 +776,7 @@
                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
               </svg>
-              Calculate Parameters
+              <span data-i18n="vssOcs.calcParams">Calculate Parameters</span>
             </button>
           </div>
 
@@ -710,6 +787,7 @@
           >
             <h2
               class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
+              data-i18n="vssOcs.ilsResultsTitle"
             >
               ILS OAS Results
             </h2>
@@ -719,7 +797,10 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.oasHeight"
+                >
                   OAS Height
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
@@ -729,7 +810,10 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.oasLength"
+                >
                   OAS Length
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
@@ -739,7 +823,10 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.oasWidth"
+                >
                   OAS Width
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
@@ -749,7 +836,10 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.ilsCategory"
+                >
                   ILS Category
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
@@ -778,7 +868,7 @@
                   ></path>
                   <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                 </svg>
-                Copy to Word Document
+                <span data-i18n="common.copyToWord">Copy to Word Document</span>
               </button>
             </div>
           </div>
@@ -790,6 +880,7 @@
           >
             <h2
               class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
+              data-i18n="vssOcs.apvResultsTitle"
             >
               APV OAS Results
             </h2>
@@ -799,7 +890,10 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.oasHeight"
+                >
                   OAS Height
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
@@ -809,7 +903,10 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.oasLength"
+                >
                   OAS Length
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
@@ -819,7 +916,10 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.oasWidth"
+                >
                   OAS Width
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
@@ -829,7 +929,12 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">APV Type</p>
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.apvType"
+                >
+                  APV Type
+                </p>
                 <p class="text-lg font-semibold dark:text-white">
                   <span id="apvTypeOutput"></span>
                 </p>
@@ -856,7 +961,7 @@
                   ></path>
                   <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                 </svg>
-                Copy to Word Document
+                <span data-i18n="common.copyToWord">Copy to Word Document</span>
               </button>
             </div>
           </div>
@@ -868,6 +973,7 @@
           >
             <h2
               class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
+              data-i18n="vssOcs.locResultsTitle"
             >
               LOC OAS Results
             </h2>
@@ -877,7 +983,10 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.oasHeight"
+                >
                   OAS Height
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
@@ -887,7 +996,10 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.oasLength"
+                >
                   OAS Length
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
@@ -897,7 +1009,10 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.oasWidth"
+                >
                   OAS Width
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
@@ -907,7 +1022,10 @@
               <div
                 class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
               >
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p
+                  class="text-sm text-gray-500 dark:text-gray-400"
+                  data-i18n="vssOcs.locSensitivity"
+                >
                   LOC Sensitivity
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
@@ -936,7 +1054,7 @@
                   ></path>
                   <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                 </svg>
-                Copy to Word Document
+                <span data-i18n="common.copyToWord">Copy to Word Document</span>
               </button>
             </div>
           </div>
@@ -1687,15 +1805,51 @@
         }
 
         const blob = new Blob([htmlContent], { type: "text/html" });
+        // Plain-text fallback built from the same values
+        const textContent = [
+          ["Parameter", "Value"],
+          ["THR Elev", `${thrElev} ${thrElevUnit}`],
+          ["RDH", `${rdh} m`],
+          ["GP Angle (°)", `${parseFloat(gpAngle).toFixed(2)}`],
+          ["DA/DH", `${daDh} ${daDhUnit}`],
+          ["LOC Sensitivity", `${parseFloat(locSensitivity).toFixed(2)}`],
+          ["OAS Height", `${oasHeight}`],
+          ["OAS Length", `${oasLength}`],
+          ["OAS Width", `${oasWidth}`],
+        ]
+          .map((r) => r.join("\t"))
+          .join("\n");
+        const textBlob = new Blob([textContent], { type: "text/plain" });
         navigator.clipboard
-          .write([new ClipboardItem({ "text/html": blob })])
+          .write([
+            new ClipboardItem({ "text/html": blob, "text/plain": textBlob }),
+          ])
           .then(() => {
-            alert("Results copied; paste into Word.");
+            alert("Results copied; paste into Word or a text editor.");
           })
           .catch((err) => {
             console.error("Copy failed:", err);
           });
       }
+    </script>
+    <script src="i18n/i18n.js"></script>
+    <script>
+      (function () {
+        function initI18n() {
+          if (window.I18N) {
+            I18N.init({
+              defaultLang: "en",
+              supported: ["en", "es"],
+              path: "i18n",
+            }).catch(console.error);
+          }
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", initI18n);
+        } else {
+          initI18n();
+        }
+      })();
     </script>
   </body>
 </html>

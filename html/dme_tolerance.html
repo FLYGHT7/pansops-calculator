@@ -53,7 +53,7 @@
           <circle cx="12" cy="12" r="8" stroke-dasharray="4 4"></circle>
           <circle cx="12" cy="12" r="12" stroke-dasharray="4 4"></circle>
         </svg>
-        DME Slant Range & Tolerance
+        <span data-i18n="dme.title">DME Slant Range & Tolerance</span>
       </h1>
 
       <!-- Load/Save Parameters -->
@@ -61,9 +61,8 @@
         <label
           for="loadFile"
           class="text-gray-700 dark:text-gray-300 font-medium"
+          >Load Parameters File (JSON)</label
         >
-          Load Parameters File (JSON)
-        </label>
         <div class="flex gap-3 flex-wrap">
           <button
             onclick="saveParameters()"
@@ -85,7 +84,7 @@
               <polyline points="17 21 17 13 7 13 7 21"></polyline>
               <polyline points="7 3 7 8 15 8"></polyline>
             </svg>
-            Save Parameters
+            <span data-i18n="common.save">Save Parameters</span>
           </button>
           <input
             id="loadFile"
@@ -112,7 +111,7 @@
               <polyline points="17 8 12 3 7 8"></polyline>
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
-            Load Parameters
+            <span data-i18n="common.load">Load Parameters</span>
           </button>
         </div>
       </div>
@@ -121,7 +120,9 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <!-- Navaid Elevation with Unit Selector -->
         <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300"
+          <label
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="dme.navaidElevation"
             >Navaid Elevation</label
           >
           <div
@@ -132,20 +133,24 @@
               type="number"
               class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
               placeholder="Enter Navaid Elevation"
+              data-i18n="dme.navaidElevation"
+              data-i18n-attr="placeholder"
             />
             <select
               id="navaidUnit"
               onchange="handleUnitChange('navaidElevation', 'navaidUnit')"
               class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
             >
-              <option value="feet">Feet</option>
-              <option value="meters">Meters</option>
+              <option value="feet" data-i18n="common.feet">Feet</option>
+              <option value="meters" data-i18n="common.meters">Meters</option>
             </select>
           </div>
         </div>
         <!-- Fix Ground Distance -->
         <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300"
+          <label
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="dme.fixGroundDistance"
             >Fix Ground Distance (in NM)</label
           >
           <input
@@ -157,7 +162,9 @@
         </div>
         <!-- Aircraft Elevation -->
         <div class="space-y-2 md:col-span-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300"
+          <label
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="dme.aircraftElevation"
             >Aircraft Elevation</label
           >
           <div
@@ -168,14 +175,16 @@
               type="number"
               class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
               placeholder="Enter Aircraft Elevation"
+              data-i18n="dme.aircraftElevation"
+              data-i18n-attr="placeholder"
             />
             <select
               id="aircraftUnit"
               onchange="handleUnitChange('aircraftElevation', 'aircraftUnit')"
               class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
             >
-              <option value="feet">Feet</option>
-              <option value="meters">Meters</option>
+              <option value="feet" data-i18n="common.feet">Feet</option>
+              <option value="meters" data-i18n="common.meters">Meters</option>
             </select>
           </div>
         </div>
@@ -318,7 +327,7 @@
           >
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
           </svg>
-          Calculate Slant Range
+          <span data-i18n="common.calculate">Calculate</span>
         </button>
       </div>
 
@@ -327,7 +336,10 @@
         id="results"
         class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600"
       >
-        <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">
+        <h2
+          class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
+          data-i18n="dme.resultsTitle"
+        >
           DME Results
         </h2>
 
@@ -336,39 +348,57 @@
           <div
             class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
           >
-            <p class="text-sm text-gray-500 dark:text-gray-400">Slant Range</p>
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="dme.slantRange"
+            >
+              Slant Range
+            </p>
             <p class="text-lg font-semibold dark:text-white">
-              <span id="slantRange"></span> NM
+              <span id="slantRange"></span>
+              <span data-i18n="common.nauticalMiles">NM</span>
             </p>
           </div>
           <div
             class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
           >
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="dme.dmeTolerance"
+            >
               DME Tolerance
             </p>
             <p class="text-lg font-semibold dark:text-white">
-              ±<span id="dmeTolerance"></span> NM
+              ±<span id="dmeTolerance"></span>
+              <span data-i18n="common.nauticalMiles">NM</span>
             </p>
           </div>
           <div
             class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
           >
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="dme.slantRangeMin"
+            >
               Slant Range (Min)
             </p>
             <p class="text-lg font-semibold dark:text-white">
-              <span id="slantRangeMin"></span> NM
+              <span id="slantRangeMin"></span>
+              <span data-i18n="common.nauticalMiles">NM</span>
             </p>
           </div>
           <div
             class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
           >
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="dme.slantRangeMax"
+            >
               Slant Range (Max)
             </p>
             <p class="text-lg font-semibold dark:text-white">
-              <span id="slantRangeMax"></span> NM
+              <span id="slantRangeMax"></span>
+              <span data-i18n="common.nauticalMiles">NM</span>
             </p>
           </div>
         </div>
@@ -393,7 +423,7 @@
               ></path>
               <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
             </svg>
-            Copy Results as Table
+            <span data-i18n="common.copyTable">Copy Results as Table</span>
           </button>
         </div>
       </div>
@@ -610,9 +640,29 @@
         </table>
       `;
 
-        const blob = new Blob([htmlContent], { type: "text/html" });
+        // Build plain-text fallback
+        const textContent = [
+          ["Parameter", "Value"],
+          ["Navaid Elevation", `${navaidElevation} ${navaidUnit}`],
+          ["Fix Ground Distance", `${groundDistance} NM`],
+          ["Aircraft Elevation", `${aircraftElevation} ${aircraftUnit}`],
+          ["Slant Range", `${slantRange} NM`],
+          ["DME Tolerance", `±${dmeTolerance} NM`],
+          ["Slant Range (Min)", `${slantRangeMin} NM`],
+          ["Slant Range (Max)", `${slantRangeMax} NM`],
+        ]
+          .map((row) => row.join("\t"))
+          .join("\n");
+
+        const htmlBlob = new Blob([htmlContent], { type: "text/html" });
+        const textBlob = new Blob([textContent], { type: "text/plain" });
         navigator.clipboard
-          .write([new ClipboardItem({ "text/html": blob })])
+          .write([
+            new ClipboardItem({
+              "text/html": htmlBlob,
+              "text/plain": textBlob,
+            }),
+          ])
           .then(() => {
             alert("Results copied as table to clipboard!");
           })
@@ -620,6 +670,25 @@
             console.error("Copy failed:", err);
           });
       }
+    </script>
+    <script src="i18n/i18n.js"></script>
+    <script>
+      (function () {
+        function initI18n() {
+          if (window.I18N) {
+            I18N.init({
+              defaultLang: "en",
+              supported: ["en", "es"],
+              path: "i18n",
+            }).catch(console.error);
+          }
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", initI18n);
+        } else {
+          initI18n();
+        }
+      })();
     </script>
   </body>
 </html>
