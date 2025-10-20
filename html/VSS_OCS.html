@@ -1649,6 +1649,7 @@
       // 'type' is either "dvss", "ocs", "ils", "apv", or "loc". Each table will have two columns with 50% width.
       function copyToWordDocument(type) {
         let htmlContent = "";
+        let textRows = [];
         if (type === "dvss") {
           const thrElev = document.getElementById("thrElev").value || "N/A";
           const thrElevUnit =
@@ -1671,11 +1672,21 @@
               4
             )} ${ochUnit}</td></tr>
             <tr><td>VSS Distance</td><td>${vssDistance}</td></tr>
-          </table>
-        `;
+          </table>`;
+
+          textRows = [
+            ["Parameter", "Value"],
+            ["THR Elev", `${thrElev} ${thrElevUnit}`],
+            ["RDH", `${rdh} ${rdhUnit}`],
+            ["VPA (°)", `${parseFloat(vpa).toFixed(2)}`],
+            ["OCH", `${parseFloat(och).toFixed(4)} ${ochUnit}`],
+            ["VSS Distance", `${vssDistance}`],
+          ];
         } else if (type === "ocs") {
           const och = document.getElementById("och").value || "N/A";
+          const ochUnit = document.getElementById("ochUnit").value || "N/A";
           const rdh = document.getElementById("rdh").value || "N/A";
+          const rdhUnit = document.getElementById("rdhUnit").value || "N/A";
           const vpa = document.getElementById("vpa").value || "N/A";
           const ocsLength =
             document.getElementById("ocsLengthOutput").textContent || "N/A";
@@ -1691,8 +1702,10 @@
           htmlContent = `
           <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
             <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
-            <tr><td>OCH</td><td>${parseFloat(och).toFixed(4)} m</td></tr>
-            <tr><td>RDH</td><td>${rdh} m</td></tr>
+            <tr><td>OCH</td><td>${parseFloat(och).toFixed(
+              4
+            )} ${ochUnit}</td></tr>
+            <tr><td>RDH</td><td>${rdh} ${rdhUnit}</td></tr>
             <tr><td>VPA (°)</td><td>${parseFloat(vpa).toFixed(2)}</td></tr>
             <tr><td>OCS Length</td><td>${ocsLength}</td></tr>
             <tr><td>OCS E (Lateral)</td><td>${ocsE}</td></tr>
@@ -1703,13 +1716,28 @@
             <tr><td>OCS Elevation Adjustment</td><td>${parseFloat(
               ocsAdjust
             ).toFixed(4)} m</td></tr>
-          </table>
-        `;
+          </table>`;
+
+          textRows = [
+            ["Parameter", "Value"],
+            ["OCH", `${parseFloat(och).toFixed(4)} ${ochUnit}`],
+            ["RDH", `${rdh} ${rdhUnit}`],
+            ["VPA (°)", `${parseFloat(vpa).toFixed(2)}`],
+            ["OCS Length", `${ocsLength}`],
+            ["OCS E (Lateral)", `${ocsE}`],
+            ["OCS Elevation", `${parseFloat(ocsElev).toFixed(4)} m`],
+            ["OCS θ", `${parseFloat(ocsTheta).toFixed(2)}°`],
+            [
+              "OCS Elevation Adjustment",
+              `${parseFloat(ocsAdjust).toFixed(4)} m`,
+            ],
+          ];
         } else if (type === "ils") {
           const thrElev = document.getElementById("thrElevB").value || "N/A";
           const thrElevUnit =
             document.getElementById("thrElevUnitB").value || "N/A";
           const rdh = document.getElementById("rdhB").value || "N/A";
+          const rdhUnit = document.getElementById("rdhUnitB").value || "N/A";
           const gpAngle = document.getElementById("gpAngle").value || "N/A";
           const daDh = document.getElementById("daDh").value || "N/A";
           const daDhUnit = document.getElementById("daDhUnit").value || "N/A";
@@ -1726,7 +1754,7 @@
           <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
             <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
             <tr><td>THR Elev</td><td>${thrElev} ${thrElevUnit}</td></tr>
-            <tr><td>RDH</td><td>${rdh} m</td></tr>
+            <tr><td>RDH</td><td>${rdh} ${rdhUnit}</td></tr>
             <tr><td>GP Angle (°)</td><td>${parseFloat(gpAngle).toFixed(
               2
             )}</td></tr>
@@ -1735,13 +1763,25 @@
             <tr><td>OAS Height</td><td>${oasHeight}</td></tr>
             <tr><td>OAS Length</td><td>${oasLength}</td></tr>
             <tr><td>OAS Width</td><td>${oasWidth}</td></tr>
-          </table>
-        `;
+          </table>`;
+
+          textRows = [
+            ["Parameter", "Value"],
+            ["THR Elev", `${thrElev} ${thrElevUnit}`],
+            ["RDH", `${rdh} ${rdhUnit}`],
+            ["GP Angle (°)", `${parseFloat(gpAngle).toFixed(2)}`],
+            ["DA/DH", `${daDh} ${daDhUnit}`],
+            ["ILS Category", `CAT ${ilsCategory}`],
+            ["OAS Height", `${oasHeight}`],
+            ["OAS Length", `${oasLength}`],
+            ["OAS Width", `${oasWidth}`],
+          ];
         } else if (type === "apv") {
           const thrElev = document.getElementById("thrElevB").value || "N/A";
           const thrElevUnit =
             document.getElementById("thrElevUnitB").value || "N/A";
           const rdh = document.getElementById("rdhB").value || "N/A";
+          const rdhUnit = document.getElementById("rdhUnitB").value || "N/A";
           const gpAngle = document.getElementById("gpAngle").value || "N/A";
           const daDh = document.getElementById("daDh").value || "N/A";
           const daDhUnit = document.getElementById("daDhUnit").value || "N/A";
@@ -1757,7 +1797,7 @@
           <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
             <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
             <tr><td>THR Elev</td><td>${thrElev} ${thrElevUnit}</td></tr>
-            <tr><td>RDH</td><td>${rdh} m</td></tr>
+            <tr><td>RDH</td><td>${rdh} ${rdhUnit}</td></tr>
             <tr><td>GP Angle (°)</td><td>${parseFloat(gpAngle).toFixed(
               2
             )}</td></tr>
@@ -1766,13 +1806,25 @@
             <tr><td>OAS Height</td><td>${oasHeight}</td></tr>
             <tr><td>OAS Length</td><td>${oasLength}</td></tr>
             <tr><td>OAS Width</td><td>${oasWidth}</td></tr>
-          </table>
-        `;
+          </table>`;
+
+          textRows = [
+            ["Parameter", "Value"],
+            ["THR Elev", `${thrElev} ${thrElevUnit}`],
+            ["RDH", `${rdh} ${rdhUnit}`],
+            ["GP Angle (°)", `${parseFloat(gpAngle).toFixed(2)}`],
+            ["DA/DH", `${daDh} ${daDhUnit}`],
+            ["APV Type", `APV ${apvType}`],
+            ["OAS Height", `${oasHeight}`],
+            ["OAS Length", `${oasLength}`],
+            ["OAS Width", `${oasWidth}`],
+          ];
         } else if (type === "loc") {
           const thrElev = document.getElementById("thrElevB").value || "N/A";
           const thrElevUnit =
             document.getElementById("thrElevUnitB").value || "N/A";
           const rdh = document.getElementById("rdhB").value || "N/A";
+          const rdhUnit = document.getElementById("rdhUnitB").value || "N/A";
           const gpAngle = document.getElementById("gpAngle").value || "N/A";
           const daDh = document.getElementById("daDh").value || "N/A";
           const daDhUnit = document.getElementById("daDhUnit").value || "N/A";
@@ -1789,7 +1841,7 @@
           <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
             <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
             <tr><td>THR Elev</td><td>${thrElev} ${thrElevUnit}</td></tr>
-            <tr><td>RDH</td><td>${rdh} m</td></tr>
+            <tr><td>RDH</td><td>${rdh} ${rdhUnit}</td></tr>
             <tr><td>GP Angle (°)</td><td>${parseFloat(gpAngle).toFixed(
               2
             )}</td></tr>
@@ -1800,25 +1852,23 @@
             <tr><td>OAS Height</td><td>${oasHeight}</td></tr>
             <tr><td>OAS Length</td><td>${oasLength}</td></tr>
             <tr><td>OAS Width</td><td>${oasWidth}</td></tr>
-          </table>
-        `;
+          </table>`;
+
+          textRows = [
+            ["Parameter", "Value"],
+            ["THR Elev", `${thrElev} ${thrElevUnit}`],
+            ["RDH", `${rdh} ${rdhUnit}`],
+            ["GP Angle (°)", `${parseFloat(gpAngle).toFixed(2)}`],
+            ["DA/DH", `${daDh} ${daDhUnit}`],
+            ["LOC Sensitivity", `${parseFloat(locSensitivity).toFixed(2)}`],
+            ["OAS Height", `${oasHeight}`],
+            ["OAS Length", `${oasLength}`],
+            ["OAS Width", `${oasWidth}`],
+          ];
         }
 
         const blob = new Blob([htmlContent], { type: "text/html" });
-        // Plain-text fallback built from the same values
-        const textContent = [
-          ["Parameter", "Value"],
-          ["THR Elev", `${thrElev} ${thrElevUnit}`],
-          ["RDH", `${rdh} m`],
-          ["GP Angle (°)", `${parseFloat(gpAngle).toFixed(2)}`],
-          ["DA/DH", `${daDh} ${daDhUnit}`],
-          ["LOC Sensitivity", `${parseFloat(locSensitivity).toFixed(2)}`],
-          ["OAS Height", `${oasHeight}`],
-          ["OAS Length", `${oasLength}`],
-          ["OAS Width", `${oasWidth}`],
-        ]
-          .map((r) => r.join("\t"))
-          .join("\n");
+        const textContent = textRows.map((r) => r.join("\t")).join("\n");
         const textBlob = new Blob([textContent], { type: "text/plain" });
         navigator.clipboard
           .write([
