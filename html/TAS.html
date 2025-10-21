@@ -29,6 +29,7 @@
       };
     </script>
     <link rel="stylesheet" href="dark-mode.css" />
+    <script src="i18n/i18n.js"></script>
   </head>
   <body
     class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4"
@@ -54,7 +55,7 @@
           <path d="M12 18V6"></path>
           <path d="M15 9l-3-3-3 3"></path>
         </svg>
-        True Airspeed (TAS) Calculator
+        <span data-i18n="tas.title">True Airspeed (TAS) Calculator</span>
       </h1>
 
       <!-- File Upload Section -->
@@ -62,8 +63,9 @@
         <label
           for="loadFile"
           class="text-gray-700 dark:text-gray-300 font-medium"
+          data-i18n="rateTurn.loadParamsFile"
         >
-          Upload Saved ISA Parameters File
+          Load Parameters File (JSON)
         </label>
         <div class="flex gap-3 flex-wrap">
           <button
@@ -86,7 +88,7 @@
               <polyline points="17 21 17 13 7 13 7 21"></polyline>
               <polyline points="7 3 7 8 15 8"></polyline>
             </svg>
-            Save Parameters
+            <span data-i18n="common.save">Save Parameters</span>
           </button>
           <input
             id="loadFile"
@@ -113,7 +115,7 @@
               <polyline points="17 8 12 3 7 8"></polyline>
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
-            Load Parameters
+            <span data-i18n="common.load">Load Parameters</span>
           </button>
         </div>
       </div>
@@ -121,7 +123,9 @@
       <!-- Inputs for TAS Calculation -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300"
+          <label
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="tas.ias"
             >Indicated Airspeed (IAS)</label
           >
           <div
@@ -132,16 +136,24 @@
               type="number"
               class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
               placeholder="Enter IAS"
+              data-i18n="tas.phEnterIAS"
+              data-i18n-attr="placeholder"
             />
             <div
               class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
             >
-              <span class="text-gray-700 dark:text-white">knots</span>
+              <span
+                class="text-gray-700 dark:text-white"
+                data-i18n="common.knots"
+                >knots</span
+              >
             </div>
           </div>
         </div>
         <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300"
+          <label
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="tas.altitude"
             >Altitude</label
           >
           <div
@@ -152,26 +164,32 @@
               type="number"
               class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
               placeholder="Enter altitude"
+              data-i18n="tas.phEnterAltitude"
+              data-i18n-attr="placeholder"
             />
             <select
               id="altitudeUnit"
               onchange="handleUnitChange('altitude', 'altitudeUnit')"
               class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
             >
-              <option value="ft" selected>ft</option>
-              <option value="m">m</option>
+              <option value="ft" selected data-i18n="common.feet">ft</option>
+              <option value="m" data-i18n="common.meters">m</option>
             </select>
           </div>
         </div>
         <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300"
+          <label
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="tas.isaDeviationVar"
             >ISA Deviation (VAR) in °C</label
           >
           <input
             id="isaDeviation"
             type="number"
             class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            placeholder="Enter ISA Deviation or Load Parameters"
+            placeholder="Enter ISA Deviation"
+            data-i18n="tas.phEnterIsaDeviation"
+            data-i18n-attr="placeholder"
           />
         </div>
       </div>
@@ -193,7 +211,7 @@
           >
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
           </svg>
-          Calculate True Airspeed
+          <span data-i18n="tas.calcTas">Calculate True Airspeed</span>
         </button>
       </div>
 
@@ -202,7 +220,10 @@
         id="tasResults"
         class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600"
       >
-        <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">
+        <h2
+          class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
+          data-i18n="tas.tasResultsTitle"
+        >
           TAS Results
         </h2>
 
@@ -211,7 +232,12 @@
           <div
             class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
           >
-            <p class="text-sm text-gray-500 dark:text-gray-400">k Factor</p>
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="tas.kFactor"
+            >
+              k Factor
+            </p>
             <p class="text-lg font-semibold dark:text-white">
               <span id="kFactor"></span>
             </p>
@@ -219,11 +245,14 @@
           <div
             class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
           >
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="tas.trueAirspeed"
+            >
               True Airspeed (TAS)
             </p>
             <p class="text-lg font-semibold dark:text-white">
-              <span id="tas"></span> knots
+              <span id="tas"></span> <span data-i18n="common.knots">knots</span>
             </p>
           </div>
         </div>
@@ -248,7 +277,7 @@
               ></path>
               <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
             </svg>
-            Copy Results as Table
+            <span data-i18n="common.copyTable">Copy Results as Table</span>
           </button>
         </div>
       </div>
@@ -437,21 +466,57 @@
         </table>
       `;
 
-        // Create a Blob for the content
-        const blob = new Blob([htmlContent], { type: "text/html" });
+        // Build a plain-text fallback (tab-separated)
+        const textContent = [
+          ["Parameter", "Value"],
+          ["Indicated Airspeed (IAS)", `${ias} knots`],
+          ["Altitude", `${altitude} ${altitudeUnit}`],
+          ["ISA Deviation (VAR)", `${isaDeviation} °C`],
+          ["k Factor", `${kFactor}`],
+          ["True Airspeed (TAS)", `${tas} knots`],
+        ]
+          .map((row) => row.join("\t"))
+          .join("\n");
 
-        // Use Clipboard API to copy the Blob contents
+        const htmlBlob = new Blob([htmlContent], { type: "text/html" });
+        const textBlob = new Blob([textContent], { type: "text/plain" });
+
+        // Use Clipboard API to copy both HTML and plain text
         navigator.clipboard
-          .write([new ClipboardItem({ [blob.type]: blob })])
+          .write([
+            new ClipboardItem({
+              "text/html": htmlBlob,
+              "text/plain": textBlob,
+            }),
+          ])
           .then(() => {
             alert(
-              "Formatted table copied to clipboard! You can paste it into Word."
+              "Formatted table copied to clipboard! You can paste it into Word or a text editor."
             );
           })
           .catch((err) => {
             console.error("Error copying content to clipboard:", err);
           });
       }
+    </script>
+    <script>
+      // Initialize i18n robustly (runs immediately if DOM is ready, or on DOMContentLoaded)
+      (function () {
+        function initI18n() {
+          if (window.I18N) {
+            I18N.init({
+              defaultLang: "en",
+              supported: ["en", "es"],
+              path: "i18n",
+            }).catch(console.error);
+          }
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", initI18n);
+        } else {
+          initI18n();
+        }
+      })();
     </script>
   </body>
 </html>
