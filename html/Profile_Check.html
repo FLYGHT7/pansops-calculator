@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Profile Estimator</title>
+  <title data-i18n="profile.title">Profile Estimator</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -36,12 +36,12 @@
       <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 sm:h-8 sm:w-8 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M2 12h20M2 12l10-10M2 12l10 10"></path>
       </svg>
-      Profile Estimator
+      <span data-i18n="profile.title">Profile Estimator</span>
     </h1>
     
     <!-- Load/Save Parameters -->
     <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
-      <label for="loadFile" class="text-gray-700 dark:text-gray-300 font-medium">
+      <label for="loadFile" class="text-gray-700 dark:text-gray-300 font-medium" data-i18n="rateTurn.loadParamsFile">
         Load Parameters File (JSON)
       </label>
       <div class="flex gap-3 flex-wrap">
@@ -52,7 +52,7 @@
             <polyline points="17 21 17 13 7 13 7 21"></polyline>
             <polyline points="7 3 7 8 15 8"></polyline>
           </svg>
-          Save Parameters
+          <span data-i18n="common.save">Save Parameters</span>
         </button>
         <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
         <button onclick="document.getElementById('loadFile').click()"
@@ -62,7 +62,7 @@
             <polyline points="17 8 12 3 7 8"></polyline>
             <line x1="12" y1="3" x2="12" y2="15"></line>
           </svg>
-          Load Parameters
+          <span data-i18n="common.load">Load Parameters</span>
         </button>
       </div>
     </div>
@@ -71,23 +71,23 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <!-- THR Elevation -->
       <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">THR Elevation</label>
+  <label class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="profile.thrElev">THR Elev (ft)</label>
         <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
           <input id="thrElev" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter THR Elev" />
           <select id="thrElevUnit" onchange="handleUnitChange('thrElev', 'thrElevUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
-            <option value="ft" selected>ft</option>
-            <option value="m">m</option>
+            <option value="ft" selected data-i18n="common.feet">ft</option>
+            <option value="m" data-i18n="common.meters">m</option>
           </select>
         </div>
       </div>
       <!-- TCH -->
       <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">TCH</label>
+        <label class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="profile.tch">TCH (ft)</label>
         <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
           <input id="tch" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter TCH" />
           <select id="tchUnit" onchange="handleUnitChange('tch', 'tchUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
-            <option value="ft" selected>ft</option>
-            <option value="m">m</option>
+            <option value="ft" selected data-i18n="common.feet">ft</option>
+            <option value="m" data-i18n="common.meters">m</option>
           </select>
         </div>
       </div>
@@ -97,67 +97,67 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
       <!-- VPA -->
       <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">Vertical Path Angle (°)</label>
+  <label class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="profile.vpa">VPA (°)</label>
         <input id="vpa" type="number" step="0.01" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter VPA" />
       </div>
       <!-- Distance to FAF -->
       <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">Distance to FAF (NM)</label>
+  <label class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="profile.distToFaf">Distance to FAF (NM)</label>
         <input id="distToFaf" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter Distance to FAF" />
       </div>
       <!-- Intermediate Length -->
       <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">Intermediate Length (NM)</label>
+  <label class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="profile.intermediateLength">Intermediate Length (NM)</label>
         <input id="intermediateLength" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter Intermediate Length" />
       </div>
       <!-- Initial Length -->
       <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300">Initial Length (NM)</label>
+  <label class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="profile.initialLength">Initial Length (NM)</label>
         <input id="initialLength" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter Initial Length" />
       </div>
     </div>
     
     <!-- Calculate Button -->
     <div class="flex justify-end mt-6">
-      <button onclick="estimateProfile()" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center">
+  <button onclick="estimateProfile()" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
         </svg>
-        Estimate Profile
+        <span data-i18n="common.calculate">Calculate</span>
       </button>
     </div>
     
     <!-- Results and SVG Diagram -->
     <div id="results" class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600">
-      <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">Profile Results</h2>
+  <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4" data-i18n="profile.resultsTitle">Profile Results</h2>
       
       <!-- Output values in a grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400">THR Elevation</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="profile.thrElev">THR Elev (ft)</p>
           <p class="text-lg font-semibold dark:text-white"><span id="outputThrElev"></span> ft</p>
         </div>
         <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400">TCH</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="profile.tch">TCH (ft)</p>
           <p class="text-lg font-semibold dark:text-white"><span id="outputTch"></span> ft</p>
         </div>
         <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400">FAF Elevation</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="profile.fafElevation">FAF Elevation (ft)</p>
           <p class="text-lg font-semibold dark:text-white"><span id="fafElevation"></span> ft</p>
         </div>
         <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400">Intermediate Elevation</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="profile.intermediateElevation">Intermediate Elevation (ft)</p>
           <p class="text-lg font-semibold dark:text-white"><span id="intermediateElevation"></span> ft</p>
         </div>
         <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400">Initial Elevation</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="profile.initialElevation">Initial Elevation (ft)</p>
           <p class="text-lg font-semibold dark:text-white"><span id="initialElevation"></span> ft</p>
         </div>
       </div>
       
       <!-- SVG Profile Diagram -->
       <div class="mt-6">
-        <h3 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Profile Diagram:</h3>
+  <h3 class="font-medium text-gray-700 dark:text-gray-300 mb-2" data-i18n="profile.diagramTitle">Profile Diagram:</h3>
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm overflow-auto">
           <svg id="profileSvg" width="100%" height="400" viewBox="-20 0 520 400" xmlns="http://www.w3.org/2000/svg" class="  width="100%" height="400" viewBox="-20 0 520 400" xmlns="http://www.w3.org/2000/svg" class="mx-auto dark:text-white">
             <!-- Polyline for profile -->
@@ -169,12 +169,12 @@
       </div>
       
       <div class="mt-6 flex justify-end">
-        <button onclick="copyToWordDocument()" class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center">
+  <button onclick="copyToWordDocument()" class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
             <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
           </svg>
-          Copy to Word Document
+          <span data-i18n="common.copyToWord">Copy to Word Document</span>
         </button>
       </div>
     </div>
@@ -440,10 +440,37 @@
         </table>
       `;
       const blob = new Blob([htmlContent], { type: "text/html" });
-      navigator.clipboard.write([new ClipboardItem({ "text/html": blob })])
-        .then(() => { alert("Results copied; paste into Word."); })
+      // Plain-text fallback by stripping tags and using tabs/newlines
+      const stripped = htmlContent
+        .replace(/<table[^>]*>/gi, "")
+        .replace(/<tr[^>]*>/gi, "")
+        .replace(/<th[^>]*>/gi, "")
+        .replace(/<td[^>]*>/gi, "")
+        .replace(/<\/th>/gi, "\t")
+        .replace(/<\/td>/gi, "\t")
+        .replace(/<\/tr>/gi, "\n")
+        .replace(/<\/table>/gi, "")
+        .trim();
+      const textBlob = new Blob([stripped], { type: "text/plain" });
+      navigator.clipboard.write([new ClipboardItem({ "text/html": blob, "text/plain": textBlob })])
+        .then(() => { alert("Results copied; paste into Word or a text editor."); })
         .catch(err => { console.error("Copy failed:", err); });
     }
+  </script>
+  <script src="i18n/i18n.js"></script>
+  <script>
+    (function(){
+      function initI18n(){
+        if (window.I18N) {
+          I18N.init({ defaultLang: 'en', supported: ['en','es'], path: 'i18n' }).catch(console.error);
+        }
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initI18n);
+      } else {
+        initI18n();
+      }
+    })();
   </script>
 </body>
 </html>

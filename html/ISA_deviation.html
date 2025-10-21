@@ -29,6 +29,7 @@
       };
     </script>
     <link rel="stylesheet" href="dark-mode.css" />
+    <script src="i18n/i18n.js"></script>
   </head>
   <body
     class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4"
@@ -39,18 +40,33 @@
       <!-- Header with title and buttons -->
       <div class="flex flex-wrap justify-between items-center mb-6">
         <h1
-          class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300"
+          class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 flex items-center"
+          data-i18n="isa.title"
         >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-7 w-7 sm:h-8 sm:w-8 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"
+            ></path>
+          </svg>
           ISA Deviation Calculator
         </h1>
         <div class="flex gap-3">
           <button
             onclick="saveParameters()"
-            class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center"
+            class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-2"
+              class="h-5 w-5 mr-1"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -64,7 +80,7 @@
               <polyline points="17 21 17 13 7 13 7 21"></polyline>
               <polyline points="7 3 7 8 15 8"></polyline>
             </svg>
-            Save Parameters
+            <span data-i18n="common.save">Save Parameters</span>
           </button>
           <input
             id="loadFile"
@@ -75,11 +91,11 @@
           />
           <button
             onclick="document.getElementById('loadFile').click()"
-            class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center"
+            class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-2"
+              class="h-5 w-5 mr-1"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -91,7 +107,7 @@
               <polyline points="17 8 12 3 7 8"></polyline>
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
-            Load Parameters
+            <span data-i18n="common.load">Load Parameters</span>
           </button>
         </div>
       </div>
@@ -99,7 +115,9 @@
       <!-- First row: ICAO, Elevation, Unit -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300"
+          <label
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="isa.icao"
             >ICAO Airport Code</label
           >
           <input
@@ -110,7 +128,9 @@
           />
         </div>
         <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300"
+          <label
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="isa.elevation"
             >Aerodrome Elevation</label
           >
           <input
@@ -121,7 +141,9 @@
           />
         </div>
         <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300"
+          <label
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="common.unit"
             >Unit</label
           >
           <select
@@ -138,7 +160,9 @@
       <!-- Second row: Reference Temperature, Rounding Step -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300"
+          <label
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="isa.tref"
             >Reference Temperature (T<sub>REF</sub>) °C</label
           >
           <input
@@ -150,7 +174,9 @@
           />
         </div>
         <div class="space-y-2">
-          <label class="block font-medium text-gray-700 dark:text-gray-300"
+          <label
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="isa.roundStep"
             >Rounding Step (default 5)</label
           >
           <input
@@ -178,13 +204,9 @@
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <path
-              d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
-            ></path>
-            <path d="M17 13H7"></path>
-            <path d="M12 8v10"></path>
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
           </svg>
-          Calculate
+          <span data-i18n="common.calculate">Calculate</span>
         </button>
       </div>
 
@@ -194,7 +216,7 @@
         class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600"
       >
         <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">
-          ISA Deviation Results
+          <span data-i18n="isa.resultsTitle">ISA Deviation Results</span>
         </h2>
 
         <!-- Output values in a grid -->
@@ -202,7 +224,10 @@
           <div
             class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
           >
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="isa.tisa"
+            >
               T<sub>ISA</sub>
             </p>
             <p class="text-lg font-semibold dark:text-white">
@@ -212,7 +237,12 @@
           <div
             class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
           >
-            <p class="text-sm text-gray-500 dark:text-gray-400">ΔISA</p>
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="isa.delta"
+            >
+              ΔISA
+            </p>
             <p class="text-lg font-semibold dark:text-white">
               <span id="deltaISA"></span> °C
             </p>
@@ -220,7 +250,12 @@
           <div
             class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
           >
-            <p class="text-sm text-gray-500 dark:text-gray-400">Rounded ΔISA</p>
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="isa.roundedDelta"
+            >
+              Rounded ΔISA
+            </p>
             <p class="text-lg font-semibold dark:text-white">
               <span id="roundedDeltaISA"></span> °C
             </p>
@@ -228,7 +263,10 @@
           <div
             class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
           >
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="isa.isaPlusDelta"
+            >
               ISA + ΔISA (for calculations)
             </p>
             <p class="text-lg font-semibold dark:text-white">
@@ -257,7 +295,7 @@
               ></path>
               <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
             </svg>
-            Copy Results as Table
+            <span data-i18n="common.copyTable">Copy Results as Table</span>
           </button>
         </div>
       </div>
@@ -280,6 +318,12 @@
 
         // Initialize unit selectors
         initializeUnitSelectors();
+        // Initialize i18n
+        I18N.init({
+          defaultLang: "en",
+          supported: ["en", "es"],
+          path: "i18n",
+        }).catch(console.error);
       });
 
       // Function to handle unit conversion when unit selector changes
@@ -320,7 +364,10 @@
 
         if (isNaN(elevation) || isNaN(tRef)) {
           alert(
-            "Please enter valid values for both Aerodrome Elevation and Reference Temperature."
+            I18N.get(
+              "messages.enterValid",
+              "Please enter valid values for both Aerodrome Elevation and Reference Temperature."
+            )
           );
           return;
         }
@@ -393,9 +440,11 @@
             document.getElementById("roundStep").value = data.roundStep || "5";
             document.getElementById("icaoCode").value = data.icaoCode || "";
 
-            alert("Parameters successfully loaded!");
+            alert(
+              I18N.get("messages.saved", "Parameters successfully loaded!")
+            );
           } catch (err) {
-            alert("Invalid JSON file.");
+            alert(I18N.get("messages.invalidJson", "Invalid JSON file."));
           }
         };
         reader.readAsText(file);
@@ -416,7 +465,7 @@
         const finalISA =
           document.getElementById("finalISA").textContent || "N/A";
 
-        // Create a formatted Word-style table as HTML
+        // Create a formatted table as HTML with proper symbols and subscripts
         const htmlContent = `
         <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
           <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
@@ -424,22 +473,46 @@
           <tr><td>Aerodrome Elevation</td><td>${elevation} ${elevationUnit}</td></tr>
           <tr><td>Reference Temperature</td><td>${tRef} °C</td></tr>
           <tr><td>Rounding Step</td><td>${roundStep}</td></tr>
-          <tr><td>T_ISA</td><td>${tISA} °C</td></tr>
-          <tr><td>Delta_ISA</td><td>${deltaISA} °C</td></tr>
-          <tr><td>Rounded Delta_ISA</td><td>${roundedDeltaISA} °C</td></tr>
-          <tr><td>ISA + Delta_ISA</td><td>${finalISA}</td></tr>
+          <tr><td>T<sub>ISA</sub></td><td>${tISA} °C</td></tr>
+          <tr><td>ΔISA</td><td>${deltaISA} °C</td></tr>
+          <tr><td>Rounded ΔISA</td><td>${roundedDeltaISA} °C</td></tr>
+          <tr><td>ISA + ΔISA</td><td>${finalISA}</td></tr>
         </table>
       `;
 
-        // Create a Blob for the content
-        const blob = new Blob([htmlContent], { type: "text/html" });
+        // Also create a plain-text fallback with readable symbols
+        const textContent = [
+          ["Parameter", "Value"],
+          ["ICAO Airport Code", `${icaoCode}`],
+          ["Aerodrome Elevation", `${elevation} ${elevationUnit}`],
+          ["Reference Temperature", `${tRef} °C`],
+          ["Rounding Step", `${roundStep}`],
+          ["TISA", `${tISA} °C`],
+          ["ΔISA", `${deltaISA} °C`],
+          ["Rounded ΔISA", `${roundedDeltaISA} °C`],
+          ["ISA + ΔISA", `${finalISA}`],
+        ]
+          .map((row) => row.join("\t"))
+          .join("\n");
 
-        // Use Clipboard API to copy the Blob contents
+        // Create Blobs for the content
+        const htmlBlob = new Blob([htmlContent], { type: "text/html" });
+        const textBlob = new Blob([textContent], { type: "text/plain" });
+
+        // Use Clipboard API to copy both HTML and plain-text representations
         navigator.clipboard
-          .write([new ClipboardItem({ [blob.type]: blob })])
+          .write([
+            new ClipboardItem({
+              [htmlBlob.type]: htmlBlob,
+              [textBlob.type]: textBlob,
+            }),
+          ])
           .then(() => {
             alert(
-              "Formatted table copied to clipboard! You can paste it into Word."
+              I18N.get(
+                "messages.copied",
+                "Formatted table copied to clipboard! You can paste it into Word or any text editor."
+              )
             );
           })
           .catch((err) => {

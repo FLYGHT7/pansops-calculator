@@ -1,0 +1,4 @@
+# Ignore all Markdown files in docs (recursively), except the root docs/README.md
+/docs/*.md
+/docs/**/*.md
+!/docs/README.md
