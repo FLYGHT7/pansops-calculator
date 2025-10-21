@@ -2,3 +2,4 @@
 /docs/*.md
 /docs/**/*.md
 !/docs/README.md
+!/docs/PR-*.md
