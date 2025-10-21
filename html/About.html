@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="about.title">About / Changelog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="dark-mode.css" />
+    <script src="i18n/i18n.js"></script>
+  </head>
+  <body class="bg-gray-50 dark:bg-gray-900 min-h-screen p-6">
+    <div
+      class="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 p-6"
+    >
+      <h1
+        class="text-2xl font-bold text-primary-700 dark:text-primary-300 mb-4"
+        data-i18n="about.title"
+      >
+        About / Changelog
+      </h1>
+      <p
+        class="text-gray-600 dark:text-gray-300 mb-6"
+        data-i18n="about.description"
+      >
+        Version history and notable changes for the Aviation Calculators Suite.
+      </p>
+
+      <div class="space-y-6">
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
+            v0.2.0
+          </h2>
+          <ul class="list-disc pl-6 text-gray-700 dark:text-gray-300">
+            <li data-i18n="about.v020.i18n">
+              OCS unit fixes, VSS improvements, and language
+              internationalization (i18n).
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
+            v0.1.0
+          </h2>
+          <ul class="list-disc pl-6 text-gray-700 dark:text-gray-300">
+            <li data-i18n="about.v010.initial">Initial release.</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      // Mirror dark mode from parent if embedded in Main.html
+      document.addEventListener("DOMContentLoaded", function () {
+        try {
+          if (
+            window.parent &&
+            window.parent.document.documentElement.classList.contains("dark")
+          ) {
+            document.documentElement.classList.add("dark");
+          }
+        } catch {}
+
+        I18N.init({
+          defaultLang: "en",
+          supported: ["en", "es"],
+          path: "i18n",
+        }).catch(console.error);
+      });
+    </script>
+  </body>
+</html>
