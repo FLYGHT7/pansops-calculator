@@ -191,5 +191,15 @@
     "copied": "Formatted table copied to clipboard! You can paste it into Word or any text editor.",
     "invalidJson": "Invalid JSON file.",
     "invalidBearing": "Please enter a valid bearing value."
+  },
+  "about": {
+    "title": "About / Changelog",
+    "description": "Version history and notable changes for the Aviation Calculators Suite.",
+    "v020": {
+      "i18n": "OCS unit fixes, VSS improvements, and language internationalization (i18n)."
+    },
+    "v010": {
+      "initial": "Initial release."
+    }
   }
 }

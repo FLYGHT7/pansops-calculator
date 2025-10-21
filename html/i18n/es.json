@@ -191,5 +191,15 @@
     "copied": "¡Tabla formateada copiada al portapapeles! Puede pegarla en Word o en cualquier editor.",
     "invalidJson": "Archivo JSON inválido.",
     "invalidBearing": "Ingrese un valor de rumbo válido."
+  },
+  "about": {
+    "title": "Acerca de / Cambios",
+    "description": "Historial de versiones y cambios destacados de la Suite de Calculadoras de Aviación.",
+    "v020": {
+      "i18n": "Correcciones de unidades OCS, mejoras en VSS e internacionalización de idioma (i18n)."
+    },
+    "v010": {
+      "initial": "Versión inicial."
+    }
   }
 }
