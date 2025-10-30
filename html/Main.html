@@ -204,7 +204,13 @@
 
         <div class="py-4 flex flex-col justify-between h-full">
           <nav>
-            <ul class="space-y-1 px-2">
+            <ul class="space-y-1.5 px-2">
+              <!-- Section: Calculators -->
+              <li
+                class="px-3 mt-2 mb-1 text-[11px] uppercase tracking-wide text-gray-400 dark:text-gray-500 select-none"
+              >
+                <span data-i18n="sections.calculators">Calculators</span>
+              </li>
               <li>
                 <button
                   id="isaButton"
@@ -418,6 +424,29 @@
                   </svg>
                   <span data-i18n="bearings.title">Bearings Angles</span>
                 </button>
+              </li>
+              <!-- Group separator -->
+              <li><div class="my-2 border-t border-gray-700/50"></div></li>
+              <!-- Section: Support -->
+              <li
+                class="px-3 mb-1 text-[11px] uppercase tracking-wide text-gray-400 dark:text-gray-500 select-none"
+              >
+                <span data-i18n="sections.support">Support</span>
+              </li>
+              <!-- Report Issues (external link) -->
+              <li>
+                <a
+                  id="reportIssueLink"
+                  href="https://github.com/FLYGHT7/pansops-calculator/issues"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                >
+                  <i
+                    class="fas fa-bug text-primary-400 text-xl w-5 h-5 mr-3"
+                  ></i>
+                  <span data-i18n="common.reportIssue">Report an issue</span>
+                </a>
               </li>
               <!-- About / Changelog Button -->
               <li>

@@ -10,6 +10,7 @@
     "darkMode": "Dark Mode",
     "appName": "Aviation Tools",
     "suiteName": "Aviation Calculators Suite",
+    "reportIssue": "Report an issue",
     "feet": "ft",
     "meters": "m",
     "knots": "knots",
@@ -201,5 +202,9 @@
     "v010": {
       "initial": "Initial release."
     }
+  },
+  "sections": {
+    "calculators": "Calculators",
+    "support": "Support"
   }
 }
