@@ -71,6 +71,126 @@
         opacity: 0;
       }
 
+      /* Sidebar scrollbar styling (visible but subtle) */
+      #sidebar {
+        scrollbar-width: thin; /* Firefox */
+        scrollbar-color: #334155 transparent; /* thumb, track */
+      }
+      #sidebar::-webkit-scrollbar {
+        width: 10px;
+      }
+      #sidebar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      #sidebar::-webkit-scrollbar-thumb {
+        background-color: #334155; /* slate-700 */
+        border-radius: 8px;
+        border: 2px solid transparent;
+        background-clip: content-box;
+      }
+      .dark #sidebar::-webkit-scrollbar-thumb {
+        background-color: #475569; /* slate-600 */
+      }
+
+      /* Keyboard focus and hover polish for sidebar items */
+      .sidebar-item {
+        outline: none;
+      }
+      .sidebar-item:focus-visible {
+        box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.6) inset; /* primary-400 */
+        border-radius: 0.5rem;
+      }
+      .sidebar-item:hover {
+        background-color: rgba(56, 189, 248, 0.08); /* primary-400 at ~8% */
+      }
+      .sidebar-item i,
+      .sidebar-item svg {
+        transition: color 0.15s ease-in-out, transform 0.12s ease-in-out;
+      }
+      .sidebar-item:hover i,
+      .sidebar-item:hover svg {
+        color: #7dd3fc; /* primary-300 */
+      }
+      .sidebar-item:active i,
+      .sidebar-item:active svg {
+        transform: translateY(0.5px);
+      }
+
+      /* Limit long item labels to 2 lines for tidy rhythm */
+      .sidebar-item span[data-i18n] {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        line-clamp: 2; /* standard property for future support */
+        overflow: hidden;
+        white-space: normal;
+        line-height: 1.2;
+      }
+
+      /* Sticky section headers inside the scrollable sidebar */
+      .section-header {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        backdrop-filter: saturate(120%) blur(4px);
+        -webkit-backdrop-filter: saturate(120%) blur(4px);
+      }
+      .section-header .label {
+        display: inline-block;
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+      }
+
+      /* Scroll shadows for sidebar to hint overflow */
+      #sidebar {
+        position: relative;
+      }
+      #sidebar::before,
+      #sidebar::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 12px;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s ease-in-out;
+      }
+      #sidebar::before {
+        top: 0;
+        background: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.22),
+          rgba(0, 0, 0, 0)
+        );
+      }
+      #sidebar::after {
+        bottom: 0;
+        background: linear-gradient(
+          to top,
+          rgba(0, 0, 0, 0.22),
+          rgba(0, 0, 0, 0)
+        );
+      }
+      #sidebar.shadow-top::before {
+        opacity: 1;
+      }
+      #sidebar.shadow-bottom::after {
+        opacity: 1;
+      }
+
+      /* Compact density mode for sidebar */
+      #sidebar.compact .sidebar-item {
+        padding: 0.5rem !important; /* ~p-2 */
+      }
+      #sidebar.compact .sidebar-item .mr-3 {
+        margin-right: 0.5rem !important; /* ~mr-2 */
+      }
+      #sidebar.compact .section-header {
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+      }
+
       /* Improved mobile sidebar styles */
       @media (max-width: 768px) {
         .sidebar-closed {
@@ -207,9 +327,11 @@
             <ul class="space-y-1.5 px-2">
               <!-- Section: Calculators -->
               <li
-                class="px-3 mt-2 mb-1 text-[11px] uppercase tracking-wide text-gray-400 dark:text-gray-500 select-none"
+                class="section-header px-3 mt-2 mb-1 text-[11px] uppercase tracking-wide text-gray-400 dark:text-gray-500 select-none bg-gray-800/80 dark:bg-gray-900/80"
               >
-                <span data-i18n="sections.calculators">Calculators</span>
+                <span class="label" data-i18n="sections.calculators"
+                  >Calculators</span
+                >
               </li>
               <li>
                 <button
@@ -352,6 +474,12 @@
                   <span data-i18n="vssOcs.title">VSS/OCS Parameters</span>
                 </button>
               </li>
+              <!-- Subsection: ILS tools -->
+              <li
+                class="section-header px-3 mt-2 mb-1 text-[11px] uppercase tracking-wide text-gray-400 dark:text-gray-500 select-none bg-gray-800/80 dark:bg-gray-900/80"
+              >
+                <span class="label" data-i18n="sections.ils">ILS</span>
+              </li>
               <!-- New ILS Height Calculations Button -->
               <li>
                 <button
@@ -429,9 +557,9 @@
               <li><div class="my-2 border-t border-gray-700/50"></div></li>
               <!-- Section: Support -->
               <li
-                class="px-3 mb-1 text-[11px] uppercase tracking-wide text-gray-400 dark:text-gray-500 select-none"
+                class="section-header px-3 mb-1 text-[11px] uppercase tracking-wide text-gray-400 dark:text-gray-500 select-none bg-gray-800/80 dark:bg-gray-900/80"
               >
-                <span data-i18n="sections.support">Support</span>
+                <span class="label" data-i18n="sections.support">Support</span>
               </li>
               <!-- Report Issues (external link) -->
               <li>
@@ -484,6 +612,30 @@
                 ></div>
                 <div
                   id="darkModeIndicator"
+                  class="absolute left-0 w-5 h-5 transition duration-200 transform bg-white rounded-full shadow"
+                ></div>
+              </div>
+            </button>
+
+            <!-- Compact Mode Toggle -->
+            <button
+              id="compactModeToggle"
+              class="w-full flex items-center justify-between p-3 text-gray-300 rounded-lg hover:bg-gray-700 mb-4 transition-colors"
+            >
+              <div class="flex items-center">
+                <i
+                  class="fas fa-compress-arrows-alt text-primary-400 text-xl w-5 h-5 mr-3"
+                ></i>
+                <span data-i18n="common.compactMode">Compact Mode</span>
+              </div>
+              <div
+                class="relative inline-block w-10 h-5 transition duration-200 ease-in-out rounded-full"
+              >
+                <div
+                  class="absolute inset-0 bg-gray-600 rounded-full shadow-inner"
+                ></div>
+                <div
+                  id="compactModeIndicator"
                   class="absolute left-0 w-5 h-5 transition duration-200 transform bg-white rounded-full shadow"
                 ></div>
               </div>
@@ -778,8 +930,18 @@
         // Update UI immediately (no delay)
         document.querySelectorAll(".sidebar-item").forEach((btn) => {
           btn.classList.remove("active");
+          btn.removeAttribute("aria-current");
         });
         buttonElement.classList.add("active");
+        buttonElement.setAttribute("aria-current", "page");
+
+        // Ensure active item is visible in the list
+        try {
+          buttonElement.scrollIntoView({
+            block: "nearest",
+            behavior: "smooth",
+          });
+        } catch {}
 
         // Close sidebar on mobile
         if (window.innerWidth < 768) {
@@ -829,6 +991,11 @@
         const darkModeIndicator = document.getElementById("darkModeIndicator");
         const html = document.documentElement;
         const iframe = document.getElementById("iframe");
+        const sidebar = document.getElementById("sidebar");
+        const compactModeToggle = document.getElementById("compactModeToggle");
+        const compactModeIndicator = document.getElementById(
+          "compactModeIndicator"
+        );
         const langSelectGlobal = document.getElementById("langSelectGlobal");
 
         // Restore last active page - OPTIMIZED
@@ -842,8 +1009,15 @@
               // Update UI
               document.querySelectorAll(".sidebar-item").forEach((btn) => {
                 btn.classList.remove("active");
+                btn.removeAttribute("aria-current");
               });
               button.classList.add("active");
+              button.setAttribute("aria-current", "page");
+
+              // Keep active button in view when restoring
+              try {
+                button.scrollIntoView({ block: "nearest" });
+              } catch {}
 
               // Load saved page with language
               const lang = localStorage.getItem("lang") || "en";
@@ -939,6 +1113,35 @@
           }
         });
 
+        // Compact mode functionality
+        (function initCompact() {
+          const savedDensity = localStorage.getItem("density");
+          const isCompact = savedDensity === "compact";
+          if (isCompact) {
+            sidebar.classList.add("compact");
+            if (compactModeIndicator)
+              compactModeIndicator.style.transform = "translateX(100%)";
+          }
+          if (compactModeToggle) {
+            compactModeToggle.addEventListener("click", function () {
+              const nowCompact = !sidebar.classList.contains("compact");
+              sidebar.classList.toggle("compact", nowCompact);
+              if (compactModeIndicator)
+                compactModeIndicator.style.transform = nowCompact
+                  ? "translateX(100%)"
+                  : "translateX(0)";
+              localStorage.setItem(
+                "density",
+                nowCompact ? "compact" : "normal"
+              );
+              // Haptic feedback
+              if (navigator.vibrate) {
+                navigator.vibrate(15);
+              }
+            });
+          }
+        })();
+
         // Initialize and handle language changes globally - OPTIMIZED
         (function initLanguage() {
           const savedLang = localStorage.getItem("lang") || "en";
@@ -982,6 +1185,25 @@
             });
           }
         })();
+
+        // Sidebar scroll shadows
+        function updateSidebarShadows() {
+          try {
+            const atTop = sidebar.scrollTop <= 0;
+            const atBottom =
+              Math.ceil(sidebar.scrollTop + sidebar.clientHeight) >=
+              sidebar.scrollHeight;
+            sidebar.classList.toggle("shadow-top", !atTop);
+            sidebar.classList.toggle("shadow-bottom", !atBottom);
+          } catch {}
+        }
+        if (sidebar) {
+          sidebar.addEventListener("scroll", updateSidebarShadows, {
+            passive: true,
+          });
+          // Initial state after content settles
+          setTimeout(updateSidebarShadows, 50);
+        }
       });
 
       // Prevent iframe content from scrolling the main page on tablets

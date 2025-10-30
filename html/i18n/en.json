@@ -8,6 +8,7 @@
     "unit": "Unit",
     "language": "Language",
     "darkMode": "Dark Mode",
+    "compactMode": "Compact Mode",
     "appName": "Aviation Tools",
     "suiteName": "Aviation Calculators Suite",
     "reportIssue": "Report an issue",
@@ -205,6 +206,7 @@
   },
   "sections": {
     "calculators": "Calculators",
-    "support": "Support"
+    "support": "Support",
+    "ils": "ILS"
   }
 }
