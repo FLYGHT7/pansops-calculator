@@ -8,6 +8,7 @@
     "unit": "Unidad",
     "language": "Idioma",
     "darkMode": "Modo oscuro",
+    "compactMode": "Modo compacto",
     "appName": "Herramientas de Aviación",
     "suiteName": "Suite de Calculadoras de Aviación",
     "reportIssue": "Reportar un problema",
@@ -205,6 +206,7 @@
   },
   "sections": {
     "calculators": "Calculadoras",
-    "support": "Soporte"
+    "support": "Soporte",
+    "ils": "ILS"
   }
 }
