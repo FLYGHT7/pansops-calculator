@@ -8,8 +8,10 @@
     "unit": "Unidad",
     "language": "Idioma",
     "darkMode": "Modo oscuro",
+    "compactMode": "Modo compacto",
     "appName": "Herramientas de Aviación",
     "suiteName": "Suite de Calculadoras de Aviación",
+    "reportIssue": "Reportar un problema",
     "feet": "ft",
     "meters": "m",
     "knots": "nudos",
@@ -201,5 +203,10 @@
     "v010": {
       "initial": "Versión inicial."
     }
+  },
+  "sections": {
+    "calculators": "Calculadoras",
+    "support": "Soporte",
+    "ils": "ILS"
   }
 }
