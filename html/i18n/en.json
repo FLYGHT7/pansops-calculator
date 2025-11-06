@@ -8,8 +8,10 @@
     "unit": "Unit",
     "language": "Language",
     "darkMode": "Dark Mode",
+    "compactMode": "Compact Mode",
     "appName": "Aviation Tools",
     "suiteName": "Aviation Calculators Suite",
+    "reportIssue": "Report an issue",
     "feet": "ft",
     "meters": "m",
     "knots": "knots",
@@ -201,5 +203,10 @@
     "v010": {
       "initial": "Initial release."
     }
+  },
+  "sections": {
+    "calculators": "Calculators",
+    "support": "Support",
+    "ils": "ILS"
   }
 }
