@@ -1,476 +1,398 @@
-<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n="profile.title">Profile Estimator</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            primary: {
-              50: '#f0f9ff',
-              100: '#e0f2fe',
-              200: '#bae6fd',
-              300: '#7dd3fc',
-              400: '#38bdf8',
-              500: '#0ea5e9',
-              600: '#0284c7',
-              700: '#0369a1',
-              800: '#075985',
-              900: '#0c4a6e',
-            }
-          }
-        }
-      }
-    }
-  </script>
-  <link rel="stylesheet" href="dark-mode.css">
-</head>
-<body class="bg-[#f4f7f9] dark:bg-gray-900 min-h-screen flex items-center justify-center p-4">
-  <div class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
-    <h1 class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 sm:h-8 sm:w-8 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M2 12h20M2 12l10-10M2 12l10 10"></path>
-      </svg>
-      <span data-i18n="profile.title">Profile Estimator</span>
-    </h1>
-    
-    <!-- Load/Save Parameters -->
-    <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
-      <label for="loadFile" class="text-gray-700 dark:text-gray-300 font-medium" data-i18n="rateTurn.loadParamsFile">
-        Load Parameters File (JSON)
-      </label>
-      <div class="flex gap-3 flex-wrap">
-        <button onclick="saveParameters()"
-                class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-            <polyline points="17 21 17 13 7 13 7 21"></polyline>
-            <polyline points="7 3 7 8 15 8"></polyline>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="profile.title">Profile Estimator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="shared-config.js"></script>
+    <link rel="stylesheet" href="dark-mode.css" />
+    <script src="aviation-utils.js"></script>
+    <script src="i18n/i18n.js"></script>
+  </head>
+  <body
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4"
+  >
+    <main
+      class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
+    >
+      <header>
+        <h1
+          class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center"
+        >
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-7 w-7 sm:h-8 sm:w-8 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M2 12h20M2 12l10-10M2 12l10 10"></path>
           </svg>
-          <span data-i18n="common.save">Save Parameters</span>
+          <span data-i18n="profile.title">Profile Estimator</span>
+        </h1>
+      </header>
+
+      <!-- Load/Save Parameters -->
+      <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
+        <label
+          for="loadFile"
+          class="text-gray-700 dark:text-gray-300 font-medium"
+          data-i18n="rateTurn.loadParamsFile"
+        >
+          Load Parameters File (JSON)
+        </label>
+        <div class="flex gap-3 flex-wrap">
+          <button
+            type="button"
+            id="btnSave"
+            class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
+          >
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-1"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+              ></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            <span data-i18n="common.save">Save Parameters</span>
+          </button>
+          <input id="loadFile" type="file" accept=".json" class="hidden" />
+          <button
+            type="button"
+            id="btnLoad"
+            class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
+          >
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-1"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span data-i18n="common.load">Load Parameters</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Row 1: THR Elevation and TCH -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <!-- THR Elevation -->
+        <div class="space-y-2">
+          <label
+            for="thrElev"
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="profile.thrElev"
+            >THR Elev (ft)</label
+          >
+          <div
+            class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+          >
+            <input
+              id="thrElev"
+              type="number"
+              class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="Enter THR Elev"
+            />
+            <select
+              id="thrElevUnit"
+              class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+            >
+              <option value="ft" selected data-i18n="common.feet">ft</option>
+              <option value="m" data-i18n="common.meters">m</option>
+            </select>
+          </div>
+        </div>
+        <!-- TCH -->
+        <div class="space-y-2">
+          <label
+            for="tch"
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="profile.tch"
+            >TCH (ft)</label
+          >
+          <div
+            class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+          >
+            <input
+              id="tch"
+              type="number"
+              class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="Enter TCH"
+            />
+            <select
+              id="tchUnit"
+              class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+            >
+              <option value="ft" selected data-i18n="common.feet">ft</option>
+              <option value="m" data-i18n="common.meters">m</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: VPA, Distance to FAF, Intermediate Length, Initial Length -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <!-- VPA -->
+        <div class="space-y-2">
+          <label
+            for="vpa"
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="profile.vpa"
+            >VPA (Â°)</label
+          >
+          <input
+            id="vpa"
+            type="number"
+            step="0.01"
+            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            placeholder="Enter VPA"
+          />
+        </div>
+        <!-- Distance to FAF -->
+        <div class="space-y-2">
+          <label
+            for="distToFaf"
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="profile.distToFaf"
+            >Distance to FAF (NM)</label
+          >
+          <input
+            id="distToFaf"
+            type="number"
+            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            placeholder="Enter Distance to FAF"
+          />
+        </div>
+        <!-- Intermediate Length -->
+        <div class="space-y-2">
+          <label
+            for="intermediateLength"
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="profile.intermediateLength"
+            >Intermediate Length (NM)</label
+          >
+          <input
+            id="intermediateLength"
+            type="number"
+            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            placeholder="Enter Intermediate Length"
+          />
+        </div>
+        <!-- Initial Length -->
+        <div class="space-y-2">
+          <label
+            for="initialLength"
+            class="block font-medium text-gray-700 dark:text-gray-300"
+            data-i18n="profile.initialLength"
+            >Initial Length (NM)</label
+          >
+          <input
+            id="initialLength"
+            type="number"
+            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            placeholder="Enter Initial Length"
+          />
+        </div>
+      </div>
+
+      <!-- Calculate Button -->
+      <div class="flex justify-end mt-6">
+        <button
+          type="button"
+          id="btnCalculate"
+          class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center"
+        >
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          <span data-i18n="common.calculate">Calculate</span>
         </button>
-        <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
-        <button onclick="document.getElementById('loadFile').click()"
-                class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="17 8 12 3 7 8"></polyline>
-            <line x1="12" y1="3" x2="12" y2="15"></line>
-          </svg>
-          <span data-i18n="common.load">Load Parameters</span>
-        </button>
       </div>
-    </div>
-    
-    <!-- Row 1: THR Elevation and TCH -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <!-- THR Elevation -->
-      <div class="space-y-2">
-  <label class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="profile.thrElev">THR Elev (ft)</label>
-        <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
-          <input id="thrElev" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter THR Elev" />
-          <select id="thrElevUnit" onchange="handleUnitChange('thrElev', 'thrElevUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
-            <option value="ft" selected data-i18n="common.feet">ft</option>
-            <option value="m" data-i18n="common.meters">m</option>
-          </select>
+
+      <!-- Results and SVG Diagram -->
+      <div
+        id="results"
+        role="region"
+        aria-live="polite"
+        aria-atomic="true"
+        class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600"
+      >
+        <h2
+          class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
+          data-i18n="profile.resultsTitle"
+        >
+          Profile Results
+        </h2>
+
+        <!-- Output values in a grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="profile.thrElev"
+            >
+              THR Elev (ft)
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="outputThrElev"></span> ft
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="profile.tch"
+            >
+              TCH (ft)
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="outputTch"></span> ft
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="profile.fafElevation"
+            >
+              FAF Elevation (ft)
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="fafElevation"></span> ft
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="profile.intermediateElevation"
+            >
+              Intermediate Elevation (ft)
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="intermediateElevation"></span> ft
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="profile.initialElevation"
+            >
+              Initial Elevation (ft)
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="initialElevation"></span> ft
+            </p>
+          </div>
+        </div>
+
+        <!-- SVG Profile Diagram -->
+        <div class="mt-6">
+          <h3
+            class="font-medium text-gray-700 dark:text-gray-300 mb-2"
+            data-i18n="profile.diagramTitle"
+          >
+            Profile Diagram:
+          </h3>
+          <div
+            class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm overflow-auto"
+          >
+            <svg
+              id="profileSvg"
+              width="100%"
+              height="400"
+              viewBox="-20 0 520 400"
+              xmlns="http://www.w3.org/2000/svg"
+              class="mx-auto dark:text-white"
+            >
+              <!-- Polyline for profile -->
+              <polyline
+                id="profilePolyline"
+                points=""
+                stroke="#0284c7"
+                class="dark:stroke-blue-400"
+                stroke-width="3"
+                fill="none"
+              />
+              <!-- Group for all grid lines, vertical markers, and annotations -->
+              <g id="profileAnnotations"></g>
+            </svg>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button
+            type="button"
+            id="btnCopy"
+            class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center"
+          >
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-2"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+              ></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+            <span data-i18n="common.copyToWord">Copy to Word Document</span>
+          </button>
         </div>
       </div>
-      <!-- TCH -->
-      <div class="space-y-2">
-        <label class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="profile.tch">TCH (ft)</label>
-        <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
-          <input id="tch" type="number" class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter TCH" />
-          <select id="tchUnit" onchange="handleUnitChange('tch', 'tchUnit')" class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white">
-            <option value="ft" selected data-i18n="common.feet">ft</option>
-            <option value="m" data-i18n="common.meters">m</option>
-          </select>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Row 2: VPA, Distance to FAF, Intermediate Length, Initial Length -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-      <!-- VPA -->
-      <div class="space-y-2">
-  <label class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="profile.vpa">VPA (°)</label>
-        <input id="vpa" type="number" step="0.01" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter VPA" />
-      </div>
-      <!-- Distance to FAF -->
-      <div class="space-y-2">
-  <label class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="profile.distToFaf">Distance to FAF (NM)</label>
-        <input id="distToFaf" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter Distance to FAF" />
-      </div>
-      <!-- Intermediate Length -->
-      <div class="space-y-2">
-  <label class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="profile.intermediateLength">Intermediate Length (NM)</label>
-        <input id="intermediateLength" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter Intermediate Length" />
-      </div>
-      <!-- Initial Length -->
-      <div class="space-y-2">
-  <label class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="profile.initialLength">Initial Length (NM)</label>
-        <input id="initialLength" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter Initial Length" />
-      </div>
-    </div>
-    
-    <!-- Calculate Button -->
-    <div class="flex justify-end mt-6">
-  <button onclick="estimateProfile()" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-        </svg>
-        <span data-i18n="common.calculate">Calculate</span>
-      </button>
-    </div>
-    
-    <!-- Results and SVG Diagram -->
-    <div id="results" class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600">
-  <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4" data-i18n="profile.resultsTitle">Profile Results</h2>
-      
-      <!-- Output values in a grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="profile.thrElev">THR Elev (ft)</p>
-          <p class="text-lg font-semibold dark:text-white"><span id="outputThrElev"></span> ft</p>
-        </div>
-        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="profile.tch">TCH (ft)</p>
-          <p class="text-lg font-semibold dark:text-white"><span id="outputTch"></span> ft</p>
-        </div>
-        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="profile.fafElevation">FAF Elevation (ft)</p>
-          <p class="text-lg font-semibold dark:text-white"><span id="fafElevation"></span> ft</p>
-        </div>
-        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="profile.intermediateElevation">Intermediate Elevation (ft)</p>
-          <p class="text-lg font-semibold dark:text-white"><span id="intermediateElevation"></span> ft</p>
-        </div>
-        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm">
-          <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="profile.initialElevation">Initial Elevation (ft)</p>
-          <p class="text-lg font-semibold dark:text-white"><span id="initialElevation"></span> ft</p>
-        </div>
-      </div>
-      
-      <!-- SVG Profile Diagram -->
-      <div class="mt-6">
-  <h3 class="font-medium text-gray-700 dark:text-gray-300 mb-2" data-i18n="profile.diagramTitle">Profile Diagram:</h3>
-        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm overflow-auto">
-          <svg id="profileSvg" width="100%" height="400" viewBox="-20 0 520 400" xmlns="http://www.w3.org/2000/svg" class="  width="100%" height="400" viewBox="-20 0 520 400" xmlns="http://www.w3.org/2000/svg" class="mx-auto dark:text-white">
-            <!-- Polyline for profile -->
-            <polyline id="profilePolyline" points="" stroke="#0284c7" class="dark:stroke-blue-400" stroke-width="3" fill="none" />
-            <!-- Group for all grid lines, vertical markers, and annotations -->
-            <g id="profileAnnotations"></g>
-          </svg>
-        </div>
-      </div>
-      
-      <div class="mt-6 flex justify-end">
-  <button onclick="copyToWordDocument()" class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-          </svg>
-          <span data-i18n="common.copyToWord">Copy to Word Document</span>
-        </button>
-      </div>
-    </div>
-  </div>
-  
-  <script>
-    // Check for dark mode on page load
-    document.addEventListener('DOMContentLoaded', function() {
-      // Check if parent has set dark mode
-      try {
-        if (window.parent && window.parent.document.documentElement.classList.contains('dark')) {
-          document.documentElement.classList.add('dark');
-        }
-      } catch (e) {
-        console.log("Running in standalone mode");
-      }
-      
-      // Initialize unit selectors
-      initializeUnitSelectors();
-    });
-    
-    // Function to handle unit conversion when unit selector changes
-    function handleUnitChange(inputId, unitSelectId) {
-      const unitSelect = document.getElementById(unitSelectId);
-      
-      // Just update the last unit - no conversion in the UI
-      unitSelect.dataset.lastUnit = unitSelect.value;
-      
-      // No need to convert the value in the input field
-      // The conversion will happen only during calculations
-    }
-    
-    // Function to initialize all unit selectors
-    function initializeUnitSelectors() {
-      // Get all unit selectors
-      const unitSelectors = document.querySelectorAll('select[id$="Unit"]');
-      
-      unitSelectors.forEach(selector => {
-        // Save the initial unit
-        selector.dataset.lastUnit = selector.value;
-      });
-    }
-    
-    // Load parameters from a JSON file.
-    function loadParameters(event) {
-      const file = event.target.files[0];
-      if (!file) {
-        alert("Please select a valid JSON file.");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const data = JSON.parse(e.target.result);
-          if (data["THR Elev"]) document.getElementById("thrElev").value = data["THR Elev"];
-          if (data["thrElevUnit"]) {
-            const unitSelect = document.getElementById("thrElevUnit");
-            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
-            unitSelect.value = data["thrElevUnit"];
-          }
-          if (data["TCH"]) document.getElementById("tch").value = data["TCH"];
-          if (data["tchUnit"]) {
-            const unitSelect = document.getElementById("tchUnit");
-            unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
-            unitSelect.value = data["tchUnit"];
-          }
-          if (data["VPA"]) document.getElementById("vpa").value = data["VPA"];
-          if (data["Distance to FAF"]) document.getElementById("distToFaf").value = data["Distance to FAF"];
-          if (data["Intermediate Length"]) document.getElementById("intermediateLength").value = data["Intermediate Length"];
-          if (data["Initial Length"]) document.getElementById("initialLength").value = data["Initial Length"];
-          alert("Parameters successfully loaded!");
-        } catch (err) {
-          alert("Invalid JSON file. Please upload a valid parameters file.");
-        }
-      };
-      reader.readAsText(file);
-    }
-    
-    // Save parameters to a JSON file.
-    function saveParameters() {
-      const thrElev = document.getElementById("thrElev").value || "";
-      const thrElevUnit = document.getElementById("thrElevUnit").value || "ft";
-      const tch = document.getElementById("tch").value || "";
-      const tchUnit = document.getElementById("tchUnit").value || "ft";
-      const vpa = document.getElementById("vpa").value || "";
-      const distToFaf = document.getElementById("distToFaf").value || "";
-      const intermediateLength = document.getElementById("intermediateLength").value || "";
-      const initialLength = document.getElementById("initialLength").value || "";
-      
-      const data = {
-        "THR Elev": thrElev,
-        "thrElevUnit": thrElevUnit,
-        "TCH": tch,
-        "tchUnit": tchUnit,
-        "VPA": vpa,
-        "Distance to FAF": distToFaf,
-        "Intermediate Length": intermediateLength,
-        "Initial Length": initialLength
-      };
-      
-      const now = new Date();
-      const timestamp = now.toISOString().replace(/[:.]/g, "-");
-      const filename = `${timestamp}_profileestimator.json`;
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = filename;
-      a.click();
-    }
-    
-    // Estimate the profile, update results and draw the SVG diagram with annotations.
-    function estimateProfile() {
-      let thrElev = parseFloat(document.getElementById("thrElev").value);
-      let tch = parseFloat(document.getElementById("tch").value);
-      const thrElevUnit = document.getElementById("thrElevUnit").value;
-      const tchUnit = document.getElementById("tchUnit").value;
-      const vpa = parseFloat(document.getElementById("vpa").value);
-      const distToFaf = parseFloat(document.getElementById("distToFaf").value);
-      const intermediateLength = parseFloat(document.getElementById("intermediateLength").value);
-      const initialLength = parseFloat(document.getElementById("initialLength").value);
-      
-      if (isNaN(thrElev) || isNaN(tch) || isNaN(vpa) || isNaN(distToFaf) || isNaN(intermediateLength) || isNaN(initialLength)) {
-        alert("Please enter valid values for all inputs.");
-        return;
-      }
-      
-      // Convert THR Elev and TCH to feet if needed.
-      let thrElev_ft = thrElev;
-      let tch_ft = tch;
-      if (thrElevUnit === "m") { thrElev_ft = thrElev / 0.3048; }
-      if (tchUnit === "m") { tch_ft = tch / 0.3048; }
-      
-      // Set output values for THR Elev and TCH.
-      document.getElementById("outputThrElev").textContent = thrElev_ft.toFixed(2);
-      document.getElementById("outputTch").textContent = tch_ft.toFixed(2);
-      
-      // Compute slope from VPA in degrees.
-      const slope = Math.tan(vpa * (Math.PI / 180));
-      
-      // Conversion constant for NM to ft.
-      const nmToFt = (1852 / 0.3048);
-      
-      // Base elevation is the sum of THR Elev and TCH.
-      const baseElevation = thrElev_ft + tch_ft;
-      
-      // Calculate elevations.
-      const fafElevation = baseElevation + (distToFaf * slope * nmToFt);
-      const intermediateElevation = fafElevation + (intermediateLength * slope * nmToFt);
-      const initialElevation = intermediateElevation + (initialLength * nmToFt * 0.08);
-      
-      // Display computed elevations.
-      document.getElementById("fafElevation").textContent = fafElevation.toFixed(2);
-      document.getElementById("intermediateElevation").textContent = intermediateElevation.toFixed(2);
-      document.getElementById("initialElevation").textContent = initialElevation.toFixed(2);
-      
-      // Prepare to update SVG diagram.
-      // Horizontal scale: 50 px per NM.
-      // Vertical scale: 0.03 px per ft.
-      // Base Y (datum) is set at 300.
-      const xScale = 50;
-      const yScale = 0.03;
-      const baseY = 300;
-      
-      // Compute x coordinates for key points.
-      const x0 = 0;
-      const x1 = distToFaf * xScale;
-      const x2 = (distToFaf + intermediateLength) * xScale;
-      const x3 = (distToFaf + intermediateLength + initialLength) * xScale;
-      
-      // Compute y coordinates using the formula: y = baseY - ((E - baseElevation) * yScale).
-      const y0 = baseY; // THR level.
-      const y1 = baseY - ((fafElevation - baseElevation) * yScale);
-      const y2 = baseY - ((intermediateElevation - baseElevation) * yScale);
-      const y3 = baseY - ((initialElevation - baseElevation) * yScale);
-      
-      // Set the polyline points.
-      const polylinePoints = `${x0},${y0} ${x1},${y1} ${x2},${y2} ${x3},${y3}`;
-      document.getElementById("profilePolyline").setAttribute("points", polylinePoints);
-      
-      // Determine total distance to cover.
-      const totalDistance = distToFaf + intermediateLength + initialLength;
-      const gridMax = Math.ceil(totalDistance / 5) * 5 || 5;
-      const newSvgWidth = gridMax * xScale + 20;
-      
-      // Update the SVG width and viewBox.
-      const profileSvg = document.getElementById("profileSvg");
-      profileSvg.setAttribute("width", newSvgWidth);
-      profileSvg.setAttribute("viewBox", `-20 0 ${newSvgWidth} 400`);
-      
-      // Prepare grid/annotation HTML.
-      let gridHtml = "";
-      // Horizontal datum line.
-      gridHtml += `<line x1="0" y1="${baseY}" x2="${newSvgWidth}" y2="${baseY}" stroke="black" class="dark:stroke-white" stroke-width="1" stroke-dasharray="4,2" />`;
-      
-      // Vertical key lines for THR, FAF, IF, IAF.
-      gridHtml += `<line x1="${x0}" y1="0" x2="${x0}" y2="${baseY}" stroke="black" class="dark:stroke-white" stroke-width="1" />`;
-      gridHtml += `<text x="${x0}" y="15" font-size="12" text-anchor="middle" fill="black" class="dark:fill-white">THR</text>`;
-      
-      gridHtml += `<line x1="${x1}" y1="0" x2="${x1}" y2="${baseY}" stroke="black" class="dark:stroke-white" stroke-width="1" />`;
-      gridHtml += `<text x="${x1}" y="15" font-size="12" text-anchor="middle" fill="black" class="dark:fill-white">FAF</text>`;
-      
-      gridHtml += `<line x1="${x2}" y1="0" x2="${x2}" y2="${baseY}" stroke="black" class="dark:stroke-white" stroke-width="1" />`;
-      gridHtml += `<text x="${x2}" y="15" font-size="12" text-anchor="middle" fill="black" class="dark:fill-white">IF</text>`;
-      
-      gridHtml += `<line x1="${x3}" y1="0" x2="${x3}" y2="${baseY}" stroke="black" class="dark:stroke-white" stroke-width="1" />`;
-      gridHtml += `<text x="${x3}" y="15" font-size="12" text-anchor="middle" fill="black" class="dark:fill-white">IAF</text>`;
-      
-      // Draw distance hash marks every 1 NM and label every 5 NM.
-      for (let i = 0; i <= gridMax; i++) {
-        const xi = i * xScale;
-        gridHtml += `<line x1="${xi}" y1="${baseY}" x2="${xi}" y2="${baseY+5}" stroke="black" class="dark:stroke-white" stroke-width="1" />`;
-        if (i % 5 === 0) {
-          gridHtml += `<text x="${xi}" y="${baseY + 20}" font-size="10" text-anchor="middle" fill="black" class="dark:fill-white">${i}</text>`;
-        }
-      }
-      
-      // Annotate key profile points with circles and elevation labels.
-      gridHtml += `<circle cx="${x1}" cy="${y1}" r="4" fill="#d32f2f" class="dark:fill-red-400" />`;
-      gridHtml += `<text x="${x1+5}" y="${y1-5}" font-size="12" fill="black" class="dark:fill-white">FAF: ${fafElevation.toFixed(0)} ft</text>`;
-      
-      gridHtml += `<circle cx="${x2}" cy="${y2}" r="4" fill="#d32f2f" class="dark:fill-red-400" />`;
-      gridHtml += `<text x="${x2+5}" y="${y2-5}" font-size="12" fill="black" class="dark:fill-white">IF: ${intermediateElevation.toFixed(0)} ft</text>`;
-      
-      gridHtml += `<circle cx="${x3}" cy="${y3}" r="4" fill="#d32f2f" class="dark:fill-red-400" />`;
-      gridHtml += `<text x="${x3+5}" y="${y3-5}" font-size="12" fill="black" class="dark:fill-white">IAF: ${initialElevation.toFixed(0)} ft</text>`;
-      
-      // Update the annotations group.
-      document.getElementById("profileAnnotations").innerHTML = gridHtml;
-      
-      // Finally, show the results section.
-      document.getElementById("results").classList.remove("hidden");
-    }
-    
-    // Copy inputs and outputs as a formatted HTML table for Word.
-    function copyToWordDocument() {
-      const thrElev = document.getElementById("thrElev").value || "N/A";
-      const thrElevUnit = document.getElementById("thrElevUnit").value || "N/A";
-      const tch = document.getElementById("tch").value || "N/A";
-      const tchUnit = document.getElementById("tchUnit").value || "N/A";
-      const vpa = document.getElementById("vpa").value || "N/A";
-      const distToFaf = document.getElementById("distToFaf").value || "N/A";
-      const intermediateLength = document.getElementById("intermediateLength").value || "N/A";
-      const initialLength = document.getElementById("initialLength").value || "N/A";
-      
-      const outputThrElev = document.getElementById("outputThrElev").textContent || "N/A";
-      const outputTch = document.getElementById("outputTch").textContent || "N/A";
-      const fafElevation = document.getElementById("fafElevation").textContent || "N/A";
-      const intermediateElevation = document.getElementById("intermediateElevation").textContent || "N/A";
-      const initialElevation = document.getElementById("initialElevation").textContent || "N/A";
-      
-      const htmlContent = `
-        <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-          <tr><th>Parameter</th><th>Value</th></tr>
-          <tr><td>THR Elev (ft)</td><td>${outputThrElev} (Input: ${thrElev} ${thrElevUnit})</td></tr>
-          <tr><td>TCH (ft)</td><td>${outputTch} (Input: ${tch} ${tchUnit})</td></tr>
-          <tr><td>VPA (°)</td><td>${vpa}</td></tr>
-          <tr><td>Distance to FAF (NM)</td><td>${distToFaf}</td></tr>
-          <tr><td>Intermediate Length (NM)</td><td>${intermediateLength}</td></tr>
-          <tr><td>Initial Length (NM)</td><td>${initialLength}</td></tr>
-          <tr><td>FAF Elevation (ft)</td><td>${fafElevation}</td></tr>
-          <tr><td>Intermediate Elevation (ft)</td><td>${intermediateElevation}</td></tr>
-          <tr><td>Initial Elevation (ft)</td><td>${initialElevation}</td></tr>
-        </table>
-      `;
-      const blob = new Blob([htmlContent], { type: "text/html" });
-      // Plain-text fallback by stripping tags and using tabs/newlines
-      const stripped = htmlContent
-        .replace(/<table[^>]*>/gi, "")
-        .replace(/<tr[^>]*>/gi, "")
-        .replace(/<th[^>]*>/gi, "")
-        .replace(/<td[^>]*>/gi, "")
-        .replace(/<\/th>/gi, "\t")
-        .replace(/<\/td>/gi, "\t")
-        .replace(/<\/tr>/gi, "\n")
-        .replace(/<\/table>/gi, "")
-        .trim();
-      const textBlob = new Blob([stripped], { type: "text/plain" });
-      navigator.clipboard.write([new ClipboardItem({ "text/html": blob, "text/plain": textBlob })])
-        .then(() => { alert("Results copied; paste into Word or a text editor."); })
-        .catch(err => { console.error("Copy failed:", err); });
-    }
-  </script>
-  <script src="i18n/i18n.js"></script>
-  <script>
-    (function(){
-      function initI18n(){
-        if (window.I18N) {
-          I18N.init({ defaultLang: 'en', supported: ['en','es'], path: 'i18n' }).catch(console.error);
-        }
-      }
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initI18n);
-      } else {
-        initI18n();
-      }
-    })();
-  </script>
-</body>
+    </main>
+
+    <script src="js/profile_check.js"></script>
+  </body>
 </html>
