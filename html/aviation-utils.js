@@ -123,10 +123,15 @@ function getValueInUnit(inputId, unitId, targetUnit) {
     return value;
   }
 
-  // Convert based on the units
-  if (currentUnit === "ft" && targetUnit === "m") {
+  // Convert based on the units (handles both 'ft'/'m' and 'feet'/'meters' formats)
+  const isFeet = currentUnit === "ft" || currentUnit === "feet";
+  const isMeters = currentUnit === "m" || currentUnit === "meters";
+  const targetFeet = targetUnit === "ft" || targetUnit === "feet";
+  const targetMeters = targetUnit === "m" || targetUnit === "meters";
+
+  if (isFeet && targetMeters) {
     return feetToMeters(value);
-  } else if (currentUnit === "m" && targetUnit === "ft") {
+  } else if (isMeters && targetFeet) {
     return metersToFeet(value);
   }
 
@@ -185,6 +190,40 @@ function createHTMLTable(data, title) {
 }
 
 /**
+ * Shows a non-blocking toast notification.
+ * @param {string} message - Message to display.
+ * @param {'success'|'error'|'info'} type - Visual style.
+ * @param {number} duration - Auto-dismiss delay in ms (default 3000).
+ */
+function showToast(message, type = "info", duration = 3000) {
+  let container = document.getElementById("toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "toast-container";
+    container.style.cssText =
+      "position:fixed;top:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:0.5rem;pointer-events:none;";
+    document.body.appendChild(container);
+  }
+
+  const styles = {
+    success: { bg: "#dcfce7", border: "#86efac", text: "#166534" },
+    error: { bg: "#fee2e2", border: "#fca5a5", text: "#991b1b" },
+    info: { bg: "#e0f2fe", border: "#7dd3fc", text: "#075985" },
+  };
+  const s = styles[type] || styles.info;
+
+  const toast = document.createElement("div");
+  toast.style.cssText = `background:${s.bg};border:1px solid ${s.border};color:${s.text};padding:0.625rem 1rem;border-radius:0.5rem;font-size:0.875rem;max-width:320px;box-shadow:0 2px 8px rgba(0,0,0,0.15);opacity:1;transition:opacity 0.3s ease;pointer-events:auto;`;
+  toast.textContent = message;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
+}
+
+/**
  * Copies HTML content to clipboard
  * @param {string} htmlContent - HTML content to be copied
  */
@@ -193,9 +232,10 @@ function copyToClipboard(htmlContent) {
   navigator.clipboard
     .write([new ClipboardItem({ "text/html": blob })])
     .then(() => {
-      alert("Results copied; paste into Word.");
+      showToast("Results copied — paste into Word.", "success");
     })
     .catch((err) => {
       console.error("Copy failed:", err);
+      showToast("Copy failed. Check browser permissions.", "error");
     });
 }

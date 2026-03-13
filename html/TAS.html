@@ -1,46 +1,26 @@
-<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TAS Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              primary: {
-                50: "#f0f9ff",
-                100: "#e0f2fe",
-                200: "#bae6fd",
-                300: "#7dd3fc",
-                400: "#38bdf8",
-                500: "#0ea5e9",
-                600: "#0284c7",
-                700: "#0369a1",
-                800: "#075985",
-                900: "#0c4a6e",
-              },
-            },
-          },
-        },
-      };
-    </script>
+    <script src="shared-config.js"></script>
     <link rel="stylesheet" href="dark-mode.css" />
+    <script src="aviation-utils.js"></script>
     <script src="i18n/i18n.js"></script>
   </head>
   <body
     class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4"
   >
-    <div
+    <main
       class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
     >
+      <header>
       <h1
         class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center"
       >
-        <svg
+        <svg aria-hidden="true" focusable="false"
           xmlns="http://www.w3.org/2000/svg"
           class="h-7 w-7 sm:h-8 sm:w-8 mr-2"
           viewBox="0 0 24 24"
@@ -57,6 +37,7 @@
         </svg>
         <span data-i18n="tas.title">True Airspeed (TAS) Calculator</span>
       </h1>
+      </header>
 
       <!-- File Upload Section -->
       <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
@@ -68,11 +49,10 @@
           Load Parameters File (JSON)
         </label>
         <div class="flex gap-3 flex-wrap">
-          <button
-            onclick="saveParameters()"
+          <button type="button" id="btnSave"
             class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
           >
-            <svg
+            <svg aria-hidden="true" focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5 mr-1"
               viewBox="0 0 24 24"
@@ -95,13 +75,12 @@
             type="file"
             accept=".json"
             class="hidden"
-            onchange="loadParameters(event)"
+           
           />
-          <button
-            onclick="document.getElementById('loadFile').click()"
+          <button type="button" id="btnLoad"
             class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
           >
-            <svg
+            <svg aria-hidden="true" focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5 mr-1"
               viewBox="0 0 24 24"
@@ -123,7 +102,7 @@
       <!-- Inputs for TAS Calculation -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div class="space-y-2">
-          <label
+          <label for="ias"
             class="block font-medium text-gray-700 dark:text-gray-300"
             data-i18n="tas.ias"
             >Indicated Airspeed (IAS)</label
@@ -151,7 +130,7 @@
           </div>
         </div>
         <div class="space-y-2">
-          <label
+          <label for="altitude"
             class="block font-medium text-gray-700 dark:text-gray-300"
             data-i18n="tas.altitude"
             >Altitude</label
@@ -169,7 +148,7 @@
             />
             <select
               id="altitudeUnit"
-              onchange="handleUnitChange('altitude', 'altitudeUnit')"
+             
               class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
             >
               <option value="ft" selected data-i18n="common.feet">ft</option>
@@ -178,10 +157,10 @@
           </div>
         </div>
         <div class="space-y-2">
-          <label
+          <label for="isaDeviation"
             class="block font-medium text-gray-700 dark:text-gray-300"
             data-i18n="tas.isaDeviationVar"
-            >ISA Deviation (VAR) in °C</label
+            >ISA Deviation (VAR) in Â°C</label
           >
           <input
             id="isaDeviation"
@@ -195,11 +174,10 @@
       </div>
 
       <div class="flex justify-end mt-6">
-        <button
-          onclick="calculateTAS()"
+        <button type="button" id="btnCalculate"
           class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center"
         >
-          <svg
+          <svg aria-hidden="true" focusable="false"
             xmlns="http://www.w3.org/2000/svg"
             class="h-5 w-5 mr-2"
             viewBox="0 0 24 24"
@@ -217,7 +195,7 @@
 
       <!-- Results for TAS -->
       <div
-        id="tasResults"
+        id="tasResults" role="region" aria-live="polite" aria-atomic="true"
         class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600"
       >
         <h2
@@ -258,11 +236,10 @@
         </div>
 
         <div class="mt-6 flex justify-end">
-          <button
-            onclick="copyResultsToClipboard()"
+          <button type="button" id="btnCopy"
             class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center"
           >
-            <svg
+            <svg aria-hidden="true" focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5 mr-2"
               viewBox="0 0 24 24"
@@ -281,242 +258,8 @@
           </button>
         </div>
       </div>
-    </div>
+    </main>
 
-    <script>
-      // Check for dark mode on page load
-      document.addEventListener("DOMContentLoaded", function () {
-        // Check if parent has set dark mode
-        try {
-          if (
-            window.parent &&
-            window.parent.document.documentElement.classList.contains("dark")
-          ) {
-            document.documentElement.classList.add("dark");
-          }
-        } catch (e) {
-          console.log("Running in standalone mode");
-        }
-
-        // Initialize unit selectors
-        initializeUnitSelectors();
-      });
-
-      // Function to handle unit conversion when unit selector changes
-      function handleUnitChange(inputId, unitSelectId) {
-        const unitSelect = document.getElementById(unitSelectId);
-
-        // Just update the last unit - no conversion in the UI
-        unitSelect.dataset.lastUnit = unitSelect.value;
-
-        // No need to convert the value in the input field
-        // The conversion will happen only during calculations
-      }
-
-      // Function to initialize all unit selectors
-      function initializeUnitSelectors() {
-        // Get all unit selectors
-        const unitSelectors = document.querySelectorAll('select[id$="Unit"]');
-
-        unitSelectors.forEach((selector) => {
-          // Save the initial unit
-          selector.dataset.lastUnit = selector.value;
-        });
-      }
-
-      let loadedDeviation = null; // Stores loaded ISA deviation
-
-      function loadParameters(event) {
-        const file = event.target.files[0];
-        if (!file) {
-          alert("Please select a valid JSON file.");
-          return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          try {
-            const data = JSON.parse(e.target.result);
-
-            // Check for ISA Deviation in different formats
-            if (data["ISA Deviation"] !== undefined) {
-              loadedDeviation = parseFloat(data["ISA Deviation"]);
-              document.getElementById("isaDeviation").value = loadedDeviation;
-            } else if (data["roundedDeltaISA"] !== undefined) {
-              loadedDeviation = parseFloat(data["roundedDeltaISA"]);
-              document.getElementById("isaDeviation").value = loadedDeviation;
-            } else if (data["deltaISA"] !== undefined) {
-              loadedDeviation = parseFloat(data["deltaISA"]);
-              document.getElementById("isaDeviation").value = loadedDeviation;
-            }
-
-            // Load other parameters if available
-            if (data["IAS"] !== undefined) {
-              document.getElementById("ias").value = data["IAS"];
-            }
-
-            if (data["Altitude"] !== undefined) {
-              document.getElementById("altitude").value = data["Altitude"];
-            }
-
-            if (data["altitudeUnit"] !== undefined) {
-              const unitSelect = document.getElementById("altitudeUnit");
-              unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
-              unitSelect.value = data["altitudeUnit"];
-            }
-
-            alert("Parameters successfully loaded!");
-          } catch (err) {
-            alert(
-              "Invalid JSON file. Please upload a valid ISA parameters file."
-            );
-          }
-        };
-        reader.readAsText(file);
-      }
-
-      function saveParameters() {
-        const ias = document.getElementById("ias").value || "";
-        const altitude = document.getElementById("altitude").value || "";
-        const altitudeUnit =
-          document.getElementById("altitudeUnit").value || "ft";
-        const isaDeviation =
-          document.getElementById("isaDeviation").value || "";
-
-        const data = {
-          IAS: ias,
-          iasUnit: "knots", // Always knots
-          Altitude: altitude,
-          altitudeUnit: altitudeUnit,
-          "ISA Deviation": isaDeviation,
-        };
-
-        const now = new Date();
-        const timestamp = now.toISOString().replace(/[:.]/g, "-");
-        const filename = `${timestamp}_TAS_parameters.json`;
-
-        const blob = new Blob([JSON.stringify(data, null, 2)], {
-          type: "application/json",
-        });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = filename;
-        a.click();
-      }
-
-      function calculateTAS() {
-        const iasInput = parseFloat(document.getElementById("ias").value);
-        const altitudeInput = parseFloat(
-          document.getElementById("altitude").value
-        );
-        const altitudeUnit = document.getElementById("altitudeUnit").value;
-        const isaDeviation = parseFloat(
-          document.getElementById("isaDeviation").value
-        );
-
-        if (isNaN(iasInput) || isNaN(altitudeInput) || isNaN(isaDeviation)) {
-          alert(
-            "Please enter valid values for IAS, altitude, and ISA deviation."
-          );
-          return;
-        }
-
-        // IAS is always in knots now
-        let ias = iasInput;
-
-        // Convert altitude to feet if needed
-        let altitude = altitudeInput;
-        if (altitudeUnit === "m") {
-          altitude = altitudeInput / 0.3048;
-        }
-
-        // Calculate 'k' based on altitude and ISA deviation
-        const k =
-          (171233 * Math.sqrt(288 + isaDeviation - 0.00198 * altitude)) /
-          Math.pow(288 - 0.00198 * altitude, 2.628);
-
-        // Calculate True Airspeed
-        let tas = k * ias;
-
-        // Display results with 4 decimal places
-        document.getElementById("kFactor").textContent = k.toFixed(4);
-        document.getElementById("tas").textContent = tas.toFixed(4);
-        document.getElementById("tasResults").classList.remove("hidden");
-      }
-
-      function copyResultsToClipboard() {
-        const ias = document.getElementById("ias").value || "N/A";
-        const altitude = document.getElementById("altitude").value || "N/A";
-        const altitudeUnit =
-          document.getElementById("altitudeUnit").value || "ft";
-        const isaDeviation =
-          document.getElementById("isaDeviation").value || "N/A";
-        const kFactor = document.getElementById("kFactor").textContent || "N/A";
-        const tas = document.getElementById("tas").textContent || "N/A";
-
-        // Create a formatted Word-style table as HTML
-        const htmlContent = `
-        <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-          <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
-          <tr><td>Indicated Airspeed (IAS)</td><td>${ias} knots</td></tr>
-          <tr><td>Altitude</td><td>${altitude} ${altitudeUnit}</td></tr>
-          <tr><td>ISA Deviation (VAR)</td><td>${isaDeviation} °C</td></tr>
-          <tr><td>k Factor</td><td>${kFactor}</td></tr>
-          <tr><td>True Airspeed (TAS)</td><td>${tas} knots</td></tr>
-        </table>
-      `;
-
-        // Build a plain-text fallback (tab-separated)
-        const textContent = [
-          ["Parameter", "Value"],
-          ["Indicated Airspeed (IAS)", `${ias} knots`],
-          ["Altitude", `${altitude} ${altitudeUnit}`],
-          ["ISA Deviation (VAR)", `${isaDeviation} °C`],
-          ["k Factor", `${kFactor}`],
-          ["True Airspeed (TAS)", `${tas} knots`],
-        ]
-          .map((row) => row.join("\t"))
-          .join("\n");
-
-        const htmlBlob = new Blob([htmlContent], { type: "text/html" });
-        const textBlob = new Blob([textContent], { type: "text/plain" });
-
-        // Use Clipboard API to copy both HTML and plain text
-        navigator.clipboard
-          .write([
-            new ClipboardItem({
-              "text/html": htmlBlob,
-              "text/plain": textBlob,
-            }),
-          ])
-          .then(() => {
-            alert(
-              "Formatted table copied to clipboard! You can paste it into Word or a text editor."
-            );
-          })
-          .catch((err) => {
-            console.error("Error copying content to clipboard:", err);
-          });
-      }
-    </script>
-    <script>
-      // Initialize i18n robustly (runs immediately if DOM is ready, or on DOMContentLoaded)
-      (function () {
-        function initI18n() {
-          if (window.I18N) {
-            I18N.init({
-              defaultLang: "en",
-              supported: ["en", "es"],
-              path: "i18n",
-            }).catch(console.error);
-          }
-        }
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", initI18n);
-        } else {
-          initI18n();
-        }
-      })();
-    </script>
+    <script src="js/tas.js"></script>
   </body>
 </html>
