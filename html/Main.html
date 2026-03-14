@@ -6,6 +6,7 @@
     <title data-i18n="common.suiteName">Aviation Calculators Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="shared-config.js"></script>
+    <link rel="stylesheet" href="dark-mode.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -17,33 +18,35 @@
     />
     <script src="i18n/i18n.js"></script>
     <style>
-      /* Custom styles for active sidebar item */
+      /* Phase 2.3 — Active item: instrument-tab gradient + icon glow */
       .sidebar-item.active {
-        background-color: rgba(
-          14,
-          165,
-          233,
-          0.2
-        ); /* primary-500 with opacity */
-        color: #38bdf8; /* primary-400 */
-        border-left: 4px solid #38bdf8; /* primary-400 */
+        background: linear-gradient(
+          to right,
+          rgba(56, 189, 248, 0.22),
+          rgba(56, 189, 248, 0.04)
+        );
+        color: #e0f7ff;
+        border-left: 3px solid #38bdf8;
       }
-
-      /* Dark mode styles */
+      .sidebar-item.active i,
+      .sidebar-item.active svg {
+        color: #38bdf8 !important;
+        filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.7));
+        transform: scale(1.08);
+      }
       .dark .sidebar-item.active {
-        background-color: rgba(
-          56,
-          189,
-          248,
-          0.2
-        ); /* primary-400 with opacity */
-        color: #7dd3fc; /* primary-300 */
-        border-left: 4px solid #7dd3fc; /* primary-300 */
+        background: linear-gradient(
+          to right,
+          rgba(56, 189, 248, 0.25),
+          rgba(56, 189, 248, 0.05)
+        );
+        color: #e0f7ff;
+        border-left: 3px solid #38bdf8;
       }
 
-      /* Add this to your existing styles */
+      /* Iframe initial bg — matches Phase 1 card dark token */
       .dark iframe {
-        background-color: #111827; /* Match dark:bg-gray-900 */
+        background-color: #1a2235;
       }
 
       /* Add a simple fade transition for the iframe */
@@ -112,18 +115,31 @@
         line-height: 1.2;
       }
 
-      /* Sticky section headers inside the scrollable sidebar */
+      /* Phase 2.4 — Section headers: dot accent + bottom border */
       .section-header {
         position: sticky;
         top: 0;
         z-index: 5;
-        backdrop-filter: saturate(120%) blur(4px);
-        -webkit-backdrop-filter: saturate(120%) blur(4px);
+        backdrop-filter: saturate(120%) blur(6px);
+        -webkit-backdrop-filter: saturate(120%) blur(6px);
+        border-bottom: 1px solid rgba(30, 58, 95, 0.6);
       }
       .section-header .label {
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
         padding-top: 0.25rem;
         padding-bottom: 0.25rem;
+      }
+      .section-header .label::before {
+        content: "";
+        display: inline-block;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: #38bdf8;
+        box-shadow: 0 0 5px rgba(56, 189, 248, 0.8);
+        flex-shrink: 0;
       }
 
       /* Scroll shadows for sidebar to hint overflow */
@@ -162,18 +178,6 @@
       }
       #sidebar.shadow-bottom::after {
         opacity: 1;
-      }
-
-      /* Compact density mode for sidebar */
-      #sidebar.compact .sidebar-item {
-        padding: 0.5rem !important; /* ~p-2 */
-      }
-      #sidebar.compact .sidebar-item .mr-3 {
-        margin-right: 0.5rem !important; /* ~mr-2 */
-      }
-      #sidebar.compact .section-header {
-        padding-top: 0.25rem;
-        padding-bottom: 0.25rem;
       }
 
       /* Improved mobile sidebar styles */
@@ -265,6 +269,284 @@
         font-weight: 600;
         letter-spacing: 0.08em;
       }
+
+      /* Phase 2.2 — Sidebar: deep navy aviation console background */
+      .sidebar-nav {
+        background-color: #0d1424;
+        border-right-color: #1e3a5f !important;
+      }
+      .section-header {
+        background-color: rgba(13, 20, 36, 0.9) !important;
+      }
+      /* Override Tailwind gray-700 hover inside sidebar to match navy palette */
+      .sidebar-nav .hover\:bg-gray-700:hover {
+        background-color: rgba(56, 189, 248, 0.08) !important;
+      }
+
+      /* Phase 2.5 — Desktop topbar */
+      #topbar {
+        background-color: #0d1424;
+        border-bottom: 1px solid #1e3a5f;
+        flex-shrink: 0;
+      }
+
+      /* =====================================================
+         Phase 10 — Collapsible Sidebar Rail
+         ===================================================== */
+
+      /* 10.1 — Smooth width transition */
+      #sidebar {
+        transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: width;
+      }
+
+      /* When in rail mode: 56px icon-only rail */
+      #sidebar.rail {
+        width: 56px !important;
+        min-width: 56px;
+        overflow: visible; /* allow tooltip to escape clip */
+      }
+
+      /* Rail: hide label text, keep icon visible */
+      #sidebar.rail .sidebar-label {
+        opacity: 0;
+        max-width: 0;
+        overflow: hidden;
+        pointer-events: none;
+        transition:
+          opacity 0.18s ease,
+          max-width 0.18s ease;
+      }
+      #sidebar.rail .section-header .label-text {
+        display: none;
+      }
+      #sidebar.rail .section-header .section-chevron {
+        display: none;
+      }
+      #sidebar.rail .section-header .label::before {
+        display: none;
+      }
+      #sidebar.rail .section-header {
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      /* Rail: centre items, kill text-related margins */
+      #sidebar.rail .sidebar-item {
+        justify-content: center !important;
+        padding: 0.75rem 0 !important;
+      }
+      #sidebar.rail .sidebar-item i,
+      #sidebar.rail .sidebar-item svg.sidebar-icon {
+        margin-right: 0 !important;
+      }
+
+      /* Rail: hide brand text, centre compass */
+      #sidebar.rail .brand-text {
+        display: none;
+      }
+      #sidebar.rail #sidebarBrand {
+        justify-content: center !important;
+      }
+
+      /* Rail: hide footer labels + toggles that don't make sense */
+      #sidebar.rail .rail-hide {
+        display: none !important;
+      }
+      #sidebar.rail .sidebar-footer-icon {
+        margin-right: 0 !important;
+      }
+
+      /* Rail mode — fix footer clickability: full-width centred icons */
+      #sidebar.rail .sidebar-footer {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+      #sidebar.rail #darkModeToggle,
+      #sidebar.rail .language-row {
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+      }
+      /* Tooltip for footer items in rail mode */
+      #sidebar.rail #darkModeToggle,
+      #sidebar.rail .language-row {
+        position: relative;
+        overflow: visible;
+      }
+      #sidebar.rail #darkModeToggle::after,
+      #sidebar.rail .language-row::after {
+        content: attr(data-label);
+        position: absolute;
+        left: calc(100% + 12px);
+        top: 50%;
+        transform: translateY(-50%);
+        background: #0d1424;
+        border: 1px solid #1e3a5f;
+        color: #e0f7ff;
+        font-family: "Barlow", sans-serif;
+        font-size: 0.78rem;
+        white-space: nowrap;
+        padding: 0.3rem 0.7rem;
+        border-radius: 6px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.12s ease;
+        z-index: 200;
+      }
+      #sidebar.rail #darkModeToggle:hover::after,
+      #sidebar.rail .language-row:hover::after {
+        opacity: 1;
+      }
+      /* Allow tooltips to escape sidebar in rail mode */
+      #sidebar.rail {
+        overflow-y: auto;
+        overflow-x: visible;
+      }
+
+      /* Non-rail: show labels with transition */
+      .sidebar-label {
+        opacity: 1;
+        max-width: 200px;
+        overflow: hidden;
+        white-space: nowrap;
+        transition:
+          opacity 0.18s ease 0.05s,
+          max-width 0.22s ease;
+      }
+
+      /* 10.2 — Rail hover tooltip */
+      #sidebar.rail .sidebar-item {
+        position: relative;
+        overflow: visible;
+      }
+      #sidebar.rail .sidebar-item::after {
+        content: attr(data-label);
+        position: absolute;
+        left: calc(100% + 12px);
+        top: 50%;
+        transform: translateY(-50%);
+        background: #0d1424;
+        border: 1px solid #1e3a5f;
+        color: #e0f7ff;
+        font-family: "Barlow", sans-serif;
+        font-size: 0.78rem;
+        white-space: nowrap;
+        padding: 0.3rem 0.7rem;
+        border-radius: 6px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.12s ease;
+        z-index: 200;
+      }
+      #sidebar.rail .sidebar-item:hover::after {
+        opacity: 1;
+      }
+
+      /* 10.3 — Section group accordion */
+      .section-header {
+        cursor: pointer;
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        user-select: none;
+      }
+      .section-chevron {
+        width: 12px;
+        height: 12px;
+        color: #64748b;
+        flex-shrink: 0;
+        transition: transform 0.22s ease;
+      }
+      .section-header.collapsed .section-chevron {
+        transform: rotate(-90deg);
+      }
+      .section-group {
+        overflow: hidden;
+        max-height: 1200px;
+        transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .section-group.collapsed {
+        max-height: 0;
+      }
+
+      /* 10.4 — Upgraded active item glow bar (replaces border-left) */
+      .sidebar-item {
+        position: relative;
+        border-left: none !important;
+      }
+      .sidebar-item.active {
+        background: linear-gradient(
+          to right,
+          rgba(56, 189, 248, 0.18),
+          rgba(56, 189, 248, 0.04)
+        ) !important;
+        border-left: none !important;
+        color: #e0f7ff;
+      }
+      .sidebar-item.active::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 20%;
+        bottom: 20%;
+        width: 3px;
+        background: #38bdf8;
+        border-radius: 0 2px 2px 0;
+        box-shadow:
+          0 0 8px rgba(56, 189, 248, 0.8),
+          0 0 16px rgba(56, 189, 248, 0.35);
+      }
+      /* Rail mode active: bottom dot indicator */
+      #sidebar.rail .sidebar-item.active::before {
+        top: auto;
+        bottom: 4px;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        width: 16px;
+        height: 3px;
+        border-radius: 2px;
+      }
+
+      /* 10.5 — Topbar sidebar collapse button */
+      #sidebarCollapseBtn {
+        display: none; /* shown via md:flex override below */
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        color: #64748b;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        flex-shrink: 0;
+        margin-right: 12px;
+        transition:
+          color 0.15s ease,
+          background 0.15s ease;
+      }
+      #sidebarCollapseBtn:hover {
+        color: #38bdf8;
+        background: rgba(56, 189, 248, 0.1);
+      }
+      @media (min-width: 768px) {
+        #sidebarCollapseBtn {
+          display: flex;
+        }
+      }
+      #sidebarCollapseBtn .chevron-icon {
+        transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      #sidebar.rail ~ .flex-1 #sidebarCollapseBtn .chevron-icon,
+      .rail-collapsed #sidebarCollapseBtn .chevron-icon {
+        transform: rotate(180deg);
+      }
+      /* END PHASE 10 */
     </style>
   </head>
   <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
@@ -282,31 +564,71 @@
       <!-- Sidebar -->
       <div
         id="sidebar"
-        class="fixed md:relative z-30 bg-gray-800 dark:bg-gray-900 shadow-lg transition-all duration-300 ease-in-out flex flex-col w-64 md:w-64 h-full overflow-y-auto border-r border-gray-700"
+        class="fixed md:relative z-30 sidebar-nav shadow-xl transition-all duration-300 ease-in-out flex flex-col w-64 md:w-64 h-full overflow-y-auto border-r"
       >
         <div
-          class="flex items-center justify-between p-4 border-b border-gray-700"
+          class="flex items-center justify-between px-4 py-3 border-b"
+          style="border-color: #1e3a5f"
         >
-          <div class="flex items-center space-x-3">
+          <!-- Phase 2.1 / 10 — PANSOPS wordmark + compass brand mark -->
+          <div id="sidebarBrand" class="flex items-center gap-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-8 w-8 text-primary-400"
+              class="h-9 w-9 text-primary-400 flex-shrink-0"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
+              stroke-width="1.5"
               stroke-linecap="round"
               stroke-linejoin="round"
+              aria-hidden="true"
             >
-              <path
-                d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"
-              ></path>
+              <circle cx="12" cy="12" r="9" />
+              <polygon
+                points="12,3 14.2,12 12,10.5 9.8,12"
+                fill="#38bdf8"
+                stroke="none"
+              />
+              <polygon
+                points="12,21 9.8,12 12,13.5 14.2,12"
+                fill="#38bdf8"
+                stroke="none"
+                opacity="0.35"
+              />
+              <line x1="12" y1="3" x2="12" y2="5.5" stroke-width="1.5" />
+              <line x1="21" y1="12" x2="18.5" y2="12" stroke-width="1.5" />
+              <line x1="12" y1="21" x2="12" y2="18.5" stroke-width="1.5" />
+              <line x1="3" y1="12" x2="5.5" y2="12" stroke-width="1.5" />
             </svg>
-            <span
-              class="text-lg font-semibold text-white"
-              data-i18n="common.appName"
-              >Aviation Tools</span
-            >
+            <div class="brand-text flex flex-col leading-none">
+              <span
+                class="text-white font-bold"
+                style="
+                  font-family: &quot;Rajdhani&quot;, sans-serif;
+                  font-size: 1.15rem;
+                  letter-spacing: 0.14em;
+                "
+                >PANSOPS</span
+              >
+              <span
+                class="text-primary-400"
+                style="
+                  font-family: &quot;Barlow&quot;, sans-serif;
+                  font-size: 0.63rem;
+                  letter-spacing: 0.09em;
+                  opacity: 0.75;
+                  text-transform: uppercase;
+                "
+                >Calculator Suite</span
+              >
+              <div
+                class="mt-1"
+                style="
+                  height: 1px;
+                  background: linear-gradient(to right, #38bdf8, transparent);
+                "
+              ></div>
+            </div>
           </div>
           <button
             id="closeSidebarBtn"
@@ -335,288 +657,415 @@
             <ul class="space-y-1.5 px-2">
               <!-- Section: Calculators -->
               <li
-                class="section-header px-3 mt-2 mb-1 text-[11px] uppercase tracking-wide text-gray-400 dark:text-gray-500 select-none bg-gray-800/80 dark:bg-gray-900/80"
+                class="section-header px-3 mt-2 mb-1 text-[11px] uppercase tracking-wide text-gray-400 select-none"
+                data-section="calculators"
               >
-                <span class="label" data-i18n="sections.calculators"
-                  >Calculators</span
-                >
-              </li>
-              <li>
-                <button
-                  id="isaButton"
-                  onclick="loadPage('ISA_deviation.html', this)"
-                  class="sidebar-item active w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
-                >
-                  <i
-                    class="fas fa-thermometer-half text-primary-400 text-xl w-5 h-5 mr-3"
-                  ></i>
-                  <span data-i18n="isa.title">ISA Deviation Calculator</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  id="tasButton"
-                  onclick="loadPage('TAS.html', this)"
-                  class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
-                >
-                  <i
-                    class="fas fa-plane text-primary-400 text-xl w-5 h-5 mr-3"
-                  ></i>
-                  <span data-i18n="tas.title"
-                    >True Airspeed (TAS) Calculator</span
+                <span class="label">
+                  <span class="label-text" data-i18n="sections.calculators"
+                    >Calculators</span
                   >
-                </button>
-              </li>
-              <li>
-                <button
-                  id="rateTurnButton"
-                  onclick="loadPage('rate_turn.html', this)"
-                  class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                </span>
+                <svg
+                  class="section-chevron"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
                 >
-                  <i
-                    class="fas fa-circle-notch text-primary-400 text-xl w-5 h-5 mr-3"
-                  ></i>
-                  <span data-i18n="rateTurn.title"
-                    >TAS, Rate & Radius of Turn</span
+                  <polyline points="2,4 6,8 10,4" />
+                </svg>
+              </li>
+              <ul class="section-group space-y-1.5" data-for="calculators">
+                <li>
+                  <button
+                    id="isaButton"
+                    data-label="ISA Deviation"
+                    onclick="loadPage('ISA_deviation.html', this)"
+                    class="sidebar-item active w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
                   >
-                </button>
-              </li>
-              <li>
-                <button
-                  id="dmeButton"
-                  onclick="loadPage('dme_tolerance.html', this)"
-                  class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
-                >
-                  <svg
-                    class="text-primary-400 w-5 h-5 mr-3"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    <i
+                      class="fas fa-thermometer-half text-primary-400 text-xl w-5 h-5 mr-3 sidebar-icon"
+                    ></i>
+                    <span class="sidebar-label" data-i18n="isa.title"
+                      >ISA Deviation Calculator</span
+                    >
+                  </button>
+                </li>
+                <li>
+                  <button
+                    id="tasButton"
+                    data-label="True Airspeed"
+                    onclick="loadPage('TAS.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
                   >
-                    <circle cx="12" cy="12" r="4"></circle>
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="8"
-                      stroke-dasharray="4 4"
-                    ></circle>
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="12"
-                      stroke-dasharray="4 4"
-                    ></circle>
-                  </svg>
-                  <span data-i18n="dme.title">DME Tolerance</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  id="elevationButton"
-                  onclick="loadPage('Profile_Check.html', this)"
-                  class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
-                >
-                  <i
-                    class="fas fa-chart-line text-primary-400 text-xl w-5 h-5 mr-3"
-                  ></i>
-                  <span data-i18n="profile.title">Profile Estimator</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  id="npaSocButton"
-                  onclick="loadPage('NPA_SOC_Calculation.html', this)"
-                  class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
-                >
-                  <svg
-                    class="text-primary-400 w-5 h-5 mr-3"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    <i
+                      class="fas fa-plane text-primary-400 text-xl w-5 h-5 mr-3 sidebar-icon"
+                    ></i>
+                    <span class="sidebar-label" data-i18n="tas.title"
+                      >True Airspeed (TAS) Calculator</span
+                    >
+                  </button>
+                </li>
+                <li>
+                  <button
+                    id="rateTurnButton"
+                    data-label="Rate & Radius of Turn"
+                    onclick="loadPage('rate_turn.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
                   >
-                    <line
-                      x1="6"
-                      y1="12"
-                      x2="18"
-                      y2="12"
-                      stroke-dasharray="4 2"
-                    ></line>
-                    <polygon points="6,6 18,12 6,18" fill="none"></polygon>
-                  </svg>
-                  <span data-i18n="npaSoc.title">NPA SOC Calculation</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  id="vssOcsButton"
-                  onclick="loadPage('VSS_OCS.html', this)"
-                  class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
-                >
-                  <svg
-                    class="text-primary-400 w-5 h-5 mr-3"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    <i
+                      class="fas fa-circle-notch text-primary-400 text-xl w-5 h-5 mr-3 sidebar-icon"
+                    ></i>
+                    <span class="sidebar-label" data-i18n="rateTurn.title"
+                      >TAS, Rate & Radius of Turn</span
+                    >
+                  </button>
+                </li>
+                <li>
+                  <button
+                    id="dmeButton"
+                    data-label="DME Tolerance"
+                    onclick="loadPage('dme_tolerance.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
                   >
-                    <line
-                      x1="6"
-                      y1="12"
-                      x2="18"
-                      y2="12"
-                      stroke-dasharray="4 2"
-                    ></line>
-                    <polygon points="6,6 18,12 6,18" fill="none"></polygon>
-                  </svg>
-                  <span data-i18n="vssOcs.title">VSS/OCS Parameters</span>
-                </button>
-              </li>
-              <!-- Subsection: ILS tools -->
+                    <svg
+                      class="text-primary-400 w-5 h-5 mr-3 sidebar-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <circle cx="12" cy="12" r="4"></circle>
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="8"
+                        stroke-dasharray="4 4"
+                      ></circle>
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="12"
+                        stroke-dasharray="4 4"
+                      ></circle>
+                    </svg>
+                    <span class="sidebar-label" data-i18n="dme.title"
+                      >DME Tolerance</span
+                    >
+                  </button>
+                </li>
+                <li>
+                  <button
+                    id="elevationButton"
+                    data-label="Profile Estimator"
+                    onclick="loadPage('Profile_Check.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                  >
+                    <i
+                      class="fas fa-chart-line text-primary-400 text-xl w-5 h-5 mr-3 sidebar-icon"
+                    ></i>
+                    <span class="sidebar-label" data-i18n="profile.title"
+                      >Profile Estimator</span
+                    >
+                  </button>
+                </li>
+                <li>
+                  <button
+                    id="npaSocButton"
+                    data-label="NPA SOC Calculation"
+                    onclick="loadPage('NPA_SOC_Calculation.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                  >
+                    <svg
+                      class="text-primary-400 w-5 h-5 mr-3 sidebar-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <line
+                        x1="6"
+                        y1="12"
+                        x2="18"
+                        y2="12"
+                        stroke-dasharray="4 2"
+                      ></line>
+                      <polygon points="6,6 18,12 6,18" fill="none"></polygon>
+                    </svg>
+                    <span class="sidebar-label" data-i18n="npaSoc.title"
+                      >NPA SOC Calculation</span
+                    >
+                  </button>
+                </li>
+                <li>
+                  <button
+                    id="vssOcsButton"
+                    data-label="VSS/OCS Parameters"
+                    onclick="loadPage('VSS_OCS.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                  >
+                    <svg
+                      class="text-primary-400 w-5 h-5 mr-3 sidebar-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <line
+                        x1="6"
+                        y1="12"
+                        x2="18"
+                        y2="12"
+                        stroke-dasharray="4 2"
+                      ></line>
+                      <polygon points="6,6 18,12 6,18" fill="none"></polygon>
+                    </svg>
+                    <span class="sidebar-label" data-i18n="vssOcs.title"
+                      >VSS/OCS Parameters</span
+                    >
+                  </button>
+                </li>
+              </ul>
+
+              <!-- Section: ILS tools -->
               <li
-                class="section-header px-3 mt-2 mb-1 text-[11px] uppercase tracking-wide text-gray-400 dark:text-gray-500 select-none bg-gray-800/80 dark:bg-gray-900/80"
+                class="section-header px-3 mt-2 mb-1 text-[11px] uppercase tracking-wide text-gray-400 select-none"
+                data-section="ils"
               >
-                <span class="label" data-i18n="sections.ils">ILS</span>
-              </li>
-              <!-- New ILS Height Calculations Button -->
-              <li>
-                <button
-                  id="ilsHeightButton"
-                  onclick="loadPage('ILS_height_calculations.html', this)"
-                  class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                <span class="label">
+                  <span class="label-text" data-i18n="sections.ils">ILS</span>
+                </span>
+                <svg
+                  class="section-chevron"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
                 >
-                  <svg
-                    class="text-primary-400 w-5 h-5 mr-3"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M2 12h20M2 12l10-10M2 12l10 10"></path>
-                  </svg>
-                  <span data-i18n="ilsHeight.title"
-                    >ILS Height Calculations</span
-                  >
-                </button>
+                  <polyline points="2,4 6,8 10,4" />
+                </svg>
               </li>
-              <!-- New ILS Distance Calculations Button -->
-              <li>
-                <button
-                  id="ilsDistanceButton"
-                  onclick="loadPage('ILS_distance_calculations.html', this)"
-                  class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
-                >
-                  <svg
-                    class="text-primary-400 w-5 h-5 mr-3"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+              <ul class="section-group space-y-1.5" data-for="ils">
+                <li>
+                  <button
+                    id="ilsHeightButton"
+                    data-label="ILS Height Calculations"
+                    onclick="loadPage('ILS_height_calculations.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
                   >
-                    <path d="M2 12h20M2 12l10-10M2 12l10 10"></path>
-                  </svg>
-                  <span data-i18n="ilsDistance.title"
-                    >ILS Distance Calculations</span
+                    <svg
+                      class="text-primary-400 w-5 h-5 mr-3 sidebar-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M2 12h20M2 12l10-10M2 12l10 10"></path>
+                    </svg>
+                    <span class="sidebar-label" data-i18n="ilsHeight.title"
+                      >ILS Height Calculations</span
+                    >
+                  </button>
+                </li>
+                <li>
+                  <button
+                    id="ilsDistanceButton"
+                    data-label="ILS Distance Calculations"
+                    onclick="loadPage('ILS_distance_calculations.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
                   >
-                </button>
-              </li>
-              <!--New bearings_angles Button-->
-              <li>
-                <button
-                  id="bearingsAnglesButton"
-                  onclick="loadPage('bearings_angles.html', this)"
-                  class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5 mr-3 text-primary-600 dark:text-primary-400"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    <svg
+                      class="text-primary-400 w-5 h-5 mr-3 sidebar-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M2 12h20M2 12l10-10M2 12l10 10"></path>
+                    </svg>
+                    <span class="sidebar-label" data-i18n="ilsDistance.title"
+                      >ILS Distance Calculations</span
+                    >
+                  </button>
+                </li>
+                <li>
+                  <button
+                    id="bearingsAnglesButton"
+                    data-label="Bearings & Angles"
+                    onclick="loadPage('bearings_angles.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
                   >
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="16.2 7.8 12 12 8 16"></polyline>
-                    <line x1="2" y1="12" x2="22" y2="12"></line>
-                    <line x1="12" y1="2" x2="12" y2="22"></line>
-                  </svg>
-                  <span data-i18n="bearings.title">Bearings Angles</span>
-                </button>
-              </li>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 mr-3 sidebar-icon text-primary-400"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="16.2 7.8 12 12 8 16"></polyline>
+                      <line x1="2" y1="12" x2="22" y2="12"></line>
+                      <line x1="12" y1="2" x2="12" y2="22"></line>
+                    </svg>
+                    <span class="sidebar-label" data-i18n="bearings.title"
+                      >Bearings Angles</span
+                    >
+                  </button>
+                </li>
+              </ul>
+
               <!-- Group separator -->
               <li><div class="my-2 border-t border-gray-700/50"></div></li>
+
               <!-- Section: Support -->
               <li
-                class="section-header px-3 mb-1 text-[11px] uppercase tracking-wide text-gray-400 dark:text-gray-500 select-none bg-gray-800/80 dark:bg-gray-900/80"
+                class="section-header px-3 mb-1 text-[11px] uppercase tracking-wide text-gray-400 select-none"
+                data-section="support"
               >
-                <span class="label" data-i18n="sections.support">Support</span>
-              </li>
-              <!-- Report Issues (external link) -->
-              <li>
-                <a
-                  id="reportIssueLink"
-                  href="https://github.com/FLYGHT7/pansops-calculator/issues"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                <span class="label">
+                  <span class="label-text" data-i18n="sections.support"
+                    >Support</span
+                  >
+                </span>
+                <svg
+                  class="section-chevron"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
                 >
-                  <i
-                    class="fas fa-bug text-primary-400 text-xl w-5 h-5 mr-3"
-                  ></i>
-                  <span data-i18n="common.reportIssue">Report an issue</span>
-                </a>
+                  <polyline points="2,4 6,8 10,4" />
+                </svg>
               </li>
-              <!-- About / Changelog Button -->
-              <li>
-                <button
-                  id="aboutButton"
-                  onclick="loadPage('About.html', this)"
-                  class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
-                >
-                  <i
-                    class="fas fa-info-circle text-primary-400 text-xl w-5 h-5 mr-3"
-                  ></i>
-                  <span data-i18n="about.title">About / Changelog</span>
-                </button>
-              </li>
+              <ul class="section-group space-y-1.5" data-for="support">
+                <li>
+                  <a
+                    id="reportIssueLink"
+                    href="https://github.com/FLYGHT7/pansops-calculator/issues"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-label="Report an Issue"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                  >
+                    <i
+                      class="fas fa-bug text-primary-400 text-xl w-5 h-5 mr-3 sidebar-icon"
+                    ></i>
+                    <span class="sidebar-label" data-i18n="common.reportIssue"
+                      >Report an issue</span
+                    >
+                  </a>
+                </li>
+                <li>
+                  <button
+                    id="aboutButton"
+                    data-label="About / Changelog"
+                    onclick="loadPage('About.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                  >
+                    <i
+                      class="fas fa-info-circle text-primary-400 text-xl w-5 h-5 mr-3 sidebar-icon"
+                    ></i>
+                    <span class="sidebar-label" data-i18n="about.title"
+                      >About / Changelog</span
+                    >
+                  </button>
+                </li>
+              </ul>
             </ul>
           </nav>
 
-          <div class="px-4 mt-6 mb-4">
+          <div class="sidebar-footer px-4 mt-6 mb-4">
             <!-- Dark Mode Toggle -->
             <button
               id="darkModeToggle"
+              data-label="Dark Mode"
               class="w-full flex items-center justify-between p-3 text-gray-300 rounded-lg hover:bg-gray-700 mb-4 transition-colors"
             >
               <div class="flex items-center">
-                <i
-                  class="fas fa-moon text-primary-400 text-xl w-5 h-5 mr-3"
-                ></i>
-                <span data-i18n="common.darkMode">Dark Mode</span>
+                <!-- Phase 8 — animated sun/moon icon -->
+                <span
+                  class="dark-mode-icon relative inline-flex items-center justify-center w-5 h-5 mr-3 sidebar-footer-icon text-primary-400"
+                  aria-hidden="true"
+                >
+                  <!-- Sun (light mode) -->
+                  <svg
+                    class="dm-sun"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="5" />
+                    <line x1="12" y1="2" x2="12" y2="4" />
+                    <line x1="12" y1="20" x2="12" y2="22" />
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                    <line x1="2" y1="12" x2="4" y2="12" />
+                    <line x1="20" y1="12" x2="22" y2="12" />
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                  </svg>
+                  <!-- Moon (dark mode) -->
+                  <svg
+                    class="dm-moon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                  </svg>
+                </span>
+                <span
+                  class="sidebar-label rail-hide"
+                  data-i18n="common.darkMode"
+                  >Dark Mode</span
+                >
               </div>
               <div
-                class="relative inline-block w-10 h-5 transition duration-200 ease-in-out rounded-full"
+                class="relative inline-block w-10 h-5 transition duration-200 ease-in-out rounded-full rail-hide"
               >
                 <div
-                  class="absolute inset-0 bg-gray-600 rounded-full shadow-inner"
+                  class="absolute inset-0 bg-gray-600 dark-toggle-track rounded-full shadow-inner"
                 ></div>
                 <div
                   id="darkModeIndicator"
@@ -625,55 +1074,35 @@
               </div>
             </button>
 
-            <!-- Compact Mode Toggle -->
-            <button
-              id="compactModeToggle"
-              class="w-full flex items-center justify-between p-3 text-gray-300 rounded-lg hover:bg-gray-700 mb-4 transition-colors"
-            >
-              <div class="flex items-center">
-                <i
-                  class="fas fa-compress-arrows-alt text-primary-400 text-xl w-5 h-5 mr-3"
-                ></i>
-                <span data-i18n="common.compactMode">Compact Mode</span>
-              </div>
-              <div
-                class="relative inline-block w-10 h-5 transition duration-200 ease-in-out rounded-full"
-              >
-                <div
-                  class="absolute inset-0 bg-gray-600 rounded-full shadow-inner"
-                ></div>
-                <div
-                  id="compactModeIndicator"
-                  class="absolute left-0 w-5 h-5 transition duration-200 transform bg-white rounded-full shadow"
-                ></div>
-              </div>
-            </button>
-
             <!-- Language Selector -->
             <div
-              class="w-full flex items-center justify-between p-3 text-gray-300 rounded-lg hover:bg-gray-700 mb-4 transition-colors"
+              class="language-row w-full flex items-center justify-between p-3 text-gray-300 rounded-lg hover:bg-gray-700 mb-4 transition-colors"
+              data-label="Language"
             >
               <div class="flex items-center">
                 <i
-                  class="fas fa-globe text-primary-400 text-xl w-5 h-5 mr-3"
+                  class="fas fa-globe text-primary-400 text-xl w-5 h-5 mr-3 sidebar-footer-icon"
                 ></i>
                 <label
                   for="langSelectGlobal"
-                  class="mr-2"
+                  class="mr-2 rail-hide"
                   data-i18n="common.language"
                   >Language</label
                 >
               </div>
               <select
                 id="langSelectGlobal"
-                class="bg-gray-700 text-gray-200 rounded px-2 py-1 border border-gray-600"
+                class="text-gray-200 rounded px-2 py-1 border text-sm rail-hide"
+                style="background-color: #0f1929; border-color: #1e3a5f"
               >
                 <option value="en">English</option>
                 <option value="es">Español</option>
               </select>
             </div>
 
-            <div class="flex items-center space-x-2 text-sm text-gray-400">
+            <div
+              class="flex items-center space-x-2 text-sm text-gray-400 rail-hide"
+            >
               <span data-i18n="common.suiteName"
                 >Aviation Calculators Suite</span
               >
@@ -687,25 +1116,40 @@
       <div class="flex-1 flex flex-col overflow-hidden">
         <!-- Mobile Header -->
         <div
-          class="md:hidden bg-gray-800 dark:bg-gray-900 text-white p-4 flex items-center justify-between"
+          class="md:hidden text-white p-4 flex items-center justify-between"
+          style="background-color: #0d1424; border-bottom: 1px solid #1e3a5f"
         >
-          <div class="flex items-center space-x-3">
+          <div class="flex items-center gap-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-primary-400"
+              class="h-6 w-6 text-primary-400 flex-shrink-0"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              stroke-width="1.5"
+              aria-hidden="true"
             >
-              <path
-                d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"
-              ></path>
+              <circle cx="12" cy="12" r="9" />
+              <polygon
+                points="12,3 14.2,12 12,10.5 9.8,12"
+                fill="#38bdf8"
+                stroke="none"
+              />
+              <polygon
+                points="12,21 9.8,12 12,13.5 14.2,12"
+                fill="#38bdf8"
+                stroke="none"
+                opacity="0.35"
+              />
             </svg>
-            <span class="font-semibold" data-i18n="common.appName"
-              >Aviation Tools</span
+            <span
+              class="text-white font-bold"
+              style="
+                font-family: &quot;Rajdhani&quot;, sans-serif;
+                font-size: 1.05rem;
+                letter-spacing: 0.12em;
+              "
+              >PANSOPS</span
             >
           </div>
           <button
@@ -730,8 +1174,68 @@
           </button>
         </div>
 
+        <!-- Phase 2.5 / 10: Desktop topbar — collapse button + breadcrumb + current page title -->
+        <div
+          id="topbar"
+          class="hidden md:flex items-center justify-between px-5 py-2.5"
+        >
+          <div class="flex items-center">
+            <!-- Phase 10 — Sidebar collapse toggle button -->
+            <button
+              id="sidebarCollapseBtn"
+              aria-label="Collapse sidebar"
+              title="Toggle sidebar"
+            >
+              <svg
+                class="chevron-icon"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="10,3 5,8 10,13" />
+              </svg>
+            </button>
+            <div class="flex items-center gap-2">
+              <span
+                class="text-gray-500 select-none uppercase"
+                style="
+                  font-family: &quot;Barlow&quot;, sans-serif;
+                  font-size: 0.68rem;
+                  letter-spacing: 0.1em;
+                "
+                >Calculator</span
+              >
+              <span class="text-gray-600 select-none">/</span>
+              <span
+                id="topbarPageTitle"
+                class="text-primary-400 font-semibold"
+                style="
+                  font-family: &quot;Rajdhani&quot;, sans-serif;
+                  font-size: 0.95rem;
+                  letter-spacing: 0.03em;
+                "
+                >ISA Deviation</span
+              >
+            </div>
+          </div>
+          <span
+            class="text-gray-600"
+            style="
+              font-family: &quot;Share Tech Mono&quot;, monospace;
+              font-size: 0.72rem;
+            "
+            >v0.2.0</span
+          >
+        </div>
+
         <!-- Content Area -->
-        <div class="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900">
+        <div class="flex-1 overflow-auto" style="background-color: var(--bg)">
           <iframe id="iframe" class="w-full h-full border-none"></iframe>
         </div>
       </div>
@@ -958,6 +1462,21 @@
         Object.entries(PAGE_MAP).map(([hash, { url }]) => [url, hash]),
       );
 
+      // Phase 2.5 — display names for desktop topbar breadcrumb
+      const PAGE_TITLES = {
+        "ISA_deviation.html": "ISA Deviation",
+        "TAS.html": "True Airspeed",
+        "rate_turn.html": "Rate & Radius of Turn",
+        "dme_tolerance.html": "DME Tolerance",
+        "Profile_Check.html": "Profile Estimator",
+        "NPA_SOC_Calculation.html": "NPA SOC Calculation",
+        "VSS_OCS.html": "VSS / OCS Parameters",
+        "ILS_height_calculations.html": "ILS Height Calculations",
+        "ILS_distance_calculations.html": "ILS Distance Calculations",
+        "bearings_angles.html": "Bearings & Angles",
+        "About.html": "About",
+      };
+
       // Load page in iframe and update active button - OPTIMIZED
       function loadPage(pageUrl, buttonElement) {
         const iframe = document.getElementById("iframe");
@@ -971,6 +1490,12 @@
         // Save state immediately (synchronous)
         localStorage.setItem("lastPage", pageUrl);
         localStorage.setItem("lastButtonId", buttonElement.id);
+
+        // Update topbar breadcrumb
+        const topbarTitle = document.getElementById("topbarPageTitle");
+        if (topbarTitle)
+          topbarTitle.textContent =
+            PAGE_TITLES[pageUrl] || pageUrl.replace(".html", "");
 
         // Update UI immediately (no delay)
         document.querySelectorAll(".sidebar-item").forEach((btn) => {
@@ -1037,10 +1562,6 @@
         const html = document.documentElement;
         const iframe = document.getElementById("iframe");
         const sidebar = document.getElementById("sidebar");
-        const compactModeToggle = document.getElementById("compactModeToggle");
-        const compactModeIndicator = document.getElementById(
-          "compactModeIndicator",
-        );
         const langSelectGlobal = document.getElementById("langSelectGlobal");
 
         // Helper: load a page by url+buttonId and apply iframe dark mode + lang
@@ -1084,6 +1605,11 @@
           const btn = document.getElementById(buttonId);
           if (!btn) return false;
           _activateButton(btn);
+          // Update topbar breadcrumb
+          const topbarTitle = document.getElementById("topbarPageTitle");
+          if (topbarTitle)
+            topbarTitle.textContent =
+              PAGE_TITLES[pageUrl] || pageUrl.replace(".html", "");
           const lang = _applyIframeDefaults();
           const url = new URL(pageUrl, window.location.href);
           url.searchParams.set("lang", lang);
@@ -1171,6 +1697,11 @@
         // Toggle dark mode
         darkModeToggle.addEventListener("click", function () {
           const isDark = html.classList.toggle("dark");
+          // Phase 8 — icon spin animation
+          darkModeToggle.classList.add("dark-toggle-animating");
+          setTimeout(function () {
+            darkModeToggle.classList.remove("dark-toggle-animating");
+          }, 430);
           darkModeIndicator.style.transform = isDark
             ? "translateX(100%)"
             : "translateX(0)";
@@ -1194,35 +1725,6 @@
             navigator.vibrate(20);
           }
         });
-
-        // Compact mode functionality
-        (function initCompact() {
-          const savedDensity = localStorage.getItem("density");
-          const isCompact = savedDensity === "compact";
-          if (isCompact) {
-            sidebar.classList.add("compact");
-            if (compactModeIndicator)
-              compactModeIndicator.style.transform = "translateX(100%)";
-          }
-          if (compactModeToggle) {
-            compactModeToggle.addEventListener("click", function () {
-              const nowCompact = !sidebar.classList.contains("compact");
-              sidebar.classList.toggle("compact", nowCompact);
-              if (compactModeIndicator)
-                compactModeIndicator.style.transform = nowCompact
-                  ? "translateX(100%)"
-                  : "translateX(0)";
-              localStorage.setItem(
-                "density",
-                nowCompact ? "compact" : "normal",
-              );
-              // Haptic feedback
-              if (navigator.vibrate) {
-                navigator.vibrate(15);
-              }
-            });
-          }
-        })();
 
         // Initialize and handle language changes globally - OPTIMIZED
         (function initLanguage() {
@@ -1310,6 +1812,74 @@
           }
         });
       });
+
+      // =====================================================
+      // Phase 10 — Sidebar Collapse + Section Accordion
+      // =====================================================
+      document.addEventListener("DOMContentLoaded", function () {
+        var sidebar = document.getElementById("sidebar");
+        var collapseBtn = document.getElementById("sidebarCollapseBtn");
+        var chevronIcon = collapseBtn
+          ? collapseBtn.querySelector(".chevron-icon")
+          : null;
+
+        // ── 10.1 Restore sidebar rail state ──────────────────
+        var isExpanded = localStorage.getItem("sidebarExpanded") !== "false";
+        if (!isExpanded && sidebar) {
+          sidebar.classList.add("rail");
+        }
+        if (chevronIcon && !isExpanded) {
+          chevronIcon.style.transform = "rotate(180deg)";
+        }
+
+        // ── 10.5 Collapse button click ────────────────────────
+        if (collapseBtn && sidebar) {
+          collapseBtn.addEventListener("click", function () {
+            var nowRail = sidebar.classList.toggle("rail");
+            localStorage.setItem("sidebarExpanded", String(!nowRail));
+            if (chevronIcon) {
+              chevronIcon.style.transform = nowRail ? "rotate(180deg)" : "";
+            }
+            collapseBtn.setAttribute(
+              "aria-label",
+              nowRail ? "Expand sidebar" : "Collapse sidebar",
+            );
+          });
+        }
+
+        // ── 10.3 Section accordion ────────────────────────────
+        document
+          .querySelectorAll(".section-header[data-section]")
+          .forEach(function (header) {
+            var sectionName = header.getAttribute("data-section");
+            var group = document.querySelector(
+              ".section-group[data-for='" + sectionName + "']",
+            );
+            if (!group) return;
+
+            // Restore collapsed state
+            var isCollapsed =
+              localStorage.getItem("section-" + sectionName + "-collapsed") ===
+              "true";
+            if (isCollapsed) {
+              header.classList.add("collapsed");
+              group.classList.add("collapsed");
+            }
+
+            header.addEventListener("click", function () {
+              // Don't collapse sections while in rail mode (icons need to stay visible)
+              if (sidebar && sidebar.classList.contains("rail")) return;
+
+              var nowCollapsed = header.classList.toggle("collapsed");
+              group.classList.toggle("collapsed", nowCollapsed);
+              localStorage.setItem(
+                "section-" + sectionName + "-collapsed",
+                String(nowCollapsed),
+              );
+            });
+          });
+      });
+      // END PHASE 10
     </script>
   </body>
 </html>

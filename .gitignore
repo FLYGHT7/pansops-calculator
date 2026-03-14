@@ -1,6 +1,8 @@
 # Ignore the entire docs folder
 /docs/
 REFACTORING_PLAN.md
+PR_DESCRIPTION.md
+REDESIGN_PLAN.md
 
 #agents
 .agent/

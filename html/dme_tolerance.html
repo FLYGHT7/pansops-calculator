@@ -17,25 +17,27 @@
       class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
     >
       <header>
-      <h1
-        class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center"
-      >
-        <svg aria-hidden="true" focusable="false"
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-7 w-7 sm:h-8 sm:w-8 mr-2"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+        <h1
+          class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center"
         >
-          <circle cx="12" cy="12" r="4"></circle>
-          <circle cx="12" cy="12" r="8" stroke-dasharray="4 4"></circle>
-          <circle cx="12" cy="12" r="12" stroke-dasharray="4 4"></circle>
-        </svg>
-        <span data-i18n="dme.title">DME Slant Range & Tolerance</span>
-      </h1>
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-7 w-7 sm:h-8 sm:w-8 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="4"></circle>
+            <circle cx="12" cy="12" r="8" stroke-dasharray="4 4"></circle>
+            <circle cx="12" cy="12" r="12" stroke-dasharray="4 4"></circle>
+          </svg>
+          <span data-i18n="dme.title">DME Slant Range & Tolerance</span>
+        </h1>
       </header>
 
       <!-- Load/Save Parameters -->
@@ -99,79 +101,82 @@
       </div>
 
       <!-- Inputs for DME Calculation -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <!-- Navaid Elevation with Unit Selector -->
-        <div class="space-y-2">
-          <label
-            for="navaidElevation"
-            class="block font-medium text-gray-700 dark:text-gray-300"
-            data-i18n="dme.navaidElevation"
-            >Navaid Elevation</label
-          >
-          <div
-            class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
-          >
-            <input
-              id="navaidElevation"
-              type="number"
-              class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              placeholder="Enter Navaid Elevation"
+      <fieldset>
+        <legend class="sr-only">Station &amp; Aircraft Position</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <!-- Navaid Elevation with Unit Selector -->
+          <div class="space-y-2">
+            <label
+              for="navaidElevation"
+              class="block font-medium text-gray-700 dark:text-gray-300"
               data-i18n="dme.navaidElevation"
-              data-i18n-attr="placeholder"
-            />
-            <select
-              id="navaidUnit"
-              class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+              >Navaid Elevation</label
             >
-              <option value="feet" data-i18n="common.feet">Feet</option>
-              <option value="meters" data-i18n="common.meters">Meters</option>
-            </select>
+            <div
+              class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+            >
+              <input
+                id="navaidElevation"
+                type="number"
+                class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                placeholder="Enter Navaid Elevation"
+                data-i18n="dme.navaidElevation"
+                data-i18n-attr="placeholder"
+              />
+              <select
+                id="navaidUnit"
+                class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+              >
+                <option value="feet" data-i18n="common.feet">Feet</option>
+                <option value="meters" data-i18n="common.meters">Meters</option>
+              </select>
+            </div>
           </div>
-        </div>
-        <!-- Fix Ground Distance -->
-        <div class="space-y-2">
-          <label
-            for="groundDistance"
-            class="block font-medium text-gray-700 dark:text-gray-300"
-            data-i18n="dme.fixGroundDistance"
-            >Fix Ground Distance (in NM)</label
-          >
-          <input
-            id="groundDistance"
-            type="number"
-            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            placeholder="Enter Ground Distance"
-          />
-        </div>
-        <!-- Aircraft Elevation -->
-        <div class="space-y-2 md:col-span-2">
-          <label
-            for="aircraftElevation"
-            class="block font-medium text-gray-700 dark:text-gray-300"
-            data-i18n="dme.aircraftElevation"
-            >Aircraft Elevation</label
-          >
-          <div
-            class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
-          >
+          <!-- Fix Ground Distance -->
+          <div class="space-y-2">
+            <label
+              for="groundDistance"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="dme.fixGroundDistance"
+              >Fix Ground Distance (in NM)</label
+            >
             <input
-              id="aircraftElevation"
+              id="groundDistance"
               type="number"
-              class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              placeholder="Enter Aircraft Elevation"
-              data-i18n="dme.aircraftElevation"
-              data-i18n-attr="placeholder"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="Enter Ground Distance"
             />
-            <select
-              id="aircraftUnit"
-              class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+          </div>
+          <!-- Aircraft Elevation -->
+          <div class="space-y-2 md:col-span-2">
+            <label
+              for="aircraftElevation"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="dme.aircraftElevation"
+              >Aircraft Elevation</label
             >
-              <option value="feet" data-i18n="common.feet">Feet</option>
-              <option value="meters" data-i18n="common.meters">Meters</option>
-            </select>
+            <div
+              class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+            >
+              <input
+                id="aircraftElevation"
+                type="number"
+                class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                placeholder="Enter Aircraft Elevation"
+                data-i18n="dme.aircraftElevation"
+                data-i18n-attr="placeholder"
+              />
+              <select
+                id="aircraftUnit"
+                class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+              >
+                <option value="feet" data-i18n="common.feet">Feet</option>
+                <option value="meters" data-i18n="common.meters">Meters</option>
+              </select>
+            </div>
           </div>
         </div>
-      </div>
+      </fieldset>
 
       <!-- Reference Diagram (Always Visible) -->
       <div

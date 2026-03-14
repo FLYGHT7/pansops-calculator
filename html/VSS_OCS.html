@@ -118,7 +118,9 @@
 
           <!-- Input Section -->
           <!-- Row 1: THR Elevation & RDH -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <fieldset>
+            <legend class="sr-only">VSS &amp; OCS Parameters</legend>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <!-- THR Elevation -->
             <div class="space-y-2">
               <label for="thrElev"
@@ -222,6 +224,8 @@
               </div>
             </div>
           </div>
+
+          </fieldset>
 
           <!-- Calculation Buttons (aligned to right) -->
           <div class="flex flex-wrap justify-end gap-3 mt-6">
@@ -527,7 +531,9 @@
           </div>
 
           <!-- Common Fields for ILS/APV/LOC -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <fieldset>
+            <legend class="sr-only">Precision Approach Parameters</legend>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <!-- THR Elevation -->
             <div class="space-y-2">
               <label for="thrElevB"
@@ -730,6 +736,7 @@
               />
             </div>
           </div>
+          </fieldset>
 
           <!-- Calculation Buttons -->
           <div class="flex flex-wrap justify-end gap-3 mt-6">

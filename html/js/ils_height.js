@@ -346,6 +346,7 @@ function drawDiagram(
 ) {
   const svgNS = "http://www.w3.org/2000/svg";
   const svg = document.getElementById("diagram");
+  const isDark = document.documentElement.classList.contains("dark");
 
   // Calculate the base height (THR + RDH)
   const baseHeight = thrElev + rdh;
@@ -392,6 +393,28 @@ function drawDiagram(
   // Set the SVG viewBox
   svg.setAttribute("viewBox", `0 0 ${svgWidth} ${viewBoxHeight.toFixed(0)}`);
   svg.innerHTML = "";
+
+  // Background rect (avionics dark panel or clean light)
+  const bgRect = document.createElementNS(svgNS, "rect");
+  bgRect.setAttribute("x", "0");
+  bgRect.setAttribute("y", "0");
+  bgRect.setAttribute("width", svgWidth.toString());
+  bgRect.setAttribute("height", viewBoxHeight.toFixed(0));
+  bgRect.setAttribute("fill", isDark ? "#080e1c" : "#f8fafc");
+  svg.appendChild(bgRect);
+
+  // Glow filter defs (used in dark mode for FAP line and markers)
+  const defs = document.createElementNS(svgNS, "defs");
+  defs.innerHTML = `
+    <filter id="glow-blue" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow-red" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>`;
+  svg.appendChild(defs);
 
   // Conversion functions:
   function getXPixel(x_nm) {
@@ -481,7 +504,7 @@ function drawDiagram(
   ); // Offset label slightly above the line
   greenLabel.setAttribute("x", greenX);
   greenLabel.setAttribute("y", greenY);
-  greenLabel.setAttribute("fill", "#059669");
+  greenLabel.setAttribute("fill", isDark ? "#34d399" : "#059669");
   greenLabel.setAttribute("font-size", "12");
   greenLabel.setAttribute("font-family", "Rajdhani, sans-serif");
   greenLabel.setAttribute("font-weight", "600");
@@ -496,13 +519,78 @@ function drawDiagram(
   ); // Offset label slightly below the line
   redLabel.setAttribute("x", redX);
   redLabel.setAttribute("y", redY);
-  redLabel.setAttribute("fill", "#dc2626");
+  redLabel.setAttribute("fill", isDark ? "#f87171" : "#dc2626");
   redLabel.setAttribute("font-size", "12");
   redLabel.setAttribute("font-family", "Rajdhani, sans-serif");
   redLabel.setAttribute("font-weight", "600");
   redLabel.setAttribute("text-anchor", "middle");
   redLabel.textContent = "Right Triangle";
   svg.appendChild(redLabel);
+
+  // THR amber vertical marker at x = 0 (touchdown threshold)
+  const thrLineEl = document.createElementNS(svgNS, "line");
+  const thrXPx = getXPixel(0);
+  thrLineEl.setAttribute("x1", thrXPx.toString());
+  thrLineEl.setAttribute("y1", "0");
+  thrLineEl.setAttribute("x2", thrXPx.toString());
+  thrLineEl.setAttribute("y2", viewBoxHeight.toString());
+  thrLineEl.setAttribute("stroke", isDark ? "#f59e0b" : "#d97706");
+  thrLineEl.setAttribute("stroke-width", "2");
+  thrLineEl.setAttribute("stroke-dasharray", "7,5");
+  thrLineEl.setAttribute("class", "thr-line");
+  svg.appendChild(thrLineEl);
+  const thrLabelEl = document.createElementNS(svgNS, "text");
+  thrLabelEl.setAttribute("x", (thrXPx + 4).toString());
+  thrLabelEl.setAttribute("y", "18");
+  thrLabelEl.setAttribute("font-size", "10");
+  thrLabelEl.setAttribute("font-family", "Rajdhani, sans-serif");
+  thrLabelEl.setAttribute("font-weight", "700");
+  thrLabelEl.setAttribute("fill", isDark ? "#f59e0b" : "#d97706");
+  thrLabelEl.setAttribute("letter-spacing", "1");
+  thrLabelEl.textContent = "THR";
+  svg.appendChild(thrLabelEl);
+
+  // Panel legend box
+  const legendPad = 8,
+    legendW = 138,
+    legendH = 62;
+  const legendX = svgWidth - marginRight - legendW - 2;
+  const legendY = topPadding + 4;
+  const legendBox = document.createElementNS(svgNS, "rect");
+  legendBox.setAttribute("x", legendX.toString());
+  legendBox.setAttribute("y", legendY.toString());
+  legendBox.setAttribute("width", legendW.toString());
+  legendBox.setAttribute("height", legendH.toString());
+  legendBox.setAttribute("fill", isDark ? "#0d1726" : "#f8fafc");
+  legendBox.setAttribute("stroke", isDark ? "#1e3a5f" : "#cbd5e1");
+  legendBox.setAttribute("stroke-width", "1");
+  legendBox.setAttribute("rx", "4");
+  svg.appendChild(legendBox);
+  const legendItems = [
+    { color: isDark ? "#f87171" : "#dc2626", label: "Right Triangle" },
+    { color: isDark ? "#34d399" : "#059669", label: "Earth Curvature" },
+    { color: isDark ? "#f59e0b" : "#d97706", label: "THR" },
+  ];
+  legendItems.forEach(({ color, label }, i) => {
+    const ly = legendY + legendPad + 14 + i * 16;
+    const ll = document.createElementNS(svgNS, "line");
+    ll.setAttribute("x1", (legendX + legendPad).toString());
+    ll.setAttribute("y1", ly.toString());
+    ll.setAttribute("x2", (legendX + legendPad + 20).toString());
+    ll.setAttribute("y2", ly.toString());
+    ll.setAttribute("stroke", color);
+    ll.setAttribute("stroke-width", "2.5");
+    svg.appendChild(ll);
+    const lt = document.createElementNS(svgNS, "text");
+    lt.setAttribute("x", (legendX + legendPad + 26).toString());
+    lt.setAttribute("y", (ly + 4).toString());
+    lt.setAttribute("font-size", "10");
+    lt.setAttribute("font-family", "Rajdhani, sans-serif");
+    lt.setAttribute("font-weight", "600");
+    lt.setAttribute("fill", isDark ? "#94a3b8" : "#374151");
+    lt.textContent = label;
+    svg.appendChild(lt);
+  });
 
   // Add a marker for the FAP/Fix point if distance is available
   if (!isNaN(distFAP) && distFAP > 0 && distFAP <= xMax) {
@@ -516,6 +604,8 @@ function drawDiagram(
     fapLine.setAttribute("stroke", "#0284c7");
     fapLine.setAttribute("stroke-width", "2");
     fapLine.setAttribute("stroke-dasharray", "5,5");
+    fapLine.setAttribute("class", "fap-line");
+    if (isDark) fapLine.setAttribute("filter", "url(#glow-blue)");
     svg.appendChild(fapLine);
 
     // Add markers at the calculated altitudes
@@ -528,8 +618,9 @@ function drawDiagram(
     triMarker.setAttribute("cy", triY);
     triMarker.setAttribute("r", "5");
     triMarker.setAttribute("fill", "#dc2626");
-    triMarker.setAttribute("stroke", "#fff");
+    triMarker.setAttribute("stroke", isDark ? "#0d1726" : "#fff");
     triMarker.setAttribute("stroke-width", "1.5");
+    if (isDark) triMarker.setAttribute("filter", "url(#glow-red)");
     svg.appendChild(triMarker);
 
     // Curvature marker (green circle)
@@ -537,9 +628,10 @@ function drawDiagram(
     curvMarker.setAttribute("cx", fapX);
     curvMarker.setAttribute("cy", curvY);
     curvMarker.setAttribute("r", "5");
-    curvMarker.setAttribute("fill", "#059669");
-    curvMarker.setAttribute("stroke", "#fff");
+    curvMarker.setAttribute("fill", isDark ? "#34d399" : "#059669");
+    curvMarker.setAttribute("stroke", isDark ? "#0d1726" : "#fff");
     curvMarker.setAttribute("stroke-width", "1.5");
+    if (isDark) curvMarker.setAttribute("filter", "url(#glow-blue)");
     svg.appendChild(curvMarker);
 
     // Add FAP/Fix label
@@ -551,7 +643,7 @@ function drawDiagram(
     fapLabel.setAttribute("x", fapX);
     fapLabel.setAttribute("y", viewBoxHeight - 25);
     fapLabel.setAttribute("font-size", "12");
-    fapLabel.setAttribute("fill", "#0284c7");
+    fapLabel.setAttribute("fill", isDark ? "#38bdf8" : "#0284c7");
     fapLabel.setAttribute("font-family", "Rajdhani, sans-serif");
     fapLabel.setAttribute("font-weight", "600");
     fapLabel.setAttribute("text-anchor", "middle");
