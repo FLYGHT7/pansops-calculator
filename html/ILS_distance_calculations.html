@@ -108,7 +108,9 @@
       </div>
 
       <!-- Row for THR Elevation, RDH, and Glidepath Angle -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <fieldset>
+        <legend class="sr-only">Glidepath Geometry</legend>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <!-- THR Elevation Input -->
         <div class="space-y-2">
           <label for="thrElev"
@@ -177,9 +179,12 @@
           />
         </div>
       </div>
+      </fieldset>
 
       <!-- Row for Point/Fix Type and FAP Altitude -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <fieldset>
+        <legend class="sr-only">Fix Reference</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <!-- Point/Fix Type Selection -->
         <div class="space-y-2">
           <label
@@ -236,6 +241,7 @@
           />
         </div>
       </div>
+      </fieldset>
 
       <!-- Calculate Button -->
       <div class="flex justify-end mt-6">

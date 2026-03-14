@@ -51,7 +51,9 @@
     </div>
 
     <!-- Inputs for TAS Calculation -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <fieldset>
+      <legend class="sr-only">Airspeed &amp; Altitude Parameters</legend>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
       <div class="space-y-2">
         <label for="ias" class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="tas.ias">
           Indicated Airspeed (IAS)
@@ -82,9 +84,12 @@
         <input id="isaDeviation" type="number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter ISA Deviation" data-i18n="tas.phEnterIsaDeviation" data-i18n-attr="placeholder" />
       </div>
     </div>
+    </fieldset>
 
     <!-- Inputs for Rate & Radius of Turn -->
-    <div class="mt-6">
+    <fieldset>
+      <legend class="sr-only">Turn Parameters</legend>
+      <div class="mt-6">
       <div class="space-y-2 max-w-xs">
         <label for="bankAngle" class="block font-medium text-gray-700 dark:text-gray-300" data-i18n="tas.bankAngle">
           Bank Angle (Â°)
@@ -92,6 +97,7 @@
         <input id="bankAngle" type="number" value="25" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="Enter Bank Angle" data-i18n="tas.phEnterBankAngle" data-i18n-attr="placeholder" />
       </div>
     </div>
+    </fieldset>
 
     <!-- Calculation Buttons -->
     <div class="flex flex-wrap justify-end mt-6 gap-3">

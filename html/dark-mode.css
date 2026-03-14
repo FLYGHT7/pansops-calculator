@@ -1,5 +1,66 @@
 /* dark-mode.css - Common dark mode styles for all aviation calculators */
 
+/* ================================================================
+   PHASE 1 — DESIGN TOKEN LAYER
+   CSS custom properties consumed by all components.
+   Override here to retheme the entire suite.
+   ================================================================ */
+
+:root {
+  /* Backgrounds */
+  --bg: #f1f5f9; /* slate-100 — cooler than gray-50 */
+  --surface: #ffffff;
+  --card: #ffffff;
+  --border: #cbd5e1; /* slate-300 */
+
+  /* Text */
+  --text: #0f172a; /* slate-900 */
+  --text-muted: #64748b; /* slate-500 */
+
+  /* Brand */
+  --primary: #0284c7; /* sky-600 */
+  --primary-light: #38bdf8; /* sky-400 */
+  --primary-glow: rgba(56, 189, 248, 0.25);
+
+  /* Semantic status */
+  --accent-ok: #10b981; /* emerald-500 */
+  --accent-ok-glow: rgba(16, 185, 129, 0.2);
+  --accent-warn: #f59e0b; /* amber-500 */
+  --accent-warn-glow: rgba(245, 158, 11, 0.2);
+  --accent-danger: #ef4444; /* red-500 */
+  --accent-danger-glow: rgba(239, 68, 68, 0.2);
+}
+
+html.dark {
+  /* Backgrounds */
+  --bg: #0a0f1a; /* deep navy — aviation console */
+  --surface: #111827; /* gray-900 */
+  --card: #1a2235; /* blue-tinted card vs flat gray */
+  --border: #1e3a5f; /* subtle blue-tint border */
+
+  /* Text */
+  --text: #f1f5f9; /* slate-100 */
+  --text-muted: #64748b; /* slate-500 */
+
+  /* Brand */
+  --primary: #38bdf8; /* sky-400 */
+  --primary-light: #7dd3fc; /* sky-300 */
+  --primary-glow: rgba(56, 189, 248, 0.15);
+  --primary-strong-glow: rgba(56, 189, 248, 0.35);
+
+  /* Semantic status */
+  --accent-ok: #34d399; /* emerald-400 */
+  --accent-ok-glow: rgba(52, 211, 153, 0.2);
+  --accent-warn: #fbbf24; /* amber-400 */
+  --accent-warn-glow: rgba(251, 191, 36, 0.2);
+  --accent-danger: #f87171; /* red-400 */
+  --accent-danger-glow: rgba(248, 113, 113, 0.2);
+}
+
+/* ================================================================
+   END DESIGN TOKENS
+   ================================================================ */
+
 /* Ensure smooth transitions when toggling dark mode */
 html.dark {
   transition:
@@ -9,42 +70,66 @@ html.dark {
 
 /* Ensure proper text contrast in dark mode */
 html.dark body {
-  color: #f3f4f6;
+  color: var(--text);
+}
+
+/* ----------------------------------------------------------------
+   PHASE 1.2 — Dark background: deep navy + subtle dot-grid texture
+   Very low-opacity radial dot pattern gives instrument-panel depth
+   ---------------------------------------------------------------- */
+html.dark body {
+  background-color: var(--bg);
+  background-image: radial-gradient(
+    rgba(56, 189, 248, 0.045) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
 }
 
 /* Ensure proper background colors for dark mode */
 html.dark .bg-gray-50 {
-  background-color: #111827;
+  background-color: var(--bg);
 }
 
-html.dark .bg-white {
-  background-color: #1f2937;
+/* ----------------------------------------------------------------
+   PHASE 1.3 — Card surface: blue-tinted #1a2235 instead of gray-800
+   Makes cards feel like avionics panel sections vs generic dark boxes
+   ---------------------------------------------------------------- */
+html.dark .bg-white,
+html.dark .bg-gray-800 {
+  background-color: var(--card);
 }
 
-/* Ensure proper border colors in dark mode */
-html.dark .border-gray-200 {
-  border-color: #374151;
+/* Secondary surface (nested cards) */
+html.dark .bg-gray-700 {
+  background-color: #141e30;
+}
+
+/* Ensure proper border colors in dark mode — blue-tinted per design tokens */
+html.dark .border-gray-200,
+html.dark .border-gray-700 {
+  border-color: var(--border);
 }
 
 html.dark .border-gray-300 {
-  border-color: #4b5563;
+  border-color: #2a4a6b;
 }
 
 /* Ensure proper input styling in dark mode */
 html.dark input,
 html.dark select,
 html.dark textarea {
-  background-color: #374151;
-  color: #f3f4f6;
-  border-color: #4b5563;
+  background-color: #0f1929;
+  color: var(--text);
+  border-color: var(--border);
 }
 
 html.dark input:focus,
 html.dark select:focus,
 html.dark textarea:focus {
-  border-color: #3b82f6;
+  border-color: var(--primary);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
 /* Ensure proper button styling in dark mode */
@@ -78,9 +163,9 @@ html.dark svg {
 }
 
 /* Ensure proper focus styles in dark mode */
-html.dark *:focus {
+html.dark *:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
 /* Ensure proper placeholder text color in dark mode */
@@ -177,3 +262,1000 @@ html.dark [role="region"] .text-lg,
 html.dark [role="region"] .text-xl {
   color: #7dd3fc;
 }
+
+/* ================================================================
+   PHASE 3 — INPUT FORM COMPONENTS
+   Scoped to `main` so sidebar controls in Main.html are unaffected.
+   All changes are CSS-only; zero HTML edits required.
+   ================================================================ */
+
+/* ----------------------------------------------------------------
+   3.2 — Label redesign: uppercase instrument-panel annotation style
+   ---------------------------------------------------------------- */
+main label {
+  display: block;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-family: "Barlow", sans-serif;
+  margin-bottom: 0.25rem;
+}
+
+/* ----------------------------------------------------------------
+   3.1 — Input / textarea base: token borders, Barlow body
+   ---------------------------------------------------------------- */
+main input,
+main textarea {
+  border: 1.5px solid var(--border) !important;
+  background: var(--surface) !important;
+  border-radius: 6px;
+  font-family: "Barlow", sans-serif;
+  font-size: 0.9rem;
+  color: var(--text);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+/* Number inputs → Share Tech Mono — they hold precision measurements */
+main input[type="number"] {
+  font-family: "Share Tech Mono", monospace !important;
+  letter-spacing: 0.04em;
+}
+
+/* Text inputs (ICAO codes etc.) */
+main input[type="text"] {
+  font-family: "Barlow", sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ----------------------------------------------------------------
+   3.3 — Select: token border + custom sky-blue chevron, no OS styling
+   ---------------------------------------------------------------- */
+main select {
+  border: 1.5px solid var(--border) !important;
+  background-color: var(--surface) !important;
+  border-radius: 6px;
+  font-family: "Barlow", sans-serif;
+  font-size: 0.9rem;
+  color: var(--text);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%230284c7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  padding-right: 2.25rem !important;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+/* Dark mode chevron uses primary-light #38bdf8 */
+html.dark main select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2338bdf8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+}
+
+/* ----------------------------------------------------------------
+   Focus ring — override Tailwind's focus:ring-* with token glow
+   ---------------------------------------------------------------- */
+html main input:focus,
+html main textarea:focus,
+html main select:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px var(--primary-glow) !important;
+  outline: none !important;
+}
+
+/* Brief pulse on first-focus to draw attention (CSS-only one-shot) */
+html main input:focus,
+html main select:focus {
+  animation: input-focus-pulse 0.4s ease forwards;
+}
+@keyframes input-focus-pulse {
+  0% {
+    box-shadow: 0 0 0 0px var(--primary-glow);
+  }
+  50% {
+    box-shadow: 0 0 0 6px var(--primary-glow);
+  }
+  100% {
+    box-shadow: 0 0 0 3px var(--primary-glow);
+  }
+}
+
+/* ----------------------------------------------------------------
+   Dark-mode overrides for inputs/selects (complement Phase 1.3)
+   ---------------------------------------------------------------- */
+html.dark main input,
+html.dark main textarea {
+  background-color: #0f1929 !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+
+html.dark main select {
+  background-color: #0f1929 !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+
+html.dark main input::placeholder,
+html.dark main textarea::placeholder {
+  color: #3a5278;
+  letter-spacing: 0.03em;
+}
+
+/* ----------------------------------------------------------------
+   3.5 — Unit badge / addon (combo inputs like TAS, Rate Turn, etc.)
+   The div containing "knots", "ft", "NM" labels next to inputs
+   ---------------------------------------------------------------- */
+
+/* Light: pale sky tint */
+main .bg-gray-100 {
+  background-color: #e8f4fb !important;
+  border-left-color: var(--border) !important;
+  color: var(--primary) !important;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+/* Dark: deep navy panel */
+html.dark main .bg-gray-100,
+html.dark main .bg-gray-600 {
+  background-color: #0a1628 !important;
+  border-left-color: var(--border) !important;
+  color: var(--primary-light) !important;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+}
+
+/* Unit selects inside badge addons (e.g. altitude unit in TAS) */
+html.dark main .flex.rounded-lg > select,
+html.dark main .flex.overflow-hidden > select {
+  background-color: #0a1628 !important;
+  border-left-color: var(--border) !important;
+  color: var(--primary-light) !important;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.8rem;
+}
+
+main .flex.rounded-lg > select,
+main .flex.overflow-hidden > select {
+  background-color: #e8f4fb !important;
+  border-left-color: var(--border) !important;
+  color: var(--primary) !important;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.8rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' fill='none' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%230284c7' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.4rem center !important;
+  padding-right: 1.5rem !important;
+}
+
+/* ----------------------------------------------------------------
+   3.4 — Combo input wrapper: consistent border treatment
+   ---------------------------------------------------------------- */
+main .flex.rounded-lg.overflow-hidden,
+main .flex.overflow-hidden.rounded-lg {
+  border: 1.5px solid var(--border) !important;
+  border-radius: 6px !important;
+  overflow: hidden;
+}
+
+main .flex.rounded-lg.overflow-hidden input,
+main .flex.rounded-lg.overflow-hidden select,
+main .flex.overflow-hidden.rounded-lg input,
+main .flex.overflow-hidden.rounded-lg select {
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  animation: none !important; /* no pulse on nested inputs */
+}
+
+main .flex.rounded-lg.overflow-hidden:focus-within,
+main .flex.overflow-hidden.rounded-lg:focus-within {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px var(--primary-glow) !important;
+  animation: input-focus-pulse 0.4s ease forwards;
+}
+
+/* ================================================================
+   END PHASE 3
+   ================================================================ */
+
+/* ================================================================
+   PHASE 4 — BUTTONS & ACTION BAR
+   Targets buttons by ID convention:
+     btnCalc* = Calculate (primary CTA)
+     btnSave  = Save (emerald ghost)
+     btnLoad  = Load (sky ghost)
+     btnCopy* = Copy (slate ghost)
+   All CSS-only. No HTML changes needed.
+   ================================================================ */
+
+/* ----------------------------------------------------------------
+   4.1 — CALCULATE button: gradient + depth glow + Rajdhani label
+   ---------------------------------------------------------------- */
+main button[id^="btnCalc"] {
+  background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%) !important;
+  border: none !important;
+  box-shadow:
+    0 4px 14px rgba(14, 165, 233, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  color: #fff !important;
+  font-family: "Rajdhani", sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.12s ease,
+    filter 0.2s ease !important;
+}
+main button[id^="btnCalc"]:hover {
+  filter: brightness(1.12);
+  box-shadow:
+    0 6px 22px rgba(14, 165, 233, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+main button[id^="btnCalc"]:active {
+  transform: scale(0.975) translateY(1px) !important;
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.35) !important;
+}
+
+/* Dark mode: brighter glow on the sky-400 end */
+html.dark main button[id^="btnCalc"] {
+  background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%) !important;
+  box-shadow:
+    0 4px 18px rgba(56, 189, 248, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+html.dark main button[id^="btnCalc"]:hover {
+  box-shadow:
+    0 6px 26px rgba(56, 189, 248, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+/* ----------------------------------------------------------------
+   4.3 — Calculating state: progress bar + muted appearance
+         JS adds/removes `.calculating` class automatically
+   ---------------------------------------------------------------- */
+main button[id^="btnCalc"].calculating {
+  pointer-events: none;
+  filter: brightness(0.85) !important;
+}
+main button[id^="btnCalc"].calculating::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 0;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 0 2px 2px 0;
+  animation: calc-progress 1.2s ease-in-out forwards;
+}
+@keyframes calc-progress {
+  0% {
+    width: 0%;
+    opacity: 1;
+  }
+  80% {
+    width: 90%;
+    opacity: 1;
+  }
+  100% {
+    width: 100%;
+    opacity: 0;
+  }
+}
+
+/* ----------------------------------------------------------------
+   4.2 — SAVE / LOAD / COPY: ghost outline style hierarchy
+         Save = emerald, Load = sky, Copy = slate
+   ---------------------------------------------------------------- */
+
+/* --- Save button --- */
+main #btnSave {
+  background: transparent !important;
+  border: 1.5px solid #10b981 !important;
+  color: #059669 !important;
+  box-shadow: none !important;
+  font-family: "Barlow", sans-serif !important;
+  font-weight: 600 !important;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease !important;
+}
+main #btnSave:hover {
+  background: rgba(16, 185, 129, 0.08) !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+}
+html.dark main #btnSave {
+  border-color: #34d399 !important;
+  color: #34d399 !important;
+}
+html.dark main #btnSave:hover {
+  background: rgba(52, 211, 153, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2) !important;
+}
+
+/* --- Load button --- */
+main #btnLoad {
+  background: transparent !important;
+  border: 1.5px solid #0284c7 !important;
+  color: #0284c7 !important;
+  box-shadow: none !important;
+  font-family: "Barlow", sans-serif !important;
+  font-weight: 600 !important;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease !important;
+}
+main #btnLoad:hover {
+  background: rgba(2, 132, 199, 0.08) !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2) !important;
+}
+html.dark main #btnLoad {
+  border-color: #38bdf8 !important;
+  color: #38bdf8 !important;
+}
+html.dark main #btnLoad:hover {
+  background: rgba(56, 189, 248, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2) !important;
+}
+
+/* --- Copy buttons (btnCopy, btnCopyDVSS, btnCopyOCS, etc.) --- */
+main button[id^="btnCopy"] {
+  background: transparent !important;
+  border: 1.5px solid #64748b !important;
+  color: #64748b !important;
+  box-shadow: none !important;
+  font-family: "Barlow", sans-serif !important;
+  font-weight: 600 !important;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease !important;
+}
+main button[id^="btnCopy"]:hover {
+  background: rgba(100, 116, 139, 0.08) !important;
+  border-color: #94a3b8 !important;
+  color: #94a3b8 !important;
+}
+html.dark main button[id^="btnCopy"] {
+  border-color: #475569 !important;
+  color: #94a3b8 !important;
+}
+html.dark main button[id^="btnCopy"]:hover {
+  background: rgba(148, 163, 184, 0.1) !important;
+  border-color: #94a3b8 !important;
+  color: #cbd5e1 !important;
+}
+
+/* ----------------------------------------------------------------
+   4.3 — Results section fade-in
+   When JS removes `.hidden`, the element re-renders and this
+   animation fires from the start — no JS changes needed.
+   ---------------------------------------------------------------- */
+[role="region"]:not(.hidden) {
+  animation: result-appear 0.35s ease forwards;
+}
+@keyframes result-appear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================================================================
+   END PHASE 4
+   ================================================================ */
+
+/* ================================================================
+   PHASE 5 — RESULT CARDS & OUTPUT DISPLAY
+   CSS-only. Extends Phase 4.3 base styles with main-scoped, higher-
+   specificity rules for the avionics glass-cockpit result aesthetic.
+   ================================================================ */
+
+/* --- 5.1  Result region container -------------------------------- */
+main [role="region"] {
+  background-color: #eef7ff !important;
+  border: 1.5px solid #bae6fd !important;
+  border-radius: 12px !important;
+}
+
+html.dark main [role="region"] {
+  background-color: #080e1c !important;
+  border-color: var(--border) !important;
+  box-shadow:
+    inset 0 1px 12px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(56, 189, 248, 0.07);
+}
+
+/* --- 5.2  Result section title h2 -------------------------------- */
+main [role="region"] h2 {
+  font-family: "Rajdhani", sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 0.8rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: #0284c7 !important;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #bae6fd;
+  margin-bottom: 1.25rem !important;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+html.dark main [role="region"] h2 {
+  color: var(--primary-light) !important;
+  border-bottom-color: rgba(56, 189, 248, 0.18);
+}
+
+/* Cyan pulse dot before results heading */
+main [role="region"] h2::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px currentColor;
+}
+
+/* --- 5.3  Individual result metric cards ------------------------- */
+main [role="region"] .grid > div {
+  background-color: #ffffff !important;
+  border: 1.5px solid #e0f2fe !important;
+  border-left: 2.5px solid #0284c7 !important;
+  border-radius: 8px !important;
+  padding: 0.875rem 1rem !important;
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+main [role="region"] .grid > div:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.14);
+}
+
+html.dark main [role="region"] .grid > div {
+  background-color: #0d1726 !important;
+  border-color: #1e3a5f !important;
+  border-left-color: rgba(56, 189, 248, 0.5) !important;
+  box-shadow: inset 0 1px 0 rgba(56, 189, 248, 0.05);
+}
+
+html.dark main [role="region"] .grid > div:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(56, 189, 248, 0.05),
+    0 6px 18px rgba(56, 189, 248, 0.1);
+  border-left-color: rgba(56, 189, 248, 0.85) !important;
+}
+
+/* --- 5.4  Result label (instrument annotation) ------------------- */
+main [role="region"] .grid > div p.text-sm {
+  font-family: "Barlow", sans-serif !important;
+  font-size: 0.63rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: var(--text-muted) !important;
+  margin-bottom: 0.3rem;
+}
+
+/* --- 5.5  Result value (digital readout) ------------------------- */
+main [role="region"] .grid > div p.text-lg,
+main [role="region"] .grid > div p.text-xl {
+  font-family: "Share Tech Mono", monospace !important;
+  font-size: 1.45rem !important;
+  font-weight: 400 !important;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  color: #0369a1 !important;
+}
+
+html.dark main [role="region"] .grid > div p.text-lg,
+html.dark main [role="region"] .grid > div p.text-xl {
+  color: #38bdf8 !important;
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+}
+
+/* --- 5.6  Tables inside result regions --------------------------- */
+main [role="region"] table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+main [role="region"] thead th {
+  background-color: #0369a1 !important;
+  color: #ffffff !important;
+  font-family: "Rajdhani", sans-serif !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  padding: 0.55rem 0.875rem;
+  border-color: transparent !important;
+}
+
+html.dark main [role="region"] thead th {
+  background-color: #0c4a6e !important;
+}
+
+main [role="region"] td {
+  font-family: "Share Tech Mono", monospace !important;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.875rem;
+  border-color: var(--border) !important;
+}
+
+main [role="region"] tbody tr:nth-child(even) {
+  background-color: rgba(56, 189, 248, 0.04) !important;
+}
+
+html.dark main [role="region"] tbody tr:nth-child(even) {
+  background-color: rgba(56, 189, 248, 0.06) !important;
+}
+
+main [role="region"] tbody tr:hover {
+  background-color: rgba(56, 189, 248, 0.1) !important;
+  transition: background-color 0.15s ease;
+}
+
+/* --- 5.7  Status color utilities --------------------------------- */
+/*  Wire up via JS: element.classList.add('text-ok')               */
+main .text-ok {
+  color: var(--accent-ok) !important;
+}
+main .text-warn {
+  color: var(--accent-warn) !important;
+}
+main .text-danger {
+  color: var(--accent-danger) !important;
+}
+
+html.dark main .text-ok {
+  text-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+}
+html.dark main .text-warn {
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+html.dark main .text-danger {
+  text-shadow: 0 0 8px rgba(248, 113, 113, 0.5);
+}
+
+/* Status card border variants (add class to card div via JS) */
+main [role="region"] .grid > div.result-ok {
+  border-left-color: var(--accent-ok) !important;
+}
+main [role="region"] .grid > div.result-warn {
+  border-left-color: var(--accent-warn) !important;
+}
+main [role="region"] .grid > div.result-danger {
+  border-left-color: var(--accent-danger) !important;
+}
+
+html.dark main [role="region"] .grid > div.result-ok {
+  box-shadow:
+    inset 0 1px 0 rgba(52, 211, 153, 0.1),
+    0 0 10px rgba(52, 211, 153, 0.07);
+}
+html.dark main [role="region"] .grid > div.result-warn {
+  box-shadow:
+    inset 0 1px 0 rgba(251, 191, 36, 0.1),
+    0 0 10px rgba(251, 191, 36, 0.07);
+}
+html.dark main [role="region"] .grid > div.result-danger {
+  box-shadow:
+    inset 0 1px 0 rgba(248, 113, 113, 0.1),
+    0 0 10px rgba(248, 113, 113, 0.07);
+}
+
+/* ================================================================
+   END PHASE 5
+   ================================================================ */
+
+/* ================================================================
+   PHASE 6 — SVG DIAGRAM POLISH
+   CSS-only scoped rules; JS enhancements in ils_height.js /
+   profile_check.js handle bg rect, glow defs, and dark colors.
+   ================================================================ */
+
+/* --- 6.1  ILS Height diagram container styling ------------------ */
+#diagramContainer {
+  background-color: var(--card) !important;
+  border-color: var(--border) !important;
+  border-radius: 12px !important;
+}
+
+#diagramContainer > h2 {
+  font-family: "Rajdhani", sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 0.8rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted) !important;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.6rem;
+  margin-bottom: 0.75rem !important;
+}
+
+/* SVG element backgrounds in dark mode */
+html.dark #diagram,
+html.dark #profileSvg {
+  background-color: #080e1c;
+  border-radius: 6px;
+}
+
+html.dark #diagram {
+  border-color: #1e3a5f !important;
+}
+
+/* --- 6.2  Dark mode grid lines — blue-tinted ------------------- */
+/* (grid-line class is in ILS_height_calculations.html <style> block) */
+
+/* --- 6.3  Profile polyline dark glow ---------------------------- */
+html.dark #profilePolyline {
+  stroke: #38bdf8 !important;
+  filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.5));
+}
+
+/* --- 6.4  Profile diagram SVG container ------------------------- */
+.overflow-auto:has(#profileSvg),
+.overflow-auto:has(#diagram) {
+  border-radius: 8px;
+  overflow: hidden !important;
+}
+
+/* --- 6.5  ILS polyline glow in dark ----------------------------- */
+html.dark polyline[stroke="#dc2626"] {
+  filter: drop-shadow(0 0 3px rgba(248, 113, 113, 0.45));
+}
+html.dark polyline[stroke="#059669"] {
+  filter: drop-shadow(0 0 3px rgba(52, 211, 153, 0.45));
+}
+
+/* ================================================================
+   END PHASE 6
+   ================================================================ */
+
+/* ================================================================
+   PHASE 7 — ABOUT PAGE + TOOLTIP / HELP SYSTEM
+   7.2: CSS-only tooltip via [data-tooltip] attribute.
+   Add  data-tooltip="Your hint text"  to any label or icon and
+   the tooltip renders automatically — zero JS needed.
+   ================================================================ */
+
+/* --- 7.1  About page — card hover & section separator overrides - */
+/* (Most About.html design is inline-style; these supplement it)    */
+
+/* Changelog timeline connector line */
+.timeline-item + .timeline-item {
+  position: relative;
+}
+.timeline-item + .timeline-item::before {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 1rem;
+  margin-left: 1.5rem;
+  background: var(--border);
+}
+
+/* --- 7.2  CSS-only tooltip system -------------------------------- */
+/*  Usage: <label data-tooltip="FAP altitude above MSL">...</label> */
+/*         <button data-tooltip="Save parameters as JSON">...</button> */
+
+[data-tooltip] {
+  position: relative;
+  cursor: default;
+}
+
+/* The tooltip bubble */
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  z-index: 50;
+
+  /* Layout */
+  width: max-content;
+  max-width: 220px;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  white-space: normal;
+
+  /* Typography */
+  font-family: "Barlow", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.5;
+  text-transform: none;
+  letter-spacing: 0;
+
+  /* Colors — light */
+  background: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+
+  /* Animation */
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+/* Arrow caret */
+[data-tooltip]::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% + 3px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 51;
+  border: 5px solid transparent;
+  border-top-color: #1e293b;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+
+/* Show on hover / focus */
+[data-tooltip]:hover::after,
+[data-tooltip]:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+[data-tooltip]:hover::before,
+[data-tooltip]:focus-visible::before {
+  opacity: 1;
+}
+
+/* Dark mode: lighter surface so it pops */
+html.dark [data-tooltip]::after {
+  background: #0d1726;
+  color: #cbd5e1;
+  border-color: var(--border);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+html.dark [data-tooltip]::before {
+  border-top-color: #0d1726;
+}
+
+/* Tooltip that opens downward (add class .tooltip-below) */
+[data-tooltip].tooltip-below::after {
+  bottom: auto;
+  top: calc(100% + 8px);
+  transform: translateX(-50%) translateY(-4px);
+}
+[data-tooltip].tooltip-below:hover::after,
+[data-tooltip].tooltip-below:focus-visible::after {
+  transform: translateX(-50%) translateY(0);
+}
+[data-tooltip].tooltip-below::before {
+  bottom: auto;
+  top: calc(100% + 3px);
+  border-top-color: transparent;
+  border-bottom-color: #1e293b;
+}
+html.dark [data-tooltip].tooltip-below::before {
+  border-bottom-color: #0d1726;
+}
+
+/* ================================================================
+   END PHASE 7
+   ================================================================ */
+
+/* ================================================================
+   PHASE 8 — MICRO-INTERACTIONS & MOTION
+   ================================================================ */
+
+/* --- 8.1  Page load stagger ----------------------------------- */
+@keyframes page-entry {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main > header,
+main > div:not([role="region"]),
+main > section {
+  animation: page-entry 0.3s ease both;
+}
+
+main > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+main > *:nth-child(2) {
+  animation-delay: 55ms;
+}
+main > *:nth-child(3) {
+  animation-delay: 110ms;
+}
+main > *:nth-child(4) {
+  animation-delay: 165ms;
+}
+main > *:nth-child(5) {
+  animation-delay: 220ms;
+}
+main > *:nth-child(6) {
+  animation-delay: 275ms;
+}
+main > *:nth-child(7) {
+  animation-delay: 330ms;
+}
+main > *:nth-child(8) {
+  animation-delay: 385ms;
+}
+
+/* --- 8.2  Dark mode toggle ----------------------------------- */
+
+/* Track color sweep */
+#darkModeToggle .dark-toggle-track {
+  transition: background-color 0.35s ease;
+  background-color: #4b5563 !important;
+}
+html.dark #darkModeToggle .dark-toggle-track {
+  background-color: #0284c7 !important;
+}
+
+/* Knob tint in dark mode */
+#darkModeIndicator {
+  transition:
+    transform 0.2s ease,
+    background-color 0.35s ease !important;
+}
+html.dark #darkModeIndicator {
+  background-color: #e0f2fe !important;
+}
+
+/* Sun ↔ Moon icon cross-fade */
+.dark-mode-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.dm-sun,
+.dm-moon {
+  transition: opacity 0.3s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.dm-sun {
+  opacity: 1;
+}
+.dm-moon {
+  opacity: 0;
+}
+html.dark .dm-sun {
+  opacity: 0;
+}
+html.dark .dm-moon {
+  opacity: 1;
+}
+
+/* On-click icon spin */
+@keyframes toggle-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.dark-toggle-animating .dark-mode-icon {
+  animation: toggle-spin 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- 8.3  Result card cascade stagger ----------------------- */
+
+main [role="region"]:not(.hidden) .grid > div {
+  animation: result-appear 0.3s ease both;
+}
+main [role="region"]:not(.hidden) .grid > div:nth-child(1) {
+  animation-delay: 80ms;
+}
+main [role="region"]:not(.hidden) .grid > div:nth-child(2) {
+  animation-delay: 140ms;
+}
+main [role="region"]:not(.hidden) .grid > div:nth-child(3) {
+  animation-delay: 200ms;
+}
+main [role="region"]:not(.hidden) .grid > div:nth-child(4) {
+  animation-delay: 260ms;
+}
+main [role="region"]:not(.hidden) .grid > div:nth-child(5) {
+  animation-delay: 320ms;
+}
+main [role="region"]:not(.hidden) .grid > div:nth-child(6) {
+  animation-delay: 380ms;
+}
+main [role="region"]:not(.hidden) .grid > div:nth-child(7) {
+  animation-delay: 440ms;
+}
+main [role="region"]:not(.hidden) .grid > div:nth-child(8) {
+  animation-delay: 500ms;
+}
+
+/* --- 8.4  Focus pulse — extend to textarea ------------------- */
+
+html main textarea:focus {
+  animation: input-focus-pulse 0.4s ease forwards;
+}
+
+/* ================================================================
+   END PHASE 8
+   ================================================================ */
+
+/* ================================================================
+   PHASE 9 — ACCESSIBILITY & SEMANTIC HARDENING
+   ================================================================ */
+
+/* --- 9.1  Fieldset / legend reset ----------------------------- */
+/* Removes browser chrome from <fieldset> so grid layout is unaffected */
+main fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+  min-inline-size: 0; /* overrides the browser default of min-content */
+}
+
+/* --- 9.2  Result region: visible focus outline ---------------- */
+/* tabindex="-1" regions receive focus programmatically; show a    */
+/* subtle ring so sighted keyboard users know where they landed.   */
+main [role="region"]:focus {
+  outline: 2px solid rgba(56, 189, 248, 0.5);
+  outline-offset: 3px;
+}
+main [role="region"]:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* --- 9.3  Contrast fix: result metric card labels ------------- */
+/* text-gray-500 (#6b7280) on white is ~4.48:1 — just below AA.   */
+/* Bump to gray-600 (≥5.9:1) for normal text on white.            */
+main [role="region"] .grid > div p.text-sm,
+main [role="region"] .grid > div span.text-sm {
+  color: #4b5563; /* gray-600, 5.9:1 on white ✓ */
+}
+html.dark main [role="region"] .grid > div p.text-sm,
+html.dark main [role="region"] .grid > div span.text-sm {
+  color: #94a3b8; /* slate-400, 4.6:1 on #1f2937 ✓ */
+}
+
+/* ================================================================
+   END PHASE 9
+   ================================================================ */

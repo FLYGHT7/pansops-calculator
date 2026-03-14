@@ -18,33 +18,39 @@
     >
       <!-- Header with title and buttons -->
       <div class="flex flex-wrap justify-between items-center mb-6">
-      <header>
-        <h1
-          class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 flex items-center"
-          data-i18n="isa.title"
-        >
-          <svg aria-hidden="true" focusable="false"
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-7 w-7 sm:h-8 sm:w-8 mr-2"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+        <header>
+          <h1
+            class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 flex items-center"
+            data-i18n="isa.title"
           >
-            <path
-              d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"
-            ></path>
-          </svg>
-          ISA Deviation Calculator
-        </h1>
-      </header>
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-7 w-7 sm:h-8 sm:w-8 mr-2"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"
+              ></path>
+            </svg>
+            ISA Deviation Calculator
+          </h1>
+        </header>
         <div class="flex gap-3">
-          <button type="button" id="btnSave"
+          <button
+            type="button"
+            id="btnSave"
             class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
           >
-            <svg aria-hidden="true" focusable="false"
+            <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5 mr-1"
               viewBox="0 0 24 24"
@@ -62,17 +68,15 @@
             </svg>
             <span data-i18n="common.save">Save Parameters</span>
           </button>
-          <input
-            id="loadFile"
-            type="file"
-            accept=".json"
-            class="hidden"
-           
-          />
-          <button type="button" id="btnLoad"
+          <input id="loadFile" type="file" accept=".json" class="hidden" />
+          <button
+            type="button"
+            id="btnLoad"
             class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
           >
-            <svg aria-hidden="true" focusable="false"
+            <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5 mr-1"
               viewBox="0 0 24 24"
@@ -92,87 +96,98 @@
       </div>
 
       <!-- First row: ICAO, Elevation, Unit -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div class="space-y-2">
-          <label for="icaoCode"
-            class="block font-medium text-gray-700 dark:text-gray-300"
-            data-i18n="isa.icao"
-            >ICAO Airport Code</label
-          >
-          <input
-            id="icaoCode"
-            type="text"
-            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            placeholder="Enter ICAO Code (e.g., MHLM)"
-          />
+      <fieldset>
+        <legend class="sr-only">Airport &amp; Temperature Parameters</legend>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div class="space-y-2">
+            <label
+              for="icaoCode"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="isa.icao"
+              >ICAO Airport Code</label
+            >
+            <input
+              id="icaoCode"
+              type="text"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="Enter ICAO Code (e.g., MHLM)"
+            />
+          </div>
+          <div class="space-y-2">
+            <label
+              for="elevation"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="isa.elevation"
+              >Aerodrome Elevation</label
+            >
+            <input
+              id="elevation"
+              type="number"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="Enter elevation"
+            />
+          </div>
+          <div class="space-y-2">
+            <label
+              for="elevationUnit"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="common.unit"
+              >Unit</label
+            >
+            <select
+              id="elevationUnit"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            >
+              <option value="ft">Feet</option>
+              <option value="m">Meters</option>
+            </select>
+          </div>
         </div>
-        <div class="space-y-2">
-          <label for="elevation"
-            class="block font-medium text-gray-700 dark:text-gray-300"
-            data-i18n="isa.elevation"
-            >Aerodrome Elevation</label
-          >
-          <input
-            id="elevation"
-            type="number"
-            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            placeholder="Enter elevation"
-          />
-        </div>
-        <div class="space-y-2">
-          <label for="elevationUnit"
-            class="block font-medium text-gray-700 dark:text-gray-300"
-            data-i18n="common.unit"
-            >Unit</label
-          >
-          <select
-            id="elevationUnit"
-           
-            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-          >
-            <option value="ft">Feet</option>
-            <option value="m">Meters</option>
-          </select>
-        </div>
-      </div>
 
-      <!-- Second row: Reference Temperature, Rounding Step -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div class="space-y-2">
-          <label for="tRef"
-            class="block font-medium text-gray-700 dark:text-gray-300"
-            data-i18n="isa.tref"
-            >Reference Temperature (T<sub>REF</sub>) Â°C</label
-          >
-          <input
-            id="tRef"
-            type="number"
-            step="0.1"
-            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            placeholder="Enter temperature"
-          />
+        <!-- Second row: Reference Temperature, Rounding Step -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div class="space-y-2">
+            <label
+              for="tRef"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="isa.tref"
+              >Reference Temperature (T<sub>REF</sub>) Â°C</label
+            >
+            <input
+              id="tRef"
+              type="number"
+              step="0.1"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="Enter temperature"
+            />
+          </div>
+          <div class="space-y-2">
+            <label
+              for="roundStep"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="isa.roundStep"
+              >Rounding Step (default 5)</label
+            >
+            <input
+              id="roundStep"
+              type="number"
+              value="5"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            />
+          </div>
         </div>
-        <div class="space-y-2">
-          <label for="roundStep"
-            class="block font-medium text-gray-700 dark:text-gray-300"
-            data-i18n="isa.roundStep"
-            >Rounding Step (default 5)</label
-          >
-          <input
-            id="roundStep"
-            type="number"
-            value="5"
-            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-          />
-        </div>
-      </div>
+      </fieldset>
 
       <!-- Calculate button aligned to the left -->
       <div class="flex justify-end mt-6">
-        <button type="button" id="btnCalculate"
+        <button
+          type="button"
+          id="btnCalculate"
           class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center"
         >
-          <svg aria-hidden="true" focusable="false"
+          <svg
+            aria-hidden="true"
+            focusable="false"
             xmlns="http://www.w3.org/2000/svg"
             class="h-5 w-5 mr-2"
             viewBox="0 0 24 24"
@@ -190,7 +205,10 @@
 
       <!-- Results -->
       <div
-        id="results" role="region" aria-live="polite" aria-atomic="true"
+        id="results"
+        role="region"
+        aria-live="polite"
+        aria-atomic="true"
         class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600"
       >
         <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">
@@ -254,10 +272,14 @@
         </div>
 
         <div class="mt-6 flex justify-end">
-          <button type="button" id="btnCopy"
+          <button
+            type="button"
+            id="btnCopy"
             class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center"
           >
-            <svg aria-hidden="true" focusable="false"
+            <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5 mr-2"
               viewBox="0 0 24 24"
