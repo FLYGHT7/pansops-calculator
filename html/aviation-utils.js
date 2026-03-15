@@ -239,3 +239,63 @@ function copyToClipboard(htmlContent) {
       showToast("Copy failed. Check browser permissions.", "error");
     });
 }
+
+/**
+ * Phase 4.3 — Calculate button animation hook
+ * Auto-wires all buttons matching [id^="btnCalc"] on DOMContentLoaded.
+ * Adds `.calculating` for the duration of the synchronous compute
+ * plus a short tail (300ms) so the progress bar animation completes.
+ */
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll("button[id^='btnCalc']").forEach(function (btn) {
+    btn.addEventListener(
+      "click",
+      function () {
+        btn.classList.add("calculating");
+        // Remove after a short tail — enough for the CSS progress animation
+        setTimeout(function () {
+          btn.classList.remove("calculating");
+        }, 1400);
+      },
+      { capture: true, passive: true },
+    );
+  });
+});
+
+/**
+ * Phase 9 — Accessibility: focus result regions on reveal.
+ * - Adds tabindex="-1" so regions accept programmatic focus.
+ * - Derives aria-label from the inner <h2> when not already set.
+ * - MutationObserver focuses the region the moment `.hidden` is removed.
+ */
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll('[role="region"]').forEach(function (el) {
+    if (!el.getAttribute("tabindex")) {
+      el.setAttribute("tabindex", "-1");
+    }
+    if (!el.getAttribute("aria-label")) {
+      var h2 = el.querySelector("h2");
+      if (h2) {
+        el.setAttribute("aria-label", h2.textContent.trim());
+      }
+    }
+    new MutationObserver(function (mutations) {
+      mutations.forEach(function (m) {
+        if (
+          m.attributeName === "class" &&
+          m.oldValue &&
+          m.oldValue.split(" ").includes("hidden") &&
+          !el.classList.contains("hidden")
+        ) {
+          setTimeout(function () {
+            el.focus({ preventScroll: false });
+          }, 80);
+        }
+      });
+    }).observe(el, {
+      attributes: true,
+      attributeOldValue: true,
+      attributeFilter: ["class"],
+    });
+  });
+});

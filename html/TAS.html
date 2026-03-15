@@ -17,26 +17,28 @@
       class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
     >
       <header>
-      <h1
-        class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center"
-      >
-        <svg aria-hidden="true" focusable="false"
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-7 w-7 sm:h-8 sm:w-8 mr-2"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+        <h1
+          class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center"
         >
-          <path d="M22 2L2 22"></path>
-          <path d="M18 12H6"></path>
-          <path d="M12 18V6"></path>
-          <path d="M15 9l-3-3-3 3"></path>
-        </svg>
-        <span data-i18n="tas.title">True Airspeed (TAS) Calculator</span>
-      </h1>
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-7 w-7 sm:h-8 sm:w-8 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M22 2L2 22"></path>
+            <path d="M18 12H6"></path>
+            <path d="M12 18V6"></path>
+            <path d="M15 9l-3-3-3 3"></path>
+          </svg>
+          <span data-i18n="tas.title">True Airspeed (TAS) Calculator</span>
+        </h1>
       </header>
 
       <!-- File Upload Section -->
@@ -49,10 +51,14 @@
           Load Parameters File (JSON)
         </label>
         <div class="flex gap-3 flex-wrap">
-          <button type="button" id="btnSave"
+          <button
+            type="button"
+            id="btnSave"
             class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
           >
-            <svg aria-hidden="true" focusable="false"
+            <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5 mr-1"
               viewBox="0 0 24 24"
@@ -70,17 +76,15 @@
             </svg>
             <span data-i18n="common.save">Save Parameters</span>
           </button>
-          <input
-            id="loadFile"
-            type="file"
-            accept=".json"
-            class="hidden"
-           
-          />
-          <button type="button" id="btnLoad"
+          <input id="loadFile" type="file" accept=".json" class="hidden" />
+          <button
+            type="button"
+            id="btnLoad"
             class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
           >
-            <svg aria-hidden="true" focusable="false"
+            <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5 mr-1"
               viewBox="0 0 24 24"
@@ -100,84 +104,93 @@
       </div>
 
       <!-- Inputs for TAS Calculation -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div class="space-y-2">
-          <label for="ias"
-            class="block font-medium text-gray-700 dark:text-gray-300"
-            data-i18n="tas.ias"
-            >Indicated Airspeed (IAS)</label
-          >
-          <div
-            class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
-          >
-            <input
-              id="ias"
-              type="number"
-              class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              placeholder="Enter IAS"
-              data-i18n="tas.phEnterIAS"
-              data-i18n-attr="placeholder"
-            />
-            <div
-              class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
+      <fieldset>
+        <legend class="sr-only">Airspeed &amp; Altitude Parameters</legend>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div class="space-y-2">
+            <label
+              for="ias"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="tas.ias"
+              >Indicated Airspeed (IAS)</label
             >
-              <span
-                class="text-gray-700 dark:text-white"
-                data-i18n="common.knots"
-                >knots</span
+            <div
+              class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+            >
+              <input
+                id="ias"
+                type="number"
+                class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                placeholder="Enter IAS"
+                data-i18n="tas.phEnterIAS"
+                data-i18n-attr="placeholder"
+              />
+              <div
+                class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
               >
+                <span
+                  class="text-gray-700 dark:text-white"
+                  data-i18n="common.knots"
+                  >knots</span
+                >
+              </div>
             </div>
           </div>
-        </div>
-        <div class="space-y-2">
-          <label for="altitude"
-            class="block font-medium text-gray-700 dark:text-gray-300"
-            data-i18n="tas.altitude"
-            >Altitude</label
-          >
-          <div
-            class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
-          >
+          <div class="space-y-2">
+            <label
+              for="altitude"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="tas.altitude"
+              >Altitude</label
+            >
+            <div
+              class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+            >
+              <input
+                id="altitude"
+                type="number"
+                class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                placeholder="Enter altitude"
+                data-i18n="tas.phEnterAltitude"
+                data-i18n-attr="placeholder"
+              />
+              <select
+                id="altitudeUnit"
+                class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+              >
+                <option value="ft" selected data-i18n="common.feet">ft</option>
+                <option value="m" data-i18n="common.meters">m</option>
+              </select>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label
+              for="isaDeviation"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="tas.isaDeviationVar"
+              >ISA Deviation (VAR) in Â°C</label
+            >
             <input
-              id="altitude"
+              id="isaDeviation"
               type="number"
-              class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              placeholder="Enter altitude"
-              data-i18n="tas.phEnterAltitude"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="Enter ISA Deviation"
+              data-i18n="tas.phEnterIsaDeviation"
               data-i18n-attr="placeholder"
             />
-            <select
-              id="altitudeUnit"
-             
-              class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
-            >
-              <option value="ft" selected data-i18n="common.feet">ft</option>
-              <option value="m" data-i18n="common.meters">m</option>
-            </select>
           </div>
         </div>
-        <div class="space-y-2">
-          <label for="isaDeviation"
-            class="block font-medium text-gray-700 dark:text-gray-300"
-            data-i18n="tas.isaDeviationVar"
-            >ISA Deviation (VAR) in Â°C</label
-          >
-          <input
-            id="isaDeviation"
-            type="number"
-            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            placeholder="Enter ISA Deviation"
-            data-i18n="tas.phEnterIsaDeviation"
-            data-i18n-attr="placeholder"
-          />
-        </div>
-      </div>
+      </fieldset>
 
       <div class="flex justify-end mt-6">
-        <button type="button" id="btnCalculate"
+        <button
+          type="button"
+          id="btnCalculate"
           class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center"
         >
-          <svg aria-hidden="true" focusable="false"
+          <svg
+            aria-hidden="true"
+            focusable="false"
             xmlns="http://www.w3.org/2000/svg"
             class="h-5 w-5 mr-2"
             viewBox="0 0 24 24"
@@ -195,7 +208,10 @@
 
       <!-- Results for TAS -->
       <div
-        id="tasResults" role="region" aria-live="polite" aria-atomic="true"
+        id="tasResults"
+        role="region"
+        aria-live="polite"
+        aria-atomic="true"
         class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600"
       >
         <h2
@@ -236,10 +252,14 @@
         </div>
 
         <div class="mt-6 flex justify-end">
-          <button type="button" id="btnCopy"
+          <button
+            type="button"
+            id="btnCopy"
             class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center"
           >
-            <svg aria-hidden="true" focusable="false"
+            <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5 mr-2"
               viewBox="0 0 24 24"

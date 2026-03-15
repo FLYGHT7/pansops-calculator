@@ -240,11 +240,12 @@ function estimateProfile() {
   profileSvg.setAttribute("viewBox", `-20 0 ${newSvgWidth} 400`);
 
   // Prepare grid/annotation HTML.
+  const isDark = document.documentElement.classList.contains("dark");
   let gridHtml = "";
 
   // Filled area under the profile line (shows vertical clearance visually)
   const areaPoints = `${x0},${y0} ${x1},${y1} ${x2},${y2} ${x3},${y3} ${x3},${baseY} ${x0},${baseY}`;
-  gridHtml += `<polygon points="${areaPoints}" fill="rgba(2,132,199,0.08)" class="dark:fill-blue-900/20" />`;
+  gridHtml += `<polygon points="${areaPoints}" fill="${isDark ? "rgba(56,189,248,0.07)" : "rgba(2,132,199,0.08)"}" />`;
 
   // Horizontal datum line.
   gridHtml += `<line x1="0" y1="${baseY}" x2="${newSvgWidth}" y2="${baseY}" stroke="#94a3b8" class="dark:stroke-slate-500" stroke-width="1" stroke-dasharray="6,3" />`;
@@ -257,8 +258,16 @@ function estimateProfile() {
     { x: x3, label: "IAF" },
   ];
   stations.forEach(({ x, label }) => {
-    gridHtml += `<line x1="${x}" y1="20" x2="${x}" y2="${baseY}" stroke="#94a3b8" class="dark:stroke-slate-500" stroke-width="1" stroke-dasharray="4,3" />`;
-    gridHtml += `<text x="${x}" y="14" font-size="11" font-family="Rajdhani, sans-serif" font-weight="600" text-anchor="middle" fill="#0369a1" class="dark:fill-sky-400" letter-spacing="0.5">${label}</text>`;
+    const stationLineColor = isDark ? "#334155" : "#94a3b8";
+    gridHtml += `<line x1="${x}" y1="20" x2="${x}" y2="${baseY}" stroke="${stationLineColor}" stroke-width="1" stroke-dasharray="4,3" />`;
+    if (label === "THR") {
+      const thrColor = isDark ? "#f59e0b" : "#0369a1";
+      gridHtml += `<rect x="${x - 5}" y="${baseY - 24}" width="10" height="24" fill="${thrColor}" rx="1" opacity="0.85" />`;
+      gridHtml += `<text x="${x}" y="14" font-size="11" font-family="Rajdhani, sans-serif" font-weight="700" text-anchor="middle" fill="${thrColor}" letter-spacing="0.5">${label}</text>`;
+    } else {
+      const labelColor = isDark ? "#38bdf8" : "#0369a1";
+      gridHtml += `<text x="${x}" y="14" font-size="11" font-family="Rajdhani, sans-serif" font-weight="600" text-anchor="middle" fill="${labelColor}" letter-spacing="0.5">${label}</text>`;
+    }
   });
 
   // Distance hash marks every 1 NM, label every 5 NM.
@@ -279,9 +288,16 @@ function estimateProfile() {
     { x: x3, y: y3, label: `IAF: ${initialElevation.toFixed(0)} ft` },
   ];
   keyPoints.forEach(({ x, y, label }) => {
-    gridHtml += `<circle cx="${x}" cy="${y}" r="6" fill="#fff" stroke="#0284c7" class="dark:fill-gray-800 dark:stroke-sky-400" stroke-width="2" />`;
-    gridHtml += `<circle cx="${x}" cy="${y}" r="2.5" fill="#0284c7" class="dark:fill-sky-400" />`;
-    gridHtml += `<text x="${x + 8}" y="${y - 6}" font-size="11" font-family="Barlow, sans-serif" font-weight="500" fill="#1e3a5f" class="dark:fill-sky-300">${label}</text>`;
+    const parts = label.split(": ");
+    const wptName = parts[0];
+    const elevText = parts[1] || "";
+    const markerFill = isDark ? "#0d1726" : "#fff";
+    const markerStroke = isDark ? "#38bdf8" : "#0284c7";
+    const dotFill = isDark ? "#38bdf8" : "#0284c7";
+    gridHtml += `<circle cx="${x}" cy="${y}" r="6" fill="${markerFill}" stroke="${markerStroke}" stroke-width="2" />`;
+    gridHtml += `<circle cx="${x}" cy="${y}" r="2.5" fill="${dotFill}" />`;
+    gridHtml += `<text x="${x + 9}" y="${y - 7}" font-size="10" font-family="Rajdhani, sans-serif" font-weight="700" fill="${isDark ? "#7dd3fc" : "#1e3a5f"}">${wptName}</text>`;
+    gridHtml += `<text x="${x + 9}" y="${y + 5}" font-size="10" font-family="Share Tech Mono, monospace" fill="${isDark ? "#38bdf8" : "#0369a1"}">${elevText}</text>`;
   });
 
   // Update the annotations group.

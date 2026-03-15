@@ -29,37 +29,43 @@
 
       /* Dark mode specific SVG styles */
       html.dark .axis {
-        stroke: #94a3b8;
+        stroke: #475569;
       }
       html.dark .grid-line {
-        stroke: #334155;
+        stroke: #1e3a5f;           /* blue-tinted grid — avionics feel */
+        stroke-dasharray: 4, 4;
       }
 
-      /* Dark mode text colors for SVG */
+      /* Dark mode text */
       html.dark text {
-        fill: #f3f4f6;
+        fill: #94a3b8;
       }
 
-      /* Dark mode polyline colors */
+      /* Dark mode polyline colors (fill/stroke handled via JS isDark path) */
       html.dark polyline[stroke="#dc2626"] {
         stroke: #f87171;
       }
-
       html.dark polyline[stroke="#059669"] {
-        stroke: #4ade80;
+        stroke: #34d399;
       }
 
-      /* Dark mode FAP blue line */
+      /* Dark mode FAP line */
+      html.dark line.fap-line,
       html.dark line[stroke="#0284c7"] {
         stroke: #38bdf8;
       }
 
-      /* Dark mode markers */
+      /* Dark mode THR amber line */
+      html.dark line.thr-line {
+        stroke: #f59e0b !important;
+      }
+
+      /* Dark mode marker circles */
       html.dark circle[fill="#dc2626"] {
         fill: #f87171;
       }
       html.dark circle[fill="#059669"] {
-        fill: #4ade80;
+        fill: #34d399;
       }
     </style>
   </head>
@@ -142,7 +148,9 @@
       </div>
 
       <!-- Row for THR Elevation, RDH, and Glidepath Angle -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <fieldset>
+        <legend class="sr-only">Glidepath Geometry</legend>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <!-- THR Elevation Input -->
         <div class="space-y-2">
           <label for="thrElev"
@@ -211,9 +219,12 @@
           />
         </div>
       </div>
+      </fieldset>
 
       <!-- Row for Point/Fix Type and Distance -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <fieldset>
+        <legend class="sr-only">Fix Reference</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <!-- Point/Fix Type Selection -->
         <div class="space-y-2">
           <label
@@ -270,6 +281,7 @@
           />
         </div>
       </div>
+      </fieldset>
 
       <!-- Calculate Button -->
       <div class="flex justify-end mt-6">
