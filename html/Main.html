@@ -1,38 +1,21 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" class="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-i18n="common.suiteName">Aviation Calculators Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="shared-config.js"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <!-- Phase 4.3 — distinctive typography -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Rajdhani:wght@600;700&display=swap"
+    />
     <script src="i18n/i18n.js"></script>
-    <script>
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              primary: {
-                50: "#f0f9ff",
-                100: "#e0f2fe",
-                200: "#bae6fd",
-                300: "#7dd3fc",
-                400: "#38bdf8",
-                500: "#0ea5e9",
-                600: "#0284c7",
-                700: "#0369a1",
-                800: "#075985",
-                900: "#0c4a6e",
-              },
-            },
-          },
-        },
-      };
-    </script>
     <style>
       /* Custom styles for active sidebar item */
       .sidebar-item.active {
@@ -105,7 +88,9 @@
       }
       .sidebar-item i,
       .sidebar-item svg {
-        transition: color 0.15s ease-in-out, transform 0.12s ease-in-out;
+        transition:
+          color 0.15s ease-in-out,
+          transform 0.12s ease-in-out;
       }
       .sidebar-item:hover i,
       .sidebar-item:hover svg {
@@ -256,6 +241,29 @@
         width: 20px;
         height: 100%;
         z-index: 15;
+      }
+
+      /* Phase 4.3 — typography */
+      body {
+        font-family: "Barlow", sans-serif;
+      }
+      button,
+      input,
+      select,
+      label {
+        font-family: "Barlow", sans-serif;
+      }
+      /* App name + section headers → Rajdhani technical condensed */
+      #sidebar .text-lg.font-semibold {
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        font-size: 1.1rem;
+      }
+      .section-header .label {
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 600;
+        letter-spacing: 0.08em;
       }
     </style>
   </head>
@@ -783,7 +791,7 @@
           function (e) {
             touchStartX = e.changedTouches[0].screenX;
           },
-          { passive: true }
+          { passive: true },
         );
 
         swipeArea.addEventListener(
@@ -792,7 +800,7 @@
             touchEndX = e.changedTouches[0].screenX;
             handleSwipeGesture(touchStartX, touchEndX);
           },
-          { passive: true }
+          { passive: true },
         );
 
         // For swiping the sidebar closed
@@ -801,7 +809,7 @@
           function (e) {
             touchStartX = e.changedTouches[0].screenX;
           },
-          { passive: true }
+          { passive: true },
         );
 
         sidebar.addEventListener(
@@ -810,7 +818,7 @@
             touchEndX = e.changedTouches[0].screenX;
             handleSidebarSwipe(touchStartX, touchEndX);
           },
-          { passive: true }
+          { passive: true },
         );
 
         // For the main content area - to detect swipes
@@ -819,7 +827,7 @@
           function (e) {
             touchStartX = e.changedTouches[0].screenX;
           },
-          { passive: true }
+          { passive: true },
         );
 
         document.addEventListener(
@@ -831,7 +839,7 @@
               handleContentSwipe(touchStartX, touchEndX);
             }
           },
-          { passive: true }
+          { passive: true },
         );
       }
 
@@ -919,9 +927,46 @@
         }
       }
 
+      // Hash ↔ page mapping (4.1 hash routing)
+      const PAGE_MAP = {
+        "#isa": { url: "ISA_deviation.html", buttonId: "isaButton" },
+        "#tas": { url: "TAS.html", buttonId: "tasButton" },
+        "#rate-turn": { url: "rate_turn.html", buttonId: "rateTurnButton" },
+        "#dme": { url: "dme_tolerance.html", buttonId: "dmeButton" },
+        "#profile": { url: "Profile_Check.html", buttonId: "elevationButton" },
+        "#npa-soc": {
+          url: "NPA_SOC_Calculation.html",
+          buttonId: "npaSocButton",
+        },
+        "#vss-ocs": { url: "VSS_OCS.html", buttonId: "vssOcsButton" },
+        "#ils-height": {
+          url: "ILS_height_calculations.html",
+          buttonId: "ilsHeightButton",
+        },
+        "#ils-distance": {
+          url: "ILS_distance_calculations.html",
+          buttonId: "ilsDistanceButton",
+        },
+        "#bearings": {
+          url: "bearings_angles.html",
+          buttonId: "bearingsAnglesButton",
+        },
+        "#about": { url: "About.html", buttonId: "aboutButton" },
+      };
+      // Reverse lookup: url → hash
+      const URL_TO_HASH = Object.fromEntries(
+        Object.entries(PAGE_MAP).map(([hash, { url }]) => [url, hash]),
+      );
+
       // Load page in iframe and update active button - OPTIMIZED
       function loadPage(pageUrl, buttonElement) {
         const iframe = document.getElementById("iframe");
+
+        // Push hash to browser history so back/forward works
+        const hash = URL_TO_HASH[pageUrl];
+        if (hash && location.hash !== hash) {
+          history.pushState({ pageUrl, buttonId: buttonElement.id }, "", hash);
+        }
 
         // Save state immediately (synchronous)
         localStorage.setItem("lastPage", pageUrl);
@@ -994,62 +1039,99 @@
         const sidebar = document.getElementById("sidebar");
         const compactModeToggle = document.getElementById("compactModeToggle");
         const compactModeIndicator = document.getElementById(
-          "compactModeIndicator"
+          "compactModeIndicator",
         );
         const langSelectGlobal = document.getElementById("langSelectGlobal");
 
-        // Restore last active page - OPTIMIZED
+        // Helper: load a page by url+buttonId and apply iframe dark mode + lang
+        function _applyIframeDefaults() {
+          const lang = localStorage.getItem("lang") || "en";
+          iframe.onload = function () {
+            try {
+              if (document.documentElement.classList.contains("dark")) {
+                const idoc =
+                  iframe.contentDocument || iframe.contentWindow.document;
+                idoc?.documentElement?.classList?.add("dark");
+              }
+              try {
+                const iw = iframe.contentWindow;
+                if (
+                  iw &&
+                  iw.I18N &&
+                  typeof iw.I18N.setLanguage === "function"
+                ) {
+                  iw.I18N.setLanguage(lang).catch(() => {});
+                }
+              } catch {}
+            } catch {}
+          };
+          return lang;
+        }
+
+        function _activateButton(btn) {
+          document.querySelectorAll(".sidebar-item").forEach((b) => {
+            b.classList.remove("active");
+            b.removeAttribute("aria-current");
+          });
+          btn.classList.add("active");
+          btn.setAttribute("aria-current", "page");
+          try {
+            btn.scrollIntoView({ block: "nearest" });
+          } catch {}
+        }
+
+        function _loadByPageUrl(pageUrl, buttonId) {
+          const btn = document.getElementById(buttonId);
+          if (!btn) return false;
+          _activateButton(btn);
+          const lang = _applyIframeDefaults();
+          const url = new URL(pageUrl, window.location.href);
+          url.searchParams.set("lang", lang);
+          iframe.src = url.toString();
+          return true;
+        }
+
+        // popstate — browser back/forward
+        window.addEventListener("popstate", function (e) {
+          const hash = location.hash;
+          const entry = PAGE_MAP[hash];
+          if (entry) {
+            _loadByPageUrl(entry.url, entry.buttonId);
+            localStorage.setItem("lastPage", entry.url);
+            localStorage.setItem("lastButtonId", entry.buttonId);
+          }
+        });
+
+        // Restore last active page — hash wins over localStorage - OPTIMIZED
         (function restoreLastPage() {
+          // 1. Try URL hash first (shared link / browser back)
+          const hashEntry = PAGE_MAP[location.hash];
+          if (hashEntry) {
+            _loadByPageUrl(hashEntry.url, hashEntry.buttonId);
+            localStorage.setItem("lastPage", hashEntry.url);
+            localStorage.setItem("lastButtonId", hashEntry.buttonId);
+            return;
+          }
+
+          // 2. Fall back to localStorage
           const lastPage = localStorage.getItem("lastPage");
           const lastButtonId = localStorage.getItem("lastButtonId");
 
           if (lastPage && lastButtonId) {
-            const button = document.getElementById(lastButtonId);
-            if (button) {
-              // Update UI
-              document.querySelectorAll(".sidebar-item").forEach((btn) => {
-                btn.classList.remove("active");
-                btn.removeAttribute("aria-current");
-              });
-              button.classList.add("active");
-              button.setAttribute("aria-current", "page");
-
-              // Keep active button in view when restoring
-              try {
-                button.scrollIntoView({ block: "nearest" });
-              } catch {}
-
-              // Load saved page with language
-              const lang = localStorage.getItem("lang") || "en";
-              const url = new URL(lastPage, window.location.href);
-              url.searchParams.set("lang", lang);
-              // Mirror dark mode to iframe when it loads for the first time
-              iframe.onload = function () {
-                try {
-                  if (document.documentElement.classList.contains("dark")) {
-                    const idoc =
-                      iframe.contentDocument || iframe.contentWindow.document;
-                    idoc?.documentElement?.classList?.add("dark");
-                  }
-                  // Force-set language inside the iframe as an extra safeguard
-                  try {
-                    const iw = iframe.contentWindow;
-                    if (
-                      iw &&
-                      iw.I18N &&
-                      typeof iw.I18N.setLanguage === "function"
-                    ) {
-                      iw.I18N.setLanguage(lang).catch(() => {});
-                    }
-                  } catch {}
-                } catch {}
-              };
-              iframe.src = url.toString();
-              return; // Exit early
+            if (_loadByPageUrl(lastPage, lastButtonId)) {
+              // Push hash so the address bar reflects the restored page
+              const restoredHash = URL_TO_HASH[lastPage];
+              if (restoredHash)
+                history.replaceState(
+                  { pageUrl: lastPage, buttonId: lastButtonId },
+                  "",
+                  restoredHash,
+                );
+              return;
             }
           }
 
-          // Default: load ISA
+          // 3. Default: load ISA
           const lang = localStorage.getItem("lang") || "en";
           const url = new URL("ISA_deviation.html", window.location.href);
           url.searchParams.set("lang", lang);
@@ -1077,7 +1159,7 @@
         })(); // Dark mode - OPTIMIZED
         const savedTheme = localStorage.getItem("theme");
         const prefersDark = window.matchMedia(
-          "(prefers-color-scheme: dark)"
+          "(prefers-color-scheme: dark)",
         ).matches;
 
         // Apply initial theme
@@ -1132,7 +1214,7 @@
                   : "translateX(0)";
               localStorage.setItem(
                 "density",
-                nowCompact ? "compact" : "normal"
+                nowCompact ? "compact" : "normal",
               );
               // Haptic feedback
               if (navigator.vibrate) {
@@ -1221,7 +1303,7 @@
               function (e) {
                 e.stopPropagation();
               },
-              { passive: true }
+              { passive: true },
             );
           } catch (e) {
             console.error("Error setting up iframe touch handling:", e);

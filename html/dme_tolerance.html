@@ -1,45 +1,26 @@
-<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DME Slant Range & Tolerance Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              primary: {
-                50: "#f0f9ff",
-                100: "#e0f2fe",
-                200: "#bae6fd",
-                300: "#7dd3fc",
-                400: "#38bdf8",
-                500: "#0ea5e9",
-                600: "#0284c7",
-                700: "#0369a1",
-                800: "#075985",
-                900: "#0c4a6e",
-              },
-            },
-          },
-        },
-      };
-    </script>
+    <script src="shared-config.js"></script>
     <link rel="stylesheet" href="dark-mode.css" />
+    <script src="aviation-utils.js"></script>
+    <script src="i18n/i18n.js"></script>
   </head>
   <body
     class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4"
   >
-    <div
+    <main
       class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
     >
+      <header>
       <h1
         class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-6 flex items-center"
       >
-        <svg
+        <svg aria-hidden="true" focusable="false"
           xmlns="http://www.w3.org/2000/svg"
           class="h-7 w-7 sm:h-8 sm:w-8 mr-2"
           viewBox="0 0 24 24"
@@ -55,6 +36,7 @@
         </svg>
         <span data-i18n="dme.title">DME Slant Range & Tolerance</span>
       </h1>
+      </header>
 
       <!-- Load/Save Parameters -->
       <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
@@ -65,10 +47,13 @@
         >
         <div class="flex gap-3 flex-wrap">
           <button
-            onclick="saveParameters()"
+            type="button"
+            id="btnSave"
             class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
           >
             <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5 mr-1"
               viewBox="0 0 24 24"
@@ -86,18 +71,15 @@
             </svg>
             <span data-i18n="common.save">Save Parameters</span>
           </button>
-          <input
-            id="loadFile"
-            type="file"
-            accept=".json"
-            class="hidden"
-            onchange="loadParameters(event)"
-          />
+          <input id="loadFile" type="file" accept=".json" class="hidden" />
           <button
-            onclick="document.getElementById('loadFile').click()"
+            type="button"
+            id="btnLoad"
             class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
           >
             <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5 mr-1"
               viewBox="0 0 24 24"
@@ -121,6 +103,7 @@
         <!-- Navaid Elevation with Unit Selector -->
         <div class="space-y-2">
           <label
+            for="navaidElevation"
             class="block font-medium text-gray-700 dark:text-gray-300"
             data-i18n="dme.navaidElevation"
             >Navaid Elevation</label
@@ -138,7 +121,6 @@
             />
             <select
               id="navaidUnit"
-              onchange="handleUnitChange('navaidElevation', 'navaidUnit')"
               class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
             >
               <option value="feet" data-i18n="common.feet">Feet</option>
@@ -149,6 +131,7 @@
         <!-- Fix Ground Distance -->
         <div class="space-y-2">
           <label
+            for="groundDistance"
             class="block font-medium text-gray-700 dark:text-gray-300"
             data-i18n="dme.fixGroundDistance"
             >Fix Ground Distance (in NM)</label
@@ -163,6 +146,7 @@
         <!-- Aircraft Elevation -->
         <div class="space-y-2 md:col-span-2">
           <label
+            for="aircraftElevation"
             class="block font-medium text-gray-700 dark:text-gray-300"
             data-i18n="dme.aircraftElevation"
             >Aircraft Elevation</label
@@ -180,7 +164,6 @@
             />
             <select
               id="aircraftUnit"
-              onchange="handleUnitChange('aircraftElevation', 'aircraftUnit')"
               class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
             >
               <option value="feet" data-i18n="common.feet">Feet</option>
@@ -194,10 +177,10 @@
       <div
         class="mt-6 flex flex-col items-center bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600"
       >
-        <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <h2 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
           Diagram: Relationship between Ground Distance, Height Above Station,
           and Slant Range
-        </h3>
+        </h2>
         <svg
           width="100%"
           height="250"
@@ -312,10 +295,13 @@
       <!-- Calculation Button -->
       <div class="flex justify-end mt-6">
         <button
-          onclick="calculateSlantRange()"
+          type="button"
+          id="btnCalculate"
           class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center"
         >
           <svg
+            aria-hidden="true"
+            focusable="false"
             xmlns="http://www.w3.org/2000/svg"
             class="h-5 w-5 mr-2"
             viewBox="0 0 24 24"
@@ -334,6 +320,9 @@
       <!-- Results Section (Initially Hidden) -->
       <div
         id="results"
+        role="region"
+        aria-live="polite"
+        aria-atomic="true"
         class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600"
       >
         <h2
@@ -369,7 +358,7 @@
               DME Tolerance
             </p>
             <p class="text-lg font-semibold dark:text-white">
-              ±<span id="dmeTolerance"></span>
+              Â±<span id="dmeTolerance"></span>
               <span data-i18n="common.nauticalMiles">NM</span>
             </p>
           </div>
@@ -405,10 +394,13 @@
 
         <div class="mt-6 flex justify-end">
           <button
-            onclick="copyResultsToClipboard()"
+            type="button"
+            id="btnCopy"
             class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center"
           >
             <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5 mr-2"
               viewBox="0 0 24 24"
@@ -427,268 +419,8 @@
           </button>
         </div>
       </div>
-    </div>
+    </main>
 
-    <script>
-      // Check for dark mode on page load
-      document.addEventListener("DOMContentLoaded", function () {
-        // Check if parent has set dark mode
-        try {
-          if (
-            window.parent &&
-            window.parent.document.documentElement.classList.contains("dark")
-          ) {
-            document.documentElement.classList.add("dark");
-          }
-        } catch (e) {
-          console.log("Running in standalone mode");
-        }
-
-        // Initialize unit selectors
-        initializeUnitSelectors();
-      });
-
-      // Function to handle unit conversion when unit selector changes
-      function handleUnitChange(inputId, unitSelectId) {
-        const unitSelect = document.getElementById(unitSelectId);
-
-        // Just update the last unit - no conversion in the UI
-        unitSelect.dataset.lastUnit = unitSelect.value;
-
-        // No need to convert the value in the input field
-        // The conversion will happen only during calculations
-      }
-
-      // Function to initialize all unit selectors
-      function initializeUnitSelectors() {
-        // Get all unit selectors
-        const unitSelectors = document.querySelectorAll('select[id$="Unit"]');
-
-        unitSelectors.forEach((selector) => {
-          // Save the initial unit
-          selector.dataset.lastUnit = selector.value;
-        });
-      }
-
-      // --- Load/Save Functions ---
-      function loadParameters(event) {
-        const file = event.target.files[0];
-        if (!file) {
-          alert("Please select a valid JSON file.");
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          try {
-            const data = JSON.parse(e.target.result);
-            if (data["Navaid Elevation"]) {
-              document.getElementById("navaidElevation").value =
-                data["Navaid Elevation"];
-            }
-            if (data["Navaid Unit"]) {
-              const unitSelect = document.getElementById("navaidUnit");
-              unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
-              unitSelect.value = data["Navaid Unit"];
-            }
-            if (data["Fix Ground Distance"]) {
-              document.getElementById("groundDistance").value =
-                data["Fix Ground Distance"];
-            }
-            if (data["Aircraft Elevation"]) {
-              document.getElementById("aircraftElevation").value =
-                data["Aircraft Elevation"];
-            }
-            if (data["Aircraft Unit"]) {
-              const unitSelect = document.getElementById("aircraftUnit");
-              unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
-              unitSelect.value = data["Aircraft Unit"];
-            }
-            alert("Parameters successfully loaded!");
-          } catch (err) {
-            alert("Invalid JSON file. Please upload a valid parameters file.");
-          }
-        };
-        reader.readAsText(file);
-      }
-
-      function saveParameters() {
-        const navaidElevation =
-          document.getElementById("navaidElevation").value || "";
-        const navaidUnit =
-          document.getElementById("navaidUnit").value || "feet";
-        const groundDistance =
-          document.getElementById("groundDistance").value || "";
-        const aircraftElevation =
-          document.getElementById("aircraftElevation").value || "";
-        const aircraftUnit =
-          document.getElementById("aircraftUnit").value || "feet";
-
-        const data = {
-          "Navaid Elevation": navaidElevation,
-          "Navaid Unit": navaidUnit,
-          "Fix Ground Distance": groundDistance,
-          "Aircraft Elevation": aircraftElevation,
-          "Aircraft Unit": aircraftUnit,
-        };
-
-        const now = new Date();
-        const timestamp = now.toISOString().replace(/[:.]/g, "-");
-        const filename = `${timestamp}_dmetolerance.json`;
-        const blob = new Blob([JSON.stringify(data, null, 2)], {
-          type: "application/json",
-        });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = filename;
-        a.click();
-      }
-
-      // --- Calculation Functions ---
-      function calculateSlantRange() {
-        const navaidElevationInput = parseFloat(
-          document.getElementById("navaidElevation").value
-        );
-        const navaidUnit = document.getElementById("navaidUnit").value;
-        const groundDistance = parseFloat(
-          document.getElementById("groundDistance").value
-        );
-        const aircraftElevationInput = parseFloat(
-          document.getElementById("aircraftElevation").value
-        );
-        const aircraftUnit = document.getElementById("aircraftUnit").value;
-
-        if (
-          isNaN(navaidElevationInput) ||
-          isNaN(groundDistance) ||
-          isNaN(aircraftElevationInput)
-        ) {
-          alert("Please enter valid values for all inputs.");
-          return;
-        }
-
-        // Convert elevations to feet if in meters
-        let navaidElevation = navaidElevationInput;
-        let aircraftElevation = aircraftElevationInput;
-        if (navaidUnit === "meters") {
-          navaidElevation = navaidElevationInput / 0.3048;
-        }
-        if (aircraftUnit === "meters") {
-          aircraftElevation = aircraftElevationInput / 0.3048;
-        }
-
-        // Conversion factor for NM to feet.
-        const conversionFactor = 1852 / 0.3048;
-        const groundDistanceFeet = groundDistance * conversionFactor;
-
-        // Calculate vertical difference.
-        const verticalDifference = aircraftElevation - navaidElevation;
-        const slantRangeFeet = Math.sqrt(
-          Math.pow(groundDistanceFeet, 2) + Math.pow(verticalDifference, 2)
-        );
-
-        // Convert slant range back to NM.
-        const slantRangeNM = slantRangeFeet / conversionFactor;
-
-        // Calculate DME tolerance: ± (0.25 NM + 1.25% of slant range)
-        const dmeTolerance = 0.25 + 0.0125 * slantRangeNM;
-
-        // Additional calculated values.
-        const slantRangeMin = slantRangeNM - dmeTolerance;
-        const slantRangeMax = slantRangeNM + dmeTolerance;
-
-        document.getElementById("slantRange").textContent =
-          slantRangeNM.toFixed(4);
-        document.getElementById("dmeTolerance").textContent =
-          dmeTolerance.toFixed(4);
-        document.getElementById("slantRangeMin").textContent =
-          slantRangeMin.toFixed(4);
-        document.getElementById("slantRangeMax").textContent =
-          slantRangeMax.toFixed(4);
-        document.getElementById("results").classList.remove("hidden");
-      }
-
-      // --- Copy Results Function ---
-      function copyResultsToClipboard() {
-        const navaidElevation =
-          document.getElementById("navaidElevation").value || "N/A";
-        const navaidUnit = document.getElementById("navaidUnit").value || "N/A";
-        const groundDistance =
-          document.getElementById("groundDistance").value || "N/A";
-        const aircraftElevation =
-          document.getElementById("aircraftElevation").value || "N/A";
-        const aircraftUnit =
-          document.getElementById("aircraftUnit").value || "N/A";
-        const slantRange =
-          document.getElementById("slantRange").textContent || "N/A";
-        const dmeTolerance =
-          document.getElementById("dmeTolerance").textContent || "N/A";
-        const slantRangeMin =
-          document.getElementById("slantRangeMin").textContent || "N/A";
-        const slantRangeMax =
-          document.getElementById("slantRangeMax").textContent || "N/A";
-
-        const htmlContent = `
-        <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-          <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
-          <tr><td>Navaid Elevation</td><td>${navaidElevation} ${navaidUnit}</td></tr>
-          <tr><td>Fix Ground Distance</td><td>${groundDistance} NM</td></tr>
-          <tr><td>Aircraft Elevation</td><td>${aircraftElevation} ${aircraftUnit}</td></tr>
-          <tr><td>Slant Range</td><td>${slantRange} NM</td></tr>
-          <tr><td>DME Tolerance</td><td>±${dmeTolerance} NM</td></tr>
-          <tr><td>Slant Range (Min)</td><td>${slantRangeMin} NM</td></tr>
-          <tr><td>Slant Range (Max)</td><td>${slantRangeMax} NM</td></tr>
-        </table>
-      `;
-
-        // Build plain-text fallback
-        const textContent = [
-          ["Parameter", "Value"],
-          ["Navaid Elevation", `${navaidElevation} ${navaidUnit}`],
-          ["Fix Ground Distance", `${groundDistance} NM`],
-          ["Aircraft Elevation", `${aircraftElevation} ${aircraftUnit}`],
-          ["Slant Range", `${slantRange} NM`],
-          ["DME Tolerance", `±${dmeTolerance} NM`],
-          ["Slant Range (Min)", `${slantRangeMin} NM`],
-          ["Slant Range (Max)", `${slantRangeMax} NM`],
-        ]
-          .map((row) => row.join("\t"))
-          .join("\n");
-
-        const htmlBlob = new Blob([htmlContent], { type: "text/html" });
-        const textBlob = new Blob([textContent], { type: "text/plain" });
-        navigator.clipboard
-          .write([
-            new ClipboardItem({
-              "text/html": htmlBlob,
-              "text/plain": textBlob,
-            }),
-          ])
-          .then(() => {
-            alert("Results copied as table to clipboard!");
-          })
-          .catch((err) => {
-            console.error("Copy failed:", err);
-          });
-      }
-    </script>
-    <script src="i18n/i18n.js"></script>
-    <script>
-      (function () {
-        function initI18n() {
-          if (window.I18N) {
-            I18N.init({
-              defaultLang: "en",
-              supported: ["en", "es"],
-              path: "i18n",
-            }).catch(console.error);
-          }
-        }
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", initI18n);
-        } else {
-          initI18n();
-        }
-      })();
-    </script>
+    <script src="js/dme_tolerance.js"></script>
   </body>
 </html>
