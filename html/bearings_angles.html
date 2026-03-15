@@ -107,7 +107,9 @@
       </div>
 
       <!-- 1. Input Type and Bearing Input -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <fieldset>
+        <legend class="sr-only">Bearing Input</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div class="space-y-2">
           <label
             class="block font-medium text-gray-700 dark:text-gray-300"
@@ -161,6 +163,7 @@
           />
         </div>
       </div>
+      </fieldset>
 
       <!-- 2. Magnetic Variation and Date -->
       <div class="mt-6">
@@ -170,7 +173,9 @@
         >
           Magnetic Variation
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <fieldset>
+          <legend class="sr-only">Magnetic Variation</legend>
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div class="space-y-2">
             <label for="var_deg"
               class="block font-medium text-gray-700 dark:text-gray-300"
@@ -249,6 +254,7 @@
             />
           </div>
         </div>
+        </fieldset>
       </div>
 
       <!-- 3. Option to Include QGIS Angle -->

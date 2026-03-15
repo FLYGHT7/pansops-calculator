@@ -1,57 +1,1057 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title data-i18n="about.title">About / Changelog</title>
+    <title data-i18n="about.title">About — PANSOPS Calculator Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="shared-config.js"></script>
     <link rel="stylesheet" href="dark-mode.css" />
     <script src="i18n/i18n.js"></script>
+    <style>
+      /* Page-level background — mirrors dark-mode.css body bg in dark */
+      body {
+        background-color: var(--bg);
+      }
+      html.dark body {
+        background-color: #0a0f1a;
+      }
+
+      /* Hero gradient overlay */
+      .hero-bg {
+        background: linear-gradient(160deg, #0c1e3c 0%, #0a0f1a 60%);
+      }
+      html:not(.dark) .hero-bg {
+        background: linear-gradient(
+          160deg,
+          #0369a1 0%,
+          #0284c7 50%,
+          #0ea5e9 100%
+        );
+      }
+
+      /* Compass ring animation */
+      @keyframes spin-slow {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .compass-ring {
+        animation: spin-slow 60s linear infinite;
+      }
+
+      /* Calculator group card hover */
+      .calc-card {
+        transition:
+          transform 0.18s ease,
+          box-shadow 0.18s ease;
+      }
+      .calc-card:hover {
+        transform: translateY(-3px);
+      }
+
+      /* Changelog timeline connector */
+      .timeline-item + .timeline-item::before {
+        content: "";
+        display: block;
+        width: 1px;
+        height: 1.5rem;
+        background: var(--border);
+        margin-left: 1.25rem;
+        margin-bottom: 0;
+      }
+
+      /* Version badge */
+      .ver-badge {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+      }
+    </style>
   </head>
-  <body class="bg-gray-50 dark:bg-gray-900 min-h-screen p-6">
-    <div
-      class="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 p-6"
+  <body class="min-h-screen">
+    <!-- ============================================================
+         HERO
+    ============================================================ -->
+    <header
+      class="hero-bg text-white px-6 pt-10 pb-12 relative overflow-hidden"
     >
-      <h1
-        class="text-2xl font-bold text-primary-700 dark:text-primary-300 mb-4"
-        data-i18n="about.title"
-      >
-        About / Changelog
-      </h1>
-      <p
-        class="text-gray-600 dark:text-gray-300 mb-6"
-        data-i18n="about.description"
-      >
-        Version history and notable changes for the Aviation Calculators Suite.
-      </p>
+      <!-- Faint dot grid overlay identical to dark-mode.css body -->
+      <div
+        class="absolute inset-0 pointer-events-none"
+        style="
+          background-image: radial-gradient(
+            rgba(56, 189, 248, 0.06) 1px,
+            transparent 1px
+          );
+          background-size: 24px 24px;
+        "
+      ></div>
 
-      <div class="space-y-6">
-        <section>
-          <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
-            v0.2.0
-          </h2>
-          <ul class="list-disc pl-6 text-gray-700 dark:text-gray-300">
-            <li data-i18n="about.v020.i18n">
-              OCS unit fixes, VSS improvements, and language
-              internationalization (i18n).
-            </li>
-          </ul>
-        </section>
+      <div class="max-w-4xl mx-auto relative z-10">
+        <!-- Wordmark row -->
+        <div class="flex items-center gap-4 mb-6">
+          <!-- Compass SVG -->
+          <div class="relative flex-shrink-0" style="width: 52px; height: 52px">
+            <!-- Outer ring (slow spin) -->
+            <svg
+              class="compass-ring absolute inset-0"
+              width="52"
+              height="52"
+              viewBox="0 0 52 52"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <circle
+                cx="26"
+                cy="26"
+                r="24"
+                stroke="rgba(56,189,248,0.35)"
+                stroke-width="1"
+                stroke-dasharray="3 5"
+              />
+            </svg>
+            <!-- Static face -->
+            <svg
+              class="absolute inset-0"
+              width="52"
+              height="52"
+              viewBox="0 0 52 52"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <circle
+                cx="26"
+                cy="26"
+                r="20"
+                stroke="rgba(56,189,248,0.6)"
+                stroke-width="1.5"
+              />
+              <!-- N needle (sky blue) -->
+              <polygon points="26,8 22,26 26,24 30,26" fill="#38bdf8" />
+              <!-- S needle (slate) -->
+              <polygon
+                points="26,44 22,26 26,28 30,26"
+                fill="rgba(148,163,184,0.6)"
+              />
+              <!-- Tick marks -->
+              <line
+                x1="26"
+                y1="6"
+                x2="26"
+                y2="10"
+                stroke="rgba(56,189,248,0.5)"
+                stroke-width="1.5"
+              />
+              <line
+                x1="46"
+                y1="26"
+                x2="42"
+                y2="26"
+                stroke="rgba(56,189,248,0.5)"
+                stroke-width="1.5"
+              />
+              <line
+                x1="26"
+                y1="46"
+                x2="26"
+                y2="42"
+                stroke="rgba(56,189,248,0.5)"
+                stroke-width="1.5"
+              />
+              <line
+                x1="6"
+                y1="26"
+                x2="10"
+                y2="26"
+                stroke="rgba(56,189,248,0.5)"
+                stroke-width="1.5"
+              />
+              <circle cx="26" cy="26" r="2.5" fill="#38bdf8" />
+            </svg>
+          </div>
 
-        <section>
-          <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
-            v0.1.0
-          </h2>
-          <ul class="list-disc pl-6 text-gray-700 dark:text-gray-300">
-            <li data-i18n="about.v010.initial">Initial release.</li>
-          </ul>
-        </section>
+          <!-- Text wordmark -->
+          <div>
+            <div
+              style="
+                font-family: &quot;Rajdhani&quot;, sans-serif;
+                font-weight: 700;
+                font-size: 2rem;
+                letter-spacing: 0.12em;
+                line-height: 1;
+                color: #fff;
+              "
+            >
+              PANSOPS
+            </div>
+            <div
+              style="
+                font-family: &quot;Barlow&quot;, sans-serif;
+                font-size: 0.7rem;
+                font-weight: 600;
+                letter-spacing: 0.22em;
+                text-transform: uppercase;
+                color: rgba(56, 189, 248, 0.8);
+                margin-top: 2px;
+              "
+            >
+              Calculator Suite
+            </div>
+          </div>
+        </div>
+
+        <!-- Tagline -->
+        <h1
+          style="
+            font-family: &quot;Rajdhani&quot;, sans-serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            letter-spacing: 0.04em;
+            color: rgba(255, 255, 255, 0.92);
+            margin-bottom: 0.5rem;
+          "
+        >
+          Instrument Approach Design Toolkit
+        </h1>
+        <p
+          style="
+            font-family: &quot;Barlow&quot;, sans-serif;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.55);
+            max-width: 520px;
+            line-height: 1.6;
+          "
+        >
+          A collection of precision calculators for PANS-OPS instrument flight
+          procedure design, built on ICAO DOC 8168 standards.
+        </p>
+
+        <!-- Standards badges -->
+        <div class="flex flex-wrap gap-2 mt-5">
+          <span
+            class="ver-badge px-3 py-1 rounded"
+            style="
+              background: rgba(56, 189, 248, 0.12);
+              border: 1px solid rgba(56, 189, 248, 0.3);
+              color: #7dd3fc;
+            "
+            >ICAO DOC 8168</span
+          >
+          <span
+            class="ver-badge px-3 py-1 rounded"
+            style="
+              background: rgba(56, 189, 248, 0.12);
+              border: 1px solid rgba(56, 189, 248, 0.3);
+              color: #7dd3fc;
+            "
+            >PANS-OPS Vol. II</span
+          >
+          <span
+            class="ver-badge px-3 py-1 rounded"
+            style="
+              background: rgba(56, 189, 248, 0.12);
+              border: 1px solid rgba(56, 189, 248, 0.3);
+              color: #7dd3fc;
+            "
+            >IFP Design</span
+          >
+        </div>
       </div>
-    </div>
+    </header>
+
+    <!-- ============================================================
+         MAIN CONTENT
+    ============================================================ -->
+    <main class="max-w-4xl mx-auto px-6 py-8 space-y-10">
+      <!-- ── CALCULATOR GROUPS ──────────────────────────────────── -->
+      <section aria-labelledby="tools-heading">
+        <h2
+          id="tools-heading"
+          style="
+            font-family: &quot;Rajdhani&quot;, sans-serif;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+          "
+        >
+          <span
+            style="
+              width: 5px;
+              height: 5px;
+              border-radius: 50%;
+              background: #38bdf8;
+              display: inline-block;
+              box-shadow: 0 0 5px #38bdf8;
+            "
+          ></span>
+          Calculator Groups
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Atmospherics -->
+          <article
+            class="calc-card bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm"
+            style="border-left: 3px solid #0284c7"
+          >
+            <div class="flex items-start gap-3">
+              <div
+                class="flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center"
+                style="background: rgba(2, 132, 199, 0.1)"
+              >
+                <!-- Thermometer icon -->
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="#0284c7"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3
+                  style="
+                    font-family: &quot;Rajdhani&quot;, sans-serif;
+                    font-weight: 700;
+                    font-size: 1rem;
+                    letter-spacing: 0.04em;
+                    color: var(--text);
+                  "
+                >
+                  Atmospherics
+                </h3>
+                <p
+                  style="
+                    font-size: 0.78rem;
+                    color: var(--text-muted);
+                    margin-top: 2px;
+                    line-height: 1.5;
+                    font-family: &quot;Barlow&quot;, sans-serif;
+                  "
+                >
+                  ISA temperature deviation &amp; true airspeed computation.
+                </p>
+                <div class="flex flex-wrap gap-1 mt-2">
+                  <span
+                    style="
+                      font-family: &quot;Share Tech Mono&quot;, monospace;
+                      font-size: 0.65rem;
+                      background: rgba(2, 132, 199, 0.08);
+                      color: #0284c7;
+                      border: 1px solid rgba(2, 132, 199, 0.2);
+                      padding: 1px 7px;
+                      border-radius: 4px;
+                    "
+                    >ISA Deviation</span
+                  >
+                  <span
+                    style="
+                      font-family: &quot;Share Tech Mono&quot;, monospace;
+                      font-size: 0.65rem;
+                      background: rgba(2, 132, 199, 0.08);
+                      color: #0284c7;
+                      border: 1px solid rgba(2, 132, 199, 0.2);
+                      padding: 1px 7px;
+                      border-radius: 4px;
+                    "
+                    >TAS</span
+                  >
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Navigation -->
+          <article
+            class="calc-card bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm"
+            style="border-left: 3px solid #f59e0b"
+          >
+            <div class="flex items-start gap-3">
+              <div
+                class="flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center"
+                style="background: rgba(245, 158, 11, 0.1)"
+              >
+                <!-- Compass icon -->
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="#f59e0b"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <polygon
+                    points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3
+                  style="
+                    font-family: &quot;Rajdhani&quot;, sans-serif;
+                    font-weight: 700;
+                    font-size: 1rem;
+                    letter-spacing: 0.04em;
+                    color: var(--text);
+                  "
+                >
+                  Navigation
+                </h3>
+                <p
+                  style="
+                    font-size: 0.78rem;
+                    color: var(--text-muted);
+                    margin-top: 2px;
+                    line-height: 1.5;
+                    font-family: &quot;Barlow&quot;, sans-serif;
+                  "
+                >
+                  DME tolerance, rate &amp; radius of turn, bearings and angle
+                  conversions.
+                </p>
+                <div class="flex flex-wrap gap-1 mt-2">
+                  <span
+                    style="
+                      font-family: &quot;Share Tech Mono&quot;, monospace;
+                      font-size: 0.65rem;
+                      background: rgba(245, 158, 11, 0.08);
+                      color: #d97706;
+                      border: 1px solid rgba(245, 158, 11, 0.2);
+                      padding: 1px 7px;
+                      border-radius: 4px;
+                    "
+                    >DME Tolerance</span
+                  >
+                  <span
+                    style="
+                      font-family: &quot;Share Tech Mono&quot;, monospace;
+                      font-size: 0.65rem;
+                      background: rgba(245, 158, 11, 0.08);
+                      color: #d97706;
+                      border: 1px solid rgba(245, 158, 11, 0.2);
+                      padding: 1px 7px;
+                      border-radius: 4px;
+                    "
+                    >Rate of Turn</span
+                  >
+                  <span
+                    style="
+                      font-family: &quot;Share Tech Mono&quot;, monospace;
+                      font-size: 0.65rem;
+                      background: rgba(245, 158, 11, 0.08);
+                      color: #d97706;
+                      border: 1px solid rgba(245, 158, 11, 0.2);
+                      padding: 1px 7px;
+                      border-radius: 4px;
+                    "
+                    >Bearings</span
+                  >
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Obstacle Analysis -->
+          <article
+            class="calc-card bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm"
+            style="border-left: 3px solid #ef4444"
+          >
+            <div class="flex items-start gap-3">
+              <div
+                class="flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center"
+                style="background: rgba(239, 68, 68, 0.1)"
+              >
+                <!-- Triangle up icon -->
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="#ef4444"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+                  />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+              </div>
+              <div>
+                <h3
+                  style="
+                    font-family: &quot;Rajdhani&quot;, sans-serif;
+                    font-weight: 700;
+                    font-size: 1rem;
+                    letter-spacing: 0.04em;
+                    color: var(--text);
+                  "
+                >
+                  Obstacle Analysis
+                </h3>
+                <p
+                  style="
+                    font-size: 0.78rem;
+                    color: var(--text-muted);
+                    margin-top: 2px;
+                    line-height: 1.5;
+                    font-family: &quot;Barlow&quot;, sans-serif;
+                  "
+                >
+                  VSS &amp; OCS distance computation for obstacle clearance
+                  surfaces.
+                </p>
+                <div class="flex flex-wrap gap-1 mt-2">
+                  <span
+                    style="
+                      font-family: &quot;Share Tech Mono&quot;, monospace;
+                      font-size: 0.65rem;
+                      background: rgba(239, 68, 68, 0.08);
+                      color: #ef4444;
+                      border: 1px solid rgba(239, 68, 68, 0.2);
+                      padding: 1px 7px;
+                      border-radius: 4px;
+                    "
+                    >VSS / OCS</span
+                  >
+                  <span
+                    style="
+                      font-family: &quot;Share Tech Mono&quot;, monospace;
+                      font-size: 0.65rem;
+                      background: rgba(239, 68, 68, 0.08);
+                      color: #ef4444;
+                      border: 1px solid rgba(239, 68, 68, 0.2);
+                      padding: 1px 7px;
+                      border-radius: 4px;
+                    "
+                    >NPA SOC</span
+                  >
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Approach Design -->
+          <article
+            class="calc-card bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm"
+            style="border-left: 3px solid #10b981"
+          >
+            <div class="flex items-start gap-3">
+              <div
+                class="flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center"
+                style="background: rgba(16, 185, 129, 0.1)"
+              >
+                <!-- Glide path arrow icon -->
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="#10b981"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </div>
+              <div>
+                <h3
+                  style="
+                    font-family: &quot;Rajdhani&quot;, sans-serif;
+                    font-weight: 700;
+                    font-size: 1rem;
+                    letter-spacing: 0.04em;
+                    color: var(--text);
+                  "
+                >
+                  Approach Design
+                </h3>
+                <p
+                  style="
+                    font-size: 0.78rem;
+                    color: var(--text-muted);
+                    margin-top: 2px;
+                    line-height: 1.5;
+                    font-family: &quot;Barlow&quot;, sans-serif;
+                  "
+                >
+                  ILS height &amp; distance, profile check and glide path
+                  geometry.
+                </p>
+                <div class="flex flex-wrap gap-1 mt-2">
+                  <span
+                    style="
+                      font-family: &quot;Share Tech Mono&quot;, monospace;
+                      font-size: 0.65rem;
+                      background: rgba(16, 185, 129, 0.08);
+                      color: #059669;
+                      border: 1px solid rgba(16, 185, 129, 0.2);
+                      padding: 1px 7px;
+                      border-radius: 4px;
+                    "
+                    >ILS Height</span
+                  >
+                  <span
+                    style="
+                      font-family: &quot;Share Tech Mono&quot;, monospace;
+                      font-size: 0.65rem;
+                      background: rgba(16, 185, 129, 0.08);
+                      color: #059669;
+                      border: 1px solid rgba(16, 185, 129, 0.2);
+                      padding: 1px 7px;
+                      border-radius: 4px;
+                    "
+                    >ILS Distance</span
+                  >
+                  <span
+                    style="
+                      font-family: &quot;Share Tech Mono&quot;, monospace;
+                      font-size: 0.65rem;
+                      background: rgba(16, 185, 129, 0.08);
+                      color: #059669;
+                      border: 1px solid rgba(16, 185, 129, 0.2);
+                      padding: 1px 7px;
+                      border-radius: 4px;
+                    "
+                    >Profile Check</span
+                  >
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ── REFERENCE STANDARDS ──────────────────────────────── -->
+      <section aria-labelledby="standards-heading">
+        <h2
+          id="standards-heading"
+          style="
+            font-family: &quot;Rajdhani&quot;, sans-serif;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+          "
+        >
+          <span
+            style="
+              width: 5px;
+              height: 5px;
+              border-radius: 50%;
+              background: #38bdf8;
+              display: inline-block;
+              box-shadow: 0 0 5px #38bdf8;
+            "
+          ></span>
+          Reference Standards
+        </h2>
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5"
+        >
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div
+              class="text-center p-3 rounded-lg"
+              style="
+                background: rgba(2, 132, 199, 0.06);
+                border: 1px solid rgba(2, 132, 199, 0.15);
+              "
+            >
+              <div
+                style="
+                  font-family: &quot;Share Tech Mono&quot;, monospace;
+                  font-size: 0.85rem;
+                  color: #0284c7;
+                  font-weight: bold;
+                  letter-spacing: 0.06em;
+                "
+              >
+                ICAO DOC 8168
+              </div>
+              <div
+                style="
+                  font-family: &quot;Barlow&quot;, sans-serif;
+                  font-size: 0.72rem;
+                  color: var(--text-muted);
+                  margin-top: 4px;
+                  line-height: 1.4;
+                "
+              >
+                Aircraft Operations Vol. II — Construction of Visual and
+                Instrument Flight Procedures
+              </div>
+            </div>
+            <div
+              class="text-center p-3 rounded-lg"
+              style="
+                background: rgba(2, 132, 199, 0.06);
+                border: 1px solid rgba(2, 132, 199, 0.15);
+              "
+            >
+              <div
+                style="
+                  font-family: &quot;Share Tech Mono&quot;, monospace;
+                  font-size: 0.85rem;
+                  color: #0284c7;
+                  font-weight: bold;
+                  letter-spacing: 0.06em;
+                "
+              >
+                PANS-OPS
+              </div>
+              <div
+                style="
+                  font-family: &quot;Barlow&quot;, sans-serif;
+                  font-size: 0.72rem;
+                  color: var(--text-muted);
+                  margin-top: 4px;
+                  line-height: 1.4;
+                "
+              >
+                Procedures for Air Navigation Services — Aircraft Operations
+              </div>
+            </div>
+            <div
+              class="text-center p-3 rounded-lg"
+              style="
+                background: rgba(2, 132, 199, 0.06);
+                border: 1px solid rgba(2, 132, 199, 0.15);
+              "
+            >
+              <div
+                style="
+                  font-family: &quot;Share Tech Mono&quot;, monospace;
+                  font-size: 0.85rem;
+                  color: #0284c7;
+                  font-weight: bold;
+                  letter-spacing: 0.06em;
+                "
+              >
+                ISA / ICAO ATM
+              </div>
+              <div
+                style="
+                  font-family: &quot;Barlow&quot;, sans-serif;
+                  font-size: 0.72rem;
+                  color: var(--text-muted);
+                  margin-top: 4px;
+                  line-height: 1.4;
+                "
+              >
+                Standard Atmosphere model per ICAO Doc 7488 / ISO 2533
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── CHANGELOG ─────────────────────────────────────────── -->
+      <section aria-labelledby="changelog-heading">
+        <h2
+          id="changelog-heading"
+          style="
+            font-family: &quot;Rajdhani&quot;, sans-serif;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+          "
+        >
+          <span
+            style="
+              width: 5px;
+              height: 5px;
+              border-radius: 50%;
+              background: #38bdf8;
+              display: inline-block;
+              box-shadow: 0 0 5px #38bdf8;
+            "
+          ></span>
+          Changelog
+        </h2>
+
+        <div class="space-y-1">
+          <div
+            class="timeline-item bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5"
+          >
+            <div class="flex items-center gap-3 mb-2">
+              <span
+                class="ver-badge px-2 py-0.5 rounded"
+                style="
+                  background: rgba(56, 189, 248, 0.12);
+                  border: 1px solid rgba(56, 189, 248, 0.3);
+                  color: #0284c7;
+                "
+                >v0.3.0</span
+              >
+              <span
+                style="
+                  font-family: &quot;Barlow&quot;, sans-serif;
+                  font-size: 0.7rem;
+                  color: var(--text-muted);
+                "
+                >2026 — UI Redesign</span
+              >
+            </div>
+            <ul
+              style="
+                font-family: &quot;Barlow&quot;, sans-serif;
+                font-size: 0.82rem;
+                color: var(--text-muted);
+                list-style: disc;
+                padding-left: 1.25rem;
+                line-height: 1.8;
+              "
+            >
+              <li>
+                Avionics glass-cockpit visual language (Garmin G1000 color
+                logic)
+              </li>
+              <li>
+                Design token system — CSS custom properties for semantic palette
+              </li>
+              <li>Rajdhani + Barlow + Share Tech Mono typography stack</li>
+              <li>
+                Redesigned sidebar, result cards, input forms, and buttons
+              </li>
+              <li>SVG diagram polish for ILS Height &amp; Profile Check</li>
+            </ul>
+          </div>
+
+          <div
+            class="timeline-item bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5"
+          >
+            <div class="flex items-center gap-3 mb-2">
+              <span
+                class="ver-badge px-2 py-0.5 rounded"
+                style="
+                  background: rgba(100, 116, 139, 0.1);
+                  border: 1px solid rgba(100, 116, 139, 0.25);
+                  color: var(--text-muted);
+                "
+                >v0.2.0</span
+              >
+              <span
+                style="
+                  font-family: &quot;Barlow&quot;, sans-serif;
+                  font-size: 0.7rem;
+                  color: var(--text-muted);
+                "
+                >2025</span
+              >
+            </div>
+            <ul
+              style="
+                font-family: &quot;Barlow&quot;, sans-serif;
+                font-size: 0.82rem;
+                color: var(--text-muted);
+                list-style: disc;
+                padding-left: 1.25rem;
+                line-height: 1.8;
+              "
+            >
+              <li data-i18n="about.v020.i18n">
+                OCS unit fixes, VSS improvements, and language
+                internationalization (i18n).
+              </li>
+            </ul>
+          </div>
+
+          <div
+            class="timeline-item bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5"
+          >
+            <div class="flex items-center gap-3 mb-2">
+              <span
+                class="ver-badge px-2 py-0.5 rounded"
+                style="
+                  background: rgba(100, 116, 139, 0.1);
+                  border: 1px solid rgba(100, 116, 139, 0.25);
+                  color: var(--text-muted);
+                "
+                >v0.1.0</span
+              >
+              <span
+                style="
+                  font-family: &quot;Barlow&quot;, sans-serif;
+                  font-size: 0.7rem;
+                  color: var(--text-muted);
+                "
+                >2024</span
+              >
+            </div>
+            <ul
+              style="
+                font-family: &quot;Barlow&quot;, sans-serif;
+                font-size: 0.82rem;
+                color: var(--text-muted);
+                list-style: disc;
+                padding-left: 1.25rem;
+                line-height: 1.8;
+              "
+            >
+              <li data-i18n="about.v010.initial">Initial release.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── CONTRIBUTE / REPORT ───────────────────────────────── -->
+      <section aria-labelledby="contribute-heading">
+        <h2
+          id="contribute-heading"
+          style="
+            font-family: &quot;Rajdhani&quot;, sans-serif;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+          "
+        >
+          <span
+            style="
+              width: 5px;
+              height: 5px;
+              border-radius: 50%;
+              background: #38bdf8;
+              display: inline-block;
+              box-shadow: 0 0 5px #38bdf8;
+            "
+          ></span>
+          Contribute &amp; Support
+        </h2>
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+        >
+          <div>
+            <p
+              style="
+                font-family: &quot;Barlow&quot;, sans-serif;
+                font-size: 0.85rem;
+                color: var(--text);
+                line-height: 1.6;
+              "
+            >
+              Found a bug or have a suggestion? Open an issue on GitHub.
+            </p>
+            <p
+              style="
+                font-family: &quot;Barlow&quot;, sans-serif;
+                font-size: 0.78rem;
+                color: var(--text-muted);
+                margin-top: 4px;
+              "
+            >
+              All calculations are for training and reference purposes only.
+              Verify all outputs against official ICAO documentation.
+            </p>
+          </div>
+          <a
+            href="https://github.com/FLYGHT7/pansops-calculator/issues"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-i18n="common.reportIssue"
+            style="
+              font-family: &quot;Rajdhani&quot;, sans-serif;
+              font-weight: 700;
+              font-size: 0.85rem;
+              letter-spacing: 0.08em;
+              text-transform: uppercase;
+              display: inline-flex;
+              align-items: center;
+              gap: 0.4rem;
+              padding: 0.5rem 1.1rem;
+              border-radius: 8px;
+              background: linear-gradient(135deg, #0369a1, #0ea5e9);
+              color: #fff;
+              text-decoration: none;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35);
+              flex-shrink: 0;
+              transition: filter 0.15s ease;
+            "
+            onmouseover="this.style.filter = 'brightness(1.12)'"
+            onmouseout="this.style.filter = ''"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="15"
+              height="15"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+              aria-hidden="true"
+            >
+              <path
+                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+                       0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+                       -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
+                       .07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15
+                       -.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27
+                       .68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12
+                       .51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+                       0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+              />
+            </svg>
+            Report an Issue
+          </a>
+        </div>
+      </section>
+    </main>
 
     <script>
-      // Mirror dark mode from parent if embedded in Main.html
       document.addEventListener("DOMContentLoaded", function () {
+        // Mirror dark mode from parent (Main.html)
         try {
           if (
             window.parent &&
@@ -59,7 +1059,9 @@
           ) {
             document.documentElement.classList.add("dark");
           }
-        } catch {}
+        } catch (e) {
+          /* standalone mode */
+        }
 
         I18N.init({
           defaultLang: "en",

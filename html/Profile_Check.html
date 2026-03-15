@@ -101,125 +101,131 @@
       </div>
 
       <!-- Row 1: THR Elevation and TCH -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <!-- THR Elevation -->
-        <div class="space-y-2">
-          <label
-            for="thrElev"
-            class="block font-medium text-gray-700 dark:text-gray-300"
-            data-i18n="profile.thrElev"
-            >THR Elev (ft)</label
-          >
-          <div
-            class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
-          >
-            <input
-              id="thrElev"
-              type="number"
-              class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              placeholder="Enter THR Elev"
-            />
-            <select
-              id="thrElevUnit"
-              class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+      <fieldset>
+        <legend class="sr-only">Threshold Parameters</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <!-- THR Elevation -->
+          <div class="space-y-2">
+            <label
+              for="thrElev"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="profile.thrElev"
+              >THR Elev (ft)</label
             >
-              <option value="ft" selected data-i18n="common.feet">ft</option>
-              <option value="m" data-i18n="common.meters">m</option>
-            </select>
+            <div
+              class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+            >
+              <input
+                id="thrElev"
+                type="number"
+                class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                placeholder="Enter THR Elev"
+              />
+              <select
+                id="thrElevUnit"
+                class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+              >
+                <option value="ft" selected data-i18n="common.feet">ft</option>
+                <option value="m" data-i18n="common.meters">m</option>
+              </select>
+            </div>
+          </div>
+          <!-- TCH -->
+          <div class="space-y-2">
+            <label
+              for="tch"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="profile.tch"
+              >TCH (ft)</label
+            >
+            <div
+              class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+            >
+              <input
+                id="tch"
+                type="number"
+                class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                placeholder="Enter TCH"
+              />
+              <select
+                id="tchUnit"
+                class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+              >
+                <option value="ft" selected data-i18n="common.feet">ft</option>
+                <option value="m" data-i18n="common.meters">m</option>
+              </select>
+            </div>
           </div>
         </div>
-        <!-- TCH -->
-        <div class="space-y-2">
-          <label
-            for="tch"
-            class="block font-medium text-gray-700 dark:text-gray-300"
-            data-i18n="profile.tch"
-            >TCH (ft)</label
-          >
-          <div
-            class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
-          >
-            <input
-              id="tch"
-              type="number"
-              class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              placeholder="Enter TCH"
-            />
-            <select
-              id="tchUnit"
-              class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
-            >
-              <option value="ft" selected data-i18n="common.feet">ft</option>
-              <option value="m" data-i18n="common.meters">m</option>
-            </select>
-          </div>
-        </div>
-      </div>
+      </fieldset>
 
       <!-- Row 2: VPA, Distance to FAF, Intermediate Length, Initial Length -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <!-- VPA -->
-        <div class="space-y-2">
-          <label
-            for="vpa"
-            class="block font-medium text-gray-700 dark:text-gray-300"
-            data-i18n="profile.vpa"
-            >VPA (Â°)</label
-          >
-          <input
-            id="vpa"
-            type="number"
-            step="0.01"
-            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            placeholder="Enter VPA"
-          />
+      <fieldset>
+        <legend class="sr-only">Approach Geometry</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <!-- VPA -->
+          <div class="space-y-2">
+            <label
+              for="vpa"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="profile.vpa"
+              >VPA (Â°)</label
+            >
+            <input
+              id="vpa"
+              type="number"
+              step="0.01"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="Enter VPA"
+            />
+          </div>
+          <!-- Distance to FAF -->
+          <div class="space-y-2">
+            <label
+              for="distToFaf"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="profile.distToFaf"
+              >Distance to FAF (NM)</label
+            >
+            <input
+              id="distToFaf"
+              type="number"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="Enter Distance to FAF"
+            />
+          </div>
+          <!-- Intermediate Length -->
+          <div class="space-y-2">
+            <label
+              for="intermediateLength"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="profile.intermediateLength"
+              >Intermediate Length (NM)</label
+            >
+            <input
+              id="intermediateLength"
+              type="number"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="Enter Intermediate Length"
+            />
+          </div>
+          <!-- Initial Length -->
+          <div class="space-y-2">
+            <label
+              for="initialLength"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="profile.initialLength"
+              >Initial Length (NM)</label
+            >
+            <input
+              id="initialLength"
+              type="number"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="Enter Initial Length"
+            />
+          </div>
         </div>
-        <!-- Distance to FAF -->
-        <div class="space-y-2">
-          <label
-            for="distToFaf"
-            class="block font-medium text-gray-700 dark:text-gray-300"
-            data-i18n="profile.distToFaf"
-            >Distance to FAF (NM)</label
-          >
-          <input
-            id="distToFaf"
-            type="number"
-            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            placeholder="Enter Distance to FAF"
-          />
-        </div>
-        <!-- Intermediate Length -->
-        <div class="space-y-2">
-          <label
-            for="intermediateLength"
-            class="block font-medium text-gray-700 dark:text-gray-300"
-            data-i18n="profile.intermediateLength"
-            >Intermediate Length (NM)</label
-          >
-          <input
-            id="intermediateLength"
-            type="number"
-            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            placeholder="Enter Intermediate Length"
-          />
-        </div>
-        <!-- Initial Length -->
-        <div class="space-y-2">
-          <label
-            for="initialLength"
-            class="block font-medium text-gray-700 dark:text-gray-300"
-            data-i18n="profile.initialLength"
-            >Initial Length (NM)</label
-          >
-          <input
-            id="initialLength"
-            type="number"
-            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            placeholder="Enter Initial Length"
-          />
-        </div>
-      </div>
+      </fieldset>
 
       <!-- Calculate Button -->
       <div class="flex justify-end mt-6">
