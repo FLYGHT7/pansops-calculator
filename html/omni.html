@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OMNI SID PDG Calculator (ICAO)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: "#f0f9ff",
+                100: "#e0f2fe",
+                200: "#bae6fd",
+                300: "#7dd3fc",
+                400: "#38bdf8",
+                500: "#0ea5e9",
+                600: "#0284c7",
+                700: "#0369a1",
+                800: "#075985",
+                900: "#0c4a6e",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="dark-mode.css" />
+  </head>
+  <body class="bg-[#f4f7f9] dark:bg-gray-900 min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-white dark:bg-gray-800 p-6 shadow-xl rounded-2xl mt-10 border border-gray-200 dark:border-gray-700">
+      <h1 class="text-2xl font-bold mb-4 text-center text-primary-700 dark:text-primary-300">
+        OMNI SID PDG Calculator
+      </h1>
+      <p class="text-sm text-gray-600 dark:text-gray-300 mb-6 text-center">
+        According to ICAO PANS-OPS (PDG starts at DER + 5 m, MOC = 0.8%)
+      </p>
+
+      <!-- DER Elevation with Unit Dropdown -->
+      <div class="mb-4 flex">
+        <div class="flex-grow">
+          <label for="derElevation" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            DER Elevation
+          </label>
+          <input type="number" id="derElevation" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md" placeholder="e.g. 100" />
+        </div>
+        <div class="ml-2">
+          <label for="unitsDer" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Units
+          </label>
+          <select id="unitsDer" class="w-20 p-2 border border-gray-300 dark:border-gray-600 rounded-md">
+            <option value="m" selected>m</option>
+            <option value="ft">ft</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Obstacle Elevation with Unit Dropdown -->
+      <div class="mb-4 flex">
+        <div class="flex-grow">
+          <label for="obsElevation" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Obstacle Elevation
+          </label>
+          <input type="number" id="obsElevation" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md" placeholder="e.g. 600" />
+        </div>
+        <div class="ml-2">
+          <label for="unitsObs" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Units
+          </label>
+          <select id="unitsObs" class="w-20 p-2 border border-gray-300 dark:border-gray-600 rounded-md">
+            <option value="m" selected>m</option>
+            <option value="ft">ft</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Horizontal Distance with Unit Dropdown -->
+      <div class="mb-4 flex">
+        <div class="flex-grow">
+          <label for="distance" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Horizontal Distance to Obstacle
+          </label>
+          <input type="number" id="distance" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md" placeholder="e.g. 10000" />
+        </div>
+        <div class="ml-2">
+          <label for="unitsDist" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Units
+          </label>
+          <select id="unitsDist" class="w-20 p-2 border border-gray-300 dark:border-gray-600 rounded-md">
+            <option value="m" selected>m</option>
+            <option value="NM">NM</option>
+          </select>
+        </div>
+      </div>
+
+      <button onclick="calculatePDG()" class="w-full bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white py-2 rounded font-medium">
+        Calculate PDG
+      </button>
+
+      <!-- Results Section -->
+      <div id="result" class="mt-6 text-center text-sm font-medium text-gray-800 dark:text-gray-100"></div>
+
+      <!-- Copy Results as Table Button (Hidden Initially) -->
+      <div id="copyButtonContainer" class="hidden mt-4 text-center">
+        <button onclick="copyToWord()" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white py-2 px-4 rounded font-medium">
+          Copy Results as Table
+        </button>
+      </div>
+
+      <!-- Save/Load Buttons -->
+      <div class="mt-6 flex justify-between">
+        <button onclick="document.getElementById('loadFile').click()" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded font-medium">
+          Load
+        </button>
+        <button onclick="saveParameters()" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded font-medium">
+          Save
+        </button>
+        <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
+      </div>
+    </div>
+
+    <script>
+      // Helper conversion functions
+      function ftToMeters(value) {
+        return value * 0.3048;
+      }
+      function nmToMeters(value) {
+        return value * 1852;
+      }
+
+      function calculatePDG() {
+        // Read input values
+        const derVal = parseFloat(document.getElementById("derElevation").value);
+        const obsVal = parseFloat(document.getElementById("obsElevation").value);
+        const distVal = parseFloat(document.getElementById("distance").value);
+
+        if (isNaN(derVal) || isNaN(obsVal) || isNaN(distVal) || distVal <= 0) {
+          document.getElementById("result").innerHTML =
+            '<span class="text-red-600">⚠️ Please enter valid numeric values.</span>';
+          return;
+        }
+
+        // Convert DER and Obstacle elevations to meters.
+        const unitDer = document.getElementById("unitsDer").value;
+        const unitObs = document.getElementById("unitsObs").value;
+        let der_m = unitDer === "ft" ? ftToMeters(derVal) : derVal;
+        let obs_m = unitObs === "ft" ? ftToMeters(obsVal) : obsVal;
+
+        // Convert Horizontal Distance into meters.
+        const unitDist = document.getElementById("unitsDist").value;
+        let dist_m = unitDist === "NM" ? nmToMeters(distVal) : distVal;
+
+        // PDG Calculation: PDG = (((obs - (der + 5)) / distance) + 0.008) * 100
+        const pdg = (((obs_m - (der_m + 5)) / dist_m) + 0.008) * 100;
+        const roundedPDG = pdg.toFixed(2);
+
+        // OIS Calculation: OIS Elevation = (der_m + 5) + (dist_m * 0.025)
+        const ois = (der_m + 5) + (dist_m * 0.025);
+        const roundedOIS = ois.toFixed(2);
+        const oisPenetration = obs_m > ois;
+
+        // MOC Calculation: MOC Clearance = 0.8% of distance (in meters)
+        const moc = dist_m * 0.008;
+        const roundedMOC = moc.toFixed(2);
+
+        // Required Altitude = Obstacle Elevation + MOC (in meters)
+        const reqAlt = obs_m + moc;
+        const roundedReqAlt = reqAlt.toFixed(2);
+        const reqAlt_ft = (reqAlt / 0.3048).toFixed(2);
+
+        // Also calculate MOC in feet
+        const moc_ft = (moc / 0.3048).toFixed(2);
+
+        // Build results summary HTML.
+        let resultHTML = `📐 <strong>Required PDG: ${roundedPDG}%</strong><br><br>`;
+        resultHTML += `<strong>Input Parameters:</strong><br>`;
+        resultHTML += `DER Elevation: ${derVal} ${unitDer}${(unitDer === "ft") ? " (" + der_m.toFixed(2) + " m)" : ""}<br>`;
+        resultHTML += `Obstacle Elevation: ${obsVal} ${unitObs}${(unitObs === "ft") ? " (" + obs_m.toFixed(2) + " m)" : ""}<br>`;
+        resultHTML += `Distance: ${distVal} ${unitDist}${(unitDist === "NM") ? " (" + dist_m.toFixed(2) + " m)" : ""}<br><br>`;
+        resultHTML += `<strong>OIS Elevation:</strong> ${roundedOIS} m<br>`;
+        resultHTML += `<strong>MOC Clearance (0.8% of distance):</strong> ${roundedMOC} m (${moc_ft} ft)<br>`;
+        resultHTML += `<strong>Required Altitude:</strong> ${roundedReqAlt} m (${reqAlt_ft} ft)<br>`;
+        resultHTML += oisPenetration 
+          ? `<span class="text-red-600">⚠️ Obstacle penetrates the OIS.</span><br><br>` 
+          : `<span class="text-green-600">✅ Obstacle does not penetrate the OIS.</span><br><br>`;
+        resultHTML += pdg > 3.3 
+          ? `<span class="text-red-600">⚠️ Exceeds standard 3.3% — special aircraft performance required.</span>`
+          : `<span class="text-green-600">✅ Within standard 3.3% PDG.</span>`;
+
+        document.getElementById("result").innerHTML = resultHTML;
+        // Reveal the Copy Results as Table button.
+        document.getElementById("copyButtonContainer").classList.remove("hidden");
+      }
+
+      function copyToWord() {
+        const derVal = parseFloat(document.getElementById("derElevation").value);
+        const obsVal = parseFloat(document.getElementById("obsElevation").value);
+        const distVal = parseFloat(document.getElementById("distance").value);
+  
+        const unitDer = document.getElementById("unitsDer").value;
+        const unitObs = document.getElementById("unitsObs").value;
+        const unitDist = document.getElementById("unitsDist").value;
+  
+        let der_m = unitDer === "ft" ? ftToMeters(derVal) : derVal;
+        let obs_m = unitObs === "ft" ? ftToMeters(obsVal) : obsVal;
+        let dist_m = unitDist === "NM" ? nmToMeters(distVal) : distVal;
+  
+        const pdg = (((obs_m - (der_m + 5)) / dist_m) + 0.008) * 100;
+        const roundedPDG = pdg.toFixed(2);
+  
+        const ois = (der_m + 5) + (dist_m * 0.025);
+        const roundedOIS = ois.toFixed(2);
+        const oisPenetration = obs_m > ois;
+  
+        const moc = dist_m * 0.008;
+        const roundedMOC = moc.toFixed(2);
+        const moc_ft = (moc / 0.3048).toFixed(2);
+  
+        const reqAlt = obs_m + moc;
+        const roundedReqAlt = reqAlt.toFixed(2);
+        const reqAlt_ft = (reqAlt / 0.3048).toFixed(2);
+  
+        const tableHTML = `
+          <table border="1" style="border-collapse: collapse; width: 100%;">
+            <tr style="background-color: #f1f5f9;">
+              <th style="padding: 8px;">Parameter</th>
+              <th style="padding: 8px;">Value</th>
+            </tr>
+            <tr>
+              <td>DER Elevation</td>
+              <td>${derVal} ${unitDer}${(unitDer === 'ft') ? " (" + der_m.toFixed(2) + " m)" : ""}</td>
+            </tr>
+            <tr>
+              <td>Obstacle Elevation</td>
+              <td>${obsVal} ${unitObs}${(unitObs === 'ft') ? " (" + obs_m.toFixed(2) + " m)" : ""}</td>
+            </tr>
+            <tr>
+              <td>Distance</td>
+              <td>${distVal} ${unitDist}${(unitDist === 'NM') ? " (" + dist_m.toFixed(2) + " m)" : ""}</td>
+            </tr>
+            <tr>
+              <td>Required PDG</td>
+              <td>${roundedPDG}%</td>
+            </tr>
+            <tr>
+              <td>OIS Elevation</td>
+              <td>${roundedOIS} m</td>
+            </tr>
+            <tr>
+              <td>MOC Clearance</td>
+              <td>${roundedMOC} m (${moc_ft} ft)</td>
+            </tr>
+            <tr>
+              <td>Required Altitude</td>
+              <td>${roundedReqAlt} m (${reqAlt_ft} ft)</td>
+            </tr>
+            <tr>
+              <td>OIS Penetration</td>
+              <td>${oisPenetration ? '<span style="color:red;">Yes</span>' : '<span style="color:green;">No</span>'}</td>
+            </tr>
+            <tr>
+              <td>Note</td>
+              <td>${pdg > 3.3 ? '<span style="color:red;">Exceeds standard 3.3% — special performance required.</span>' : '<span style="color:green;">Within standard 3.3% PDG.</span>'}</td>
+            </tr>
+          </table>
+        `;
+  
+        const blob = new Blob([tableHTML], { type: "text/html" });
+        navigator.clipboard.write([new ClipboardItem({ "text/html": blob })])
+          .then(() => { alert("Formatted table copied to clipboard! Paste into Word."); })
+          .catch((err) => { console.error("Copy failed:", err); });
+      }
+      
+      function saveParameters() {
+        const params = {
+          derElevation: document.getElementById("derElevation").value || "",
+          obsElevation: document.getElementById("obsElevation").value || "",
+          distance: document.getElementById("distance").value || "",
+          unitsDer: document.getElementById("unitsDer").value || "m",
+          unitsObs: document.getElementById("unitsObs").value || "m",
+          unitsDist: document.getElementById("unitsDist").value || "m",
+        };
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[:.]/g, "-");
+        const filename = `${timestamp}_omni_sid.json`;
+        const blob = new Blob([JSON.stringify(params, null, 2)], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+      }
+      
+      function loadParameters(event) {
+        const file = event.target.files[0];
+        if (!file) {
+          alert("Please select a valid JSON file.");
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            const data = JSON.parse(e.target.result);
+            if (data.derElevation !== undefined) document.getElementById("derElevation").value = data.derElevation;
+            if (data.obsElevation !== undefined) document.getElementById("obsElevation").value = data.obsElevation;
+            if (data.distance !== undefined) document.getElementById("distance").value = data.distance;
+            if (data.unitsDer !== undefined) document.getElementById("unitsDer").value = data.unitsDer;
+            if (data.unitsObs !== undefined) document.getElementById("unitsObs").value = data.unitsObs;
+            if (data.unitsDist !== undefined) document.getElementById("unitsDist").value = data.unitsDist;
+            alert("Parameters successfully loaded!");
+          } catch (err) {
+            alert("Invalid JSON file. Please upload a valid parameters file.");
+          }
+        };
+        reader.readAsText(file);
+      }
+    </script>
+  </body>
+</html>
