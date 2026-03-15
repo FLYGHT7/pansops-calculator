@@ -2,7 +2,9 @@
 
 /* Ensure smooth transitions when toggling dark mode */
 html.dark {
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 /* Ensure proper text contrast in dark mode */
@@ -47,7 +49,9 @@ html.dark textarea:focus {
 
 /* Ensure proper button styling in dark mode */
 html.dark button {
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
 }
 
 html.dark button:active {
@@ -99,4 +103,77 @@ html.dark .border-green-200 {
 
 html.dark .border-green-100 {
   border-color: #374151;
+}
+
+/* ================================================================
+   PHASE 4.3 — TYPOGRAPHY & RESULT DESIGN SYSTEM
+   Applied via shared-config.js font injection (Barlow + Rajdhani +
+   Share Tech Mono loaded from Google Fonts on every calculator page)
+   ================================================================ */
+
+/* Body & form elements — Barlow professional sans */
+html body {
+  font-family: "Barlow", sans-serif;
+}
+html input,
+html select,
+html textarea,
+html button,
+html label {
+  font-family: "Barlow", sans-serif;
+}
+
+/* Headings — Rajdhani angular technical condensed */
+h1 {
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+}
+h2,
+h3 {
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Result section — subtle accent top border */
+[role="region"] {
+  border-top-width: 3px;
+  border-top-color: #0284c7;
+}
+html.dark [role="region"] {
+  border-top-color: #38bdf8;
+}
+
+/* Individual result metric cards — left accent stripe + hover lift */
+[role="region"] .bg-white {
+  border-left: 3px solid #0284c7;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.08);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+[role="region"] .bg-white:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.15);
+}
+html.dark [role="region"] .bg-white {
+  border-left-color: #38bdf8;
+  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.08);
+}
+html.dark [role="region"] .bg-white:hover {
+  box-shadow: 0 6px 16px rgba(56, 189, 248, 0.18);
+}
+
+/* Result numeric values — Share Tech Mono instrument readout style */
+[role="region"] .text-lg,
+[role="region"] .text-xl {
+  font-family: "Share Tech Mono", monospace;
+  letter-spacing: 0.06em;
+  color: #0369a1;
+  font-size: 1.25rem;
+}
+html.dark [role="region"] .text-lg,
+html.dark [role="region"] .text-xl {
+  color: #7dd3fc;
 }
