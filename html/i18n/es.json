@@ -208,5 +208,31 @@
     "calculators": "Calculadoras",
     "support": "Soporte",
     "ils": "ILS"
+  },
+  "windSpiral": {
+    "title": "Calculadora de Espiral de Viento",
+    "subtitle": "Efecto del viento y \u00e1ngulo de deriva PANS-OPS para dise\u00f1o de procedimientos",
+    "globalParams": "Par\u00e1metros Globales",
+    "secFlight": "Par\u00e1metros de Vuelo",
+    "secSpiral": "Par\u00e1metros de Espiral",
+    "tas": "Velocidad Verdadera (TAS)",
+    "windSpeed": "Velocidad del Viento (W)",
+    "bankAngle": "\u00c1ngulo de Banco (\u03c6)",
+    "thetaStep": "Paso Angular (\u03b8)",
+    "thetaNote": "Pasos m\u00e1s peque\u00f1os = espiral m\u00e1s precisa; 30\u00b0 es un buen compromiso",
+    "totalAngle": "\u00c1ngulo Total de Giro",
+    "phTas": "ej. 180",
+    "phWind": "ej. 30",
+    "phBank": "ej. 25",
+    "resultsTitle": "Resultados de la Espiral de Viento",
+    "rateOfTurn": "Tasa de Viraje (R)",
+    "driftAngle": "\u00c1ngulo de Deriva (d)",
+    "windEffect": "Efecto Viento E\u03b8",
+    "fullTurnTime": "Tiempo de Vuelta 360\u00b0",
+    "colAngle": "\u00c1ngulo Acum. (\u00b0)",
+    "colTime": "Tiempo (s)",
+    "colStepE": "E\u03b8 / paso (NM)",
+    "colCumulE": "E Acumulado (NM)",
+    "formulaRef": "Referencia de F\u00f3rmulas PANS-OPS"
   }
 }
