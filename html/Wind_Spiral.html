@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f1f5f9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0a0f1a" media="(prefers-color-scheme: dark)" />
     <title data-i18n="windSpiral.title">Wind Spiral Calculator</title>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="shared-config.js"></script>
     <link rel="stylesheet" href="dark-mode.css" />
@@ -48,7 +51,10 @@
         border: 14px solid var(--primary-glow);
         pointer-events: none;
       }
-      header > * { position: relative; z-index: 1; }
+      header > * {
+        position: relative;
+        z-index: 1;
+      }
 
       /* ── Input section divider labels ────────────────────────────── */
       .section-label {
@@ -89,7 +95,9 @@
         border-left: 3px solid var(--primary);
         border-radius: 10px;
         padding: 14px 16px;
-        transition: transform 0.12s ease, box-shadow 0.12s ease;
+        transition:
+          transform 0.12s ease,
+          box-shadow 0.12s ease;
       }
       .result-kpi:hover {
         transform: translateY(-2px);
@@ -109,6 +117,7 @@
         font-weight: 700;
         color: var(--text);
         line-height: 1.1;
+        font-variant-numeric: tabular-nums;
       }
       .result-kpi .kpi-unit {
         font-size: 0.72rem;
@@ -119,7 +128,7 @@
       /* ── Spiral table ────────────────────────────────────────────── */
       .spiral-table th {
         background: linear-gradient(90deg, #0c2240 0%, var(--border) 100%);
-        color: #93c5fd;
+        color: var(--primary-light);
         font-size: 0.72rem;
         font-weight: 700;
         letter-spacing: 0.06em;
@@ -134,11 +143,13 @@
         font-size: 0.82rem;
         padding: 7px 12px;
         border-bottom: 1px solid rgba(148, 163, 184, 0.08);
-        color: #334155;
+        color: var(--text);
         text-align: right;
       }
-      html.dark .spiral-table td { color: #cbd5e1; }
-      .spiral-table td:first-child { text-align: left; font-weight: 600; }
+      .spiral-table td:first-child {
+        text-align: left;
+        font-weight: 600;
+      }
       .spiral-table tbody tr:nth-child(even) td {
         background: rgba(148, 163, 184, 0.04);
       }
@@ -147,14 +158,16 @@
       }
       /* Highlight the full 360° row */
       .spiral-table tr.row-360 td {
-        color: #0369a1;
+        color: var(--primary);
         font-weight: 700;
-        background: linear-gradient(to right, rgba(56,189,248,0.12), rgba(56,189,248,0.04));
+        background: linear-gradient(
+          to right,
+          rgba(56, 189, 248, 0.12),
+          rgba(56, 189, 248, 0.04)
+        );
       }
       html.dark .spiral-table tr.row-360 td {
-        color: #38bdf8;
         text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
-        background: linear-gradient(to right, rgba(56,189,248,0.12), rgba(56,189,248,0.03));
       }
 
       /* ── Validation banner ───────────────────────────────────────── */
@@ -162,24 +175,30 @@
         display: flex;
         align-items: flex-start;
         gap: 10px;
-        background: rgba(239, 68, 68, 0.07);
-        border: 1px solid rgba(239, 68, 68, 0.3);
+        background: var(--accent-danger-glow);
+        border: 1px solid var(--accent-danger);
         border-radius: 8px;
         padding: 10px 16px;
-        color: #dc2626;
+        color: var(--accent-danger);
         font-size: 0.875rem;
       }
-      html.dark .validation-banner {
-        background: rgba(239, 68, 68, 0.12);
-        border-color: rgba(239, 68, 68, 0.4);
-        color: #f87171;
-      }
       @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        20%, 60% { transform: translateX(-5px); }
-        40%, 80% { transform: translateX(5px); }
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20%,
+        60% {
+          transform: translateX(-5px);
+        }
+        40%,
+        80% {
+          transform: translateX(5px);
+        }
       }
-      .shake { animation: shake 0.35s ease; }
+      .shake {
+        animation: shake 0.35s ease;
+      }
 
       /* ── Formula reference panel ─────────────────────────────────── */
       .formula-panel {
@@ -203,10 +222,23 @@
         user-select: none;
         list-style: none;
       }
-      .formula-panel summary::-webkit-details-marker { display: none; }
-      .formula-panel summary:hover { opacity: 0.85; }
-      .formula-panel summary .chevron { margin-left: auto; transition: transform 0.2s ease; }
-      .formula-panel[open] summary .chevron { transform: rotate(180deg); }
+      .formula-panel summary::-webkit-details-marker {
+        display: none;
+      }
+      .formula-panel summary:hover {
+        opacity: 0.85;
+      }
+      .formula-panel summary:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+      }
+      .formula-panel summary .chevron {
+        margin-left: auto;
+        transition: transform 0.2s ease;
+      }
+      .formula-panel[open] summary .chevron {
+        transform: rotate(180deg);
+      }
       .formula-body {
         padding: 16px 20px;
         background: var(--primary-glow);
@@ -241,18 +273,51 @@
         color: var(--text-muted);
         line-height: 1.45;
       }
+      /* ── Reduced-motion overrides ────────────────────────────────── */
+      @media (prefers-reduced-motion: reduce) {
+        .result-kpi {
+          transition: none;
+        }
+        .formula-panel summary .chevron {
+          transition: none;
+        }
+        .shake {
+          animation: none;
+        }
+      }
+
+      /* ── Touch targets ───────────────────────────────────────────── */
+      button {
+        touch-action: manipulation;
+      }
     </style>
   </head>
 
-  <body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-start justify-center p-4">
-    <main class="max-w-5xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
-
+  <body
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-start justify-center p-4"
+  >
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-primary-700 focus:rounded focus:shadow">Skip to content</a>
+    <main
+      id="main-content"
+      class="max-w-5xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
+    >
       <!-- Header -->
       <header>
-        <h1 class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-1 flex items-center">
-          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"
-            class="h-7 w-7 sm:h-8 sm:w-8 mr-2" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <h1
+          class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-1 flex items-center [text-wrap:balance]"
+        >
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-7 w-7 sm:h-8 sm:w-8 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <!-- Wind spiral icon: inward spiral path -->
             <path d="M21 12a9 9 0 0 1-9 9"></path>
             <path d="M3 12a9 9 0 0 1 9-9"></path>
@@ -262,7 +327,10 @@
           </svg>
           <span data-i18n="windSpiral.title">Wind Spiral Calculator</span>
         </h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6" data-i18n="windSpiral.subtitle">
+        <p
+          class="text-sm text-gray-500 dark:text-gray-400 mb-6"
+          data-i18n="windSpiral.subtitle"
+        >
           PANS-OPS wind effect and drift angle for procedure design
         </p>
       </header>
@@ -270,22 +338,48 @@
       <!-- Save / Load parameters -->
       <div class="flex flex-wrap justify-end mb-6 gap-3">
         <input id="loadFile" type="file" accept=".json" class="hidden" />
-        <button type="button" id="btnSave"
-          class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
-          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+        <button
+          type="button"
+          id="btnSave"
+          class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
+        >
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-1"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+            ></path>
             <polyline points="17 21 17 13 7 13 7 21"></polyline>
             <polyline points="7 3 7 8 15 8"></polyline>
           </svg>
           <span data-i18n="common.save">Save Parameters</span>
         </button>
-        <button type="button" id="btnLoad"
-          class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
-          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button
+          type="button"
+          id="btnLoad"
+          class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
+        >
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-1"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="17 8 12 3 7 8"></polyline>
             <line x1="12" y1="3" x2="12" y2="15"></line>
@@ -297,87 +391,177 @@
       <!-- Inputs -->
       <form id="inputForm" novalidate>
         <fieldset class="mb-6" aria-labelledby="legendGlobal">
-          <legend id="legendGlobal" class="sr-only" data-i18n="windSpiral.globalParams">Global Parameters</legend>
+          <legend
+            id="legendGlobal"
+            class="sr-only"
+            data-i18n="windSpiral.globalParams"
+          >
+            Global Parameters
+          </legend>
 
-          <p class="section-label" aria-hidden="true" data-i18n="windSpiral.secFlight">Flight Parameters</p>
+          <p
+            class="section-label"
+            aria-hidden="true"
+            data-i18n="windSpiral.secFlight"
+          >
+            Flight Parameters
+          </p>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-
             <!-- TAS -->
             <div class="space-y-2">
-              <label for="tas" class="block font-medium text-gray-700 dark:text-gray-300"
-                data-i18n="windSpiral.tas">True Airspeed (TAS)</label>
-              <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
-                <input id="tas" type="number" min="1" max="999" required
-                  class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                  placeholder="e.g. 180"
-                  data-i18n="windSpiral.phTas" data-i18n-attr="placeholder" />
-                <div class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center">
-                  <span class="text-gray-700 dark:text-white text-sm" data-i18n="common.knots">kt</span>
+              <label
+                for="tas"
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="windSpiral.tas"
+                >True Airspeed (TAS)</label
+              >
+              <div
+                class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+              >
+                <input
+                  id="tas"
+                  type="number"
+                  min="1"
+                  max="999"
+                  required
+                  autocomplete="off"
+                  class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent dark:bg-gray-700 dark:text-white"
+                  placeholder="e.g. 180…"
+                  data-i18n="windSpiral.phTas"
+                  data-i18n-attr="placeholder"
+                />
+                <div
+                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
+                >
+                  <span
+                    class="text-gray-700 dark:text-white text-sm"
+                    data-i18n="common.knots"
+                    >kt</span
+                  >
                 </div>
               </div>
             </div>
 
             <!-- Wind Speed -->
             <div class="space-y-2">
-              <label for="windSpeed" class="block font-medium text-gray-700 dark:text-gray-300"
-                data-i18n="windSpiral.windSpeed">Wind Speed (W)</label>
-              <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
-                <input id="windSpeed" type="number" min="0" max="999" required
-                  class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                  placeholder="e.g. 30"
-                  data-i18n="windSpiral.phWind" data-i18n-attr="placeholder" />
-                <div class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center">
-                  <span class="text-gray-700 dark:text-white text-sm" data-i18n="common.knots">kt</span>
+              <label
+                for="windSpeed"
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="windSpiral.windSpeed"
+                >Wind Speed (W)</label
+              >
+              <div
+                class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+              >
+                <input
+                  id="windSpeed"
+                  type="number"
+                  min="0"
+                  max="999"
+                  required
+                  autocomplete="off"
+                  class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent dark:bg-gray-700 dark:text-white"
+                  placeholder="e.g. 30…"
+                  data-i18n="windSpiral.phWind"
+                  data-i18n-attr="placeholder"
+                />
+                <div
+                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
+                >
+                  <span
+                    class="text-gray-700 dark:text-white text-sm"
+                    data-i18n="common.knots"
+                    >kt</span
+                  >
                 </div>
               </div>
             </div>
 
             <!-- Bank Angle -->
             <div class="space-y-2">
-              <label for="bankAngle" class="block font-medium text-gray-700 dark:text-gray-300"
-                data-i18n="windSpiral.bankAngle">Bank Angle (&phi;)</label>
-              <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
-                <input id="bankAngle" type="number" min="1" max="45" required
-                  class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                  placeholder="e.g. 25"
-                  data-i18n="windSpiral.phBank" data-i18n-attr="placeholder" />
-                <div class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center">
-                  <span class="text-gray-700 dark:text-white" data-i18n="common.degrees">°</span>
+              <label
+                for="bankAngle"
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="windSpiral.bankAngle"
+                >Bank Angle (&phi;)</label
+              >
+              <div
+                class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+              >
+                <input
+                  id="bankAngle"
+                  type="number"
+                  min="1"
+                  max="45"
+                  required
+                  autocomplete="off"
+                  class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent dark:bg-gray-700 dark:text-white"
+                  placeholder="e.g. 25…"
+                  data-i18n="windSpiral.phBank"
+                  data-i18n-attr="placeholder"
+                />
+                <div
+                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
+                >
+                  <span
+                    class="text-gray-700 dark:text-white"
+                    data-i18n="common.degrees"
+                    >°</span
+                  >
                 </div>
               </div>
             </div>
-
           </div>
 
           <!-- Second row: theta step + total angle -->
-          <p class="section-label" aria-hidden="true" data-i18n="windSpiral.secSpiral">Spiral Parameters</p>
+          <p
+            class="section-label"
+            aria-hidden="true"
+            data-i18n="windSpiral.secSpiral"
+          >
+            Spiral Parameters
+          </p>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
             <!-- θ Step -->
             <div class="space-y-2">
-              <label for="thetaStep" class="block font-medium text-gray-700 dark:text-gray-300"
-                data-i18n="windSpiral.thetaStep">Angular Step (&theta;)</label>
-              <select id="thetaStep"
-                class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">
+              <label
+                for="thetaStep"
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="windSpiral.thetaStep"
+                >Angular Step (&theta;)</label
+              >
+              <select
+                id="thetaStep"
+                class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:bg-gray-700 dark:text-white"
+              >
                 <option value="10">10°</option>
                 <option value="15">15°</option>
                 <option value="20">20°</option>
                 <option value="30" selected>30° (recommended)</option>
                 <option value="45">45°</option>
               </select>
-              <p class="text-xs text-gray-500 dark:text-gray-400" data-i18n="windSpiral.thetaNote">
+              <p
+                class="text-xs text-gray-500 dark:text-gray-400"
+                data-i18n="windSpiral.thetaNote"
+              >
                 Smaller steps = more accurate spiral; 30° is a good compromise
               </p>
             </div>
 
             <!-- Total turn angle -->
             <div class="space-y-2">
-              <label for="totalAngle" class="block font-medium text-gray-700 dark:text-gray-300"
-                data-i18n="windSpiral.totalAngle">Total Turn Angle</label>
-              <select id="totalAngle"
-                class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">
+              <label
+                for="totalAngle"
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="windSpiral.totalAngle"
+                >Total Turn Angle</label
+              >
+              <select
+                id="totalAngle"
+                class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:bg-gray-700 dark:text-white"
+              >
                 <option value="360" selected>360° (full circle)</option>
                 <option value="180">180°</option>
                 <option value="90">90°</option>
@@ -385,29 +569,53 @@
                 <option value="720">720° (two turns)</option>
               </select>
             </div>
-
           </div>
         </fieldset>
 
         <!-- Validation banner -->
-        <div id="validationBanner" class="validation-banner hidden mb-4" role="alert">
-          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <div
+          id="validationBanner"
+          class="validation-banner hidden mb-4"
+          role="alert"
+        >
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 flex-shrink-0 mt-0.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="8" x2="12" y2="12"></line>
             <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
-          <span id="validationMessage">Please fill in all required fields.</span>
+          <span id="validationMessage"
+            >Please fill in all required fields.</span
+          >
         </div>
 
         <!-- Calculate button -->
         <div class="flex justify-end mb-8">
-          <button type="button" id="btnCalcSpiral"
-            class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center">
-            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button
+            type="button"
+            id="btnCalcSpiral"
+            class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center"
+          >
+            <svg
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-2"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
             </svg>
             <span data-i18n="common.calculate">Calculate</span>
@@ -416,18 +624,39 @@
       </form>
 
       <!-- Results -->
-      <div id="results" role="region" aria-labelledby="resultsHeading" aria-live="polite" aria-atomic="true" class="hidden">
-
+      <div
+        id="results"
+        role="region"
+        aria-labelledby="resultsHeading"
+        aria-live="polite"
+        aria-atomic="true"
+        class="hidden"
+      >
         <!-- KPI row -->
-        <h2 id="resultsHeading" class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
-          data-i18n="windSpiral.resultsTitle">Wind Spiral Results</h2>
+        <h2
+          id="resultsHeading"
+          class="text-xl font-bold text-green-800 dark:text-green-300 mb-4 [text-wrap:balance]"
+          data-i18n="windSpiral.resultsTitle"
+        >
+          Wind Spiral Results
+        </h2>
 
         <!-- Adjusted bank angle notice -->
         <div id="adjBankNotice" class="adj-badge mb-4 hidden">
-          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 flex-shrink-0"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+            ></path>
             <line x1="12" y1="9" x2="12" y2="13"></line>
             <line x1="12" y1="17" x2="12.01" y2="17"></line>
           </svg>
@@ -436,35 +665,54 @@
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           <div class="result-kpi">
-            <div class="kpi-label" data-i18n="windSpiral.rateOfTurn">Rate of Turn (R)</div>
+            <div class="kpi-label" data-i18n="windSpiral.rateOfTurn">
+              Rate of Turn (R)
+            </div>
             <div class="kpi-value" id="kpiR">—</div>
             <div class="kpi-unit">°/s</div>
           </div>
           <div class="result-kpi">
-            <div class="kpi-label" data-i18n="windSpiral.driftAngle">Drift Angle (d)</div>
+            <div class="kpi-label" data-i18n="windSpiral.driftAngle">
+              Drift Angle (d)
+            </div>
             <div class="kpi-value" id="kpiD">—</div>
             <div class="kpi-unit" data-i18n="common.degrees">°</div>
           </div>
           <div class="result-kpi">
-            <div class="kpi-label" data-i18n="windSpiral.windEffect">Wind Effect E&theta;</div>
+            <div class="kpi-label" data-i18n="windSpiral.windEffect">
+              Wind Effect E&theta;
+            </div>
             <div class="kpi-value" id="kpiE">—</div>
-            <div class="kpi-unit" data-i18n="common.nauticalMiles">NM / step</div>
+            <div class="kpi-unit" data-i18n="common.nauticalMiles">
+              NM / step
+            </div>
           </div>
           <div class="result-kpi">
-            <div class="kpi-label" data-i18n="windSpiral.fullTurnTime">Full 360° Time</div>
+            <div class="kpi-label" data-i18n="windSpiral.fullTurnTime">
+              Full 360° Time
+            </div>
             <div class="kpi-value" id="kpiT">—</div>
             <div class="kpi-unit">seconds</div>
           </div>
         </div>
 
         <!-- Spiral table -->
-        <div class="bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600">
-
-          <div class="overflow-x-auto rounded-lg border border-green-200 dark:border-gray-600">
-            <table class="spiral-table w-full text-sm" id="spiralTable" aria-labelledby="resultsHeading">
+        <div
+          class="bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600"
+        >
+          <div
+            class="overflow-x-auto rounded-lg border border-green-200 dark:border-gray-600"
+          >
+            <table
+              class="spiral-table w-full text-sm"
+              id="spiralTable"
+              aria-labelledby="resultsHeading"
+            >
               <thead>
                 <tr>
-                  <th class="text-left" data-i18n="windSpiral.colAngle">Cumul. Angle (°)</th>
+                  <th class="text-left" data-i18n="windSpiral.colAngle">
+                    Cumul. Angle (°)
+                  </th>
                   <th data-i18n="windSpiral.colTime">Time (s)</th>
                   <th data-i18n="windSpiral.colStepE">E&theta; / step (NM)</th>
                   <th data-i18n="windSpiral.colCumulE">Cumul. E (NM)</th>
@@ -478,68 +726,106 @@
 
           <!-- Copy button -->
           <div class="mt-6 flex justify-end">
-            <button type="button" id="btnCopy"
-              class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center">
-              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <button
+              type="button"
+              id="btnCopy"
+              class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center"
+            >
+              <svg
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-2"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+                ></path>
                 <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
               </svg>
               <span data-i18n="common.copyTable">Copy Results as Table</span>
             </button>
           </div>
-
         </div>
       </div>
 
       <!-- PANS-OPS Formula Reference — always visible -->
       <details class="formula-panel" id="formulaPanel">
-            <summary>
-              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-              </svg>
-              <span data-i18n="windSpiral.formulaRef">PANS-OPS Formula Reference</span>
-              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                class="chevron h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-            </summary>
+        <summary>
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 flex-shrink-0"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+          <span data-i18n="windSpiral.formulaRef"
+            >PANS-OPS Formula Reference</span
+          >
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            class="chevron h-4 w-4 flex-shrink-0"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </summary>
 
-            <div class="formula-body">
-              <div class="formula-card">
-                <div class="fc-label">Rate of Turn (R)</div>
-                <div class="fc-expr">R = 9.81 &times; tan(&phi;)
-   &divide; V&#x2098;&#x2c;&#x209b; &times; (180/&pi;)
-
-R&#x1D42E;&#x1D42C;&#x1D41E;&#x1D41D; = min(R, 3&deg;/s)</div>
-                <div class="fc-note">V in m/s (TAS &times; 0.514444)</div>
-              </div>
-              <div class="formula-card">
-                <div class="fc-label">Drift Angle (d) — Formula 007</div>
-                <div class="fc-expr">d = arcsin(W / V)</div>
-                <div class="fc-note">W and V in the same units (kt). d in degrees.</div>
-              </div>
-              <div class="formula-card">
-                <div class="fc-label">Wind Effect (E&theta;) — Formula 006</div>
-                <div class="fc-expr">E&theta; = (&theta; / R) &times; (W / 3600)</div>
-                <div class="fc-note">&theta; in °, R in °/s, W in kt &rarr; E in NM per step</div>
-              </div>
-              <div class="formula-card">
-                <div class="fc-label">Adjusted Bank Angle</div>
-                <div class="fc-expr">&phi;&#x2090;&#x2c;&#x2c;&thinsp;= arctan(
-  3 &times; &pi;/180
-  &times; V&#x2098;&#x2c;&#x209b; / 9.81
-) &times; 180/&pi;</div>
-                <div class="fc-note">Applied only when R&gt;3°/s to cap rate of turn</div>
-              </div>
+        <div class="formula-body">
+          <div class="formula-card">
+            <div class="fc-label">Rate of Turn (R)</div>
+            <div class="fc-expr">
+              R = 9.81 &times; tan(&phi;) &divide; V&#x2098;&#x2c;&#x209b;
+              &times; (180/&pi;) R&#x1D42E;&#x1D42C;&#x1D41E;&#x1D41D; = min(R,
+              3&deg;/s)
             </div>
+            <div class="fc-note">V in m/s (TAS &times; 0.514444)</div>
+          </div>
+          <div class="formula-card">
+            <div class="fc-label">Drift Angle (d) — Formula 007</div>
+            <div class="fc-expr">d = arcsin(W / V)</div>
+            <div class="fc-note">
+              W and V in the same units (kt). d in degrees.
+            </div>
+          </div>
+          <div class="formula-card">
+            <div class="fc-label">Wind Effect (E&theta;) — Formula 006</div>
+            <div class="fc-expr">
+              E&theta; = (&theta; / R) &times; (W / 3600)
+            </div>
+            <div class="fc-note">
+              &theta; in °, R in °/s, W in kt &rarr; E in NM per step
+            </div>
+          </div>
+          <div class="formula-card">
+            <div class="fc-label">Adjusted Bank Angle</div>
+            <div class="fc-expr">
+              &phi;&#x2090;&#x2c;&#x2c;&thinsp;= arctan( 3 &times; &pi;/180
+              &times; V&#x2098;&#x2c;&#x209b; / 9.81 ) &times; 180/&pi;
+            </div>
+            <div class="fc-note">
+              Applied only when R&gt;3°/s to cap rate of turn
+            </div>
+          </div>
+        </div>
       </details>
-
     </main>
 
     <script src="js/wind_spiral.js"></script>

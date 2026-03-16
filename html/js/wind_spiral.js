@@ -12,7 +12,7 @@
 
 function calcRateOfTurn(tas_kt, bankDeg) {
   const v_ms = tas_kt * KT_TO_MS;
-  return (9.81 * Math.tan(bankDeg * DEG_TO_RAD) / v_ms) * (180 / Math.PI);
+  return ((9.81 * Math.tan(bankDeg * DEG_TO_RAD)) / v_ms) * (180 / Math.PI);
 }
 
 function adjBankForMaxR(tas_kt) {
@@ -41,7 +41,11 @@ function showValidationError(msg) {
   document.getElementById("validationMessage").textContent = msg;
   banner.classList.remove("hidden");
   banner.classList.add("shake");
-  banner.addEventListener("animationend", () => banner.classList.remove("shake"), { once: true });
+  banner.addEventListener(
+    "animationend",
+    () => banner.classList.remove("shake"),
+    { once: true },
+  );
 }
 
 function hideValidationError() {
@@ -49,32 +53,41 @@ function hideValidationError() {
 }
 
 function validate() {
-  const tas  = document.getElementById("tas").value.trim();
+  const tas = document.getElementById("tas").value.trim();
   const wind = document.getElementById("windSpeed").value.trim();
   const bank = document.getElementById("bankAngle").value.trim();
 
   if (tas === "" || wind === "" || bank === "") {
-    showValidationError("Please fill in TAS, Wind Speed, and Bank Angle before calculating.");
+    showValidationError(
+      "Please fill in TAS, Wind Speed, and Bank Angle before calculating.",
+    );
+    document.getElementById(tas === "" ? "tas" : wind === "" ? "windSpeed" : "bankAngle").focus();
     return false;
   }
-  const tasVal  = parseFloat(tas);
+  const tasVal = parseFloat(tas);
   const windVal = parseFloat(wind);
   const bankVal = parseFloat(bank);
 
   if (isNaN(tasVal) || tasVal <= 0) {
     showValidationError("TAS must be a positive number.");
+    document.getElementById("tas").focus();
     return false;
   }
   if (isNaN(windVal) || windVal < 0) {
     showValidationError("Wind Speed must be zero or greater.");
+    document.getElementById("windSpeed").focus();
     return false;
   }
   if (isNaN(bankVal) || bankVal < 1 || bankVal > 45) {
     showValidationError("Bank angle must be between 1° and 45°.");
+    document.getElementById("bankAngle").focus();
     return false;
   }
   if (windVal >= tasVal) {
-    showValidationError("Wind speed must be less than TAS for a valid drift angle.");
+    showValidationError(
+      "Wind speed must be less than TAS for a valid drift angle.",
+    );
+    document.getElementById("windSpeed").focus();
     return false;
   }
   hideValidationError();
@@ -86,19 +99,19 @@ function validate() {
 function calculate() {
   if (!validate()) return;
 
-  const tas_kt   = parseFloat(document.getElementById("tas").value);
-  const wind_kt  = parseFloat(document.getElementById("windSpeed").value);
+  const tas_kt = parseFloat(document.getElementById("tas").value);
+  const wind_kt = parseFloat(document.getElementById("windSpeed").value);
   const bank_deg = parseFloat(document.getElementById("bankAngle").value);
-  const theta    = parseFloat(document.getElementById("thetaStep").value);
-  const total    = parseFloat(document.getElementById("totalAngle").value);
+  const theta = parseFloat(document.getElementById("thetaStep").value);
+  const total = parseFloat(document.getElementById("totalAngle").value);
 
-  const R_calc    = calcRateOfTurn(tas_kt, bank_deg);
-  const R_used    = Math.min(3.0, R_calc);
+  const R_calc = calcRateOfTurn(tas_kt, bank_deg);
+  const R_used = Math.min(3.0, R_calc);
   const bankCapped = R_calc > 3.0;
-  const bankAdj   = bankCapped ? adjBankForMaxR(tas_kt) : bank_deg;
-  const d         = calcDriftAngle(wind_kt, tas_kt);
-  const E_step    = calcWindEffect(theta, R_used, wind_kt);
-  const t360      = 360 / R_used;
+  const bankAdj = bankCapped ? adjBankForMaxR(tas_kt) : bank_deg;
+  const d = calcDriftAngle(wind_kt, tas_kt);
+  const E_step = calcWindEffect(theta, R_used, wind_kt);
+  const t360 = 360 / R_used;
 
   document.getElementById("kpiR").textContent = fmt(R_used, 4);
   document.getElementById("kpiD").textContent = fmt(d, 4);
@@ -128,15 +141,14 @@ function calculate() {
     if (cumAngle % 360 === 0) tr.classList.add("row-360");
 
     const vals = [
-      { v: cumAngle.toFixed(0) + "°", right: false },
-      { v: fmt(timeStep, 1), right: true },
-      { v: fmt(E_step, 4), right: true },
-      { v: fmt(cumulE, 4), right: true },
+      cumAngle.toFixed(0) + "°",
+      fmt(timeStep, 1),
+      fmt(E_step, 4),
+      fmt(cumulE, 4),
     ];
-    vals.forEach(({ v, right }) => {
+    vals.forEach((v) => {
       const td = document.createElement("td");
       td.textContent = v;
-      if (right) td.style.textAlign = "right";
       tr.appendChild(td);
     });
     tbody.appendChild(tr);
@@ -153,15 +165,17 @@ function calculate() {
 
 function saveParameters() {
   const data = {
-    tas:        document.getElementById("tas").value || "",
-    windSpeed:  document.getElementById("windSpeed").value || "",
-    bankAngle:  document.getElementById("bankAngle").value || "",
-    thetaStep:  document.getElementById("thetaStep").value || "30",
+    tas: document.getElementById("tas").value || "",
+    windSpeed: document.getElementById("windSpeed").value || "",
+    bankAngle: document.getElementById("bankAngle").value || "",
+    thetaStep: document.getElementById("thetaStep").value || "30",
     totalAngle: document.getElementById("totalAngle").value || "360",
   };
 
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: "application/json",
+  });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = `${timestamp}_wind_spiral.json`;
@@ -179,14 +193,21 @@ function loadParameters(event) {
   reader.onload = function (e) {
     try {
       const data = JSON.parse(e.target.result);
-      if (data.tas)        document.getElementById("tas").value        = data.tas;
-      if (data.windSpeed)  document.getElementById("windSpeed").value  = data.windSpeed;
-      if (data.bankAngle)  document.getElementById("bankAngle").value  = data.bankAngle;
-      if (data.thetaStep)  document.getElementById("thetaStep").value  = data.thetaStep;
-      if (data.totalAngle) document.getElementById("totalAngle").value = data.totalAngle;
+      if (data.tas) document.getElementById("tas").value = data.tas;
+      if (data.windSpeed)
+        document.getElementById("windSpeed").value = data.windSpeed;
+      if (data.bankAngle)
+        document.getElementById("bankAngle").value = data.bankAngle;
+      if (data.thetaStep)
+        document.getElementById("thetaStep").value = data.thetaStep;
+      if (data.totalAngle)
+        document.getElementById("totalAngle").value = data.totalAngle;
       showToast("Parameters loaded!", "success");
     } catch {
-      showToast("Invalid JSON file. Please upload a valid parameters file.", "error");
+      showToast(
+        "Invalid JSON file. Please upload a valid parameters file.",
+        "error",
+      );
     }
   };
   reader.readAsText(file);
@@ -202,22 +223,28 @@ function copyTable() {
     .map((tr) =>
       Array.from(tr.querySelectorAll("th, td"))
         .map((c) => c.textContent.trim().padEnd(18))
-        .join("\t")
+        .join("\t"),
     )
     .join("\n");
 
-  navigator.clipboard.writeText(text).then(() => {
-    showToast("Table copied to clipboard!", "success");
-  }).catch(() => {
-    showToast("Copy failed. Check browser permissions.", "error");
-  });
+  navigator.clipboard
+    .writeText(text)
+    .then(() => {
+      showToast("Table copied to clipboard!", "success");
+    })
+    .catch(() => {
+      showToast("Copy failed. Check browser permissions.", "error");
+    });
 }
 
 // ── Init ───────────────────────────────────────────────────────────────────────
 
 document.addEventListener("DOMContentLoaded", function () {
   try {
-    if (window.parent && window.parent.document.documentElement.classList.contains("dark")) {
+    if (
+      window.parent &&
+      window.parent.document.documentElement.classList.contains("dark")
+    ) {
       document.documentElement.classList.add("dark");
     }
   } catch (e) {
@@ -228,13 +255,17 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("btnLoad").addEventListener("click", function () {
     document.getElementById("loadFile").click();
   });
-  document.getElementById("loadFile").addEventListener("change", loadParameters);
+  document
+    .getElementById("loadFile")
+    .addEventListener("change", loadParameters);
   document.getElementById("btnCalcSpiral").addEventListener("click", calculate);
   document.getElementById("btnCopy").addEventListener("click", copyTable);
-  document.getElementById("inputForm").addEventListener("keydown", function (e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      document.getElementById("btnCalcSpiral").click();
-    }
-  });
+  document
+    .getElementById("inputForm")
+    .addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        document.getElementById("btnCalcSpiral").click();
+      }
+    });
 });
