@@ -12,10 +12,10 @@
     <style>
       /* ── Main card accent top stripe ─────────────────────────────── */
       main {
-        border-top: 3px solid #0284c7;
+        border-top: 3px solid var(--primary);
       }
       html.dark main {
-        border-top-color: #38bdf8;
+        border-top-color: var(--primary-light);
         box-shadow:
           0 0 60px rgba(56, 189, 248, 0.05),
           0 8px 32px rgba(0, 0, 0, 0.45);
@@ -34,7 +34,7 @@
         width: 200px;
         height: 200px;
         border-radius: 50%;
-        border: 38px solid rgba(2, 132, 199, 0.07);
+        border: 38px solid var(--primary-glow);
         pointer-events: none;
       }
       header::after {
@@ -45,11 +45,9 @@
         width: 72px;
         height: 72px;
         border-radius: 50%;
-        border: 14px solid rgba(2, 132, 199, 0.04);
+        border: 14px solid var(--primary-glow);
         pointer-events: none;
       }
-      html.dark header::before { border-color: rgba(56, 189, 248, 0.11); }
-      html.dark header::after  { border-color: rgba(56, 189, 248, 0.06); }
       header > * { position: relative; z-index: 1; }
 
       /* ── Input section divider labels ────────────────────────────── */
@@ -58,7 +56,7 @@
         font-weight: 700;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: #0284c7;
+        color: var(--primary);
         display: flex;
         align-items: center;
         gap: 8px;
@@ -68,75 +66,59 @@
         content: "";
         flex: 1;
         height: 1px;
-        background: rgba(2, 132, 199, 0.15);
+        background: var(--primary-glow);
       }
-      html.dark .section-label { color: #38bdf8; }
-      html.dark .section-label::after { background: rgba(56, 189, 248, 0.15); }
 
       /* ── Adjusted bank angle badge ───────────────────────────────── */
       .adj-badge {
         display: inline-flex;
         align-items: center;
         gap: 5px;
-        background: rgba(245, 158, 11, 0.1);
-        border: 1px solid rgba(245, 158, 11, 0.3);
+        background: var(--accent-warn-glow);
+        border: 1px solid var(--accent-warn);
         border-radius: 6px;
         padding: 4px 10px;
         font-size: 0.78rem;
-        color: #b45309;
-      }
-      html.dark .adj-badge {
-        background: rgba(251, 191, 36, 0.1);
-        border-color: rgba(251, 191, 36, 0.3);
-        color: #fbbf24;
+        color: var(--accent-warn);
       }
 
       /* ── Key results cards ───────────────────────────────────────── */
       .result-kpi {
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-left: 3px solid #0284c7;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--primary);
         border-radius: 10px;
         padding: 14px 16px;
         transition: transform 0.12s ease, box-shadow 0.12s ease;
       }
       .result-kpi:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(2, 132, 199, 0.12);
-      }
-      html.dark .result-kpi {
-        background: rgba(255, 255, 255, 0.03);
-        border-color: #1e3a5f;
-        border-left-color: #38bdf8;
-        box-shadow: 0 2px 8px rgba(56, 189, 248, 0.06);
+        box-shadow: 0 6px 18px var(--primary-glow);
       }
       .result-kpi .kpi-label {
         font-size: 0.65rem;
         font-weight: 700;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: #0284c7;
+        color: var(--primary);
         margin-bottom: 4px;
       }
-      html.dark .result-kpi .kpi-label { color: #38bdf8; }
       .result-kpi .kpi-value {
         font-family: "Share Tech Mono", monospace;
         font-size: 1.35rem;
         font-weight: 700;
-        color: #0f172a;
+        color: var(--text);
         line-height: 1.1;
       }
-      html.dark .result-kpi .kpi-value { color: #f1f5f9; }
       .result-kpi .kpi-unit {
         font-size: 0.72rem;
-        color: #64748b;
+        color: var(--text-muted);
         margin-top: 2px;
       }
-      html.dark .result-kpi .kpi-unit { color: #94a3b8; }
 
       /* ── Spiral table ────────────────────────────────────────────── */
       .spiral-table th {
-        background: linear-gradient(90deg, #0c2240 0%, #1e3a5f 100%);
+        background: linear-gradient(90deg, #0c2240 0%, var(--border) 100%);
         color: #93c5fd;
         font-size: 0.72rem;
         font-weight: 700;
@@ -201,72 +183,64 @@
 
       /* ── Formula reference panel ─────────────────────────────────── */
       .formula-panel {
-        border: 1px solid rgba(2, 132, 199, 0.2);
+        border: 1px solid var(--primary-glow);
         border-radius: 10px;
         overflow: hidden;
         margin-top: 20px;
       }
-      html.dark .formula-panel { border-color: rgba(56, 189, 248, 0.18); }
       .formula-panel summary {
         display: flex;
         align-items: center;
         gap: 8px;
         padding: 10px 16px;
         cursor: pointer;
-        background: rgba(2, 132, 199, 0.05);
+        background: var(--primary-glow);
         font-size: 0.8rem;
         font-weight: 600;
         letter-spacing: 0.04em;
         text-transform: uppercase;
-        color: #0369a1;
+        color: var(--primary);
         user-select: none;
         list-style: none;
       }
       .formula-panel summary::-webkit-details-marker { display: none; }
-      html.dark .formula-panel summary { background: rgba(56, 189, 248, 0.06); color: #7dd3fc; }
-      .formula-panel summary:hover { background: rgba(2, 132, 199, 0.1); }
-      html.dark .formula-panel summary:hover { background: rgba(56, 189, 248, 0.1); }
+      .formula-panel summary:hover { opacity: 0.85; }
       .formula-panel summary .chevron { margin-left: auto; transition: transform 0.2s ease; }
       .formula-panel[open] summary .chevron { transform: rotate(180deg); }
       .formula-body {
         padding: 16px 20px;
-        background: rgba(2, 132, 199, 0.02);
+        background: var(--primary-glow);
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
         gap: 12px;
       }
-      html.dark .formula-body { background: rgba(0, 0, 0, 0.15); }
       .formula-card {
-        background: #fff;
-        border: 1px solid rgba(2, 132, 199, 0.12);
+        background: var(--card);
+        border: 1px solid var(--border);
         border-radius: 8px;
         padding: 10px 14px;
       }
-      html.dark .formula-card { background: rgba(255,255,255,0.03); border-color: rgba(56,189,248,0.12); }
       .formula-card .fc-label {
         font-size: 0.65rem;
         font-weight: 700;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: #0284c7;
+        color: var(--primary);
         margin-bottom: 4px;
       }
-      html.dark .formula-card .fc-label { color: #38bdf8; }
       .formula-card .fc-expr {
         font-family: "Share Tech Mono", monospace;
         font-size: 0.82rem;
-        color: #1e293b;
+        color: var(--text);
         line-height: 1.55;
         white-space: pre;
       }
-      html.dark .formula-card .fc-expr { color: #e2e8f0; }
       .formula-card .fc-note {
         margin-top: 5px;
         font-size: 0.68rem;
-        color: #64748b;
+        color: var(--text-muted);
         line-height: 1.45;
       }
-      html.dark .formula-card .fc-note { color: #94a3b8; }
     </style>
   </head>
 
@@ -292,6 +266,33 @@
           PANS-OPS wind effect and drift angle for procedure design
         </p>
       </header>
+
+      <!-- Save / Load parameters -->
+      <div class="flex flex-wrap justify-end mb-6 gap-3">
+        <input id="loadFile" type="file" accept=".json" class="hidden" />
+        <button type="button" id="btnSave"
+          class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          <span data-i18n="common.save">Save Parameters</span>
+        </button>
+        <button type="button" id="btnLoad"
+          class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm">
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <span data-i18n="common.load">Load Parameters</span>
+        </button>
+      </div>
 
       <!-- Inputs -->
       <form id="inputForm" novalidate>
@@ -402,7 +403,7 @@
 
         <!-- Calculate button -->
         <div class="flex justify-end mb-8">
-          <button type="button" id="btnCalculate"
+          <button type="button" id="btnCalcSpiral"
             class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center">
             <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none"
@@ -489,8 +490,11 @@
             </button>
           </div>
 
-          <!-- Formula reference -->
-          <details class="formula-panel" id="formulaPanel">
+        </div>
+      </div>
+
+      <!-- PANS-OPS Formula Reference — always visible -->
+      <details class="formula-panel" id="formulaPanel">
             <summary>
               <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                 class="h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="none"
@@ -534,210 +538,10 @@ R&#x1D42E;&#x1D42C;&#x1D41E;&#x1D41D; = min(R, 3&deg;/s)</div>
                 <div class="fc-note">Applied only when R&gt;3°/s to cap rate of turn</div>
               </div>
             </div>
-          </details>
-
-        </div>
-      </div>
+      </details>
 
     </main>
 
-    <script>
-      // ─── Wind Spiral Calculator — PANS-OPS Vol I ──────────────────────────
-      // Formula 006: E_θ = (θ/R) × (W/3600)   [wind effect per step, NM]
-      // Formula 007: d   = arcsin(W/V)          [drift angle, degrees]
-      //
-      // R_calc = 9.81 × tan(φ_rad) / (TAS_m_s) × (180/π)  [°/s]
-      // R_used = min(3.0, R_calc)
-      // If R_calc > 3: bank angle auto-adjusted to give exactly R_used = 3°/s
-
-      const DEG2RAD = Math.PI / 180;
-      const KT2MS   = 0.514444;
-
-      function calcRateOfTurn(tas_kt, bankDeg) {
-        const v_ms  = tas_kt * KT2MS;
-        const R     = (9.81 * Math.tan(bankDeg * DEG2RAD) / v_ms) * (180 / Math.PI);
-        return R;
-      }
-
-      function adjBankForMaxR(tas_kt) {
-        // bank angle that gives exactly 3°/s at this TAS
-        const v_ms = tas_kt * KT2MS;
-        return Math.atan((3 * DEG2RAD * v_ms) / 9.81) / DEG2RAD;
-      }
-
-      function calcDriftAngle(windKt, tasKt) {
-        const ratio = windKt / tasKt;
-        if (ratio > 1) return 90; // edge case: wind > TAS (unusual)
-        return Math.asin(ratio) / DEG2RAD;
-      }
-
-      function calcWindEffect(thetaDeg, R_used, windKt) {
-        // E_θ = (θ / R_used) × (W / 3600)  → NM
-        return (thetaDeg / R_used) * (windKt / 3600);
-      }
-
-      function fmt(val, dec) {
-        return typeof val === "number" ? val.toFixed(dec) : "—";
-      }
-
-      // ── Validation ────────────────────────────────────────────────────────
-      function showValidationError(msg) {
-        const banner = document.getElementById("validationBanner");
-        document.getElementById("validationMessage").textContent = msg;
-        banner.classList.remove("hidden");
-        banner.classList.add("shake");
-        banner.addEventListener("animationend", () => banner.classList.remove("shake"), { once: true });
-      }
-      function hideValidationError() {
-        document.getElementById("validationBanner").classList.add("hidden");
-      }
-
-      function validate() {
-        const tas  = document.getElementById("tas").value.trim();
-        const wind = document.getElementById("windSpeed").value.trim();
-        const bank = document.getElementById("bankAngle").value.trim();
-
-        if (tas === "" || wind === "" || bank === "") {
-          showValidationError("Please fill in TAS, Wind Speed, and Bank Angle before calculating.");
-          return false;
-        }
-        const tasVal  = parseFloat(tas);
-        const windVal = parseFloat(wind);
-        const bankVal = parseFloat(bank);
-
-        if (isNaN(tasVal) || tasVal <= 0) {
-          showValidationError("TAS must be a positive number.");
-          return false;
-        }
-        if (isNaN(windVal) || windVal < 0) {
-          showValidationError("Wind Speed must be zero or greater.");
-          return false;
-        }
-        if (isNaN(bankVal) || bankVal < 1 || bankVal > 45) {
-          showValidationError("Bank angle must be between 1° and 45°.");
-          return false;
-        }
-        if (windVal >= tasVal) {
-          showValidationError("Wind speed must be less than TAS for a valid drift angle.");
-          return false;
-        }
-        hideValidationError();
-        return true;
-      }
-
-      // ── Main calculation ──────────────────────────────────────────────────
-      function calculate() {
-        if (!validate()) return;
-
-        const tas_kt   = parseFloat(document.getElementById("tas").value);
-        const wind_kt  = parseFloat(document.getElementById("windSpeed").value);
-        const bank_deg = parseFloat(document.getElementById("bankAngle").value);
-        const theta    = parseFloat(document.getElementById("thetaStep").value);
-        const total    = parseFloat(document.getElementById("totalAngle").value);
-
-        // Rate of turn
-        const R_calc = calcRateOfTurn(tas_kt, bank_deg);
-        const R_used = Math.min(3.0, R_calc);
-        const bankCapped = R_calc > 3.0;
-        const bankAdj    = bankCapped ? adjBankForMaxR(tas_kt) : bank_deg;
-
-        // Drift angle
-        const d = calcDriftAngle(wind_kt, tas_kt);
-
-        // Wind effect per step
-        const E_step = calcWindEffect(theta, R_used, wind_kt);
-
-        // Full 360° time
-        const t360 = 360 / R_used;
-
-        // ── KPI cards ──────────────────────────────────────────────────
-        document.getElementById("kpiR").textContent = fmt(R_used, 4);
-        document.getElementById("kpiD").textContent = fmt(d, 4);
-        document.getElementById("kpiE").textContent = fmt(E_step, 4);
-        document.getElementById("kpiT").textContent = fmt(t360, 1);
-
-        // ── Adjusted bank notice ────────────────────────────────────────
-        const notice = document.getElementById("adjBankNotice");
-        if (bankCapped) {
-          document.getElementById("adjBankText").textContent =
-            `R_calc = ${fmt(R_calc, 3)}°/s exceeds 3°/s — rate capped at 3°/s. Bank angle adjusted to ${fmt(bankAdj, 2)}°.`;
-          notice.classList.remove("hidden");
-        } else {
-          notice.classList.add("hidden");
-        }
-
-        // ── Spiral table ────────────────────────────────────────────────
-        const tbody = document.getElementById("spiralBody");
-        tbody.innerHTML = "";
-
-        const steps = Math.round(total / theta);
-        let cumulE = 0;
-
-        for (let i = 1; i <= steps; i++) {
-          const cumAngle = i * theta;
-          const timeStep = cumAngle / R_used;
-          cumulE += E_step;
-
-          const tr = document.createElement("tr");
-          if (cumAngle % 360 === 0) tr.classList.add("row-360");
-
-          const vals = [
-            { v: cumAngle.toFixed(0) + "°", right: false },
-            { v: fmt(timeStep, 1), right: true },
-            { v: fmt(E_step, 4), right: true },
-            { v: fmt(cumulE, 4), right: true },
-          ];
-          vals.forEach(({ v, right }) => {
-            const td = document.createElement("td");
-            td.textContent = v;
-            if (right) td.style.textAlign = "right";
-            tr.appendChild(td);
-          });
-
-          tbody.appendChild(tr);
-        }
-
-        // Show results
-        document.getElementById("results").classList.remove("hidden");
-
-        // Re-apply i18n
-        if (window.I18N && typeof I18N.applyToElement === "function") {
-          I18N.applyToElement(document.getElementById("results"));
-        }
-      }
-
-      // ── Button bindings ───────────────────────────────────────────────────
-      document.getElementById("btnCalculate").addEventListener("click", function () {
-        if (window.animateButton) animateButton(this);
-        calculate();
-      });
-
-      document.getElementById("btnCopy").addEventListener("click", function () {
-        const table = document.getElementById("spiralTable");
-        if (!table) return;
-        const rows = Array.from(table.querySelectorAll("tr"));
-        const text = rows
-          .map((tr) =>
-            Array.from(tr.querySelectorAll("th, td"))
-              .map((c) => c.textContent.trim().padEnd(18))
-              .join("\t")
-          )
-          .join("\n");
-
-        navigator.clipboard.writeText(text).then(() => {
-          const original = this.querySelector("span").textContent;
-          this.querySelector("span").textContent = "Copied!";
-          setTimeout(() => (this.querySelector("span").textContent = original), 2000);
-        });
-      });
-
-      // ── Enter key submits form ────────────────────────────────────────────
-      document.getElementById("inputForm").addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          document.getElementById("btnCalculate").click();
-        }
-      });
-    </script>
+    <script src="js/wind_spiral.js"></script>
   </body>
 </html>
