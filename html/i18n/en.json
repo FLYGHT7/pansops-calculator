@@ -208,5 +208,31 @@
     "calculators": "Calculators",
     "support": "Support",
     "ils": "ILS"
+  },
+  "windSpiral": {
+    "title": "Wind Spiral Calculator",
+    "subtitle": "PANS-OPS wind effect and drift angle for procedure design",
+    "globalParams": "Global Parameters",
+    "secFlight": "Flight Parameters",
+    "secSpiral": "Spiral Parameters",
+    "tas": "True Airspeed (TAS)",
+    "windSpeed": "Wind Speed (W)",
+    "bankAngle": "Bank Angle (\u03c6)",
+    "thetaStep": "Angular Step (\u03b8)",
+    "thetaNote": "Smaller steps = more accurate spiral; 30\u00b0 is a good compromise",
+    "totalAngle": "Total Turn Angle",
+    "phTas": "e.g. 180",
+    "phWind": "e.g. 30",
+    "phBank": "e.g. 25",
+    "resultsTitle": "Wind Spiral Results",
+    "rateOfTurn": "Rate of Turn (R)",
+    "driftAngle": "Drift Angle (d)",
+    "windEffect": "Wind Effect E\u03b8",
+    "fullTurnTime": "Full 360\u00b0 Time",
+    "colAngle": "Cumul. Angle (\u00b0)",
+    "colTime": "Time (s)",
+    "colStepE": "E\u03b8 / step (NM)",
+    "colCumulE": "Cumul. E (NM)",
+    "formulaRef": "PANS-OPS Formula Reference"
   }
 }
