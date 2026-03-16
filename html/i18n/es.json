@@ -207,6 +207,33 @@
   "sections": {
     "calculators": "Calculadoras",
     "support": "Soporte",
-    "ils": "ILS"
+    "ils": "ILS",
+    "subGeneral": "General",
+    "subApproach": "Aproximaci\u00f3n y Maniobra"
+  },
+  "circling": {
+    "title": "\u00c1rea de Protecci\u00f3n para Maniobra Visual",
+    "subtitle": "C\u00e1lculo del \u00c1rea de Protecci\u00f3n para Aproximaci\u00f3n Visual (Circling)",
+    "aerodromeElevation": "Elevaci\u00f3n del Aer\u00f3dromo (ARP)",
+    "bankAngle": "\u00c1ngulo de Banco",
+    "deltaISA": "Desviaci\u00f3n \u0394T ISA (\u00b0C)",
+    "phElevation": "ej. 500",
+    "phBankAngle": "ej. 20",
+    "phDeltaISA": "ej. +15 o \u221210",
+    "perCategoryInputs": "Par\u00e1metros por Categor\u00eda",
+    "parameters": "Par\u00e1metros",
+    "ias": "IAS [KT]",
+    "protectedHeight": "Altura Protegida [ft]",
+    "altitudeH1": "Altitud (h1) [ft]",
+    "kFactor": "Factor K",
+    "tasPlusWind": "TAS + 25KT",
+    "rateOfTurnCalc": "Tasa de Viraje (R) calculada [\u00b0/s]",
+    "rateOfTurnUsed": "Tasa de Viraje (R) usada [\u00b0/s]",
+    "nominalRadius": "Radio Nominal (r) [NM]",
+    "straightSegment": "Segmento Recto (S) [NM]",
+    "circlingRadius": "Radio de Circling = 2r + S [NM]",
+    "resultsTitle": "Resultados de Par\u00e1metros de Circling",
+    "formulaRef": "Referencia de F\u00f3rmulas PANS-OPS",
+    "globalParams": "Par\u00e1metros Globales"
   }
 }

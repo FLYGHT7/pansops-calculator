@@ -1,0 +1,1269 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Circling Protection Area</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="shared-config.js"></script>
+    <link rel="stylesheet" href="dark-mode.css" />
+    <script src="aviation-utils.js"></script>
+    <script src="i18n/i18n.js"></script>
+    <style>
+      /* Results table — highlight output row */
+      .result-output td {
+        background: linear-gradient(
+          to right,
+          rgba(56, 189, 248, 0.18),
+          rgba(56, 189, 248, 0.06)
+        );
+        font-weight: 700;
+        color: #0369a1;
+      }
+      html.dark .result-output td {
+        color: #38bdf8;
+        background: linear-gradient(
+          to right,
+          rgba(56, 189, 248, 0.22),
+          rgba(56, 189, 248, 0.06)
+        );
+      }
+      /* Calculation row — muted */
+      .result-calc td {
+        color: #64748b;
+        font-size: 0.85rem;
+      }
+      html.dark .result-calc td {
+        color: #94a3b8;
+      }
+      /* Category header cells (results table) */
+      .cat-header {
+        background-color: #1e3a5f;
+        color: #e0f7ff;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+      }
+      /* Table zebra */
+      .param-table tbody tr:nth-child(even) td {
+        background-color: rgba(148, 163, 184, 0.06);
+      }
+      html.dark .param-table tbody tr:nth-child(even) td {
+        background-color: rgba(255, 255, 255, 0.03);
+      }
+
+      /* ── Phase 2 — Category input cards ──────────────────────────── */
+      .cat-card {
+        border-left-width: 3px;
+        transition:
+          box-shadow 0.15s ease,
+          transform 0.12s ease;
+      }
+      .cat-card:hover {
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
+      }
+      .cat-badge {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 2px 10px;
+        border-radius: 99px;
+        display: inline-block;
+        margin-bottom: 2px;
+      }
+      /* Per-category colour tokens */
+      .cat-card-a {
+        border-left-color: #22c55e;
+        background: rgba(34, 197, 94, 0.05);
+      }
+      .cat-card-b {
+        border-left-color: #84cc16;
+        background: rgba(132, 204, 22, 0.05);
+      }
+      .cat-card-c {
+        border-left-color: #eab308;
+        background: rgba(234, 179, 8, 0.05);
+      }
+      .cat-card-d {
+        border-left-color: #f97316;
+        background: rgba(249, 115, 22, 0.05);
+      }
+      .cat-card-e {
+        border-left-color: #ef4444;
+        background: rgba(239, 68, 68, 0.05);
+      }
+      html.dark .cat-card-a {
+        background: rgba(34, 197, 94, 0.08);
+      }
+      html.dark .cat-card-b {
+        background: rgba(132, 204, 22, 0.08);
+      }
+      html.dark .cat-card-c {
+        background: rgba(234, 179, 8, 0.08);
+      }
+      html.dark .cat-card-d {
+        background: rgba(249, 115, 22, 0.08);
+      }
+      html.dark .cat-card-e {
+        background: rgba(239, 68, 68, 0.08);
+      }
+      .cat-badge-a {
+        background: rgba(34, 197, 94, 0.15);
+        color: #16a34a;
+      }
+      .cat-badge-b {
+        background: rgba(132, 204, 22, 0.15);
+        color: #65a30d;
+      }
+      .cat-badge-c {
+        background: rgba(234, 179, 8, 0.15);
+        color: #b45309;
+      }
+      .cat-badge-d {
+        background: rgba(249, 115, 22, 0.15);
+        color: #c2410c;
+      }
+      .cat-badge-e {
+        background: rgba(239, 68, 68, 0.15);
+        color: #dc2626;
+      }
+      html.dark .cat-badge-a {
+        background: rgba(34, 197, 94, 0.18);
+        color: #4ade80;
+      }
+      html.dark .cat-badge-b {
+        background: rgba(132, 204, 22, 0.18);
+        color: #a3e635;
+      }
+      html.dark .cat-badge-c {
+        background: rgba(234, 179, 8, 0.18);
+        color: #fbbf24;
+      }
+      html.dark .cat-badge-d {
+        background: rgba(249, 115, 22, 0.18);
+        color: #fb923c;
+      }
+      html.dark .cat-badge-e {
+        background: rgba(239, 68, 68, 0.18);
+        color: #f87171;
+      }
+
+      /* Validation banner */
+      .validation-banner {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: rgba(239, 68, 68, 0.07);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 8px;
+        padding: 10px 16px;
+        color: #dc2626;
+        font-size: 0.875rem;
+      }
+      html.dark .validation-banner {
+        background: rgba(239, 68, 68, 0.12);
+        border-color: rgba(239, 68, 68, 0.4);
+        color: #f87171;
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20%,
+        60% {
+          transform: translateX(-5px);
+        }
+        40%,
+        80% {
+          transform: translateX(5px);
+        }
+      }
+      .shake {
+        animation: shake 0.35s ease;
+      }
+
+      /* ── Phase 3 — Glass-cockpit visual design ──────────────────── */
+
+      /* Main card — accent top stripe */
+      main {
+        border-top: 3px solid #0284c7;
+      }
+      html.dark main {
+        border-top-color: #38bdf8;
+        box-shadow:
+          0 0 60px rgba(56, 189, 248, 0.05),
+          0 8px 32px rgba(0, 0, 0, 0.45);
+      }
+
+      /* Header — decorative concentric orbit arcs (reinforce circling theme) */
+      header::before {
+        content: "";
+        position: absolute;
+        top: -52px;
+        right: -52px;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        border: 44px solid rgba(2, 132, 199, 0.07);
+        pointer-events: none;
+      }
+      header::after {
+        content: "";
+        position: absolute;
+        top: 6px;
+        right: 28px;
+        width: 88px;
+        height: 88px;
+        border-radius: 50%;
+        border: 18px solid rgba(2, 132, 199, 0.04);
+        pointer-events: none;
+      }
+      html.dark header::before {
+        border-color: rgba(56, 189, 248, 0.11);
+      }
+      html.dark header::after {
+        border-color: rgba(56, 189, 248, 0.06);
+      }
+      /* Lift all header children above the arc pseudo-elements */
+      header > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Results table cat-header — avionics panel gradient */
+      .cat-header {
+        background: linear-gradient(90deg, #0c2240 0%, #1e3a5f 100%);
+      }
+      html.dark .cat-header {
+        background: linear-gradient(90deg, #040e1c 0%, #0b1e35 100%);
+        color: #93c5fd;
+      }
+
+      /* Output row — left accent stripe + neon text glow in dark */
+      .result-output td:first-child {
+        position: relative;
+      }
+      .result-output td:first-child::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: #0284c7;
+        border-radius: 0 2px 2px 0;
+      }
+      html.dark .result-output td {
+        text-shadow: 0 0 10px rgba(56, 189, 248, 0.45);
+      }
+      html.dark .result-output td:first-child::before {
+        background: #38bdf8;
+        box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+      }
+
+      /* Intermediate calc rows — muted to direct eye to output row */
+      .result-calc {
+        opacity: 0.78;
+      }
+      html.dark .result-calc {
+        opacity: 0.65;
+      }
+
+      /* ── Phase 4 — Formula reference panel ─────────────────────── */
+      .formula-panel {
+        border: 1px solid rgba(2, 132, 199, 0.2);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 24px;
+      }
+      html.dark .formula-panel {
+        border-color: rgba(56, 189, 248, 0.18);
+      }
+      .formula-panel summary {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        cursor: pointer;
+        background: rgba(2, 132, 199, 0.05);
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #0369a1;
+        user-select: none;
+        list-style: none;
+      }
+      .formula-panel summary::-webkit-details-marker {
+        display: none;
+      }
+      html.dark .formula-panel summary {
+        background: rgba(56, 189, 248, 0.06);
+        color: #7dd3fc;
+      }
+      .formula-panel summary:hover {
+        background: rgba(2, 132, 199, 0.1);
+      }
+      html.dark .formula-panel summary:hover {
+        background: rgba(56, 189, 248, 0.1);
+      }
+      .formula-panel summary .chevron {
+        margin-left: auto;
+        transition: transform 0.2s ease;
+      }
+      .formula-panel[open] summary .chevron {
+        transform: rotate(180deg);
+      }
+      .formula-body {
+        padding: 16px 20px;
+        background: rgba(2, 132, 199, 0.02);
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      html.dark .formula-body {
+        background: rgba(0, 0, 0, 0.15);
+      }
+      .formula-card {
+        background: #fff;
+        border: 1px solid rgba(2, 132, 199, 0.12);
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 0.75rem;
+      }
+      html.dark .formula-card {
+        background: rgba(255, 255, 255, 0.03);
+        border-color: rgba(56, 189, 248, 0.12);
+      }
+      .formula-card .fc-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #0284c7;
+        margin-bottom: 4px;
+      }
+      html.dark .formula-card .fc-label {
+        color: #38bdf8;
+      }
+      .formula-card .fc-expr {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.82rem;
+        color: #1e293b;
+        line-height: 1.55;
+      }
+      html.dark .formula-card .fc-expr {
+        color: #e2e8f0;
+      }
+      .formula-card .fc-note {
+        margin-top: 5px;
+        font-size: 0.68rem;
+        color: #64748b;
+        line-height: 1.45;
+      }
+      html.dark .formula-card .fc-note {
+        color: #94a3b8;
+      }
+
+      /* Visible fieldset legend — accent pill */
+      .visible-legend {
+        background: rgba(2, 132, 199, 0.07);
+        border: 1px solid rgba(2, 132, 199, 0.15);
+        border-radius: 8px;
+        padding: 4px 12px 4px 8px;
+      }
+      html.dark .visible-legend {
+        background: rgba(56, 189, 248, 0.08);
+        border-color: rgba(56, 189, 248, 0.2);
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-start justify-center p-4"
+  >
+    <main
+      class="max-w-5xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
+    >
+      <!-- Header -->
+      <header class="relative overflow-hidden">
+        <h1
+          class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-1 flex items-center"
+        >
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-7 w-7 sm:h-8 sm:w-8 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="9"></circle>
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M12 3 A9 9 0 0 1 21 12" stroke-dasharray="3 2"></path>
+          </svg>
+          <span data-i18n="circling.title">Circling Protection Area</span>
+        </h1>
+        <p
+          class="text-sm text-gray-500 dark:text-gray-400 mb-6"
+          data-i18n="circling.subtitle"
+        >
+          Visual Manoeuvring (Circling) Protection Area Calculation
+        </p>
+      </header>
+
+      <!-- Global Inputs -->
+      <fieldset class="mb-6" aria-labelledby="legendGlobal">
+        <legend
+          id="legendGlobal"
+          class="sr-only"
+          data-i18n="circling.globalParams"
+        >
+          Global Parameters
+        </legend>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Aerodrome Elevation -->
+          <div class="space-y-2">
+            <label
+              for="aerodromeElev"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="circling.aerodromeElevation"
+              >Aerodrome Elevation (ARP)</label
+            >
+            <div
+              class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+            >
+              <input
+                id="aerodromeElev"
+                type="number"
+                required
+                class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                placeholder="e.g. 500"
+                data-i18n="circling.phElevation"
+                data-i18n-attr="placeholder"
+              />
+              <select
+                id="elevUnit"
+                class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+              >
+                <option value="ft" selected data-i18n="common.feet">ft</option>
+                <option value="m" data-i18n="common.meters">m</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Bank Angle -->
+          <div class="space-y-2">
+            <label
+              for="bankAngle"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="circling.bankAngle"
+              >Bank Angle</label
+            >
+            <div
+              class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+            >
+              <input
+                id="bankAngle"
+                type="number"
+                min="1"
+                max="45"
+                required
+                class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                placeholder="e.g. 20"
+                data-i18n="circling.phBankAngle"
+                data-i18n-attr="placeholder"
+              />
+              <div
+                class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
+              >
+                <span
+                  class="text-gray-700 dark:text-white"
+                  data-i18n="common.degrees"
+                  >°</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Delta ISA -->
+          <div class="space-y-2">
+            <label
+              for="deltaISA"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="circling.deltaISA"
+              >ΔT ISA Deviation (°C)</label
+            >
+            <div
+              class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+            >
+              <input
+                id="deltaISA"
+                type="number"
+                required
+                class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                placeholder="e.g. +15 or −10"
+                data-i18n="circling.phDeltaISA"
+                data-i18n-attr="placeholder"
+              />
+              <div
+                class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
+              >
+                <span class="text-gray-700 dark:text-white">°C</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Per-Category Parameters -->
+      <fieldset class="mb-6">
+        <legend
+          class="visible-legend font-semibold text-gray-700 dark:text-gray-200 mb-4 flex items-center gap-2"
+        >
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 text-primary-400"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+            <line x1="3" y1="9" x2="21" y2="9"></line>
+            <line x1="9" y1="21" x2="9" y2="3"></line>
+          </svg>
+          <span data-i18n="circling.perCategoryInputs"
+            >Per-Category Parameters</span
+          >
+        </legend>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <!-- CAT A -->
+          <div
+            class="cat-card cat-card-a rounded-xl border border-gray-200 dark:border-gray-600 p-4 space-y-3"
+          >
+            <span class="cat-badge cat-badge-a">CAT A</span>
+            <div class="space-y-1">
+              <label
+                for="ias_a"
+                class="block text-xs font-medium text-gray-600 dark:text-gray-400"
+                data-i18n="circling.ias"
+                >IAS [KT]</label
+              >
+              <input
+                id="ias_a"
+                type="number"
+                min="1"
+                class="cat-input w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="e.g. 100"
+              />
+            </div>
+            <div class="space-y-1">
+              <label
+                for="ph_a"
+                class="block text-xs font-medium text-gray-600 dark:text-gray-400"
+                data-i18n="circling.protectedHeight"
+                >Prot. Height [ft]</label
+              >
+              <input
+                id="ph_a"
+                type="number"
+                min="0"
+                class="cat-input w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="e.g. 1120"
+              />
+            </div>
+          </div>
+
+          <!-- CAT B -->
+          <div
+            class="cat-card cat-card-b rounded-xl border border-gray-200 dark:border-gray-600 p-4 space-y-3"
+          >
+            <span class="cat-badge cat-badge-b">CAT B</span>
+            <div class="space-y-1">
+              <label
+                for="ias_b"
+                class="block text-xs font-medium text-gray-600 dark:text-gray-400"
+                data-i18n="circling.ias"
+                >IAS [KT]</label
+              >
+              <input
+                id="ias_b"
+                type="number"
+                min="1"
+                class="cat-input w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="e.g. 135"
+              />
+            </div>
+            <div class="space-y-1">
+              <label
+                for="ph_b"
+                class="block text-xs font-medium text-gray-600 dark:text-gray-400"
+                data-i18n="circling.protectedHeight"
+                >Prot. Height [ft]</label
+              >
+              <input
+                id="ph_b"
+                type="number"
+                min="0"
+                class="cat-input w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="e.g. 1120"
+              />
+            </div>
+          </div>
+
+          <!-- CAT C -->
+          <div
+            class="cat-card cat-card-c rounded-xl border border-gray-200 dark:border-gray-600 p-4 space-y-3"
+          >
+            <span class="cat-badge cat-badge-c">CAT C</span>
+            <div class="space-y-1">
+              <label
+                for="ias_c"
+                class="block text-xs font-medium text-gray-600 dark:text-gray-400"
+                data-i18n="circling.ias"
+                >IAS [KT]</label
+              >
+              <input
+                id="ias_c"
+                type="number"
+                min="1"
+                class="cat-input w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="e.g. 180"
+              />
+            </div>
+            <div class="space-y-1">
+              <label
+                for="ph_c"
+                class="block text-xs font-medium text-gray-600 dark:text-gray-400"
+                data-i18n="circling.protectedHeight"
+                >Prot. Height [ft]</label
+              >
+              <input
+                id="ph_c"
+                type="number"
+                min="0"
+                class="cat-input w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="e.g. 1120"
+              />
+            </div>
+          </div>
+
+          <!-- CAT D -->
+          <div
+            class="cat-card cat-card-d rounded-xl border border-gray-200 dark:border-gray-600 p-4 space-y-3"
+          >
+            <span class="cat-badge cat-badge-d">CAT D</span>
+            <div class="space-y-1">
+              <label
+                for="ias_d"
+                class="block text-xs font-medium text-gray-600 dark:text-gray-400"
+                data-i18n="circling.ias"
+                >IAS [KT]</label
+              >
+              <input
+                id="ias_d"
+                type="number"
+                min="1"
+                class="cat-input w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="e.g. 205"
+              />
+            </div>
+            <div class="space-y-1">
+              <label
+                for="ph_d"
+                class="block text-xs font-medium text-gray-600 dark:text-gray-400"
+                data-i18n="circling.protectedHeight"
+                >Prot. Height [ft]</label
+              >
+              <input
+                id="ph_d"
+                type="number"
+                min="0"
+                class="cat-input w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="e.g. 1120"
+              />
+            </div>
+          </div>
+
+          <!-- CAT E -->
+          <div
+            class="cat-card cat-card-e rounded-xl border border-gray-200 dark:border-gray-600 p-4 space-y-3"
+          >
+            <span class="cat-badge cat-badge-e">CAT E</span>
+            <div class="space-y-1">
+              <label
+                for="ias_e"
+                class="block text-xs font-medium text-gray-600 dark:text-gray-400"
+                data-i18n="circling.ias"
+                >IAS [KT]</label
+              >
+              <input
+                id="ias_e"
+                type="number"
+                min="1"
+                class="cat-input w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="e.g. 240"
+              />
+            </div>
+            <div class="space-y-1">
+              <label
+                for="ph_e"
+                class="block text-xs font-medium text-gray-600 dark:text-gray-400"
+                data-i18n="circling.protectedHeight"
+                >Prot. Height [ft]</label
+              >
+              <input
+                id="ph_e"
+                type="number"
+                min="0"
+                class="cat-input w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="e.g. 1000"
+              />
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Validation banner (shown on invalid / incomplete input) -->
+      <div
+        id="validationBanner"
+        class="validation-banner hidden mb-4"
+        role="alert"
+      >
+        <svg
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4 flex-shrink-0 mt-0.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span id="validationMessage"
+          >Please fill in all required fields before calculating.</span
+        >
+      </div>
+
+      <!-- Calculate Button -->
+      <div class="flex justify-end mb-8">
+        <button
+          type="button"
+          id="btnCalculate"
+          class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center"
+        >
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          <span data-i18n="common.calculate">Calculate</span>
+        </button>
+      </div>
+
+      <!-- Results -->
+      <div
+        id="results"
+        role="region"
+        aria-labelledby="resultsHeading"
+        aria-live="polite"
+        aria-atomic="true"
+        class="hidden"
+      >
+        <div
+          class="bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600"
+        >
+          <h2
+            id="resultsHeading"
+            class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
+            data-i18n="circling.resultsTitle"
+          >
+            Circling Parameters Results
+          </h2>
+
+          <div
+            class="overflow-x-auto rounded-lg border border-green-200 dark:border-gray-600"
+          >
+            <table
+              class="param-table w-full text-sm text-center"
+              id="resultsTable"
+              aria-labelledby="resultsHeading"
+            >
+              <thead>
+                <tr>
+                  <th
+                    class="cat-header text-left px-4 py-2"
+                    data-i18n="circling.parameters"
+                  >
+                    Parameters
+                  </th>
+                  <th class="cat-header px-4 py-2">CAT A</th>
+                  <th class="cat-header px-4 py-2">CAT B</th>
+                  <th class="cat-header px-4 py-2">CAT C</th>
+                  <th class="cat-header px-4 py-2">CAT D</th>
+                  <th class="cat-header px-4 py-2">CAT E</th>
+                </tr>
+              </thead>
+              <tbody class="text-gray-700 dark:text-gray-300" id="resultsBody">
+                <!-- populated by JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Copy button -->
+          <div class="mt-6 flex justify-end">
+            <button
+              type="button"
+              id="btnCopy"
+              class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center"
+            >
+              <svg
+                aria-hidden="true"
+                focusable="false"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-2"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+                ></path>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+              </svg>
+              <span data-i18n="common.copyTable">Copy Results as Table</span>
+            </button>
+          </div>
+
+          <!-- ── Phase 4: Formula Reference Panel ──────────────────────── -->
+          <details class="formula-panel" id="formulaPanel">
+            <summary>
+              <svg
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 flex-shrink-0"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+              </svg>
+              <span data-i18n="circling.formulaRef"
+                >PANS-OPS Formula Reference</span
+              >
+              <svg
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                class="chevron h-4 w-4 flex-shrink-0"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </summary>
+
+            <div class="formula-body">
+              <!-- ISA Temperature -->
+              <div class="formula-card">
+                <div class="fc-label">ISA Temperature</div>
+                <div class="fc-expr">
+                  T&#x1D4D2;&#x1D4C2;&#x1D4D0; = 288.15 &minus; 0.0019812
+                  &times; h&#x1D41F;&#x1D42D;
+                </div>
+                <div class="fc-note">h in feet; result in Kelvin</div>
+              </div>
+
+              <!-- Density ratio σ -->
+              <div class="formula-card">
+                <div class="fc-label">Density Ratio (&sigma;)</div>
+                <div class="fc-expr">
+                  &sigma; = &delta; / &theta; &delta; =
+                  (T&#x1D4D2;&#x1D4C2;&#x1D4D0; /
+                  288.15)&#x2075;&#xB7;&#xB2;&#x2075;&#x2076;&#xB9; &theta; =
+                  T&#x1D41A;&#x1D41C;&#x1D42C;&#x1D42A;&#x1D41A;&#x1D426; /
+                  288.15
+                </div>
+                <div class="fc-note">
+                  &delta; = pressure ratio (ISA), &theta; = temp ratio
+                </div>
+              </div>
+
+              <!-- k factor -->
+              <div class="formula-card">
+                <div class="fc-label">K Factor</div>
+                <div class="fc-expr">k = 1 / &radic;&sigma;</div>
+                <div class="fc-note">Density correction for TAS conversion</div>
+              </div>
+
+              <!-- TAS -->
+              <div class="formula-card">
+                <div class="fc-label">True Airspeed (TAS)</div>
+                <div class="fc-expr">TAS = IAS &times; k</div>
+                <div class="fc-note">
+                  Both in knots. Wind allowance +25 kt added separately.
+                </div>
+              </div>
+
+              <!-- Rate of turn -->
+              <div class="formula-card">
+                <div class="fc-label">Rate of Turn (R)</div>
+                <div class="fc-expr">
+                  R&#x1D41C;&#x1D41A;&#x1D425;&#x1D41C; = 9.81 &times;
+                  tan(&phi;) &nbsp;&nbsp;&nbsp;&nbsp; &divide;
+                  V&#x1D4C2;&#x1D4C2; &times; (180/&pi;)
+                  R&#x1D42E;&#x1D42C;&#x1D41E;&#x1D41D; =
+                  min(R&#x1D41C;&#x1D41A;&#x1D425;&#x1D41C;, 3&deg;/s)
+                </div>
+                <div class="fc-note">
+                  &phi; = bank angle; V&#x1D4C2;&#x1D4C2; = TAS+25 kt in m/s
+                </div>
+              </div>
+
+              <!-- Nominal radius -->
+              <div class="formula-card">
+                <div class="fc-label">Nominal Radius (r)</div>
+                <div class="fc-expr">
+                  r = (TAS + 25) / (20&pi; &times;
+                  R&#x1D42E;&#x1D42C;&#x1D41E;&#x1D41D;)
+                </div>
+                <div class="fc-note">TAS in kt, result in NM</div>
+              </div>
+
+              <!-- Circling radius -->
+              <div class="formula-card">
+                <div class="fc-label">Circling Radius</div>
+                <div class="fc-expr">
+                  CR = 2r + S S: A=0.3 B=0.4 C=0.5 &nbsp;&nbsp;&nbsp;D=0.6 E=0.7
+                  NM
+                </div>
+                <div class="fc-note">S = straight-segment constant per CAT</div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // ─── Circling Protection Area — Calculation Engine ───────────────────
+      // Based on ICAO PANS-OPS Vol I, Part I, Section 4 (Visual Manoeuvring)
+      //
+      // k-factor derivation:
+      //   T_isa (K)  = 288.15 - 0.0019812 * h_ft
+      //   T_actual   = T_isa + deltaISA
+      //   theta      = T_actual / 288.15   (temp ratio)
+      //   delta      = (T_isa / 288.15)^5.2561  (pressure ratio, ISA atm)
+      //   sigma      = delta / theta  (density ratio)
+      //   k          = 1 / sqrt(sigma)
+      //
+      // Rate of turn:
+      //   R_calc [°/s] = 9.81 * tan(bank_rad) / (TAS_plus_wind_m_s) * (180/π)
+      //   R_used       = min(3.0, R_calc)
+      //
+      // Radius & circling radius:
+      //   r [NM]             = (TAS + 25) [kt] / (20 * π * R_used)
+      //   S (segment const)  = 0.3 / 0.4 / 0.5 / 0.6 / 0.7  (CAT A–E)
+      //   Circling Radius    = 2r + S  [NM]
+
+      const CATS = ["A", "B", "C", "D", "E"];
+      const S_CONST = { A: 0.3, B: 0.4, C: 0.5, D: 0.6, E: 0.7 };
+      const ft2m = 0.3048;
+      const kt2ms = 0.514444;
+      const DEG2RAD = Math.PI / 180;
+
+      function calcDensityRatio(h_ft, deltaISA) {
+        const T_isa = 288.15 - 0.0019812 * h_ft;
+        const T_actual = T_isa + deltaISA;
+        const theta = T_actual / 288.15;
+        const delta = Math.pow(T_isa / 288.15, 5.2561);
+        return delta / theta; // sigma
+      }
+
+      function calcCategory(ias_kt, protHeight_ft, elevFt, bankDeg, deltaISA) {
+        const h1_ft = elevFt + protHeight_ft;
+        const sigma = calcDensityRatio(h1_ft, deltaISA);
+        const k = 1 / Math.sqrt(sigma);
+        const tas_kt = ias_kt * k;
+        const tasPlusWind_kt = tas_kt + 25;
+        const tasPlusWind_ms = tasPlusWind_kt * kt2ms;
+        const R_calc =
+          ((9.81 * Math.tan(bankDeg * DEG2RAD)) / tasPlusWind_ms) *
+          (180 / Math.PI);
+        const R_used = Math.min(3.0, R_calc);
+        const r = tasPlusWind_kt / (20 * Math.PI * R_used);
+        return { h1_ft, k, tas_kt, tasPlusWind_kt, R_calc, R_used, r };
+      }
+
+      function fmt(val, dec) {
+        return typeof val === "number" ? val.toFixed(dec) : val;
+      }
+
+      function buildResultsBody(elevFt, bankDeg, deltaISA) {
+        const rows = [
+          { label: "IAS [KT]", id: "ias", dec: 0, isInput: true },
+          { label: "Protected Height [ft]", id: "ph", dec: 0, isInput: true },
+          { label: "Altitude (h1) [ft]", id: "h1", dec: 4, isCalc: true },
+          { label: "K Factor", id: "k", dec: 4, isCalc: true },
+          { label: "TAS + 25KT", id: "tasPlusWind", dec: 4, isCalc: true },
+          {
+            label: "Rate of Turn (R) calculated [\u00b0/s]",
+            id: "R_calc",
+            dec: 4,
+            isCalc: true,
+          },
+          {
+            label: "Rate of Turn (R) used [\u00b0/s]",
+            id: "R_used",
+            dec: 4,
+            isCalc: true,
+          },
+          { label: "Nominal Radius (r) [NM]", id: "r", dec: 4, isCalc: true },
+          { label: "Straight Segment (S) [NM]", id: "S", dec: 1, isCalc: true },
+          {
+            label: "Circling Radius = 2r + S [NM]",
+            id: "circ",
+            isOutput: true,
+            dec: 4,
+          },
+        ];
+
+        const data = {};
+        CATS.forEach((cat) => {
+          const c = cat.toLowerCase();
+          const ias = parseFloat(document.getElementById(`ias_${c}`).value);
+          const ph = parseFloat(document.getElementById(`ph_${c}`).value);
+          // Skip this category if either input is missing or invalid
+          if (isNaN(ias) || ias <= 0 || isNaN(ph) || ph < 0) {
+            data[cat] = null;
+            return;
+          }
+          const res = calcCategory(ias, ph, elevFt, bankDeg, deltaISA);
+          const S = S_CONST[cat];
+          data[cat] = {
+            ias,
+            ph,
+            h1: res.h1_ft,
+            k: res.k,
+            tasPlusWind: res.tasPlusWind_kt,
+            R_calc: res.R_calc,
+            R_used: res.R_used,
+            r: res.r,
+            S,
+            circ: 2 * res.r + S,
+          };
+        });
+
+        const tbody = document.getElementById("resultsBody");
+        tbody.innerHTML = "";
+
+        rows.forEach((row) => {
+          const tr = document.createElement("tr");
+          if (row.isOutput) tr.classList.add("result-output");
+          if (row.isCalc) tr.classList.add("result-calc");
+
+          const td0 = document.createElement("td");
+          td0.className = "text-left px-4 py-2 font-medium";
+          const i18nKey = rowI18nKey(row.id);
+          if (i18nKey) td0.setAttribute("data-i18n", i18nKey);
+          td0.textContent = row.label;
+          tr.appendChild(td0);
+
+          CATS.forEach((cat) => {
+            const td = document.createElement("td");
+            td.className = "px-4 py-2";
+            const val = data[cat] !== null ? data[cat][row.id] : null;
+            td.textContent =
+              val !== null && val !== undefined ? fmt(val, row.dec) : "\u2014";
+            tr.appendChild(td);
+          });
+
+          tbody.appendChild(tr);
+        });
+
+        // Re-apply i18n if loaded
+        if (window.I18N && typeof I18N.applyToElement === "function") {
+          I18N.applyToElement(tbody);
+        }
+      }
+
+      function rowI18nKey(id) {
+        const map = {
+          ias: "circling.ias",
+          ph: "circling.protectedHeight",
+          h1: "circling.altitudeH1",
+          k: "circling.kFactor",
+          tasPlusWind: "circling.tasPlusWind",
+          R_calc: "circling.rateOfTurnCalc",
+          R_used: "circling.rateOfTurnUsed",
+          r: "circling.nominalRadius",
+          S: "circling.straightSegment",
+          circ: "circling.circlingRadius",
+        };
+        return map[id] || null;
+      }
+
+      function getElevFt() {
+        const val = parseFloat(document.getElementById("aerodromeElev").value);
+        const unit = document.getElementById("elevUnit").value;
+        return unit === "m" ? val / ft2m : val;
+      }
+
+      function showValidationError(msg) {
+        const banner = document.getElementById("validationBanner");
+        document.getElementById("validationMessage").textContent = msg;
+        banner.classList.remove("hidden");
+        banner.classList.add("shake");
+        banner.addEventListener(
+          "animationend",
+          () => banner.classList.remove("shake"),
+          { once: true },
+        );
+      }
+
+      function hideValidationError() {
+        document.getElementById("validationBanner").classList.add("hidden");
+      }
+
+      function validate() {
+        const elev = document.getElementById("aerodromeElev").value.trim();
+        const bank = document.getElementById("bankAngle").value.trim();
+        const isa = document.getElementById("deltaISA").value.trim();
+
+        if (elev === "" || bank === "" || isa === "") {
+          showValidationError(
+            "Please fill in Aerodrome Elevation, Bank Angle, and \u0394T ISA before calculating.",
+          );
+          return false;
+        }
+        const bankVal = parseFloat(bank);
+        if (bankVal < 1 || bankVal > 45) {
+          showValidationError(
+            "Bank angle should be between 1\u00b0 and 45\u00b0.",
+          );
+          return false;
+        }
+        if (Math.abs(parseFloat(isa)) > 60) {
+          showValidationError(
+            "Unusual \u0394T ISA \u2014 please verify the value (expected between \u221260\u00b0C and +60\u00b0C). Calculating anyway.",
+          );
+          // warn but don't block
+        } else {
+          hideValidationError();
+        }
+        const anyCatFilled = ["a", "b", "c", "d", "e"].some((c) => {
+          const ias = document.getElementById(`ias_${c}`).value.trim();
+          const ph = document.getElementById(`ph_${c}`).value.trim();
+          return ias !== "" && ph !== "";
+        });
+        if (!anyCatFilled) {
+          showValidationError(
+            "Please fill in IAS and Protected Height for at least one aircraft category.",
+          );
+          return false;
+        }
+        return true;
+      }
+
+      function calculate() {
+        if (!validate()) return;
+
+        const elevFt = getElevFt();
+        const bankDeg = parseFloat(document.getElementById("bankAngle").value);
+        const deltaISA = parseFloat(document.getElementById("deltaISA").value);
+
+        buildResultsBody(elevFt, bankDeg, deltaISA);
+        document.getElementById("results").classList.remove("hidden");
+      }
+
+      // Calculate button
+      document
+        .getElementById("btnCalculate")
+        .addEventListener("click", function () {
+          if (window.animateButton) animateButton(this);
+          calculate();
+        });
+
+      // Copy results as plain text table
+      document.getElementById("btnCopy").addEventListener("click", function () {
+        const table = document.getElementById("resultsTable");
+        if (!table) return;
+        const rows = Array.from(table.querySelectorAll("tr"));
+        const text = rows
+          .map((tr) =>
+            Array.from(tr.querySelectorAll("th, td"))
+              .map((c) => c.textContent.trim().padEnd(36))
+              .join("  "),
+          )
+          .join("\n");
+        navigator.clipboard.writeText(text).then(() => {
+          const btn = this;
+          const span = btn.querySelector("span");
+          const orig = span.textContent;
+          span.textContent = "Copied!";
+          setTimeout(() => {
+            span.textContent = orig;
+          }, 2000);
+        });
+      });
+
+      // Auto-calculate on global input change
+      ["aerodromeElev", "elevUnit", "bankAngle", "deltaISA"].forEach((id) => {
+        document.getElementById(id).addEventListener("change", () => {
+          if (
+            !document.getElementById("results").classList.contains("hidden")
+          ) {
+            calculate();
+          }
+        });
+      });
+
+      // Auto-calculate on per-category input change (if results already shown)
+      document.querySelectorAll(".cat-input").forEach((inp) => {
+        inp.addEventListener("change", () => {
+          if (
+            !document.getElementById("results").classList.contains("hidden")
+          ) {
+            calculate();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
