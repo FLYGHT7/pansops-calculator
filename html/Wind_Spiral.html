@@ -265,7 +265,8 @@
         font-size: 0.82rem;
         color: var(--text);
         line-height: 1.55;
-        white-space: pre;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
       }
       .formula-card .fc-note {
         margin-top: 5px;
@@ -791,38 +792,23 @@
         <div class="formula-body">
           <div class="formula-card">
             <div class="fc-label">Rate of Turn (R)</div>
-            <div class="fc-expr">
-              R = 9.81 &times; tan(&phi;) &divide; V&#x2098;&#x2c;&#x209b;
-              &times; (180/&pi;) R&#x1D42E;&#x1D42C;&#x1D41E;&#x1D41D; = min(R,
-              3&deg;/s)
-            </div>
+            <div class="fc-expr">R = 9.81 &times; tan(&phi;) / V&#x2098;&#x2215;&#x209b; &times; (180/&pi;)<br>R&#x1D42E;&#x1D42C;&#x1D41E;&#x1D41D; = min(R, 3&deg;/s)</div>
             <div class="fc-note">V in m/s (TAS &times; 0.514444)</div>
           </div>
           <div class="formula-card">
-            <div class="fc-label">Drift Angle (d) — Formula 007</div>
+            <div class="fc-label">Drift Angle (d) &mdash; Formula 007</div>
             <div class="fc-expr">d = arcsin(W / V)</div>
-            <div class="fc-note">
-              W and V in the same units (kt). d in degrees.
-            </div>
+            <div class="fc-note">W and V in the same units (kt). d in degrees.</div>
           </div>
           <div class="formula-card">
-            <div class="fc-label">Wind Effect (E&theta;) — Formula 006</div>
-            <div class="fc-expr">
-              E&theta; = (&theta; / R) &times; (W / 3600)
-            </div>
-            <div class="fc-note">
-              &theta; in °, R in °/s, W in kt &rarr; E in NM per step
-            </div>
+            <div class="fc-label">Wind Effect (E&theta;) &mdash; Formula 006</div>
+            <div class="fc-expr">E&theta; = (&theta; / R) &times; (W / 3600)</div>
+            <div class="fc-note">&theta; in &deg;, R in &deg;/s, W in kt &rarr; E in NM per step</div>
           </div>
           <div class="formula-card">
             <div class="fc-label">Adjusted Bank Angle</div>
-            <div class="fc-expr">
-              &phi;&#x2090;&#x2c;&#x2c;&thinsp;= arctan( 3 &times; &pi;/180
-              &times; V&#x2098;&#x2c;&#x209b; / 9.81 ) &times; 180/&pi;
-            </div>
-            <div class="fc-note">
-              Applied only when R&gt;3°/s to cap rate of turn
-            </div>
+            <div class="fc-expr">&phi;&#x2090;&#x2064;&#x2d;&#x2064;&#x2090;&#x2064;&#x2d;&#x2064; = arctan(3 &times; &pi;/180 &times; V&#x2098;&#x2215;&#x209b; / 9.81) &times; 180/&pi;</div>
+            <div class="fc-note">Applied only when R &gt; 3&deg;/s to cap rate of turn</div>
           </div>
         </div>
       </details>
