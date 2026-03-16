@@ -49,12 +49,23 @@
         background-color: #1a2235;
       }
 
-      /* Add a simple fade transition for the iframe */
+      /* Phase 10 — smooth cross-fade when switching tools (fix #37) */
       iframe {
-        transition: opacity 0.15s ease-in-out;
+        transition: opacity 0.2s ease-in-out;
+        /* Paint the iframe chrome with the page bg so the blank-document
+           moment between src swap and first paint is invisible */
+        background-color: var(--bg, #f1f5f9);
       }
       iframe.loading {
         opacity: 0;
+      }
+      /* Give the wrapper a matching bg so no white flash bleeds through */
+      #iframe-wrapper {
+        background-color: var(--bg, #f1f5f9);
+      }
+      html.dark iframe,
+      html.dark #iframe-wrapper {
+        background-color: var(--bg); /* resolves to #0a0f1a in dark */
       }
 
       /* Sidebar scrollbar styling (visible but subtle) */
@@ -1235,7 +1246,11 @@
         </div>
 
         <!-- Content Area -->
-        <div class="flex-1 overflow-auto" style="background-color: var(--bg)">
+        <div
+          id="iframe-wrapper"
+          class="flex-1 overflow-auto"
+          style="background-color: var(--bg)"
+        >
           <iframe id="iframe" class="w-full h-full border-none"></iframe>
         </div>
       </div>
@@ -1462,6 +1477,9 @@
         Object.entries(PAGE_MAP).map(([hash, { url }]) => [url, hash]),
       );
 
+      // Pending navigation timer — cancelled on rapid successive clicks (fix #37)
+      let _navTimer = null;
+
       // Phase 2.5 — display names for desktop topbar breadcrumb
       const PAGE_TITLES = {
         "ISA_deviation.html": "ISA Deviation",
@@ -1522,37 +1540,63 @@
         const lang = localStorage.getItem("lang") || "en";
         const url = new URL(pageUrl, window.location.href);
         url.searchParams.set("lang", lang);
-        iframe.src = url.toString();
 
-        // Setup onload handler (single responsibility)
-        iframe.onload = function () {
-          const isDark = document.documentElement.classList.contains("dark");
+        // Cancel any in-flight navigation (rapid clicks) before starting a new one
+        clearTimeout(_navTimer);
+        iframe.onload = null;
 
-          try {
-            const iframeDoc =
-              iframe.contentDocument || iframe.contentWindow.document;
+        // Fade out → swap src → fade in (fix #37 flicker)
+        iframe.classList.add("loading");
 
-            // Apply dark mode
-            if (isDark) {
-              iframeDoc.documentElement.classList.add("dark");
+        // Wait for the CSS fade-out (200ms) before swapping src so the old
+        // content is fully invisible when the blank document briefly appears.
+        const FADE_MS = 200;
+        _navTimer = setTimeout(() => {
+          iframe.src = url.toString();
+
+          // Capture the nav sequence so a stale onload from a previous
+          // navigation cannot accidentally show/hide the wrong state.
+          const navSrc = url.toString();
+
+          iframe.onload = function () {
+            // Guard: ignore if another navigation already changed src
+            if (iframe.src !== navSrc) return;
+
+            const isDark = document.documentElement.classList.contains("dark");
+
+            try {
+              const iframeDoc =
+                iframe.contentDocument || iframe.contentWindow.document;
+
+              // Apply dark mode
+              if (isDark) {
+                iframeDoc.documentElement.classList.add("dark");
+              }
+
+              // Also force-set language inside the iframe in case the page ignores ?lang
+              try {
+                const iw = iframe.contentWindow;
+                if (
+                  iw &&
+                  iw.I18N &&
+                  typeof iw.I18N.setLanguage === "function"
+                ) {
+                  iw.I18N.setLanguage(lang).catch(() => {});
+                }
+              } catch {}
+            } catch (e) {
+              console.error("Error setting iframe properties:", e);
             }
 
-            // Also force-set language inside the iframe in case the page ignores ?lang
-            try {
-              const iw = iframe.contentWindow;
-              if (iw && iw.I18N && typeof iw.I18N.setLanguage === "function") {
-                iw.I18N.setLanguage(lang).catch(() => {});
-              }
-            } catch {}
-          } catch (e) {
-            console.error("Error setting iframe properties:", e);
-          }
+            // Fade the new page in
+            iframe.classList.remove("loading");
 
-          // Haptic feedback
-          if (navigator.vibrate) {
-            navigator.vibrate(15);
-          }
-        };
+            // Haptic feedback
+            if (navigator.vibrate) {
+              navigator.vibrate(15);
+            }
+          };
+        }, FADE_MS);
       }
 
       // Dark mode functionality
