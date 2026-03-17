@@ -343,6 +343,35 @@
         padding-right: 0;
       }
 
+      /* Phase 7 — Sub-section labels inside Calculators group */
+      .sub-section-label {
+        padding: 6px 12px 2px 20px;
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #4b6480;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        pointer-events: none;
+        user-select: none;
+      }
+      .sub-section-label::before {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgba(56, 189, 248, 0.12);
+      }
+      /* Hide label text in rail mode; keep the divider line */
+      #sidebar.rail .sub-section-label span {
+        display: none;
+      }
+      #sidebar.rail .sub-section-label {
+        padding: 6px 0 2px;
+        justify-content: center;
+      }
+
       /* Rail: centre items, kill text-related margins */
       #sidebar.rail .sidebar-item {
         justify-content: center !important;
@@ -690,6 +719,9 @@
                 </svg>
               </li>
               <ul class="section-group space-y-1.5" data-for="calculators">
+                <li class="sub-section-label" aria-hidden="true">
+                  <span data-i18n="sections.subGeneral">General</span>
+                </li>
                 <li>
                   <button
                     id="isaButton"
@@ -772,6 +804,11 @@
                     >
                   </button>
                 </li>
+                <li class="sub-section-label" aria-hidden="true">
+                  <span data-i18n="sections.subApproach"
+                    >Approach &amp; Manoeuvring</span
+                  >
+                </li>
                 <li>
                   <button
                     id="elevationButton"
@@ -848,6 +885,36 @@
                     </svg>
                     <span class="sidebar-label" data-i18n="vssOcs.title"
                       >VSS/OCS Parameters</span
+                    >
+                  </button>
+                </li>
+                <li>
+                  <button
+                    id="circlingButton"
+                    data-label="Circling Parameters"
+                    onclick="loadPage('Circling_Parameters.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                  >
+                    <svg
+                      class="text-primary-400 w-5 h-5 mr-3 sidebar-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <circle cx="12" cy="12" r="9"></circle>
+                      <circle cx="12" cy="12" r="3"></circle>
+                      <path
+                        d="M12 3 A9 9 0 0 1 21 12"
+                        stroke-dasharray="3 2"
+                      ></path>
+                    </svg>
+                    <span class="sidebar-label" data-i18n="circling.title"
+                      >Circling Protection Area</span
                     >
                   </button>
                 </li>
@@ -1458,6 +1525,10 @@
           buttonId: "npaSocButton",
         },
         "#vss-ocs": { url: "VSS_OCS.html", buttonId: "vssOcsButton" },
+        "#circling": {
+          url: "Circling_Parameters.html",
+          buttonId: "circlingButton",
+        },
         "#ils-height": {
           url: "ILS_height_calculations.html",
           buttonId: "ilsHeightButton",
@@ -1489,6 +1560,7 @@
         "Profile_Check.html": "Profile Estimator",
         "NPA_SOC_Calculation.html": "NPA SOC Calculation",
         "VSS_OCS.html": "VSS / OCS Parameters",
+        "Circling_Parameters.html": "Circling Protection Area",
         "ILS_height_calculations.html": "ILS Height Calculations",
         "ILS_distance_calculations.html": "ILS Distance Calculations",
         "bearings_angles.html": "Bearings & Angles",
