@@ -234,6 +234,33 @@
   "sections": {
     "calculators": "Calculators",
     "support": "Support",
-    "ils": "ILS"
+    "ils": "ILS",
+    "subGeneral": "General",
+    "subApproach": "Approach \u0026 Manoeuvring"
+  },
+  "circling": {
+    "title": "Circling Protection Area",
+    "subtitle": "Visual Manoeuvring (Circling) Protection Area Calculation",
+    "aerodromeElevation": "Aerodrome Elevation (ARP)",
+    "bankAngle": "Bank Angle",
+    "deltaISA": "\u0394T ISA Deviation (\u00b0C)",
+    "phElevation": "e.g. 500",
+    "phBankAngle": "e.g. 20",
+    "phDeltaISA": "e.g. +15 or \u221210",
+    "perCategoryInputs": "Per-Category Parameters",
+    "parameters": "Parameters",
+    "ias": "IAS [KT]",
+    "protectedHeight": "Protected Height [ft]",
+    "altitudeH1": "Altitude (h1) [ft]",
+    "kFactor": "K Factor",
+    "tasPlusWind": "TAS + 25KT",
+    "rateOfTurnCalc": "Rate of Turn (R) calculated [\u00b0/s]",
+    "rateOfTurnUsed": "Rate of Turn (R) used [\u00b0/s]",
+    "nominalRadius": "Nominal Radius (r) [NM]",
+    "straightSegment": "Straight Segment (S) [NM]",
+    "circlingRadius": "Circling Radius = 2r + S [NM]",
+    "resultsTitle": "Circling Parameters Results",
+    "formulaRef": "PANS-OPS Formula Reference",
+    "globalParams": "Global Parameters"
   }
 }
