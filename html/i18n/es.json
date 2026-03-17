@@ -204,6 +204,33 @@
       "initial": "Versión inicial."
     }
   },
+  "omniSid": {
+    "title": "OMNI SID PDG",
+    "subtitle": "ICAO PANS-OPS \u2014 PDG comienza en DER + 5 m, MOC = 0.8%",
+    "derElevation": "Elevaci\u00f3n DER",
+    "obsElevation": "Elevaci\u00f3n del Obst\u00e1culo",
+    "distance": "Distancia Horizontal al Obst\u00e1culo",
+    "phDer": "ej. 100\u2026",
+    "phObs": "ej. 600\u2026",
+    "phDist": "ej. 10000\u2026",
+    "resultsTitle": "Resultados PDG",
+    "kpiPdg": "PDG Requerido",
+    "kpiOis": "Elevaci\u00f3n OIS",
+    "kpiMoc": "Separaci\u00f3n MOC",
+    "kpiReqAlt": "Altitud Requerida",
+    "inputParams": "Par\u00e1metros de Entrada",
+    "oisNote": "OIS = (DER + 5\u00a0m) + (dist \u00d7 2.5%)",
+    "mocNote": "MOC = 0.8% de la distancia horizontal",
+    "warnOis": "El obst\u00e1culo penetra el OIS.",
+    "okOis": "El obst\u00e1culo no penetra el OIS.",
+    "warnPdg": "Supera el 3.3% est\u00e1ndar \u2014 se requiere performance especial.",
+    "okPdg": "Dentro del PDG est\u00e1ndar del 3.3%.",
+    "formulaRef": "Referencia de F\u00f3rmulas PANS-OPS",
+    "formulaPdgLabel": "F\u00f3rmula PDG",
+    "formulaOisLabel": "Elevaci\u00f3n OIS",
+    "formulaMocLabel": "Separaci\u00f3n MOC",
+    "formulaReqAltLabel": "Altitud Requerida"
+  },
   "sections": {
     "calculators": "Calculadoras",
     "support": "Soporte",
