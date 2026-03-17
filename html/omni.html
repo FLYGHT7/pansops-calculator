@@ -1,321 +1,423 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OMNI SID PDG Calculator (ICAO)</title>
+    <meta name="theme-color" content="#f1f5f9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0a0f1a" media="(prefers-color-scheme: dark)" />
+    <title data-i18n="omniSid.title">OMNI SID PDG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              primary: {
-                50: "#f0f9ff",
-                100: "#e0f2fe",
-                200: "#bae6fd",
-                300: "#7dd3fc",
-                400: "#38bdf8",
-                500: "#0ea5e9",
-                600: "#0284c7",
-                700: "#0369a1",
-                800: "#075985",
-                900: "#0c4a6e",
-              },
-            },
-          },
-        },
-      };
-    </script>
+    <script src="shared-config.js"></script>
     <link rel="stylesheet" href="dark-mode.css" />
+    <script src="aviation-utils.js"></script>
+    <script src="i18n/i18n.js"></script>
+    <style>
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+      }
+      .status-ok {
+        background-color: rgba(16, 185, 129, 0.12);
+        color: #065f46;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+      html.dark .status-ok {
+        background-color: rgba(52, 211, 153, 0.12);
+        color: #6ee7b7;
+        border-color: rgba(52, 211, 153, 0.3);
+      }
+      .status-warn {
+        background-color: rgba(245, 158, 11, 0.12);
+        color: #92400e;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+      }
+      html.dark .status-warn {
+        background-color: rgba(251, 191, 36, 0.12);
+        color: #fcd34d;
+        border-color: rgba(251, 191, 36, 0.3);
+      }
+      @keyframes shake {
+        0%,100% { transform: translateX(0); }
+        20%     { transform: translateX(-6px); }
+        40%     { transform: translateX(6px); }
+        60%     { transform: translateX(-4px); }
+        80%     { transform: translateX(4px); }
+      }
+      .shake { animation: shake 0.35s ease; }
+
+      /* Formula panel */
+      details.formula-panel {
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        background-color: var(--surface);
+        overflow: hidden;
+      }
+      details.formula-panel summary {
+        cursor: pointer;
+        padding: 0.75rem 1rem;
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--primary);
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        user-select: none;
+      }
+      details.formula-panel summary::-webkit-details-marker { display: none; }
+      details.formula-panel summary::before {
+        content: "▶";
+        font-size: 0.65rem;
+        transition: transform 0.2s ease;
+        flex-shrink: 0;
+      }
+      details.formula-panel[open] summary::before { transform: rotate(90deg); }
+      details.formula-panel .formula-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 0.75rem;
+        padding: 0.75rem 1rem 1rem;
+        border-top: 1px solid var(--border);
+      }
+      details.formula-panel .formula-card {
+        background-color: var(--card);
+        border: 1.5px solid var(--border);
+        border-left: 3px solid var(--primary);
+        border-radius: 8px;
+        padding: 0.75rem;
+      }
+      details.formula-panel .formula-card h3 {
+        font-family: "Barlow", sans-serif;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+        margin-bottom: 0.4rem;
+      }
+      details.formula-panel .formula-card code {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.8rem;
+        color: var(--primary);
+        display: block;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+        line-height: 1.6;
+      }
+      html.dark details.formula-panel .formula-card code { color: var(--primary-light); }
+    </style>
   </head>
-  <body class="bg-[#f4f7f9] dark:bg-gray-900 min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-md w-full bg-white dark:bg-gray-800 p-6 shadow-xl rounded-2xl mt-10 border border-gray-200 dark:border-gray-700">
-      <h1 class="text-2xl font-bold mb-4 text-center text-primary-700 dark:text-primary-300">
-        OMNI SID PDG Calculator
-      </h1>
-      <p class="text-sm text-gray-600 dark:text-gray-300 mb-6 text-center">
-        According to ICAO PANS-OPS (PDG starts at DER + 5 m, MOC = 0.8%)
-      </p>
+  <body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-primary-700 focus:rounded focus:shadow">Skip to main content</a>
 
-      <!-- DER Elevation with Unit Dropdown -->
-      <div class="mb-4 flex">
-        <div class="flex-grow">
-          <label for="derElevation" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            DER Elevation
-          </label>
-          <input type="number" id="derElevation" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md" placeholder="e.g. 100" />
-        </div>
-        <div class="ml-2">
-          <label for="unitsDer" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Units
-          </label>
-          <select id="unitsDer" class="w-20 p-2 border border-gray-300 dark:border-gray-600 rounded-md">
-            <option value="m" selected>m</option>
-            <option value="ft">ft</option>
-          </select>
-        </div>
-      </div>
+    <!-- Main Container -->
+    <main
+      id="main-content"
+      class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
+    >
+      <!-- ── Header ─────────────────────────────────────────────────────── -->
+      <header>
+        <h1 class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-1 flex items-center">
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-7 w-7 sm:h-8 sm:w-8 mr-2 flex-shrink-0"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+          </svg>
+          <span data-i18n="omniSid.title">OMNI SID PDG</span>
+        </h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 ml-10" data-i18n="omniSid.subtitle">
+          ICAO PANS-OPS — PDG starts at DER + 5 m, MOC = 0.8%
+        </p>
+      </header>
 
-      <!-- Obstacle Elevation with Unit Dropdown -->
-      <div class="mb-4 flex">
-        <div class="flex-grow">
-          <label for="obsElevation" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Obstacle Elevation
-          </label>
-          <input type="number" id="obsElevation" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md" placeholder="e.g. 600" />
-        </div>
-        <div class="ml-2">
-          <label for="unitsObs" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Units
-          </label>
-          <select id="unitsObs" class="w-20 p-2 border border-gray-300 dark:border-gray-600 rounded-md">
-            <option value="m" selected>m</option>
-            <option value="ft">ft</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Horizontal Distance with Unit Dropdown -->
-      <div class="mb-4 flex">
-        <div class="flex-grow">
-          <label for="distance" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Horizontal Distance to Obstacle
-          </label>
-          <input type="number" id="distance" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md" placeholder="e.g. 10000" />
-        </div>
-        <div class="ml-2">
-          <label for="unitsDist" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Units
-          </label>
-          <select id="unitsDist" class="w-20 p-2 border border-gray-300 dark:border-gray-600 rounded-md">
-            <option value="m" selected>m</option>
-            <option value="NM">NM</option>
-          </select>
-        </div>
-      </div>
-
-      <button onclick="calculatePDG()" class="w-full bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white py-2 rounded font-medium">
-        Calculate PDG
-      </button>
-
-      <!-- Results Section -->
-      <div id="result" class="mt-6 text-center text-sm font-medium text-gray-800 dark:text-gray-100"></div>
-
-      <!-- Copy Results as Table Button (Hidden Initially) -->
-      <div id="copyButtonContainer" class="hidden mt-4 text-center">
-        <button onclick="copyToWord()" class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white py-2 px-4 rounded font-medium">
-          Copy Results as Table
+      <!-- ── Save / Load ───────────────────────────────────────────────── -->
+      <div class="flex flex-wrap justify-end mb-6 gap-3">
+        <input id="loadFile" type="file" accept=".json" class="hidden" aria-label="Load parameters file" />
+        <button
+          type="button"
+          id="btnSave"
+          class="font-medium py-2 px-4 rounded-lg shadow flex items-center text-sm"
+          data-tooltip="Save current inputs as JSON"
+        >
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          <span data-i18n="common.save">Save Parameters</span>
+        </button>
+        <button
+          type="button"
+          id="btnLoad"
+          class="font-medium py-2 px-4 rounded-lg shadow flex items-center text-sm"
+          data-tooltip="Load parameters from JSON file"
+        >
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <span data-i18n="common.load">Load Parameters</span>
         </button>
       </div>
 
-      <!-- Save/Load Buttons -->
-      <div class="mt-6 flex justify-between">
-        <button onclick="document.getElementById('loadFile').click()" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded font-medium">
-          Load
-        </button>
-        <button onclick="saveParameters()" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded font-medium">
-          Save
-        </button>
-        <input id="loadFile" type="file" accept=".json" class="hidden" onchange="loadParameters(event)" />
-      </div>
-    </div>
+      <!-- ── Input Form ────────────────────────────────────────────────── -->
+      <form id="inputForm" novalidate>
+        <fieldset>
+          <legend id="legendOmni" class="sr-only" data-i18n="omniSid.title">OMNI SID PDG Inputs</legend>
 
-    <script>
-      // Helper conversion functions
-      function ftToMeters(value) {
-        return value * 0.3048;
-      }
-      function nmToMeters(value) {
-        return value * 1852;
-      }
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
 
-      function calculatePDG() {
-        // Read input values
-        const derVal = parseFloat(document.getElementById("derElevation").value);
-        const obsVal = parseFloat(document.getElementById("obsElevation").value);
-        const distVal = parseFloat(document.getElementById("distance").value);
+            <!-- DER Elevation -->
+            <div class="space-y-2">
+              <label for="derElevation" data-i18n="omniSid.derElevation" data-tooltip="Departure End of Runway elevation above MSL">DER Elevation</label>
+              <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+                <input
+                  id="derElevation"
+                  type="number"
+                  step="any"
+                  placeholder="e.g. 100"
+                  data-i18n-placeholder="omniSid.phDer"
+                  class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  aria-required="true"
+                  inputmode="decimal"
+                  style="touch-action: manipulation;"
+                />
+                <select
+                  id="unitsDer"
+                  aria-label="DER Elevation unit"
+                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+                >
+                  <option value="m" data-i18n="common.meters">m</option>
+                  <option value="ft" data-i18n="common.feet">ft</option>
+                </select>
+              </div>
+            </div>
 
-        if (isNaN(derVal) || isNaN(obsVal) || isNaN(distVal) || distVal <= 0) {
-          document.getElementById("result").innerHTML =
-            '<span class="text-red-600">⚠️ Please enter valid numeric values.</span>';
-          return;
-        }
+            <!-- Obstacle Elevation -->
+            <div class="space-y-2">
+              <label for="obsElevation" data-i18n="omniSid.obsElevation" data-tooltip="Highest obstacle elevation in the departure sector">Obstacle Elevation</label>
+              <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+                <input
+                  id="obsElevation"
+                  type="number"
+                  step="any"
+                  placeholder="e.g. 600"
+                  data-i18n-placeholder="omniSid.phObs"
+                  class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  aria-required="true"
+                  inputmode="decimal"
+                  style="touch-action: manipulation;"
+                />
+                <select
+                  id="unitsObs"
+                  aria-label="Obstacle Elevation unit"
+                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+                >
+                  <option value="m" data-i18n="common.meters">m</option>
+                  <option value="ft" data-i18n="common.feet">ft</option>
+                </select>
+              </div>
+            </div>
 
-        // Convert DER and Obstacle elevations to meters.
-        const unitDer = document.getElementById("unitsDer").value;
-        const unitObs = document.getElementById("unitsObs").value;
-        let der_m = unitDer === "ft" ? ftToMeters(derVal) : derVal;
-        let obs_m = unitObs === "ft" ? ftToMeters(obsVal) : obsVal;
+            <!-- Horizontal Distance -->
+            <div class="space-y-2">
+              <label for="distance" data-i18n="omniSid.distance" data-tooltip="Horizontal ground distance from DER to the controlling obstacle">Horizontal Distance to Obstacle</label>
+              <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+                <input
+                  id="distance"
+                  type="number"
+                  step="any"
+                  placeholder="e.g. 10000"
+                  data-i18n-placeholder="omniSid.phDist"
+                  class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  aria-required="true"
+                  inputmode="decimal"
+                  style="touch-action: manipulation;"
+                />
+                <select
+                  id="unitsDist"
+                  aria-label="Distance unit"
+                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+                >
+                  <option value="m" data-i18n="common.meters">m</option>
+                  <option value="NM">NM</option>
+                </select>
+              </div>
+            </div>
 
-        // Convert Horizontal Distance into meters.
-        const unitDist = document.getElementById("unitsDist").value;
-        let dist_m = unitDist === "NM" ? nmToMeters(distVal) : distVal;
+          </div><!-- /grid -->
 
-        // PDG Calculation: PDG = (((obs - (der + 5)) / distance) + 0.008) * 100
-        const pdg = (((obs_m - (der_m + 5)) / dist_m) + 0.008) * 100;
-        const roundedPDG = pdg.toFixed(2);
+          <!-- Validation Banner -->
+          <div
+            id="validationBanner"
+            role="alert"
+            aria-live="assertive"
+            class="hidden mb-4 flex items-start gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-sm"
+          >
+            <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span id="validationMessage"></span>
+          </div>
 
-        // OIS Calculation: OIS Elevation = (der_m + 5) + (dist_m * 0.025)
-        const ois = (der_m + 5) + (dist_m * 0.025);
-        const roundedOIS = ois.toFixed(2);
-        const oisPenetration = obs_m > ois;
+          <!-- Calculate Button -->
+          <button
+            type="button"
+            id="btnCalcOmni"
+            class="w-full py-3 px-6 rounded-lg font-semibold text-white shadow-md"
+          >
+            <span data-i18n="common.calculate">Calculate PDG</span>
+          </button>
 
-        // MOC Calculation: MOC Clearance = 0.8% of distance (in meters)
-        const moc = dist_m * 0.008;
-        const roundedMOC = moc.toFixed(2);
+        </fieldset>
+      </form>
 
-        // Required Altitude = Obstacle Elevation + MOC (in meters)
-        const reqAlt = obs_m + moc;
-        const roundedReqAlt = reqAlt.toFixed(2);
-        const reqAlt_ft = (reqAlt / 0.3048).toFixed(2);
+      <!-- ── Results ───────────────────────────────────────────────────── -->
+      <div
+        id="results"
+        role="region"
+        aria-live="polite"
+        aria-labelledby="resultsHeading"
+        tabindex="-1"
+        class="hidden mt-8 p-6 rounded-xl"
+      >
+        <!-- Section title -->
+        <h2 id="resultsHeading" data-i18n="omniSid.resultsTitle">PDG Results</h2>
 
-        // Also calculate MOC in feet
-        const moc_ft = (moc / 0.3048).toFixed(2);
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
 
-        // Build results summary HTML.
-        let resultHTML = `📐 <strong>Required PDG: ${roundedPDG}%</strong><br><br>`;
-        resultHTML += `<strong>Input Parameters:</strong><br>`;
-        resultHTML += `DER Elevation: ${derVal} ${unitDer}${(unitDer === "ft") ? " (" + der_m.toFixed(2) + " m)" : ""}<br>`;
-        resultHTML += `Obstacle Elevation: ${obsVal} ${unitObs}${(unitObs === "ft") ? " (" + obs_m.toFixed(2) + " m)" : ""}<br>`;
-        resultHTML += `Distance: ${distVal} ${unitDist}${(unitDist === "NM") ? " (" + dist_m.toFixed(2) + " m)" : ""}<br><br>`;
-        resultHTML += `<strong>OIS Elevation:</strong> ${roundedOIS} m<br>`;
-        resultHTML += `<strong>MOC Clearance (0.8% of distance):</strong> ${roundedMOC} m (${moc_ft} ft)<br>`;
-        resultHTML += `<strong>Required Altitude:</strong> ${roundedReqAlt} m (${reqAlt_ft} ft)<br>`;
-        resultHTML += oisPenetration 
-          ? `<span class="text-red-600">⚠️ Obstacle penetrates the OIS.</span><br><br>` 
-          : `<span class="text-green-600">✅ Obstacle does not penetrate the OIS.</span><br><br>`;
-        resultHTML += pdg > 3.3 
-          ? `<span class="text-red-600">⚠️ Exceeds standard 3.3% — special aircraft performance required.</span>`
-          : `<span class="text-green-600">✅ Within standard 3.3% PDG.</span>`;
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="omniSid.kpiPdg">Required PDG</p>
+            <p id="kpiPdg" class="text-xl font-bold tabular-nums">—</p>
+          </div>
 
-        document.getElementById("result").innerHTML = resultHTML;
-        // Reveal the Copy Results as Table button.
-        document.getElementById("copyButtonContainer").classList.remove("hidden");
-      }
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="omniSid.kpiOis">OIS Elevation</p>
+            <p id="kpiOis" class="text-xl font-bold tabular-nums">—</p>
+          </div>
 
-      function copyToWord() {
-        const derVal = parseFloat(document.getElementById("derElevation").value);
-        const obsVal = parseFloat(document.getElementById("obsElevation").value);
-        const distVal = parseFloat(document.getElementById("distance").value);
-  
-        const unitDer = document.getElementById("unitsDer").value;
-        const unitObs = document.getElementById("unitsObs").value;
-        const unitDist = document.getElementById("unitsDist").value;
-  
-        let der_m = unitDer === "ft" ? ftToMeters(derVal) : derVal;
-        let obs_m = unitObs === "ft" ? ftToMeters(obsVal) : obsVal;
-        let dist_m = unitDist === "NM" ? nmToMeters(distVal) : distVal;
-  
-        const pdg = (((obs_m - (der_m + 5)) / dist_m) + 0.008) * 100;
-        const roundedPDG = pdg.toFixed(2);
-  
-        const ois = (der_m + 5) + (dist_m * 0.025);
-        const roundedOIS = ois.toFixed(2);
-        const oisPenetration = obs_m > ois;
-  
-        const moc = dist_m * 0.008;
-        const roundedMOC = moc.toFixed(2);
-        const moc_ft = (moc / 0.3048).toFixed(2);
-  
-        const reqAlt = obs_m + moc;
-        const roundedReqAlt = reqAlt.toFixed(2);
-        const reqAlt_ft = (reqAlt / 0.3048).toFixed(2);
-  
-        const tableHTML = `
-          <table border="1" style="border-collapse: collapse; width: 100%;">
-            <tr style="background-color: #f1f5f9;">
-              <th style="padding: 8px;">Parameter</th>
-              <th style="padding: 8px;">Value</th>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="omniSid.kpiMoc">MOC Clearance</p>
+            <p id="kpiMoc" class="text-xl font-bold tabular-nums">—</p>
+          </div>
+
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="omniSid.kpiReqAlt">Required Altitude</p>
+            <p id="kpiReqAlt" class="text-xl font-bold tabular-nums">—</p>
+          </div>
+
+        </div>
+
+        <!-- Status badges -->
+        <div class="flex flex-wrap gap-3 mb-6">
+          <span id="oisStatus" class="inline-flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium"></span>
+          <span id="pdgStatus" class="inline-flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium"></span>
+        </div>
+
+        <!-- Input summary table -->
+        <table class="w-full text-sm border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-6">
+          <thead>
+            <tr>
+              <th class="text-left px-4 py-2" data-i18n="omniSid.inputParams" colspan="2">Input Parameters</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="px-4 py-2 text-gray-500 dark:text-gray-400" data-i18n="omniSid.derElevation">DER Elevation</td>
+              <td id="summaryDer" class="px-4 py-2 font-mono">—</td>
             </tr>
             <tr>
-              <td>DER Elevation</td>
-              <td>${derVal} ${unitDer}${(unitDer === 'ft') ? " (" + der_m.toFixed(2) + " m)" : ""}</td>
+              <td class="px-4 py-2 text-gray-500 dark:text-gray-400" data-i18n="omniSid.obsElevation">Obstacle Elevation</td>
+              <td id="summaryObs" class="px-4 py-2 font-mono">—</td>
             </tr>
             <tr>
-              <td>Obstacle Elevation</td>
-              <td>${obsVal} ${unitObs}${(unitObs === 'ft') ? " (" + obs_m.toFixed(2) + " m)" : ""}</td>
+              <td class="px-4 py-2 text-gray-500 dark:text-gray-400" data-i18n="omniSid.distance">Distance</td>
+              <td id="summaryDist" class="px-4 py-2 font-mono">—</td>
             </tr>
             <tr>
-              <td>Distance</td>
-              <td>${distVal} ${unitDist}${(unitDist === 'NM') ? " (" + dist_m.toFixed(2) + " m)" : ""}</td>
+              <td class="px-4 py-2 text-gray-500 dark:text-gray-400" data-i18n="omniSid.kpiMoc">MOC Clearance</td>
+              <td id="summaryMocFt" class="px-4 py-2 font-mono">—</td>
             </tr>
             <tr>
-              <td>Required PDG</td>
-              <td>${roundedPDG}%</td>
+              <td class="px-4 py-2 text-gray-500 dark:text-gray-400" data-i18n="omniSid.kpiReqAlt">Required Altitude</td>
+              <td id="summaryReqAltFt" class="px-4 py-2 font-mono">—</td>
             </tr>
-            <tr>
-              <td>OIS Elevation</td>
-              <td>${roundedOIS} m</td>
-            </tr>
-            <tr>
-              <td>MOC Clearance</td>
-              <td>${roundedMOC} m (${moc_ft} ft)</td>
-            </tr>
-            <tr>
-              <td>Required Altitude</td>
-              <td>${roundedReqAlt} m (${reqAlt_ft} ft)</td>
-            </tr>
-            <tr>
-              <td>OIS Penetration</td>
-              <td>${oisPenetration ? '<span style="color:red;">Yes</span>' : '<span style="color:green;">No</span>'}</td>
-            </tr>
-            <tr>
-              <td>Note</td>
-              <td>${pdg > 3.3 ? '<span style="color:red;">Exceeds standard 3.3% — special performance required.</span>' : '<span style="color:green;">Within standard 3.3% PDG.</span>'}</td>
-            </tr>
-          </table>
-        `;
-  
-        const blob = new Blob([tableHTML], { type: "text/html" });
-        navigator.clipboard.write([new ClipboardItem({ "text/html": blob })])
-          .then(() => { alert("Formatted table copied to clipboard! Paste into Word."); })
-          .catch((err) => { console.error("Copy failed:", err); });
-      }
-      
-      function saveParameters() {
-        const params = {
-          derElevation: document.getElementById("derElevation").value || "",
-          obsElevation: document.getElementById("obsElevation").value || "",
-          distance: document.getElementById("distance").value || "",
-          unitsDer: document.getElementById("unitsDer").value || "m",
-          unitsObs: document.getElementById("unitsObs").value || "m",
-          unitsDist: document.getElementById("unitsDist").value || "m",
-        };
-        const now = new Date();
-        const timestamp = now.toISOString().replace(/[:.]/g, "-");
-        const filename = `${timestamp}_omni_sid.json`;
-        const blob = new Blob([JSON.stringify(params, null, 2)], { type: "application/json" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = filename;
-        a.click();
-      }
-      
-      function loadParameters(event) {
-        const file = event.target.files[0];
-        if (!file) {
-          alert("Please select a valid JSON file.");
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          try {
-            const data = JSON.parse(e.target.result);
-            if (data.derElevation !== undefined) document.getElementById("derElevation").value = data.derElevation;
-            if (data.obsElevation !== undefined) document.getElementById("obsElevation").value = data.obsElevation;
-            if (data.distance !== undefined) document.getElementById("distance").value = data.distance;
-            if (data.unitsDer !== undefined) document.getElementById("unitsDer").value = data.unitsDer;
-            if (data.unitsObs !== undefined) document.getElementById("unitsObs").value = data.unitsObs;
-            if (data.unitsDist !== undefined) document.getElementById("unitsDist").value = data.unitsDist;
-            alert("Parameters successfully loaded!");
-          } catch (err) {
-            alert("Invalid JSON file. Please upload a valid parameters file.");
-          }
-        };
-        reader.readAsText(file);
-      }
-    </script>
+          </tbody>
+        </table>
+
+        <!-- Copy button -->
+        <div class="flex justify-end">
+          <button
+            type="button"
+            id="btnCopy"
+            class="py-2 px-4 rounded-lg font-medium flex items-center gap-2 text-sm"
+          >
+            <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span data-i18n="common.copy">Copy Results</span>
+          </button>
+        </div>
+
+      </div><!-- /#results -->
+
+      <!-- ── Formula Panel ─────────────────────────────────────────────── -->
+      <details class="formula-panel mt-8">
+        <summary>
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+          <span data-i18n="omniSid.formulaRef">PANS-OPS Formula Reference</span>
+        </summary>
+        <div class="formula-grid">
+
+          <div class="formula-card">
+            <h3 data-i18n="omniSid.formulaPdgLabel">PDG Formula</h3>
+            <code>PDG = (((obs − (der + 5)) ÷ dist) + 0.008) × 100 [%]</code>
+          </div>
+
+          <div class="formula-card">
+            <h3 data-i18n="omniSid.formulaOisLabel">OIS Elevation</h3>
+            <code>OIS = (der + 5) + (dist × 0.025) [m]</code>
+            <p class="text-xs text-gray-400 mt-1" data-i18n="omniSid.oisNote">OIS = (DER + 5 m) + (dist × 2.5%)</p>
+          </div>
+
+          <div class="formula-card">
+            <h3 data-i18n="omniSid.formulaMocLabel">MOC Clearance</h3>
+            <code>MOC = dist × 0.008 [m]</code>
+            <p class="text-xs text-gray-400 mt-1" data-i18n="omniSid.mocNote">MOC = 0.8% of horizontal distance</p>
+          </div>
+
+          <div class="formula-card">
+            <h3 data-i18n="omniSid.formulaReqAltLabel">Required Altitude</h3>
+            <code>ReqAlt = obs + MOC [m]</code>
+          </div>
+
+        </div>
+      </details>
+
+    </main>
+
+    <script src="js/omni_sid.js"></script>
   </body>
 </html>

@@ -204,6 +204,33 @@
       "initial": "Initial release."
     }
   },
+  "omniSid": {
+    "title": "OMNI SID PDG",
+    "subtitle": "ICAO PANS-OPS — PDG starts at DER + 5 m, MOC = 0.8%",
+    "derElevation": "DER Elevation",
+    "obsElevation": "Obstacle Elevation",
+    "distance": "Horizontal Distance to Obstacle",
+    "phDer": "e.g. 100\u2026",
+    "phObs": "e.g. 600\u2026",
+    "phDist": "e.g. 10000\u2026",
+    "resultsTitle": "PDG Results",
+    "kpiPdg": "Required PDG",
+    "kpiOis": "OIS Elevation",
+    "kpiMoc": "MOC Clearance",
+    "kpiReqAlt": "Required Altitude",
+    "inputParams": "Input Parameters",
+    "oisNote": "OIS = (DER + 5\u00a0m) + (dist \u00d7 2.5%)",
+    "mocNote": "MOC = 0.8% of horizontal distance",
+    "warnOis": "Obstacle penetrates the OIS.",
+    "okOis": "Obstacle does not penetrate the OIS.",
+    "warnPdg": "Exceeds standard 3.3% \u2014 special aircraft performance required.",
+    "okPdg": "Within standard 3.3% PDG.",
+    "formulaRef": "PANS-OPS Formula Reference",
+    "formulaPdgLabel": "PDG Formula",
+    "formulaOisLabel": "OIS Elevation",
+    "formulaMocLabel": "MOC Clearance",
+    "formulaReqAltLabel": "Required Altitude"
+  },
   "sections": {
     "calculators": "Calculators",
     "support": "Support",
