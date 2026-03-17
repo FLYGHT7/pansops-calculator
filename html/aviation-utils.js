@@ -7,6 +7,8 @@ const FT_PER_M = 1 / 0.3048; // ≈ 3.280839895...
 const M_PER_FT = 0.3048;
 const FT_PER_NM = 1852 / 0.3048; // ≈ 6076.1154855643 ft per NM
 const NM_PER_M = 1 / 1852; // Nautical miles per meter
+const DEG_TO_RAD = Math.PI / 180;
+const KT_TO_MS = 0.514444; // 1 knot in m/s
 
 /**
  * Converts feet to meters
