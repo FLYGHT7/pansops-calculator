@@ -906,7 +906,9 @@
                       stroke-linejoin="round"
                       aria-hidden="true"
                     >
-                      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                      <polyline
+                        points="23 6 13.5 15.5 8.5 10.5 1 18"
+                      ></polyline>
                       <polyline points="17 6 23 6 23 12"></polyline>
                     </svg>
                     <span class="sidebar-label" data-i18n="omniSid.title"
@@ -941,6 +943,33 @@
                     </svg>
                     <span class="sidebar-label" data-i18n="circling.title"
                       >Circling Protection Area</span
+                    >
+                  </button>
+                </li>
+                <li>
+                  <button
+                    id="windSpiralButton"
+                    data-label="Wind Spiral Calculator"
+                    onclick="loadPage('Wind_Spiral.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                  >
+                    <svg
+                      class="text-primary-400 w-5 h-5 mr-3 sidebar-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M12 2a10 10 0 1 1-7.07 2.93"></path>
+                      <path d="M12 6a6 6 0 1 1-4.24 1.76"></path>
+                      <path d="M12 10a2 2 0 1 1-1.41.59"></path>
+                    </svg>
+                    <span class="sidebar-label" data-i18n="windSpiral.title"
+                      >Wind Spiral Calculator</span
                     >
                   </button>
                 </li>
@@ -1552,6 +1581,10 @@
         },
         "#vss-ocs": { url: "VSS_OCS.html", buttonId: "vssOcsButton" },
         "#omni-sid": { url: "omni.html", buttonId: "omniSidButton" },
+        "#wind-spiral": {
+          url: "Wind_Spiral.html",
+          buttonId: "windSpiralButton",
+        },
         "#circling": {
           url: "Circling_Parameters.html",
           buttonId: "circlingButton",
