@@ -251,6 +251,7 @@
     "parameters": "Parameters",
     "ias": "IAS [KT]",
     "protectedHeight": "Protected Height [ft]",
+    "protectionAltitude": "Protection Altitude [ft AMSL]",
     "altitudeH1": "Altitude (h1) [ft]",
     "kFactor": "K Factor",
     "tasPlusWind": "TAS + 25KT",
