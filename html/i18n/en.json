@@ -262,5 +262,8 @@
     "resultsTitle": "Circling Parameters Results",
     "formulaRef": "PANS-OPS Formula Reference",
     "globalParams": "Global Parameters"
+  },
+  "windSpiral": {
+    "title": "Wind Spiral Calculator"
   }
 }
