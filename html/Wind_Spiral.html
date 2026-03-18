@@ -125,51 +125,6 @@
         margin-top: 2px;
       }
 
-      /* ── Spiral table ────────────────────────────────────────────── */
-      .spiral-table th {
-        background: linear-gradient(90deg, #0c2240 0%, var(--border) 100%);
-        color: var(--primary-light);
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        padding: 8px 12px;
-      }
-      html.dark .spiral-table th {
-        background: linear-gradient(90deg, #040e1c 0%, #0b1e35 100%);
-      }
-      .spiral-table td {
-        font-family: "Share Tech Mono", monospace;
-        font-size: 0.82rem;
-        padding: 7px 12px;
-        border-bottom: 1px solid rgba(148, 163, 184, 0.08);
-        color: var(--text);
-        text-align: right;
-      }
-      .spiral-table td:first-child {
-        text-align: left;
-        font-weight: 600;
-      }
-      .spiral-table tbody tr:nth-child(even) td {
-        background: rgba(148, 163, 184, 0.04);
-      }
-      html.dark .spiral-table tbody tr:nth-child(even) td {
-        background: rgba(255, 255, 255, 0.02);
-      }
-      /* Highlight the full 360° row */
-      .spiral-table tr.row-360 td {
-        color: var(--primary);
-        font-weight: 700;
-        background: linear-gradient(
-          to right,
-          rgba(56, 189, 248, 0.12),
-          rgba(56, 189, 248, 0.04)
-        );
-      }
-      html.dark .spiral-table tr.row-360 td {
-        text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
-      }
-
       /* ── Validation banner ───────────────────────────────────────── */
       .validation-banner {
         display: flex;
@@ -200,86 +155,9 @@
         animation: shake 0.35s ease;
       }
 
-      /* ── Formula reference panel ─────────────────────────────────── */
-      .formula-panel {
-        border: 1px solid var(--primary-glow);
-        border-radius: 10px;
-        overflow: hidden;
-        margin-top: 20px;
-      }
-      .formula-panel summary {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 16px;
-        cursor: pointer;
-        background: var(--primary-glow);
-        font-size: 0.8rem;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--primary);
-        user-select: none;
-        list-style: none;
-      }
-      .formula-panel summary::-webkit-details-marker {
-        display: none;
-      }
-      .formula-panel summary:hover {
-        opacity: 0.85;
-      }
-      .formula-panel summary:focus-visible {
-        outline: 2px solid var(--primary);
-        outline-offset: 2px;
-      }
-      .formula-panel summary .chevron {
-        margin-left: auto;
-        transition: transform 0.2s ease;
-      }
-      .formula-panel[open] summary .chevron {
-        transform: rotate(180deg);
-      }
-      .formula-body {
-        padding: 16px 20px;
-        background: var(--primary-glow);
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-        gap: 12px;
-      }
-      .formula-card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 10px 14px;
-      }
-      .formula-card .fc-label {
-        font-size: 0.65rem;
-        font-weight: 700;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--primary);
-        margin-bottom: 4px;
-      }
-      .formula-card .fc-expr {
-        font-family: "Share Tech Mono", monospace;
-        font-size: 0.82rem;
-        color: var(--text);
-        line-height: 1.55;
-        white-space: pre-wrap;
-        overflow-wrap: break-word;
-      }
-      .formula-card .fc-note {
-        margin-top: 5px;
-        font-size: 0.68rem;
-        color: var(--text-muted);
-        line-height: 1.45;
-      }
       /* ── Reduced-motion overrides ────────────────────────────────── */
       @media (prefers-reduced-motion: reduce) {
         .result-kpi {
-          transition: none;
-        }
-        .formula-panel summary .chevron {
           transition: none;
         }
         .shake {
@@ -698,17 +576,12 @@
         </div>
 
         <!-- Spiral table -->
-        <div
-          class="bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600"
-        >
-          <div
-            class="overflow-x-auto rounded-lg border border-green-200 dark:border-gray-600"
+        <div class="overflow-x-auto mt-4">
+          <table
+            class="w-full text-sm"
+            id="spiralTable"
+            aria-labelledby="resultsHeading"
           >
-            <table
-              class="spiral-table w-full text-sm"
-              id="spiralTable"
-              aria-labelledby="resultsHeading"
-            >
               <thead>
                 <tr>
                   <th class="text-left" data-i18n="windSpiral.colAngle">
@@ -722,96 +595,35 @@
               <tbody id="spiralBody">
                 <!-- populated by JS -->
               </tbody>
-            </table>
-          </div>
+          </table>
+        </div>
 
-          <!-- Copy button -->
-          <div class="mt-6 flex justify-end">
-            <button
-              type="button"
-              id="btnCopy"
-              class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center"
+        <!-- Copy button -->
+        <div class="mt-4 flex justify-end">
+          <button
+            type="button"
+            id="btnCopy"
+            class="py-2 px-4 rounded-lg font-medium flex items-center gap-2 text-sm"
+          >
+            <svg
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             >
-              <svg
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path
-                  d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
-                ></path>
-                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-              </svg>
-              <span data-i18n="common.copyTable">Copy Results as Table</span>
-            </button>
-          </div>
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span data-i18n="common.copyTable">Copy Results as Table</span>
+          </button>
         </div>
       </div>
 
-      <!-- PANS-OPS Formula Reference — always visible -->
-      <details class="formula-panel" id="formulaPanel">
-        <summary>
-          <svg
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 flex-shrink-0"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-          </svg>
-          <span data-i18n="windSpiral.formulaRef"
-            >PANS-OPS Formula Reference</span
-          >
-          <svg
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            class="chevron h-4 w-4 flex-shrink-0"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </summary>
-
-        <div class="formula-body">
-          <div class="formula-card">
-            <div class="fc-label">Rate of Turn (R)</div>
-            <div class="fc-expr">R = 9.81 &times; tan(&phi;) / V&#x2098;&#x2215;&#x209b; &times; (180/&pi;)<br>R&#x1D42E;&#x1D42C;&#x1D41E;&#x1D41D; = min(R, 3&deg;/s)</div>
-            <div class="fc-note">V in m/s (TAS &times; 0.514444)</div>
-          </div>
-          <div class="formula-card">
-            <div class="fc-label">Drift Angle (d) &mdash; Formula 007</div>
-            <div class="fc-expr">d = arcsin(W / V)</div>
-            <div class="fc-note">W and V in the same units (kt). d in degrees.</div>
-          </div>
-          <div class="formula-card">
-            <div class="fc-label">Wind Effect (E&theta;) &mdash; Formula 006</div>
-            <div class="fc-expr">E&theta; = (&theta; / R) &times; (W / 3600)</div>
-            <div class="fc-note">&theta; in &deg;, R in &deg;/s, W in kt &rarr; E in NM per step</div>
-          </div>
-          <div class="formula-card">
-            <div class="fc-label">Adjusted Bank Angle</div>
-            <div class="fc-expr">&phi;&#x2090;&#x2064;&#x2d;&#x2064;&#x2090;&#x2064;&#x2d;&#x2064; = arctan(3 &times; &pi;/180 &times; V&#x2098;&#x2215;&#x209b; / 9.81) &times; 180/&pi;</div>
-            <div class="fc-note">Applied only when R &gt; 3&deg;/s to cap rate of turn</div>
-          </div>
-        </div>
-      </details>
     </main>
 
     <script src="js/wind_spiral.js"></script>
