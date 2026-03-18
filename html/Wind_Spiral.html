@@ -3,8 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f1f5f9" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0a0f1a" media="(prefers-color-scheme: dark)" />
+    <meta
+      name="theme-color"
+      content="#f1f5f9"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#0a0f1a"
+      media="(prefers-color-scheme: dark)"
+    />
     <title data-i18n="windSpiral.title">Wind Spiral Calculator</title>
     <link rel="preconnect" href="https://cdn.tailwindcss.com" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -175,7 +183,11 @@
   <body
     class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-start justify-center p-4"
   >
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-primary-700 focus:rounded focus:shadow">Skip to content</a>
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-primary-700 focus:rounded focus:shadow"
+      >Skip to content</a
+    >
     <main
       id="main-content"
       class="max-w-5xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
@@ -582,19 +594,19 @@
             id="spiralTable"
             aria-labelledby="resultsHeading"
           >
-              <thead>
-                <tr>
-                  <th class="text-left" data-i18n="windSpiral.colAngle">
-                    Cumul. Angle (°)
-                  </th>
-                  <th data-i18n="windSpiral.colTime">Time (s)</th>
-                  <th data-i18n="windSpiral.colStepE">E&theta; / step (NM)</th>
-                  <th data-i18n="windSpiral.colCumulE">Cumul. E (NM)</th>
-                </tr>
-              </thead>
-              <tbody id="spiralBody">
-                <!-- populated by JS -->
-              </tbody>
+            <thead>
+              <tr>
+                <th class="text-left" data-i18n="windSpiral.colAngle">
+                  Cumul. Angle (°)
+                </th>
+                <th data-i18n="windSpiral.colTime">Time (s)</th>
+                <th data-i18n="windSpiral.colStepE">E&theta; / step (NM)</th>
+                <th data-i18n="windSpiral.colCumulE">Cumul. E (NM)</th>
+              </tr>
+            </thead>
+            <tbody id="spiralBody">
+              <!-- populated by JS -->
+            </tbody>
           </table>
         </div>
 
@@ -617,13 +629,14 @@
               stroke-linejoin="round"
             >
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              <path
+                d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+              ></path>
             </svg>
             <span data-i18n="common.copyTable">Copy Results as Table</span>
           </button>
         </div>
       </div>
-
     </main>
 
     <script src="js/wind_spiral.js"></script>

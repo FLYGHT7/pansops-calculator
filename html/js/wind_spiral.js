@@ -61,7 +61,11 @@ function validate() {
     showValidationError(
       "Please fill in TAS, Wind Speed, and Bank Angle before calculating.",
     );
-    document.getElementById(tas === "" ? "tas" : wind === "" ? "windSpeed" : "bankAngle").focus();
+    document
+      .getElementById(
+        tas === "" ? "tas" : wind === "" ? "windSpeed" : "bankAngle",
+      )
+      .focus();
     return false;
   }
   const tasVal = parseFloat(tas);
@@ -227,12 +231,14 @@ function copyTable() {
     <th style="padding:8px">Eθ / step (NM)</th>
     <th style="padding:8px">Cumul. E (NM)</th>
   </tr>
-  ${rows.map(tr => {
-    const cells = Array.from(tr.querySelectorAll("td"));
-    const is360 = tr.classList.contains("row-360");
-    const rowStyle = is360 ? ' style="font-weight:700;color:#0369a1"' : "";
-    return `<tr${rowStyle}>${cells.map(td => `<td style="padding:8px">${td.textContent.trim()}</td>`).join("")}</tr>`;
-  }).join("\n  ")}
+  ${rows
+    .map((tr) => {
+      const cells = Array.from(tr.querySelectorAll("td"));
+      const is360 = tr.classList.contains("row-360");
+      const rowStyle = is360 ? ' style="font-weight:700;color:#0369a1"' : "";
+      return `<tr${rowStyle}>${cells.map((td) => `<td style="padding:8px">${td.textContent.trim()}</td>`).join("")}</tr>`;
+    })
+    .join("\n  ")}
 </table>`;
 
   copyToClipboard(tableHTML);
