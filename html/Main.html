@@ -890,6 +890,32 @@
                 </li>
                 <li>
                   <button
+                    id="omniSidButton"
+                    data-label="OMNI SID PDG"
+                    onclick="loadPage('omni.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                  >
+                    <svg
+                      class="text-primary-400 w-5 h-5 mr-3 sidebar-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                      <polyline points="17 6 23 6 23 12"></polyline>
+                    </svg>
+                    <span class="sidebar-label" data-i18n="omniSid.title"
+                      >OMNI SID PDG</span
+                    >
+                  </button>
+                </li>
+                <li>
+                  <button
                     id="circlingButton"
                     data-label="Circling Parameters"
                     onclick="loadPage('Circling_Parameters.html', this)"
@@ -1525,6 +1551,7 @@
           buttonId: "npaSocButton",
         },
         "#vss-ocs": { url: "VSS_OCS.html", buttonId: "vssOcsButton" },
+        "#omni-sid": { url: "omni.html", buttonId: "omniSidButton" },
         "#circling": {
           url: "Circling_Parameters.html",
           buttonId: "circlingButton",
