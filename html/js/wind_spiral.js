@@ -61,7 +61,11 @@ function validate() {
     showValidationError(
       "Please fill in TAS, Wind Speed, and Bank Angle before calculating.",
     );
-    document.getElementById(tas === "" ? "tas" : wind === "" ? "windSpeed" : "bankAngle").focus();
+    document
+      .getElementById(
+        tas === "" ? "tas" : wind === "" ? "windSpeed" : "bankAngle",
+      )
+      .focus();
     return false;
   }
   const tasVal = parseFloat(tas);
@@ -216,25 +220,28 @@ function loadParameters(event) {
 // ── Copy table ─────────────────────────────────────────────────────────────────
 
 function copyTable() {
-  const table = document.getElementById("spiralTable");
-  if (!table) return;
-  const rows = Array.from(table.querySelectorAll("tr"));
-  const text = rows
-    .map((tr) =>
-      Array.from(tr.querySelectorAll("th, td"))
-        .map((c) => c.textContent.trim().padEnd(18))
-        .join("\t"),
-    )
-    .join("\n");
+  const tbody = document.getElementById("spiralBody");
+  if (!tbody) return;
+  const rows = Array.from(tbody.querySelectorAll("tr"));
 
-  navigator.clipboard
-    .writeText(text)
-    .then(() => {
-      showToast("Table copied to clipboard!", "success");
+  const tableHTML = `<table border="1" style="border-collapse:collapse;width:100%;font-family:sans-serif;font-size:13px">
+  <tr style="background:#0c2240;color:#93c5fd">
+    <th style="padding:8px;text-align:left">Cumul. Angle (°)</th>
+    <th style="padding:8px">Time (s)</th>
+    <th style="padding:8px">Eθ / step (NM)</th>
+    <th style="padding:8px">Cumul. E (NM)</th>
+  </tr>
+  ${rows
+    .map((tr) => {
+      const cells = Array.from(tr.querySelectorAll("td"));
+      const is360 = tr.classList.contains("row-360");
+      const rowStyle = is360 ? ' style="font-weight:700;color:#0369a1"' : "";
+      return `<tr${rowStyle}>${cells.map((td) => `<td style="padding:8px">${td.textContent.trim()}</td>`).join("")}</tr>`;
     })
-    .catch(() => {
-      showToast("Copy failed. Check browser permissions.", "error");
-    });
+    .join("\n  ")}
+</table>`;
+
+  copyToClipboard(tableHTML);
 }
 
 // ── Init ───────────────────────────────────────────────────────────────────────
