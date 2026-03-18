@@ -250,7 +250,7 @@
     "perCategoryInputs": "Par\u00e1metros por Categor\u00eda",
     "parameters": "Par\u00e1metros",
     "ias": "IAS [KT]",
-    "protectedHeight": "Altura Protegida [ft]",
+    "protectedHeight": "Altura Protegida [ft AGL]",
     "protectionAltitude": "Altitud de Protección [ft AMSL]",
     "altitudeH1": "Altitud (h1) [ft]",
     "kFactor": "Factor K",

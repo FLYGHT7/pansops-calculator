@@ -487,8 +487,8 @@
               <label
                 for="ph_a"
                 class="block text-xs font-medium text-gray-600 dark:text-gray-400"
-                data-i18n="circling.protectionAltitude"
-                >Prot. Altitude [ft AMSL]</label
+                data-i18n="circling.protectedHeight"
+                >Protected Height [ft AGL]</label
               >
               <input
                 id="ph_a"
@@ -524,8 +524,8 @@
               <label
                 for="ph_b"
                 class="block text-xs font-medium text-gray-600 dark:text-gray-400"
-                data-i18n="circling.protectionAltitude"
-                >Prot. Altitude [ft AMSL]</label
+                data-i18n="circling.protectedHeight"
+                >Protected Height [ft AGL]</label
               >
               <input
                 id="ph_b"
@@ -561,8 +561,8 @@
               <label
                 for="ph_c"
                 class="block text-xs font-medium text-gray-600 dark:text-gray-400"
-                data-i18n="circling.protectionAltitude"
-                >Prot. Altitude [ft AMSL]</label
+                data-i18n="circling.protectedHeight"
+                >Protected Height [ft AGL]</label
               >
               <input
                 id="ph_c"
@@ -598,8 +598,8 @@
               <label
                 for="ph_d"
                 class="block text-xs font-medium text-gray-600 dark:text-gray-400"
-                data-i18n="circling.protectionAltitude"
-                >Prot. Altitude [ft AMSL]</label
+                data-i18n="circling.protectedHeight"
+                >Protected Height [ft AGL]</label
               >
               <input
                 id="ph_d"
@@ -635,8 +635,8 @@
               <label
                 for="ph_e"
                 class="block text-xs font-medium text-gray-600 dark:text-gray-400"
-                data-i18n="circling.protectionAltitude"
-                >Prot. Altitude [ft AMSL]</label
+                data-i18n="circling.protectedHeight"
+                >Protected Height [ft AGL]</label
               >
               <input
                 id="ph_e"
@@ -818,8 +818,8 @@
         return delta / theta; // sigma
       }
 
-      function calcCategory(ias_kt, protAlt_ft, bankDeg, deltaISA) {
-        const h1_ft = protAlt_ft; // Protection Altitude is AMSL — use directly
+      function calcCategory(ias_kt, protHeight_ft, elevFt, bankDeg, deltaISA) {
+        const h1_ft = elevFt + protHeight_ft; // h1 AMSL = aerodrome elevation + protected height AGL
         const sigma = calcDensityRatio(h1_ft, deltaISA);
         const k = 1 / Math.sqrt(sigma);
         const tas_kt = ias_kt * k;
@@ -840,12 +840,12 @@
       function buildResultsBody(elevFt, bankDeg, deltaISA) {
         // Default IAS values per ICAO PANS-OPS (kt)
         const DEFAULT_IAS = { A: 100, B: 135, C: 180, D: 205, E: 240 };
-        const defaultProtAlt = elevFt + 1000; // AMSL: aerodrome elev + 1000 ft
+        const DEFAULT_PROT_HEIGHT = 1000; // AGL height above aerodrome (ft)
 
         const rows = [
           { label: "IAS [KT]", id: "ias", dec: 0, isInput: true },
           {
-            label: "Protection Altitude [ft AMSL]",
+            label: "Protected Height [ft AGL]",
             id: "ph",
             dec: 0,
             isInput: true,
@@ -887,9 +887,9 @@
             return;
           }
           const iasModified = Math.abs(ias - DEFAULT_IAS[cat]) > 0.001;
-          const phModified = Math.abs(ph - defaultProtAlt) > 0.1;
+          const phModified = Math.abs(ph - DEFAULT_PROT_HEIGHT) > 0.1;
           if (iasModified || phModified) anyModified = true;
-          const res = calcCategory(ias, ph, bankDeg, deltaISA);
+          const res = calcCategory(ias, ph, elevFt, bankDeg, deltaISA);
           const S = S_CONST[cat];
           data[cat] = {
             ias: iasModified ? fmt(ias, 0) + " \u2020" : fmt(ias, 0),
@@ -954,7 +954,7 @@
       function rowI18nKey(id) {
         const map = {
           ias: "circling.ias",
-          ph: "circling.protectionAltitude",
+          ph: "circling.protectedHeight",
           h1: "circling.altitudeH1",
           k: "circling.kFactor",
           tasPlusWind: "circling.tasPlusWind",
@@ -1002,7 +1002,7 @@
           : unit === "m"
             ? elevRaw / ft2m
             : elevRaw;
-        const defProtAlt = Math.round(elevFt + 1000);
+        const defProtHeight = 1000; // AGL — constant regardless of aerodrome elevation
 
         ["a", "b", "c", "d", "e"].forEach((c) => {
           const iasEl = document.getElementById(`ias_${c}`);
@@ -1015,17 +1015,12 @@
             iasEl.classList.add("input-is-default");
           }
 
-          // Protection altitude: update when elevation changes
-          const prevPhDefault = parseFloat(phEl.dataset.default);
-          if (
-            !phEl.dataset.default ||
-            isNaN(prevPhDefault) ||
-            parseFloat(phEl.value) === prevPhDefault
-          ) {
-            phEl.value = defProtAlt;
+          // Protected height default: 1000 ft AGL (constant)
+          if (!phEl.dataset.default) {
+            phEl.value = defProtHeight;
+            phEl.dataset.default = defProtHeight;
             phEl.classList.add("input-is-default");
           }
-          phEl.dataset.default = defProtAlt;
         });
       }
 
@@ -1113,8 +1108,6 @@
       // Auto-calculate on global input change
       ["aerodromeElev", "elevUnit", "bankAngle", "deltaISA"].forEach((id) => {
         document.getElementById(id).addEventListener("change", () => {
-          // Re-apply protection altitude default when elevation changes
-          if (id === "aerodromeElev" || id === "elevUnit") applyDefaults();
           if (
             !document.getElementById("results").classList.contains("hidden")
           ) {
