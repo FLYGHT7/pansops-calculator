@@ -71,74 +71,6 @@
       .shake {
         animation: shake 0.35s ease;
       }
-<<<<<<< Updated upstream
-      .shake { animation: shake 0.35s ease; }
-
-      /* Formula panel */
-      details.formula-panel {
-        border: 1.5px solid var(--border);
-        border-radius: 10px;
-        background-color: var(--surface);
-        overflow: hidden;
-      }
-      details.formula-panel summary {
-        cursor: pointer;
-        padding: 0.75rem 1rem;
-        font-family: "Rajdhani", sans-serif;
-        font-weight: 600;
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: var(--primary);
-        list-style: none;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        user-select: none;
-      }
-      details.formula-panel summary::-webkit-details-marker { display: none; }
-      details.formula-panel summary::before {
-        content: "▶";
-        font-size: 0.65rem;
-        transition: transform 0.2s ease;
-        flex-shrink: 0;
-      }
-      details.formula-panel[open] summary::before { transform: rotate(90deg); }
-      details.formula-panel .formula-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 0.75rem;
-        padding: 0.75rem 1rem 1rem;
-        border-top: 1px solid var(--border);
-      }
-      details.formula-panel .formula-card {
-        background-color: var(--card);
-        border: 1.5px solid var(--border);
-        border-left: 3px solid var(--primary);
-        border-radius: 8px;
-        padding: 0.75rem;
-      }
-      details.formula-panel .formula-card h3 {
-        font-family: "Barlow", sans-serif;
-        font-size: 0.65rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: var(--text-muted);
-        margin-bottom: 0.4rem;
-      }
-      details.formula-panel .formula-card code {
-        font-family: "Share Tech Mono", monospace;
-        font-size: 0.8rem;
-        color: var(--primary);
-        display: block;
-        white-space: pre-wrap;
-        overflow-wrap: break-word;
-        line-height: 1.6;
-      }
-      html.dark details.formula-panel .formula-card code { color: var(--primary-light); }
-=======
->>>>>>> Stashed changes
     </style>
   </head>
   <body
@@ -552,50 +484,9 @@
             <span data-i18n="common.copy">Copy Results</span>
           </button>
         </div>
-<<<<<<< Updated upstream
 
-      </div><!-- /#results -->
-
-      <!-- ── Formula Panel ─────────────────────────────────────────────── -->
-      <details class="formula-panel mt-8">
-        <summary>
-          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-          </svg>
-          <span data-i18n="omniSid.formulaRef">PANS-OPS Formula Reference</span>
-        </summary>
-        <div class="formula-grid">
-
-          <div class="formula-card">
-            <h3 data-i18n="omniSid.formulaPdgLabel">PDG Formula</h3>
-            <code>PDG = (((obs − (der + 5)) ÷ dist) + 0.008) × 100 [%]</code>
-          </div>
-
-          <div class="formula-card">
-            <h3 data-i18n="omniSid.formulaOisLabel">OIS Elevation</h3>
-            <code>OIS = (der + 5) + (dist × 0.025) [m]</code>
-            <p class="text-xs text-gray-400 mt-1" data-i18n="omniSid.oisNote">OIS = (DER + 5 m) + (dist × 2.5%)</p>
-          </div>
-
-          <div class="formula-card">
-            <h3 data-i18n="omniSid.formulaMocLabel">MOC Clearance</h3>
-            <code>MOC = dist × 0.008 [m]</code>
-            <p class="text-xs text-gray-400 mt-1" data-i18n="omniSid.mocNote">MOC = 0.8% of horizontal distance</p>
-          </div>
-
-          <div class="formula-card">
-            <h3 data-i18n="omniSid.formulaReqAltLabel">Required Altitude</h3>
-            <code>ReqAlt = obs + MOC [m]</code>
-          </div>
-
-        </div>
-      </details>
-
-=======
       </div>
       <!-- /#results -->
->>>>>>> Stashed changes
     </main>
 
     <script src="js/omni_sid.js"></script>
