@@ -3,8 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f1f5f9" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0a0f1a" media="(prefers-color-scheme: dark)" />
+    <meta
+      name="theme-color"
+      content="#f1f5f9"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#0a0f1a"
+      media="(prefers-color-scheme: dark)"
+    />
     <title data-i18n="omniSid.title">OMNI SID PDG</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,7 +23,12 @@
     <script src="i18n/i18n.js"></script>
     <style>
       @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
       }
       .status-ok {
         background-color: rgba(16, 185, 129, 0.12);
@@ -38,12 +51,27 @@
         border-color: rgba(251, 191, 36, 0.3);
       }
       @keyframes shake {
-        0%,100% { transform: translateX(0); }
-        20%     { transform: translateX(-6px); }
-        40%     { transform: translateX(6px); }
-        60%     { transform: translateX(-4px); }
-        80%     { transform: translateX(4px); }
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20% {
+          transform: translateX(-6px);
+        }
+        40% {
+          transform: translateX(6px);
+        }
+        60% {
+          transform: translateX(-4px);
+        }
+        80% {
+          transform: translateX(4px);
+        }
       }
+      .shake {
+        animation: shake 0.35s ease;
+      }
+<<<<<<< Updated upstream
       .shake { animation: shake 0.35s ease; }
 
       /* Formula panel */
@@ -109,10 +137,18 @@
         line-height: 1.6;
       }
       html.dark details.formula-panel .formula-card code { color: var(--primary-light); }
+=======
+>>>>>>> Stashed changes
     </style>
   </head>
-  <body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4">
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-primary-700 focus:rounded focus:shadow">Skip to main content</a>
+  <body
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4"
+  >
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-primary-700 focus:rounded focus:shadow"
+      >Skip to main content</a
+    >
 
     <!-- Main Container -->
     <main
@@ -121,7 +157,9 @@
     >
       <!-- ── Header ─────────────────────────────────────────────────────── -->
       <header>
-        <h1 class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-1 flex items-center">
+        <h1
+          class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-1 flex items-center"
+        >
           <svg
             aria-hidden="true"
             focusable="false"
@@ -139,22 +177,44 @@
           </svg>
           <span data-i18n="omniSid.title">OMNI SID PDG</span>
         </h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 ml-10" data-i18n="omniSid.subtitle">
+        <p
+          class="text-sm text-gray-500 dark:text-gray-400 mb-6 ml-10"
+          data-i18n="omniSid.subtitle"
+        >
           ICAO PANS-OPS — PDG starts at DER + 5 m, MOC = 0.8%
         </p>
       </header>
 
       <!-- ── Save / Load ───────────────────────────────────────────────── -->
       <div class="flex flex-wrap justify-end mb-6 gap-3">
-        <input id="loadFile" type="file" accept=".json" class="hidden" aria-label="Load parameters file" />
+        <input
+          id="loadFile"
+          type="file"
+          accept=".json"
+          class="hidden"
+          aria-label="Load parameters file"
+        />
         <button
           type="button"
           id="btnSave"
           class="font-medium py-2 px-4 rounded-lg shadow flex items-center text-sm"
           data-tooltip="Save current inputs as JSON"
         >
-          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-1"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+            ></path>
             <polyline points="17 21 17 13 7 13 7 21"></polyline>
             <polyline points="7 3 7 8 15 8"></polyline>
           </svg>
@@ -166,7 +226,18 @@
           class="font-medium py-2 px-4 rounded-lg shadow flex items-center text-sm"
           data-tooltip="Load parameters from JSON file"
         >
-          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-1"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="17 8 12 3 7 8"></polyline>
             <line x1="12" y1="3" x2="12" y2="15"></line>
@@ -178,14 +249,22 @@
       <!-- ── Input Form ────────────────────────────────────────────────── -->
       <form id="inputForm" novalidate>
         <fieldset>
-          <legend id="legendOmni" class="sr-only" data-i18n="omniSid.title">OMNI SID PDG Inputs</legend>
+          <legend id="legendOmni" class="sr-only" data-i18n="omniSid.title">
+            OMNI SID PDG Inputs
+          </legend>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-
             <!-- DER Elevation -->
             <div class="space-y-2">
-              <label for="derElevation" data-i18n="omniSid.derElevation" data-tooltip="Departure End of Runway elevation above MSL">DER Elevation</label>
-              <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+              <label
+                for="derElevation"
+                data-i18n="omniSid.derElevation"
+                data-tooltip="Departure End of Runway elevation above MSL"
+                >DER Elevation</label
+              >
+              <div
+                class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+              >
                 <input
                   id="derElevation"
                   type="number"
@@ -195,7 +274,7 @@
                   class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                   aria-required="true"
                   inputmode="decimal"
-                  style="touch-action: manipulation;"
+                  style="touch-action: manipulation"
                 />
                 <select
                   id="unitsDer"
@@ -210,8 +289,15 @@
 
             <!-- Obstacle Elevation -->
             <div class="space-y-2">
-              <label for="obsElevation" data-i18n="omniSid.obsElevation" data-tooltip="Highest obstacle elevation in the departure sector">Obstacle Elevation</label>
-              <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+              <label
+                for="obsElevation"
+                data-i18n="omniSid.obsElevation"
+                data-tooltip="Highest obstacle elevation in the departure sector"
+                >Obstacle Elevation</label
+              >
+              <div
+                class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+              >
                 <input
                   id="obsElevation"
                   type="number"
@@ -221,7 +307,7 @@
                   class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                   aria-required="true"
                   inputmode="decimal"
-                  style="touch-action: manipulation;"
+                  style="touch-action: manipulation"
                 />
                 <select
                   id="unitsObs"
@@ -236,8 +322,15 @@
 
             <!-- Horizontal Distance -->
             <div class="space-y-2">
-              <label for="distance" data-i18n="omniSid.distance" data-tooltip="Horizontal ground distance from DER to the controlling obstacle">Horizontal Distance to Obstacle</label>
-              <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+              <label
+                for="distance"
+                data-i18n="omniSid.distance"
+                data-tooltip="Horizontal ground distance from DER to the controlling obstacle"
+                >Horizontal Distance to Obstacle</label
+              >
+              <div
+                class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+              >
                 <input
                   id="distance"
                   type="number"
@@ -247,7 +340,7 @@
                   class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                   aria-required="true"
                   inputmode="decimal"
-                  style="touch-action: manipulation;"
+                  style="touch-action: manipulation"
                 />
                 <select
                   id="unitsDist"
@@ -259,8 +352,8 @@
                 </select>
               </div>
             </div>
-
-          </div><!-- /grid -->
+          </div>
+          <!-- /grid -->
 
           <!-- Validation Banner -->
           <div
@@ -269,7 +362,18 @@
             aria-live="assertive"
             class="hidden mb-4 flex items-start gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-sm"
           >
-            <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 flex-shrink-0 mt-0.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
               <circle cx="12" cy="12" r="10"></circle>
               <line x1="12" y1="8" x2="12" y2="12"></line>
               <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -285,7 +389,6 @@
           >
             <span data-i18n="common.calculate">Calculate PDG</span>
           </button>
-
         </fieldset>
       </form>
 
@@ -299,65 +402,124 @@
         class="hidden mt-8 p-6 rounded-xl"
       >
         <!-- Section title -->
-        <h2 id="resultsHeading" data-i18n="omniSid.resultsTitle">PDG Results</h2>
+        <h2 id="resultsHeading" data-i18n="omniSid.resultsTitle">
+          PDG Results
+        </h2>
 
         <!-- KPI Cards -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="omniSid.kpiPdg">Required PDG</p>
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="omniSid.kpiPdg"
+            >
+              Required PDG
+            </p>
             <p id="kpiPdg" class="text-xl font-bold tabular-nums">—</p>
           </div>
 
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="omniSid.kpiOis">OIS Elevation</p>
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="omniSid.kpiOis"
+            >
+              OIS Elevation
+            </p>
             <p id="kpiOis" class="text-xl font-bold tabular-nums">—</p>
           </div>
 
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="omniSid.kpiMoc">MOC Clearance</p>
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="omniSid.kpiMoc"
+            >
+              MOC Clearance
+            </p>
             <p id="kpiMoc" class="text-xl font-bold tabular-nums">—</p>
           </div>
 
           <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="omniSid.kpiReqAlt">Required Altitude</p>
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="omniSid.kpiReqAlt"
+            >
+              Required Altitude
+            </p>
             <p id="kpiReqAlt" class="text-xl font-bold tabular-nums">—</p>
           </div>
-
         </div>
 
         <!-- Status badges -->
         <div class="flex flex-wrap gap-3 mb-6">
-          <span id="oisStatus" class="inline-flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium"></span>
-          <span id="pdgStatus" class="inline-flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium"></span>
+          <span
+            id="oisStatus"
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium"
+          ></span>
+          <span
+            id="pdgStatus"
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium"
+          ></span>
         </div>
 
         <!-- Input summary table -->
-        <table class="w-full text-sm border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-6">
+        <table
+          class="w-full text-sm border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-6"
+        >
           <thead>
             <tr>
-              <th class="text-left px-4 py-2" data-i18n="omniSid.inputParams" colspan="2">Input Parameters</th>
+              <th
+                class="text-left px-4 py-2"
+                data-i18n="omniSid.inputParams"
+                colspan="2"
+              >
+                Input Parameters
+              </th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td class="px-4 py-2 text-gray-500 dark:text-gray-400" data-i18n="omniSid.derElevation">DER Elevation</td>
+              <td
+                class="px-4 py-2 text-gray-500 dark:text-gray-400"
+                data-i18n="omniSid.derElevation"
+              >
+                DER Elevation
+              </td>
               <td id="summaryDer" class="px-4 py-2 font-mono">—</td>
             </tr>
             <tr>
-              <td class="px-4 py-2 text-gray-500 dark:text-gray-400" data-i18n="omniSid.obsElevation">Obstacle Elevation</td>
+              <td
+                class="px-4 py-2 text-gray-500 dark:text-gray-400"
+                data-i18n="omniSid.obsElevation"
+              >
+                Obstacle Elevation
+              </td>
               <td id="summaryObs" class="px-4 py-2 font-mono">—</td>
             </tr>
             <tr>
-              <td class="px-4 py-2 text-gray-500 dark:text-gray-400" data-i18n="omniSid.distance">Distance</td>
+              <td
+                class="px-4 py-2 text-gray-500 dark:text-gray-400"
+                data-i18n="omniSid.distance"
+              >
+                Distance
+              </td>
               <td id="summaryDist" class="px-4 py-2 font-mono">—</td>
             </tr>
             <tr>
-              <td class="px-4 py-2 text-gray-500 dark:text-gray-400" data-i18n="omniSid.kpiMoc">MOC Clearance</td>
+              <td
+                class="px-4 py-2 text-gray-500 dark:text-gray-400"
+                data-i18n="omniSid.kpiMoc"
+              >
+                MOC Clearance
+              </td>
               <td id="summaryMocFt" class="px-4 py-2 font-mono">—</td>
             </tr>
             <tr>
-              <td class="px-4 py-2 text-gray-500 dark:text-gray-400" data-i18n="omniSid.kpiReqAlt">Required Altitude</td>
+              <td
+                class="px-4 py-2 text-gray-500 dark:text-gray-400"
+                data-i18n="omniSid.kpiReqAlt"
+              >
+                Required Altitude
+              </td>
               <td id="summaryReqAltFt" class="px-4 py-2 font-mono">—</td>
             </tr>
           </tbody>
@@ -370,13 +532,27 @@
             id="btnCopy"
             class="py-2 px-4 rounded-lg font-medium flex items-center gap-2 text-sm"
           >
-            <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              <path
+                d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+              ></path>
             </svg>
             <span data-i18n="common.copy">Copy Results</span>
           </button>
         </div>
+<<<<<<< Updated upstream
 
       </div><!-- /#results -->
 
@@ -416,6 +592,10 @@
         </div>
       </details>
 
+=======
+      </div>
+      <!-- /#results -->
+>>>>>>> Stashed changes
     </main>
 
     <script src="js/omni_sid.js"></script>
