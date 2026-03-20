@@ -236,7 +236,8 @@
     "support": "Soporte",
     "ils": "ILS",
     "subGeneral": "General",
-    "subApproach": "Aproximación y Maniobra"
+    "subApproach": "Aproximación y Maniobra",
+    "subDepartures": "Salidas"
   },
   "circling": {
     "title": "Área de Protección para Maniobra Visual",
