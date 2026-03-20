@@ -906,7 +906,9 @@
                       stroke-linejoin="round"
                       aria-hidden="true"
                     >
-                      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                      <polyline
+                        points="23 6 13.5 15.5 8.5 10.5 1 18"
+                      ></polyline>
                       <polyline points="17 6 23 6 23 12"></polyline>
                     </svg>
                     <span class="sidebar-label" data-i18n="omniSid.title"
@@ -1051,162 +1053,22 @@
               <!-- Group separator -->
               <li><div class="my-2 border-t border-gray-700/50"></div></li>
 
-              <!-- Section: Support -->
-              <li
-                class="section-header px-3 mb-1 text-[11px] uppercase tracking-wide text-gray-400 select-none"
-                data-section="support"
-              >
-                <span class="label">
-                  <span class="label-text" data-i18n="sections.support"
-                    >Support</span
-                  >
-                </span>
-                <svg
-                  class="section-chevron"
-                  viewBox="0 0 12 12"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <polyline points="2,4 6,8 10,4" />
-                </svg>
-              </li>
-              <ul class="section-group space-y-1.5" data-for="support">
-                <li>
-                  <a
-                    id="reportIssueLink"
-                    href="https://github.com/FLYGHT7/pansops-calculator/issues"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    data-label="Report an Issue"
-                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
-                  >
-                    <i
-                      class="fas fa-bug text-primary-400 text-xl w-5 h-5 mr-3 sidebar-icon"
-                    ></i>
-                    <span class="sidebar-label" data-i18n="common.reportIssue"
-                      >Report an issue</span
-                    >
-                  </a>
-                </li>
-                <li>
-                  <button
-                    id="aboutButton"
-                    data-label="About / Changelog"
-                    onclick="loadPage('About.html', this)"
-                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
-                  >
-                    <i
-                      class="fas fa-info-circle text-primary-400 text-xl w-5 h-5 mr-3 sidebar-icon"
-                    ></i>
-                    <span class="sidebar-label" data-i18n="about.title"
-                      >About / Changelog</span
-                    >
-                  </button>
-                </li>
-              </ul>
+              <!-- Support items moved to topbar — #aboutButton kept hidden for JS loadPage() compatibility -->
             </ul>
           </nav>
+          <!-- Hidden anchor for JS sidebar active-state management -->
+          <button
+            id="aboutButton"
+            data-label="About / Changelog"
+            onclick="loadPage('About.html', this)"
+            class="hidden"
+            aria-hidden="true"
+            tabindex="-1"
+          ></button>
 
-          <div class="sidebar-footer px-4 mt-6 mb-4">
-            <!-- Dark Mode Toggle -->
-            <button
-              id="darkModeToggle"
-              data-label="Dark Mode"
-              class="w-full flex items-center justify-between p-3 text-gray-300 rounded-lg hover:bg-gray-700 mb-4 transition-colors"
-            >
-              <div class="flex items-center">
-                <!-- Phase 8 — animated sun/moon icon -->
-                <span
-                  class="dark-mode-icon relative inline-flex items-center justify-center w-5 h-5 mr-3 sidebar-footer-icon text-primary-400"
-                  aria-hidden="true"
-                >
-                  <!-- Sun (light mode) -->
-                  <svg
-                    class="dm-sun"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="5" />
-                    <line x1="12" y1="2" x2="12" y2="4" />
-                    <line x1="12" y1="20" x2="12" y2="22" />
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                    <line x1="2" y1="12" x2="4" y2="12" />
-                    <line x1="20" y1="12" x2="22" y2="12" />
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                  </svg>
-                  <!-- Moon (dark mode) -->
-                  <svg
-                    class="dm-moon"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                  </svg>
-                </span>
-                <span
-                  class="sidebar-label rail-hide"
-                  data-i18n="common.darkMode"
-                  >Dark Mode</span
-                >
-              </div>
-              <div
-                class="relative inline-block w-10 h-5 transition duration-200 ease-in-out rounded-full rail-hide"
-              >
-                <div
-                  class="absolute inset-0 bg-gray-600 dark-toggle-track rounded-full shadow-inner"
-                ></div>
-                <div
-                  id="darkModeIndicator"
-                  class="absolute left-0 w-5 h-5 transition duration-200 transform bg-white rounded-full shadow"
-                ></div>
-              </div>
-            </button>
-
-            <!-- Language Selector -->
-            <div
-              class="language-row w-full flex items-center justify-between p-3 text-gray-300 rounded-lg hover:bg-gray-700 mb-4 transition-colors"
-              data-label="Language"
-            >
-              <div class="flex items-center">
-                <i
-                  class="fas fa-globe text-primary-400 text-xl w-5 h-5 mr-3 sidebar-footer-icon"
-                ></i>
-                <label
-                  for="langSelectGlobal"
-                  class="mr-2 rail-hide"
-                  data-i18n="common.language"
-                  >Language</label
-                >
-              </div>
-              <select
-                id="langSelectGlobal"
-                class="text-gray-200 rounded px-2 py-1 border text-sm rail-hide"
-                style="background-color: #0f1929; border-color: #1e3a5f"
-              >
-                <option value="en">English</option>
-                <option value="es">Español</option>
-              </select>
-            </div>
-
-            <div
-              class="flex items-center space-x-2 text-sm text-gray-400 rail-hide"
-            >
+          <!-- sidebar-footer: visible on mobile only (desktop: topbar has these controls) -->
+          <div class="sidebar-footer px-4 mt-6 mb-4 md:hidden">
+            <div class="flex items-center space-x-2 text-sm text-gray-400">
               <span data-i18n="common.suiteName"
                 >Aviation Calculators Suite</span
               >
@@ -1256,26 +1118,94 @@
               >PANSOPS</span
             >
           </div>
-          <button
-            id="openSidebarBtn"
-            class="rounded-lg p-1 hover:bg-gray-700 focus:outline-none"
-            onclick="openSidebar()"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          <div class="flex items-center gap-2">
+            <!-- Compact dark mode toggle for mobile (delegates to topbar #darkModeToggle) -->
+            <button
+              id="darkModeToggleMobile"
+              type="button"
+              aria-label="Toggle dark mode"
+              class="flex items-center justify-center w-8 h-8 rounded-lg text-primary-400 hover:bg-gray-700 transition-colors"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          </button>
+              <span
+                class="dark-mode-icon relative inline-flex items-center justify-center w-5 h-5"
+                aria-hidden="true"
+              >
+                <svg
+                  class="dm-sun"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="5" />
+                  <line x1="12" y1="2" x2="12" y2="4" />
+                  <line x1="12" y1="20" x2="12" y2="22" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="2" y1="12" x2="4" y2="12" />
+                  <line x1="20" y1="12" x2="22" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>
+                <svg
+                  class="dm-moon"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+              </span>
+            </button>
+            <!-- Compact language selector for mobile (syncs with topbar #langSelectGlobal) -->
+            <select
+              id="langSelectMobile"
+              aria-label="Language"
+              class="text-gray-200 rounded px-1.5 py-0.5 border text-xs"
+              style="background-color: #0f1929; border-color: #1e3a5f"
+            >
+              <option value="en">EN</option>
+              <option value="es">ES</option>
+            </select>
+            <!-- About icon for mobile -->
+            <button
+              type="button"
+              aria-label="About / Changelog"
+              onclick="
+                loadPage('About.html', document.getElementById('aboutButton'))
+              "
+              class="flex items-center justify-center w-8 h-8 rounded-lg text-primary-400 hover:bg-gray-700 transition-colors"
+            >
+              <i class="fas fa-info-circle text-sm" aria-hidden="true"></i>
+            </button>
+            <button
+              id="openSidebarBtn"
+              class="rounded-lg p-1 hover:bg-gray-700 focus:outline-none"
+              onclick="openSidebar()"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <!-- Phase 2.5 / 10: Desktop topbar — collapse button + breadcrumb + current page title -->
@@ -1328,14 +1258,115 @@
               >
             </div>
           </div>
-          <span
-            class="text-gray-600"
-            style="
-              font-family: &quot;Share Tech Mono&quot;, monospace;
-              font-size: 0.72rem;
-            "
-            >v0.2.0</span
-          >
+          <div class="flex items-center gap-3">
+            <!-- Dark mode toggle (moved from sidebar-footer) -->
+            <button
+              id="darkModeToggle"
+              type="button"
+              aria-label="Toggle dark mode"
+              data-label="Dark Mode"
+              class="flex items-center justify-center w-8 h-8 rounded-lg text-primary-400 hover:bg-white/10 transition-colors"
+            >
+              <span
+                class="dark-mode-icon relative inline-flex items-center justify-center w-5 h-5"
+                aria-hidden="true"
+              >
+                <svg
+                  class="dm-sun"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="5" />
+                  <line x1="12" y1="2" x2="12" y2="4" />
+                  <line x1="12" y1="20" x2="12" y2="22" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="2" y1="12" x2="4" y2="12" />
+                  <line x1="20" y1="12" x2="22" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>
+                <svg
+                  class="dm-moon"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+              </span>
+              <!-- darkModeIndicator kept in DOM for JS compatibility -->
+              <span
+                id="darkModeIndicator"
+                class="hidden"
+                aria-hidden="true"
+              ></span>
+            </button>
+
+            <!-- Language selector (moved from sidebar-footer) -->
+            <div class="flex items-center gap-1.5">
+              <i
+                class="fas fa-globe text-primary-400 text-sm"
+                aria-hidden="true"
+              ></i>
+              <select
+                id="langSelectGlobal"
+                aria-label="Language"
+                class="text-gray-300 rounded px-1.5 py-0.5 border text-xs focus:outline-none focus:border-primary-400"
+                style="background-color: #0f1929; border-color: #1e3a5f"
+              >
+                <option value="en">EN</option>
+                <option value="es">ES</option>
+              </select>
+            </div>
+
+            <!-- Separator -->
+            <span class="w-px h-4 bg-gray-700" aria-hidden="true"></span>
+
+            <!-- Report an issue -->
+            <a
+              id="reportIssueLinkTopbar"
+              href="https://github.com/FLYGHT7/pansops-calculator/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Report an issue"
+              class="flex items-center gap-1.5 px-2.5 h-8 rounded-lg text-primary-400 hover:bg-white/10 transition-colors text-xs"
+            >
+              <i class="fas fa-bug text-sm" aria-hidden="true"></i>
+              <span data-i18n="common.reportIssue">Issues</span>
+            </a>
+
+            <!-- About / Changelog -->
+            <button
+              type="button"
+              aria-label="About / Changelog"
+              onclick="
+                loadPage('About.html', document.getElementById('aboutButton'))
+              "
+              class="flex items-center gap-1.5 px-2.5 h-8 rounded-lg text-primary-400 hover:bg-white/10 transition-colors text-xs"
+            >
+              <i class="fas fa-info-circle text-sm" aria-hidden="true"></i>
+              <span data-i18n="about.title">About</span>
+            </button>
+
+            <span
+              class="text-gray-600"
+              style="
+                font-family: &quot;Share Tech Mono&quot;, monospace;
+                font-size: 0.72rem;
+              "
+              >v0.2.0</span
+            >
+          </div>
         </div>
 
         <!-- Content Area -->
@@ -1908,6 +1939,28 @@
               // Haptic feedback
               if (navigator.vibrate) {
                 navigator.vibrate(10);
+              }
+            });
+          }
+        })();
+
+        // Sync mobile header controls with topbar equivalents
+        (function syncMobileControls() {
+          const darkModeToggleMobile = document.getElementById(
+            "darkModeToggleMobile",
+          );
+          const langSelectMobile = document.getElementById("langSelectMobile");
+          if (darkModeToggleMobile) {
+            darkModeToggleMobile.addEventListener("click", function () {
+              darkModeToggle.click();
+            });
+          }
+          if (langSelectMobile) {
+            langSelectMobile.value = localStorage.getItem("lang") || "en";
+            langSelectMobile.addEventListener("change", function (e) {
+              if (langSelectGlobal) {
+                langSelectGlobal.value = e.target.value;
+                langSelectGlobal.dispatchEvent(new Event("change"));
               }
             });
           }
