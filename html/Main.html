@@ -804,6 +804,61 @@
                     >
                   </button>
                 </li>
+                <li>
+                  <button
+                    id="windSpiralButton"
+                    data-label="Wind Spiral Calculator"
+                    onclick="loadPage('Wind_Spiral.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                  >
+                    <svg
+                      class="text-primary-400 w-5 h-5 mr-3 sidebar-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M12 2a10 10 0 1 1-7.07 2.93"></path>
+                      <path d="M12 6a6 6 0 1 1-4.24 1.76"></path>
+                      <path d="M12 10a2 2 0 1 1-1.41.59"></path>
+                    </svg>
+                    <span class="sidebar-label" data-i18n="windSpiral.title"
+                      >Wind Spiral Calculator</span
+                    >
+                  </button>
+                </li>
+                <li>
+                  <button
+                    id="bearingsAnglesButton"
+                    data-label="Bearings &amp; Angles"
+                    onclick="loadPage('bearings_angles.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 mr-3 sidebar-icon text-primary-400"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="16.2 7.8 12 12 8 16"></polyline>
+                      <line x1="2" y1="12" x2="22" y2="12"></line>
+                      <line x1="12" y1="2" x2="12" y2="22"></line>
+                    </svg>
+                    <span class="sidebar-label" data-i18n="bearings.title"
+                      >Bearings Angles</span
+                    >
+                  </button>
+                </li>
                 <li class="sub-section-label" aria-hidden="true">
                   <span data-i18n="sections.subDepartures">Departures</span>
                 </li>
@@ -949,33 +1004,6 @@
                     >
                   </button>
                 </li>
-                <li>
-                  <button
-                    id="windSpiralButton"
-                    data-label="Wind Spiral Calculator"
-                    onclick="loadPage('Wind_Spiral.html', this)"
-                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
-                  >
-                    <svg
-                      class="text-primary-400 w-5 h-5 mr-3 sidebar-icon"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      aria-hidden="true"
-                    >
-                      <path d="M12 2a10 10 0 1 1-7.07 2.93"></path>
-                      <path d="M12 6a6 6 0 1 1-4.24 1.76"></path>
-                      <path d="M12 10a2 2 0 1 1-1.41.59"></path>
-                    </svg>
-                    <span class="sidebar-label" data-i18n="windSpiral.title"
-                      >Wind Spiral Calculator</span
-                    >
-                  </button>
-                </li>
               </ul>
 
               <!-- Section: ILS tools -->
@@ -1047,34 +1075,6 @@
                     </svg>
                     <span class="sidebar-label" data-i18n="ilsDistance.title"
                       >ILS Distance Calculations</span
-                    >
-                  </button>
-                </li>
-                <li>
-                  <button
-                    id="bearingsAnglesButton"
-                    data-label="Bearings & Angles"
-                    onclick="loadPage('bearings_angles.html', this)"
-                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-5 w-5 mr-3 sidebar-icon text-primary-400"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      aria-hidden="true"
-                    >
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <polyline points="16.2 7.8 12 12 8 16"></polyline>
-                      <line x1="2" y1="12" x2="22" y2="12"></line>
-                      <line x1="12" y1="2" x2="12" y2="22"></line>
-                    </svg>
-                    <span class="sidebar-label" data-i18n="bearings.title"
-                      >Bearings Angles</span
                     >
                   </button>
                 </li>
