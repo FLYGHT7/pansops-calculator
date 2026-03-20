@@ -20,7 +20,7 @@
     "celsius": "°C"
   },
   "rateTurn": {
-    "title": "TAS, Tasa y Radio de Giro",
+    "title": "Tasa y Radio de Giro",
     "loadParamsFile": "Cargar archivo de parámetros (JSON)"
   },
   "isa": {
