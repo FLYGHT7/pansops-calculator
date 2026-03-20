@@ -20,7 +20,7 @@
     "celsius": "°C"
   },
   "rateTurn": {
-    "title": "TAS, Rate & Radius of Turn",
+    "title": "Rate & Radius of Turn",
     "loadParamsFile": "Load Parameters File (JSON)"
   },
   "isa": {
