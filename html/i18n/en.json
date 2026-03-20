@@ -236,7 +236,8 @@
     "support": "Support",
     "ils": "ILS",
     "subGeneral": "General",
-    "subApproach": "Approach \u0026 Manoeuvring"
+    "subApproach": "Approach & Manoeuvring",
+    "subDepartures": "Departures"
   },
   "circling": {
     "title": "Circling Protection Area",
