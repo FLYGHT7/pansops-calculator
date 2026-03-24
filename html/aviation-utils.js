@@ -178,13 +178,13 @@ function checkDarkMode() {
  */
 function createHTMLTable(data, title) {
   let htmlContent = `
-    <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-      <tr style="background-color: #f1f5f9;"><th colspan="2">${title}</th></tr>
-      <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
+    <table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
+      <tr style="background:#0c2240;color:#ffffff"><th colspan="2" style="padding:8px;text-align:left;font-weight:bold">${title}</th></tr>
+      <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
   `;
 
   for (const [key, value] of Object.entries(data)) {
-    htmlContent += `<tr><td>${key}</td><td>${value}</td></tr>`;
+    htmlContent += `<tr><td style="padding:8px;text-align:left">${key}</td><td style="padding:8px;text-align:left">${value}</td></tr>`;
   }
 
   htmlContent += `</table>`;

@@ -231,12 +231,12 @@ function copyResultsToClipboard() {
     const rateOfTurn =
       document.getElementById("rateOfTurn").textContent || "N/A";
     if (document.getElementById("uncappedRow").classList.contains("hidden")) {
-      rateRow = `<tr><td>Rate of Turn</td><td>${rateOfTurn}</td></tr>`;
+      rateRow = `<tr><td style="padding:8px;text-align:left">Rate of Turn</td><td style="padding:8px;text-align:left">${rateOfTurn}</td></tr>`;
     } else {
       const uncappedRateOfTurn =
         document.getElementById("uncappedRateOfTurn").textContent || "N/A";
-      rateRow = `<tr><td>Rate of Turn (Capped)</td><td>${rateOfTurn}</td></tr>
-                     <tr><td>Rate of Turn (Uncapped)</td><td>${uncappedRateOfTurn}</td></tr>`;
+      rateRow = `<tr><td style="padding:8px;text-align:left">Rate of Turn (Capped)</td><td style="padding:8px;text-align:left">${rateOfTurn}</td></tr>
+                     <tr><td style="padding:8px;text-align:left">Rate of Turn (Uncapped)</td><td style="padding:8px;text-align:left">${uncappedRateOfTurn}</td></tr>`;
     }
   }
 
@@ -244,16 +244,16 @@ function copyResultsToClipboard() {
     document.getElementById("radiusOfTurn").textContent || "N/A";
 
   const htmlContent = `
-        <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-          <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
-          <tr><td>IAS</td><td>${ias} knots</td></tr>
-          <tr><td>Altitude</td><td>${altitude} ${altitudeUnit}</td></tr>
-          <tr><td>ISA Deviation (VAR)</td><td>${isaDeviation} °C</td></tr>
-          <tr><td>Bank Angle</td><td>${bankAngle} °</td></tr>
-          <tr><td>k Factor</td><td>${kFactor}</td></tr>
-          <tr><td>True Airspeed (TAS)</td><td>${tas} knots</td></tr>
+        <table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
+          <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
+          <tr><td style="padding:8px;text-align:left">IAS</td><td style="padding:8px;text-align:left">${ias} knots</td></tr>
+          <tr><td style="padding:8px;text-align:left">Altitude</td><td style="padding:8px;text-align:left">${altitude} ${altitudeUnit}</td></tr>
+          <tr><td style="padding:8px;text-align:left">ISA Deviation (VAR)</td><td style="padding:8px;text-align:left">${isaDeviation} °C</td></tr>
+          <tr><td style="padding:8px;text-align:left">Bank Angle</td><td style="padding:8px;text-align:left">${bankAngle} °</td></tr>
+          <tr><td style="padding:8px;text-align:left">k Factor</td><td style="padding:8px;text-align:left">${kFactor}</td></tr>
+          <tr><td style="padding:8px;text-align:left">True Airspeed (TAS)</td><td style="padding:8px;text-align:left">${tas} knots</td></tr>
           ${rateRow}
-          <tr><td>Radius of Turn</td><td>${radiusOfTurn}</td></tr>
+          <tr><td style="padding:8px;text-align:left">Radius of Turn</td><td style="padding:8px;text-align:left">${radiusOfTurn}</td></tr>
         </table>
       `;
 
@@ -290,7 +290,7 @@ function copyResultsToClipboard() {
       new ClipboardItem({ "text/html": htmlBlob, "text/plain": textBlob }),
     ])
     .then(() => {
-      showToast("Results copied to clipboard!", "success");
+      showToast("Results copied — paste into Word.", "success");
     })
     .catch((err) => {
       console.error("Copy failed: ", err);
