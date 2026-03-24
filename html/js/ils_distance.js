@@ -268,12 +268,12 @@ function copyToWordDocument(type) {
             <tr><td style="padding:8px;text-align:left">Point/Fix Type</td><td style="padding:8px;text-align:left">${calcType}</td></tr>
             <tr><td style="padding:8px;text-align:left">THR Elevation</td><td style="padding:8px;text-align:left">${thrElev} ${thrElevUnit}</td></tr>
             <tr><td style="padding:8px;text-align:left">RDH</td><td style="padding:8px;text-align:left">${rdh} ${rdhUnit}</td></tr>
-            <tr><td style="padding:8px;text-align:left">FAP Altitude</td><td style="padding:8px;text-align:left">${parseFloat(fapAltitude).toFixed(
-              2,
-            )} ft</td></tr>
-            <tr><td style="padding:8px;text-align:left">Glidepath Angle</td><td style="padding:8px;text-align:left">${parseFloat(glideAngle).toFixed(
-              2,
-            )}°</td></tr>
+            <tr><td style="padding:8px;text-align:left">FAP Altitude</td><td style="padding:8px;text-align:left">${parseFloat(
+              fapAltitude,
+            ).toFixed(2)} ft</td></tr>
+            <tr><td style="padding:8px;text-align:left">Glidepath Angle</td><td style="padding:8px;text-align:left">${parseFloat(
+              glideAngle,
+            ).toFixed(2)}°</td></tr>
             <tr><td style="padding:8px;text-align:left">Right Angle Computation Distance</td><td style="padding:8px;text-align:left">${distanceA} NM</td></tr>
             <tr><td style="padding:8px;text-align:left">Considering Earth Curvature Distance</td><td style="padding:8px;text-align:left">${distanceB} NM</td></tr>`;
 
@@ -304,10 +304,7 @@ function copyToWordDocument(type) {
   navigator.clipboard
     .write([new ClipboardItem({ "text/html": blob, "text/plain": textBlob })])
     .then(() => {
-      showToast(
-        "Results copied — paste into Word.",
-        "success",
-      );
+      showToast("Results copied — paste into Word.", "success");
     })
     .catch((err) => {
       console.error("Copy failed:", err);
