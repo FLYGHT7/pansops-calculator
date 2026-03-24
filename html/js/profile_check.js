@@ -330,17 +330,17 @@ function copyToWordDocument() {
     document.getElementById("initialElevation").textContent || "N/A";
 
   const htmlContent = `
-        <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-          <tr><th>Parameter</th><th>Value</th></tr>
-          <tr><td>THR Elev (ft)</td><td>${outputThrElev} (Input: ${thrElev} ${thrElevUnit})</td></tr>
-          <tr><td>TCH (ft)</td><td>${outputTch} (Input: ${tch} ${tchUnit})</td></tr>
-          <tr><td>VPA (°)</td><td>${vpa}</td></tr>
-          <tr><td>Distance to FAF (NM)</td><td>${distToFaf}</td></tr>
-          <tr><td>Intermediate Length (NM)</td><td>${intermediateLength}</td></tr>
-          <tr><td>Initial Length (NM)</td><td>${initialLength}</td></tr>
-          <tr><td>FAF Elevation (ft)</td><td>${fafElevation}</td></tr>
-          <tr><td>Intermediate Elevation (ft)</td><td>${intermediateElevation}</td></tr>
-          <tr><td>Initial Elevation (ft)</td><td>${initialElevation}</td></tr>
+        <table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
+          <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
+          <tr><td style="padding:8px;text-align:left">THR Elev (ft)</td><td style="padding:8px;text-align:left">${outputThrElev} (Input: ${thrElev} ${thrElevUnit})</td></tr>
+          <tr><td style="padding:8px;text-align:left">TCH (ft)</td><td style="padding:8px;text-align:left">${outputTch} (Input: ${tch} ${tchUnit})</td></tr>
+          <tr><td style="padding:8px;text-align:left">VPA (°)</td><td style="padding:8px;text-align:left">${vpa}</td></tr>
+          <tr><td style="padding:8px;text-align:left">Distance to FAF (NM)</td><td style="padding:8px;text-align:left">${distToFaf}</td></tr>
+          <tr><td style="padding:8px;text-align:left">Intermediate Length (NM)</td><td style="padding:8px;text-align:left">${intermediateLength}</td></tr>
+          <tr><td style="padding:8px;text-align:left">Initial Length (NM)</td><td style="padding:8px;text-align:left">${initialLength}</td></tr>
+          <tr><td style="padding:8px;text-align:left">FAF Elevation (ft)</td><td style="padding:8px;text-align:left">${fafElevation}</td></tr>
+          <tr><td style="padding:8px;text-align:left">Intermediate Elevation (ft)</td><td style="padding:8px;text-align:left">${intermediateElevation}</td></tr>
+          <tr><td style="padding:8px;text-align:left">Initial Elevation (ft)</td><td style="padding:8px;text-align:left">${initialElevation}</td></tr>
         </table>
       `;
   const blob = new Blob([htmlContent], { type: "text/html" });
@@ -360,7 +360,7 @@ function copyToWordDocument() {
     .write([new ClipboardItem({ "text/html": blob, "text/plain": textBlob })])
     .then(() => {
       showToast(
-        "Results copied — paste into Word or a text editor.",
+        "Results copied — paste into Word.",
         "success",
       );
     })

@@ -165,17 +165,17 @@ function copyTable() {
   const moc    = dist_m * 0.008;
   const reqAlt = obs_m + moc;
 
-  const tableHTML = `<table border="1" style="border-collapse:collapse;width:100%;font-family:sans-serif;font-size:13px">
-  <tr style="background:#0c2240;color:#93c5fd"><th style="padding:8px">Parameter</th><th style="padding:8px">Value</th></tr>
-  <tr><td style="padding:8px">DER Elevation</td><td style="padding:8px">${unitDer === "ft" ? derVal + " ft (" + fmt(der_m, 2) + " m)" : derVal + " m"}</td></tr>
-  <tr><td style="padding:8px">Obstacle Elevation</td><td style="padding:8px">${unitObs === "ft" ? obsVal + " ft (" + fmt(obs_m, 2) + " m)" : obsVal + " m"}</td></tr>
-  <tr><td style="padding:8px">Horizontal Distance</td><td style="padding:8px">${unitDist === "NM" ? distVal + " NM (" + fmt(dist_m, 2) + " m)" : distVal + " m"}</td></tr>
-  <tr style="font-weight:700"><td style="padding:8px">Required PDG</td><td style="padding:8px">${fmt(pdg, 2)}%</td></tr>
-  <tr><td style="padding:8px">OIS Elevation</td><td style="padding:8px">${fmt(ois, 2)} m</td></tr>
-  <tr><td style="padding:8px">MOC Clearance</td><td style="padding:8px">${fmt(moc, 2)} m (${fmt(moc / 0.3048, 2)} ft)</td></tr>
-  <tr><td style="padding:8px">Required Altitude</td><td style="padding:8px">${fmt(reqAlt, 2)} m (${fmt(reqAlt / 0.3048, 2)} ft)</td></tr>
-  <tr><td style="padding:8px">OIS Penetration</td><td style="padding:8px">${obs_m > ois ? "YES" : "No"}</td></tr>
-  <tr><td style="padding:8px">PDG Note</td><td style="padding:8px">${pdg > 3.3 ? "Exceeds 3.3% standard" : "Within 3.3% standard"}</td></tr>
+  const tableHTML = `<table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
+  <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
+  <tr><td style="padding:8px;text-align:left">DER Elevation</td><td style="padding:8px;text-align:left">${unitDer === "ft" ? derVal + " ft (" + fmt(der_m, 2) + " m)" : derVal + " m"}</td></tr>
+  <tr><td style="padding:8px;text-align:left">Obstacle Elevation</td><td style="padding:8px;text-align:left">${unitObs === "ft" ? obsVal + " ft (" + fmt(obs_m, 2) + " m)" : obsVal + " m"}</td></tr>
+  <tr><td style="padding:8px;text-align:left">Horizontal Distance</td><td style="padding:8px;text-align:left">${unitDist === "NM" ? distVal + " NM (" + fmt(dist_m, 2) + " m)" : distVal + " m"}</td></tr>
+  <tr style="font-weight:700"><td style="padding:8px;text-align:left">Required PDG</td><td style="padding:8px;text-align:left">${fmt(pdg, 2)}%</td></tr>
+  <tr><td style="padding:8px;text-align:left">OIS Elevation</td><td style="padding:8px;text-align:left">${fmt(ois, 2)} m</td></tr>
+  <tr><td style="padding:8px;text-align:left">MOC Clearance</td><td style="padding:8px;text-align:left">${fmt(moc, 2)} m (${fmt(moc / 0.3048, 2)} ft)</td></tr>
+  <tr><td style="padding:8px;text-align:left">Required Altitude</td><td style="padding:8px;text-align:left">${fmt(reqAlt, 2)} m (${fmt(reqAlt / 0.3048, 2)} ft)</td></tr>
+  <tr><td style="padding:8px;text-align:left">OIS Penetration</td><td style="padding:8px;text-align:left">${obs_m > ois ? "YES" : "No"}</td></tr>
+  <tr><td style="padding:8px;text-align:left">PDG Note</td><td style="padding:8px;text-align:left">${pdg > 3.3 ? "Exceeds 3.3% standard" : "Within 3.3% standard"}</td></tr>
 </table>`;
 
   copyToClipboard(tableHTML);
