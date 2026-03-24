@@ -359,10 +359,7 @@ function copyToWordDocument() {
   navigator.clipboard
     .write([new ClipboardItem({ "text/html": blob, "text/plain": textBlob })])
     .then(() => {
-      showToast(
-        "Results copied — paste into Word.",
-        "success",
-      );
+      showToast("Results copied — paste into Word.", "success");
     })
     .catch((err) => {
       console.error("Copy failed:", err);

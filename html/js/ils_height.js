@@ -269,9 +269,9 @@ function copyToWordDocument(type) {
             <tr><td style="padding:8px;text-align:left">Distance to the ${calcType}</td><td style="padding:8px;text-align:left">${parseFloat(
               distFAP,
             ).toFixed(2)} NM</td></tr>
-            <tr><td style="padding:8px;text-align:left">Glidepath Angle</td><td style="padding:8px;text-align:left">${parseFloat(glideAngle).toFixed(
-              2,
-            )}°</td></tr>
+            <tr><td style="padding:8px;text-align:left">Glidepath Angle</td><td style="padding:8px;text-align:left">${parseFloat(
+              glideAngle,
+            ).toFixed(2)}°</td></tr>
             <tr><td style="padding:8px;text-align:left">Right Angle Computation FAP Altitude</td><td style="padding:8px;text-align:left">${methodA} ft</td></tr>
             <tr><td style="padding:8px;text-align:left">Considering Earth Curvature FAP Altitude</td><td style="padding:8px;text-align:left">${methodB} ft</td></tr>`;
 
@@ -303,10 +303,7 @@ function copyToWordDocument(type) {
   navigator.clipboard
     .write([new ClipboardItem({ "text/html": blob, "text/plain": textBlob })])
     .then(() => {
-      showToast(
-        "Results copied — paste into Word.",
-        "success",
-      );
+      showToast("Results copied — paste into Word.", "success");
     })
     .catch((err) => {
       console.error("Copy failed:", err);

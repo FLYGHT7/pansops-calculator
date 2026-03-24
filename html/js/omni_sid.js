@@ -13,7 +13,11 @@ function showValidationError(msg) {
   document.getElementById("validationMessage").textContent = msg;
   banner.classList.remove("hidden");
   banner.classList.add("shake");
-  banner.addEventListener("animationend", () => banner.classList.remove("shake"), { once: true });
+  banner.addEventListener(
+    "animationend",
+    () => banner.classList.remove("shake"),
+    { once: true },
+  );
 }
 
 function hideValidationError() {
@@ -84,47 +88,54 @@ function fmt(val, dec) {
 function calculate() {
   if (!validate()) return;
 
-  const derVal  = parseFloat(document.getElementById("derElevation").value);
-  const obsVal  = parseFloat(document.getElementById("obsElevation").value);
+  const derVal = parseFloat(document.getElementById("derElevation").value);
+  const obsVal = parseFloat(document.getElementById("obsElevation").value);
   const distVal = parseFloat(document.getElementById("distance").value);
 
-  const unitDer  = document.getElementById("unitsDer").value;
-  const unitObs  = document.getElementById("unitsObs").value;
+  const unitDer = document.getElementById("unitsDer").value;
+  const unitObs = document.getElementById("unitsObs").value;
   const unitDist = document.getElementById("unitsDist").value;
 
-  const der_m  = unitDer  === "ft" ? feetToMeters(derVal)  : derVal;
-  const obs_m  = unitObs  === "ft" ? feetToMeters(obsVal)  : obsVal;
+  const der_m = unitDer === "ft" ? feetToMeters(derVal) : derVal;
+  const obs_m = unitObs === "ft" ? feetToMeters(obsVal) : obsVal;
   const dist_m = unitDist === "NM" ? nmToMeters(distVal) : distVal;
 
   // Core PANS-OPS calculations
-  const pdg    = (((obs_m - (der_m + 5)) / dist_m) + 0.008) * 100;
-  const ois    = (der_m + 5) + (dist_m * 0.025);
-  const moc    = dist_m * 0.008;
+  const pdg = ((obs_m - (der_m + 5)) / dist_m + 0.008) * 100;
+  const ois = der_m + 5 + dist_m * 0.025;
+  const moc = dist_m * 0.008;
   const reqAlt = obs_m + moc;
 
   const oisPenetration = obs_m > ois;
-  const pdgExceeds     = pdg > 3.3;
+  const pdgExceeds = pdg > 3.3;
 
   // Populate KPI cards
-  document.getElementById("kpiPdg").textContent    = fmt(pdg, 2) + "%";
-  document.getElementById("kpiOis").textContent    = fmt(ois, 2) + " m";
-  document.getElementById("kpiMoc").textContent    = fmt(moc, 2) + " m";
+  document.getElementById("kpiPdg").textContent = fmt(pdg, 2) + "%";
+  document.getElementById("kpiOis").textContent = fmt(ois, 2) + " m";
+  document.getElementById("kpiMoc").textContent = fmt(moc, 2) + " m";
   document.getElementById("kpiReqAlt").textContent = fmt(reqAlt, 2) + " m";
 
   // Input summary
-  const derDisplay  = unitDer  === "ft" ? `${derVal} ft (${fmt(der_m, 2)} m)`  : `${derVal} m`;
-  const obsDisplay  = unitObs  === "ft" ? `${obsVal} ft (${fmt(obs_m, 2)} m)`  : `${obsVal} m`;
-  const distDisplay = unitDist === "NM" ? `${distVal} NM (${fmt(dist_m, 2)} m)` : `${distVal} m`;
+  const derDisplay =
+    unitDer === "ft" ? `${derVal} ft (${fmt(der_m, 2)} m)` : `${derVal} m`;
+  const obsDisplay =
+    unitObs === "ft" ? `${obsVal} ft (${fmt(obs_m, 2)} m)` : `${obsVal} m`;
+  const distDisplay =
+    unitDist === "NM" ? `${distVal} NM (${fmt(dist_m, 2)} m)` : `${distVal} m`;
 
-  document.getElementById("summaryDer").textContent  = derDisplay;
-  document.getElementById("summaryObs").textContent  = obsDisplay;
+  document.getElementById("summaryDer").textContent = derDisplay;
+  document.getElementById("summaryObs").textContent = obsDisplay;
   document.getElementById("summaryDist").textContent = distDisplay;
-  document.getElementById("summaryMocFt").textContent = `${fmt(moc / 0.3048, 2)} ft`;
-  document.getElementById("summaryReqAltFt").textContent = `(${fmt(reqAlt / 0.3048, 2)} ft)`;
+  document.getElementById("summaryMocFt").textContent =
+    `${fmt(moc / 0.3048, 2)} ft`;
+  document.getElementById("summaryReqAltFt").textContent =
+    `(${fmt(reqAlt / 0.3048, 2)} ft)`;
 
   // Status indicators
   const oisStatus = document.getElementById("oisStatus");
-  oisStatus.textContent = oisPenetration ? "⚠ Obstacle penetrates the OIS." : "✓ Obstacle does not penetrate the OIS.";
+  oisStatus.textContent = oisPenetration
+    ? "⚠ Obstacle penetrates the OIS."
+    : "✓ Obstacle does not penetrate the OIS.";
   oisStatus.className = oisPenetration
     ? "inline-flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium status-warn"
     : "inline-flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium status-ok";
@@ -148,21 +159,21 @@ function calculate() {
 // ── Copy table ─────────────────────────────────────────────────────────────────
 
 function copyTable() {
-  const derVal  = parseFloat(document.getElementById("derElevation").value);
-  const obsVal  = parseFloat(document.getElementById("obsElevation").value);
+  const derVal = parseFloat(document.getElementById("derElevation").value);
+  const obsVal = parseFloat(document.getElementById("obsElevation").value);
   const distVal = parseFloat(document.getElementById("distance").value);
 
-  const unitDer  = document.getElementById("unitsDer").value;
-  const unitObs  = document.getElementById("unitsObs").value;
+  const unitDer = document.getElementById("unitsDer").value;
+  const unitObs = document.getElementById("unitsObs").value;
   const unitDist = document.getElementById("unitsDist").value;
 
-  const der_m  = unitDer  === "ft" ? feetToMeters(derVal)  : derVal;
-  const obs_m  = unitObs  === "ft" ? feetToMeters(obsVal)  : obsVal;
+  const der_m = unitDer === "ft" ? feetToMeters(derVal) : derVal;
+  const obs_m = unitObs === "ft" ? feetToMeters(obsVal) : obsVal;
   const dist_m = unitDist === "NM" ? nmToMeters(distVal) : distVal;
 
-  const pdg    = (((obs_m - (der_m + 5)) / dist_m) + 0.008) * 100;
-  const ois    = (der_m + 5) + (dist_m * 0.025);
-  const moc    = dist_m * 0.008;
+  const pdg = ((obs_m - (der_m + 5)) / dist_m + 0.008) * 100;
+  const ois = der_m + 5 + dist_m * 0.025;
+  const moc = dist_m * 0.008;
   const reqAlt = obs_m + moc;
 
   const tableHTML = `<table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
@@ -187,14 +198,16 @@ function saveParameters() {
   const data = {
     derElevation: document.getElementById("derElevation").value || "",
     obsElevation: document.getElementById("obsElevation").value || "",
-    distance:     document.getElementById("distance").value || "",
-    unitsDer:     document.getElementById("unitsDer").value || "m",
-    unitsObs:     document.getElementById("unitsObs").value || "m",
-    unitsDist:    document.getElementById("unitsDist").value || "m",
+    distance: document.getElementById("distance").value || "",
+    unitsDer: document.getElementById("unitsDer").value || "m",
+    unitsObs: document.getElementById("unitsObs").value || "m",
+    unitsDist: document.getElementById("unitsDist").value || "m",
   };
 
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: "application/json",
+  });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = `${timestamp}_omni_sid.json`;
@@ -212,9 +225,17 @@ function loadParameters(event) {
   reader.onload = function (e) {
     try {
       const data = JSON.parse(e.target.result);
-      const fields = ["derElevation", "obsElevation", "distance", "unitsDer", "unitsObs", "unitsDist"];
+      const fields = [
+        "derElevation",
+        "obsElevation",
+        "distance",
+        "unitsDer",
+        "unitsObs",
+        "unitsDist",
+      ];
       fields.forEach((id) => {
-        if (data[id] !== undefined) document.getElementById(id).value = data[id];
+        if (data[id] !== undefined)
+          document.getElementById(id).value = data[id];
       });
       showToast("Parameters loaded!", "success");
     } catch {
@@ -233,7 +254,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnLoad").addEventListener("click", () => {
     document.getElementById("loadFile").click();
   });
-  document.getElementById("loadFile").addEventListener("change", loadParameters);
+  document
+    .getElementById("loadFile")
+    .addEventListener("change", loadParameters);
   document.getElementById("btnCalcOmni").addEventListener("click", calculate);
   document.getElementById("btnCopy").addEventListener("click", copyTable);
 

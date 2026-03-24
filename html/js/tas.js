@@ -220,10 +220,7 @@ function copyResultsToClipboard() {
       }),
     ])
     .then(() => {
-      showToast(
-        "Results copied — paste into Word.",
-        "success",
-      );
+      showToast("Results copied — paste into Word.", "success");
     })
     .catch((err) => {
       console.error("Error copying content to clipboard:", err);

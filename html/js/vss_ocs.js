@@ -632,9 +632,9 @@ function copyToWordDocument(type) {
             <tr><td style="padding:8px;text-align:left">THR Elev</td><td style="padding:8px;text-align:left">${thrElev} ${thrElevUnit}</td></tr>
             <tr><td style="padding:8px;text-align:left">RDH</td><td style="padding:8px;text-align:left">${rdh} ${rdhUnit}</td></tr>
             <tr><td style="padding:8px;text-align:left">VPA (°)</td><td style="padding:8px;text-align:left">${parseFloat(vpa).toFixed(2)}</td></tr>
-            <tr><td style="padding:8px;text-align:left">OCH</td><td style="padding:8px;text-align:left">${parseFloat(och).toFixed(
-              4,
-            )} ${ochUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">OCH</td><td style="padding:8px;text-align:left">${parseFloat(
+              och,
+            ).toFixed(4)} ${ochUnit}</td></tr>
             <tr><td style="padding:8px;text-align:left">VSS Distance</td><td style="padding:8px;text-align:left">${vssDistance}</td></tr>
           </table>`;
 
@@ -665,16 +665,16 @@ function copyToWordDocument(type) {
     htmlContent = `
           <table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
             <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
-            <tr><td style="padding:8px;text-align:left">OCH</td><td style="padding:8px;text-align:left">${parseFloat(och).toFixed(
-              4,
-            )} ${ochUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">OCH</td><td style="padding:8px;text-align:left">${parseFloat(
+              och,
+            ).toFixed(4)} ${ochUnit}</td></tr>
             <tr><td style="padding:8px;text-align:left">RDH</td><td style="padding:8px;text-align:left">${rdh} ${rdhUnit}</td></tr>
             <tr><td style="padding:8px;text-align:left">VPA (°)</td><td style="padding:8px;text-align:left">${parseFloat(vpa).toFixed(2)}</td></tr>
             <tr><td style="padding:8px;text-align:left">OCS Length</td><td style="padding:8px;text-align:left">${ocsLength}</td></tr>
             <tr><td style="padding:8px;text-align:left">OCS E (Lateral)</td><td style="padding:8px;text-align:left">${ocsE}</td></tr>
-            <tr><td style="padding:8px;text-align:left">OCS Elevation</td><td style="padding:8px;text-align:left">${parseFloat(ocsElev).toFixed(
-              4,
-            )} m</td></tr>
+            <tr><td style="padding:8px;text-align:left">OCS Elevation</td><td style="padding:8px;text-align:left">${parseFloat(
+              ocsElev,
+            ).toFixed(4)} m</td></tr>
             <tr><td style="padding:8px;text-align:left">OCS θ</td><td style="padding:8px;text-align:left">${parseFloat(ocsTheta).toFixed(2)}°</td></tr>
             <tr><td style="padding:8px;text-align:left">OCS Elevation Adjustment</td><td style="padding:8px;text-align:left">${parseFloat(
               ocsAdjust,
@@ -713,9 +713,9 @@ function copyToWordDocument(type) {
             <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
             <tr><td style="padding:8px;text-align:left">THR Elev</td><td style="padding:8px;text-align:left">${thrElev} ${thrElevUnit}</td></tr>
             <tr><td style="padding:8px;text-align:left">RDH</td><td style="padding:8px;text-align:left">${rdh} ${rdhUnit}</td></tr>
-            <tr><td style="padding:8px;text-align:left">GP Angle (°)</td><td style="padding:8px;text-align:left">${parseFloat(gpAngle).toFixed(
-              2,
-            )}</td></tr>
+            <tr><td style="padding:8px;text-align:left">GP Angle (°)</td><td style="padding:8px;text-align:left">${parseFloat(
+              gpAngle,
+            ).toFixed(2)}</td></tr>
             <tr><td style="padding:8px;text-align:left">DA/DH</td><td style="padding:8px;text-align:left">${daDh} ${daDhUnit}</td></tr>
             <tr><td style="padding:8px;text-align:left">ILS Category</td><td style="padding:8px;text-align:left">CAT ${ilsCategory}</td></tr>
             <tr><td style="padding:8px;text-align:left">OAS Height</td><td style="padding:8px;text-align:left">${oasHeight}</td></tr>
@@ -755,9 +755,9 @@ function copyToWordDocument(type) {
             <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
             <tr><td style="padding:8px;text-align:left">THR Elev</td><td style="padding:8px;text-align:left">${thrElev} ${thrElevUnit}</td></tr>
             <tr><td style="padding:8px;text-align:left">RDH</td><td style="padding:8px;text-align:left">${rdh} ${rdhUnit}</td></tr>
-            <tr><td style="padding:8px;text-align:left">GP Angle (°)</td><td style="padding:8px;text-align:left">${parseFloat(gpAngle).toFixed(
-              2,
-            )}</td></tr>
+            <tr><td style="padding:8px;text-align:left">GP Angle (°)</td><td style="padding:8px;text-align:left">${parseFloat(
+              gpAngle,
+            ).toFixed(2)}</td></tr>
             <tr><td style="padding:8px;text-align:left">DA/DH</td><td style="padding:8px;text-align:left">${daDh} ${daDhUnit}</td></tr>
             <tr><td style="padding:8px;text-align:left">APV Type</td><td style="padding:8px;text-align:left">APV ${apvType}</td></tr>
             <tr><td style="padding:8px;text-align:left">OAS Height</td><td style="padding:8px;text-align:left">${oasHeight}</td></tr>
@@ -798,9 +798,9 @@ function copyToWordDocument(type) {
             <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
             <tr><td style="padding:8px;text-align:left">THR Elev</td><td style="padding:8px;text-align:left">${thrElev} ${thrElevUnit}</td></tr>
             <tr><td style="padding:8px;text-align:left">RDH</td><td style="padding:8px;text-align:left">${rdh} ${rdhUnit}</td></tr>
-            <tr><td style="padding:8px;text-align:left">GP Angle (°)</td><td style="padding:8px;text-align:left">${parseFloat(gpAngle).toFixed(
-              2,
-            )}</td></tr>
+            <tr><td style="padding:8px;text-align:left">GP Angle (°)</td><td style="padding:8px;text-align:left">${parseFloat(
+              gpAngle,
+            ).toFixed(2)}</td></tr>
             <tr><td style="padding:8px;text-align:left">DA/DH</td><td style="padding:8px;text-align:left">${daDh} ${daDhUnit}</td></tr>
             <tr><td style="padding:8px;text-align:left">LOC Sensitivity</td><td style="padding:8px;text-align:left">${parseFloat(
               locSensitivity,
@@ -829,10 +829,7 @@ function copyToWordDocument(type) {
   navigator.clipboard
     .write([new ClipboardItem({ "text/html": blob, "text/plain": textBlob })])
     .then(() => {
-      showToast(
-        "Results copied — paste into Word.",
-        "success",
-      );
+      showToast("Results copied — paste into Word.", "success");
     })
     .catch((err) => {
       console.error("Copy failed:", err);
