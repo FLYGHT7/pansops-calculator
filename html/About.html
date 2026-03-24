@@ -6,6 +6,13 @@
     <title data-i18n="about.title">About — PANSOPS Calculator Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="shared-config.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".app-version").forEach(function (el) {
+          el.textContent = "v" + (window.APP_VERSION || "?");
+        });
+      });
+    </script>
     <link rel="stylesheet" href="dark-mode.css" />
     <script src="i18n/i18n.js"></script>
     <style>
@@ -821,7 +828,7 @@
           >
             <div class="flex items-center gap-3 mb-2">
               <span
-                class="ver-badge px-2 py-0.5 rounded"
+                class="app-version ver-badge px-2 py-0.5 rounded"
                 style="
                   background: rgba(56, 189, 248, 0.12);
                   border: 1px solid rgba(56, 189, 248, 0.3);
