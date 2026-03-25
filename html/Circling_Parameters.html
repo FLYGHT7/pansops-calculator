@@ -274,13 +274,14 @@
       }
 
       /* ── Default-value highlight on inputs ─────────────────────── */
+      /* Amber = "this is an ICAO default — change if needed" (not an error) */
       .input-is-default {
-        border-color: #dc2626 !important;
-        color: #dc2626 !important;
+        border-color: #d97706 !important;
+        color: #d97706 !important;
       }
       html.dark .input-is-default {
-        border-color: #f87171 !important;
-        color: #f87171 !important;
+        border-color: #fbbf24 !important;
+        color: #fbbf24 !important;
       }
 
       /* Visible fieldset legend — accent pill */
@@ -843,6 +844,8 @@
         const DEFAULT_PROT_HEIGHT = 1000; // AGL height above aerodrome (ft)
 
         const rows = [
+          { label: "Bank Angle [\u00b0]", id: "bankAngle", dec: 1, isInput: true },
+          { label: "\u0394T ISA [\u00b0C]", id: "deltaISA", dec: 1, isInput: true },
           { label: "IAS [KT]", id: "ias", dec: 0, isInput: true },
           {
             label: "Protected Height [ft AGL]",
@@ -876,7 +879,8 @@
         ];
 
         const data = {};
-        let anyModified = false;
+        const bankModified = Math.abs(bankDeg - 20) > 0.001;
+        let anyModified = bankModified;
         CATS.forEach((cat) => {
           const c = cat.toLowerCase();
           const ias = parseFloat(document.getElementById(`ias_${c}`).value);
@@ -892,6 +896,8 @@
           const res = calcCategory(ias, ph, elevFt, bankDeg, deltaISA);
           const S = S_CONST[cat];
           data[cat] = {
+            bankAngle: bankModified ? fmt(bankDeg, 1) + " \u2020" : fmt(bankDeg, 1),
+            deltaISA: fmt(deltaISA, 1),
             ias: iasModified ? fmt(ias, 0) + " \u2020" : fmt(ias, 0),
             ph: phModified ? fmt(ph, 0) + " \u2020" : fmt(ph, 0),
             h1: res.h1_ft,
@@ -953,6 +959,8 @@
 
       function rowI18nKey(id) {
         const map = {
+          bankAngle: "circling.bankAngle",
+          deltaISA: "circling.deltaISA",
           ias: "circling.ias",
           ph: "circling.protectedHeight",
           h1: "circling.altitudeH1",
@@ -1022,6 +1030,20 @@
             phEl.classList.add("input-is-default");
           }
         });
+
+        // Bank Angle global default: 20° — flag amber if changed
+        const bankEl = document.getElementById("bankAngle");
+        if (!bankEl.dataset.default) {
+          bankEl.value = 20;
+          bankEl.dataset.default = "20";
+          bankEl.classList.add("input-is-default");
+        }
+
+        // ΔT ISA global default: 15 — do NOT flag changes (depends on aerodrome/T_ref)
+        const isaEl = document.getElementById("deltaISA");
+        if (isaEl.value === "") {
+          isaEl.value = 15;
+        }
       }
 
       function validate() {
@@ -1089,7 +1111,7 @@
         if (!table) return;
 
         const rows = Array.from(table.querySelectorAll("tr"));
-        const tableHTML = `<table border="1" style="border-collapse:collapse;width:100%;font-family:sans-serif;font-size:13px">
+        const tableHTML = `<table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
   ${rows
     .map((tr, i) => {
       const cells = Array.from(tr.querySelectorAll("th, td"));
@@ -1141,6 +1163,15 @@
             this.classList.remove("input-is-default");
           }
         });
+      });
+
+      // Bank Angle: flag amber when at default (20°), unflag when changed
+      document.getElementById("bankAngle").addEventListener("input", function () {
+        if (this.value !== "" && parseFloat(this.value) === 20) {
+          this.classList.add("input-is-default");
+        } else {
+          this.classList.remove("input-is-default");
+        }
       });
 
       // Initialize defaults on page load
