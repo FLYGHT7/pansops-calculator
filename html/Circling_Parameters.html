@@ -844,8 +844,18 @@
         const DEFAULT_PROT_HEIGHT = 1000; // AGL height above aerodrome (ft)
 
         const rows = [
-          { label: "Bank Angle [\u00b0]", id: "bankAngle", dec: 1, isInput: true },
-          { label: "\u0394T ISA [\u00b0C]", id: "deltaISA", dec: 1, isInput: true },
+          {
+            label: "Bank Angle [\u00b0]",
+            id: "bankAngle",
+            dec: 1,
+            isInput: true,
+          },
+          {
+            label: "\u0394T ISA [\u00b0C]",
+            id: "deltaISA",
+            dec: 1,
+            isInput: true,
+          },
           { label: "IAS [KT]", id: "ias", dec: 0, isInput: true },
           {
             label: "Protected Height [ft AGL]",
@@ -896,7 +906,9 @@
           const res = calcCategory(ias, ph, elevFt, bankDeg, deltaISA);
           const S = S_CONST[cat];
           data[cat] = {
-            bankAngle: bankModified ? fmt(bankDeg, 1) + " \u2020" : fmt(bankDeg, 1),
+            bankAngle: bankModified
+              ? fmt(bankDeg, 1) + " \u2020"
+              : fmt(bankDeg, 1),
             deltaISA: fmt(deltaISA, 1),
             ias: iasModified ? fmt(ias, 0) + " \u2020" : fmt(ias, 0),
             ph: phModified ? fmt(ph, 0) + " \u2020" : fmt(ph, 0),
@@ -1166,13 +1178,15 @@
       });
 
       // Bank Angle: flag amber when at default (20°), unflag when changed
-      document.getElementById("bankAngle").addEventListener("input", function () {
-        if (this.value !== "" && parseFloat(this.value) === 20) {
-          this.classList.add("input-is-default");
-        } else {
-          this.classList.remove("input-is-default");
-        }
-      });
+      document
+        .getElementById("bankAngle")
+        .addEventListener("input", function () {
+          if (this.value !== "" && parseFloat(this.value) === 20) {
+            this.classList.add("input-is-default");
+          } else {
+            this.classList.remove("input-is-default");
+          }
+        });
 
       // Initialize defaults on page load
       applyDefaults();
