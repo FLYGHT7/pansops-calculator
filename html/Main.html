@@ -6,6 +6,13 @@
     <title data-i18n="common.suiteName">Aviation Calculators Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="shared-config.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".app-version").forEach(function (el) {
+          el.textContent = "v" + (window.APP_VERSION || "?");
+        });
+      });
+    </script>
     <link rel="stylesheet" href="dark-mode.css" />
     <link
       rel="stylesheet"
@@ -1102,7 +1109,7 @@
               <span data-i18n="common.suiteName"
                 >Aviation Calculators Suite</span
               >
-              <span>v0.2.0</span>
+              <span class="app-version">v0.2.0</span>
             </div>
           </div>
         </div>
@@ -1389,7 +1396,7 @@
             </button>
 
             <span
-              class="text-gray-600"
+              class="app-version text-gray-600"
               style="
                 font-family: &quot;Share Tech Mono&quot;, monospace;
                 font-size: 0.72rem;

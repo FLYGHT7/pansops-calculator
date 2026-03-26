@@ -55,3 +55,5 @@ tailwind.config = {
     },
   },
 };
+
+window.APP_VERSION = "0.3.0";
