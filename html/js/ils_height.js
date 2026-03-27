@@ -261,22 +261,22 @@ function copyToWordDocument(type) {
       document.getElementById("deltaHOutput").textContent || "0.0000";
 
     htmlContent = `
-          <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-            <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
-            <tr><td>Point/Fix Type</td><td>${calcType}</td></tr>
-            <tr><td>THR Elevation</td><td>${thrElev} ${thrElevUnit}</td></tr>
-            <tr><td>RDH</td><td>${rdh} ${rdhUnit}</td></tr>
-            <tr><td>Distance to the ${calcType}</td><td>${parseFloat(
+          <table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
+            <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
+            <tr><td style="padding:8px;text-align:left">Point/Fix Type</td><td style="padding:8px;text-align:left">${calcType}</td></tr>
+            <tr><td style="padding:8px;text-align:left">THR Elevation</td><td style="padding:8px;text-align:left">${thrElev} ${thrElevUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">RDH</td><td style="padding:8px;text-align:left">${rdh} ${rdhUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">Distance to the ${calcType}</td><td style="padding:8px;text-align:left">${parseFloat(
               distFAP,
             ).toFixed(2)} NM</td></tr>
-            <tr><td>Glidepath Angle</td><td>${parseFloat(glideAngle).toFixed(
-              2,
-            )}°</td></tr>
-            <tr><td>Right Angle Computation FAP Altitude</td><td>${methodA} ft</td></tr>
-            <tr><td>Considering Earth Curvature FAP Altitude</td><td>${methodB} ft</td></tr>`;
+            <tr><td style="padding:8px;text-align:left">Glidepath Angle</td><td style="padding:8px;text-align:left">${parseFloat(
+              glideAngle,
+            ).toFixed(2)}°</td></tr>
+            <tr><td style="padding:8px;text-align:left">Right Angle Computation FAP Altitude</td><td style="padding:8px;text-align:left">${methodA} ft</td></tr>
+            <tr><td style="padding:8px;text-align:left">Considering Earth Curvature FAP Altitude</td><td style="padding:8px;text-align:left">${methodB} ft</td></tr>`;
 
     if (parseFloat(deltaHValue) > 0) {
-      htmlContent += `<tr><td>RDH &gt;15m Adjustment</td><td>${deltaHValue} ft</td></tr>`;
+      htmlContent += `<tr><td style="padding:8px;text-align:left">RDH &gt;15m Adjustment</td><td style="padding:8px;text-align:left">${deltaHValue} ft</td></tr>`;
     }
 
     htmlContent += `</table>`;
@@ -303,10 +303,7 @@ function copyToWordDocument(type) {
   navigator.clipboard
     .write([new ClipboardItem({ "text/html": blob, "text/plain": textBlob })])
     .then(() => {
-      showToast(
-        "Results copied — paste into Word or a text editor.",
-        "success",
-      );
+      showToast("Results copied — paste into Word.", "success");
     })
     .catch((err) => {
       console.error("Copy failed:", err);

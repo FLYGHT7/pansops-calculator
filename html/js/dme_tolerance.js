@@ -215,15 +215,15 @@ function copyResultsToClipboard() {
     document.getElementById("slantRangeMax").textContent || "N/A";
 
   const htmlContent = `
-        <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-          <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
-          <tr><td>Navaid Elevation</td><td>${navaidElevation} ${navaidUnit}</td></tr>
-          <tr><td>Fix Ground Distance</td><td>${groundDistance} NM</td></tr>
-          <tr><td>Aircraft Elevation</td><td>${aircraftElevation} ${aircraftUnit}</td></tr>
-          <tr><td>Slant Range</td><td>${slantRange} NM</td></tr>
-          <tr><td>DME Tolerance</td><td>±${dmeTolerance} NM</td></tr>
-          <tr><td>Slant Range (Min)</td><td>${slantRangeMin} NM</td></tr>
-          <tr><td>Slant Range (Max)</td><td>${slantRangeMax} NM</td></tr>
+        <table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
+          <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
+          <tr><td style="padding:8px;text-align:left">Navaid Elevation</td><td style="padding:8px;text-align:left">${navaidElevation} ${navaidUnit}</td></tr>
+          <tr><td style="padding:8px;text-align:left">Fix Ground Distance</td><td style="padding:8px;text-align:left">${groundDistance} NM</td></tr>
+          <tr><td style="padding:8px;text-align:left">Aircraft Elevation</td><td style="padding:8px;text-align:left">${aircraftElevation} ${aircraftUnit}</td></tr>
+          <tr><td style="padding:8px;text-align:left">Slant Range</td><td style="padding:8px;text-align:left">${slantRange} NM</td></tr>
+          <tr><td style="padding:8px;text-align:left">DME Tolerance</td><td style="padding:8px;text-align:left">±${dmeTolerance} NM</td></tr>
+          <tr><td style="padding:8px;text-align:left">Slant Range (Min)</td><td style="padding:8px;text-align:left">${slantRangeMin} NM</td></tr>
+          <tr><td style="padding:8px;text-align:left">Slant Range (Max)</td><td style="padding:8px;text-align:left">${slantRangeMax} NM</td></tr>
         </table>
       `;
 
@@ -251,7 +251,7 @@ function copyResultsToClipboard() {
       }),
     ])
     .then(() => {
-      showToast("Results copied to clipboard!", "success");
+      showToast("Results copied — paste into Word.", "success");
     })
     .catch((err) => {
       console.error("Copy failed:", err);

@@ -186,13 +186,13 @@ function copyResultsToClipboard() {
 
   // Create a formatted Word-style table as HTML
   const htmlContent = `
-        <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-          <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
-          <tr><td>Indicated Airspeed (IAS)</td><td>${ias} knots</td></tr>
-          <tr><td>Altitude</td><td>${altitude} ${altitudeUnit}</td></tr>
-          <tr><td>ISA Deviation (VAR)</td><td>${isaDeviation} °C</td></tr>
-          <tr><td>k Factor</td><td>${kFactor}</td></tr>
-          <tr><td>True Airspeed (TAS)</td><td>${tas} knots</td></tr>
+        <table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
+          <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
+          <tr><td style="padding:8px;text-align:left">Indicated Airspeed (IAS)</td><td style="padding:8px;text-align:left">${ias} knots</td></tr>
+          <tr><td style="padding:8px;text-align:left">Altitude</td><td style="padding:8px;text-align:left">${altitude} ${altitudeUnit}</td></tr>
+          <tr><td style="padding:8px;text-align:left">ISA Deviation (VAR)</td><td style="padding:8px;text-align:left">${isaDeviation} °C</td></tr>
+          <tr><td style="padding:8px;text-align:left">k Factor</td><td style="padding:8px;text-align:left">${kFactor}</td></tr>
+          <tr><td style="padding:8px;text-align:left">True Airspeed (TAS)</td><td style="padding:8px;text-align:left">${tas} knots</td></tr>
         </table>
       `;
 
@@ -220,10 +220,7 @@ function copyResultsToClipboard() {
       }),
     ])
     .then(() => {
-      showToast(
-        "Formatted table copied to clipboard! You can paste it into Word.",
-        "success",
-      );
+      showToast("Results copied — paste into Word.", "success");
     })
     .catch((err) => {
       console.error("Error copying content to clipboard:", err);

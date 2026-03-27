@@ -266,38 +266,38 @@ function copyToWordDocument(type) {
 
     let tableRows = "";
     if (inputType === "magnetic") {
-      tableRows += `<tr><td>Input Type</td><td>Magnetic Bearing</td></tr>`;
-      tableRows += `<tr><td>Magnetic Bearing (Input)</td><td>${bearingVal.toFixed(
+      tableRows += `<tr><td style="padding:8px;text-align:left">Input Type</td><td style="padding:8px;text-align:left">Magnetic Bearing</td></tr>`;
+      tableRows += `<tr><td style="padding:8px;text-align:left">Magnetic Bearing (Input)</td><td style="padding:8px;text-align:left">${bearingVal.toFixed(
         4,
       )}°</td></tr>`;
-      tableRows += `<tr><td>Calculated True Azimuth</td><td>${trueAzimuth.toFixed(
+      tableRows += `<tr><td style="padding:8px;text-align:left">Calculated True Azimuth</td><td style="padding:8px;text-align:left">${trueAzimuth.toFixed(
         4,
       )}°</td></tr>`;
     } else {
-      tableRows += `<tr><td>Input Type</td><td>True Azimuth</td></tr>`;
-      tableRows += `<tr><td>True Azimuth (Input)</td><td>${trueAzimuth.toFixed(
+      tableRows += `<tr><td style="padding:8px;text-align:left">Input Type</td><td style="padding:8px;text-align:left">True Azimuth</td></tr>`;
+      tableRows += `<tr><td style="padding:8px;text-align:left">True Azimuth (Input)</td><td style="padding:8px;text-align:left">${trueAzimuth.toFixed(
         4,
       )}°</td></tr>`;
-      tableRows += `<tr><td>Calculated Magnetic Bearing</td><td>${magneticBearing.toFixed(
+      tableRows += `<tr><td style="padding:8px;text-align:left">Calculated Magnetic Bearing</td><td style="padding:8px;text-align:left">${magneticBearing.toFixed(
         4,
       )}°</td></tr>`;
     }
-    tableRows += `<tr><td>Magnetic Variation</td><td>${variation.toFixed(
+    tableRows += `<tr><td style="padding:8px;text-align:left">Magnetic Variation</td><td style="padding:8px;text-align:left">${variation.toFixed(
       4,
     )}°</td></tr>`;
-    tableRows += `<tr><td>Variation Direction</td><td>${var_dir}</td></tr>`;
+    tableRows += `<tr><td style="padding:8px;text-align:left">Variation Direction</td><td style="padding:8px;text-align:left">${var_dir}</td></tr>`;
     if (varDate) {
-      tableRows += `<tr><td>Date</td><td>${varDate}</td></tr>`;
+      tableRows += `<tr><td style="padding:8px;text-align:left">Date</td><td style="padding:8px;text-align:left">${varDate}</td></tr>`;
     }
     if (document.getElementById("includeQGIS").checked) {
-      tableRows += `<tr><td>QGIS Angle</td><td>${qgisAngle.toFixed(
+      tableRows += `<tr><td style="padding:8px;text-align:left">QGIS Angle</td><td style="padding:8px;text-align:left">${qgisAngle.toFixed(
         4,
       )}°</td></tr>`;
     }
 
     htmlContent = `
-          <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-            <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
+          <table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
+            <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
             ${tableRows}
           </table>
         `;
@@ -307,7 +307,7 @@ function copyToWordDocument(type) {
   const plainRows = tableRows
     .replace(/<tr>/g, "")
     .replace(/<\/tr>/g, "\n")
-    .replace(/<td>/g, "")
+    .replace(/<td[^>]*>/g, "")
     .replace(/<\/td>/g, "\t")
     .replace(/\t\n/g, "\n")
     .trim();
@@ -316,12 +316,7 @@ function copyToWordDocument(type) {
   navigator.clipboard
     .write([new ClipboardItem({ "text/html": blob, "text/plain": textBlob })])
     .then(() => {
-      showToast(
-        window.I18N && I18N.get
-          ? I18N.get("messages.copied", "Results copied to clipboard!")
-          : "Results copied to clipboard!",
-        "success",
-      );
+      showToast("Results copied — paste into Word.", "success");
     })
     .catch((err) => {
       console.error("Copy failed:", err);

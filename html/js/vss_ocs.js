@@ -627,15 +627,15 @@ function copyToWordDocument(type) {
       document.getElementById("dvssOutput").textContent || "N/A";
 
     htmlContent = `
-          <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-            <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
-            <tr><td>THR Elev</td><td>${thrElev} ${thrElevUnit}</td></tr>
-            <tr><td>RDH</td><td>${rdh} ${rdhUnit}</td></tr>
-            <tr><td>VPA (°)</td><td>${parseFloat(vpa).toFixed(2)}</td></tr>
-            <tr><td>OCH</td><td>${parseFloat(och).toFixed(
-              4,
-            )} ${ochUnit}</td></tr>
-            <tr><td>VSS Distance</td><td>${vssDistance}</td></tr>
+          <table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
+            <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
+            <tr><td style="padding:8px;text-align:left">THR Elev</td><td style="padding:8px;text-align:left">${thrElev} ${thrElevUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">RDH</td><td style="padding:8px;text-align:left">${rdh} ${rdhUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">VPA (°)</td><td style="padding:8px;text-align:left">${parseFloat(vpa).toFixed(2)}</td></tr>
+            <tr><td style="padding:8px;text-align:left">OCH</td><td style="padding:8px;text-align:left">${parseFloat(
+              och,
+            ).toFixed(4)} ${ochUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">VSS Distance</td><td style="padding:8px;text-align:left">${vssDistance}</td></tr>
           </table>`;
 
     textRows = [
@@ -663,20 +663,20 @@ function copyToWordDocument(type) {
       document.getElementById("ocsAdjustOutput").textContent || "N/A";
 
     htmlContent = `
-          <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-            <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
-            <tr><td>OCH</td><td>${parseFloat(och).toFixed(
-              4,
-            )} ${ochUnit}</td></tr>
-            <tr><td>RDH</td><td>${rdh} ${rdhUnit}</td></tr>
-            <tr><td>VPA (°)</td><td>${parseFloat(vpa).toFixed(2)}</td></tr>
-            <tr><td>OCS Length</td><td>${ocsLength}</td></tr>
-            <tr><td>OCS E (Lateral)</td><td>${ocsE}</td></tr>
-            <tr><td>OCS Elevation</td><td>${parseFloat(ocsElev).toFixed(
-              4,
-            )} m</td></tr>
-            <tr><td>OCS θ</td><td>${parseFloat(ocsTheta).toFixed(2)}°</td></tr>
-            <tr><td>OCS Elevation Adjustment</td><td>${parseFloat(
+          <table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
+            <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
+            <tr><td style="padding:8px;text-align:left">OCH</td><td style="padding:8px;text-align:left">${parseFloat(
+              och,
+            ).toFixed(4)} ${ochUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">RDH</td><td style="padding:8px;text-align:left">${rdh} ${rdhUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">VPA (°)</td><td style="padding:8px;text-align:left">${parseFloat(vpa).toFixed(2)}</td></tr>
+            <tr><td style="padding:8px;text-align:left">OCS Length</td><td style="padding:8px;text-align:left">${ocsLength}</td></tr>
+            <tr><td style="padding:8px;text-align:left">OCS E (Lateral)</td><td style="padding:8px;text-align:left">${ocsE}</td></tr>
+            <tr><td style="padding:8px;text-align:left">OCS Elevation</td><td style="padding:8px;text-align:left">${parseFloat(
+              ocsElev,
+            ).toFixed(4)} m</td></tr>
+            <tr><td style="padding:8px;text-align:left">OCS θ</td><td style="padding:8px;text-align:left">${parseFloat(ocsTheta).toFixed(2)}°</td></tr>
+            <tr><td style="padding:8px;text-align:left">OCS Elevation Adjustment</td><td style="padding:8px;text-align:left">${parseFloat(
               ocsAdjust,
             ).toFixed(4)} m</td></tr>
           </table>`;
@@ -709,18 +709,18 @@ function copyToWordDocument(type) {
       document.getElementById("oasWidthOutput").textContent || "N/A";
 
     htmlContent = `
-          <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-            <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
-            <tr><td>THR Elev</td><td>${thrElev} ${thrElevUnit}</td></tr>
-            <tr><td>RDH</td><td>${rdh} ${rdhUnit}</td></tr>
-            <tr><td>GP Angle (°)</td><td>${parseFloat(gpAngle).toFixed(
-              2,
-            )}</td></tr>
-            <tr><td>DA/DH</td><td>${daDh} ${daDhUnit}</td></tr>
-            <tr><td>ILS Category</td><td>CAT ${ilsCategory}</td></tr>
-            <tr><td>OAS Height</td><td>${oasHeight}</td></tr>
-            <tr><td>OAS Length</td><td>${oasLength}</td></tr>
-            <tr><td>OAS Width</td><td>${oasWidth}</td></tr>
+          <table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
+            <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
+            <tr><td style="padding:8px;text-align:left">THR Elev</td><td style="padding:8px;text-align:left">${thrElev} ${thrElevUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">RDH</td><td style="padding:8px;text-align:left">${rdh} ${rdhUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">GP Angle (°)</td><td style="padding:8px;text-align:left">${parseFloat(
+              gpAngle,
+            ).toFixed(2)}</td></tr>
+            <tr><td style="padding:8px;text-align:left">DA/DH</td><td style="padding:8px;text-align:left">${daDh} ${daDhUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">ILS Category</td><td style="padding:8px;text-align:left">CAT ${ilsCategory}</td></tr>
+            <tr><td style="padding:8px;text-align:left">OAS Height</td><td style="padding:8px;text-align:left">${oasHeight}</td></tr>
+            <tr><td style="padding:8px;text-align:left">OAS Length</td><td style="padding:8px;text-align:left">${oasLength}</td></tr>
+            <tr><td style="padding:8px;text-align:left">OAS Width</td><td style="padding:8px;text-align:left">${oasWidth}</td></tr>
           </table>`;
 
     textRows = [
@@ -751,18 +751,18 @@ function copyToWordDocument(type) {
       document.getElementById("apvOasWidthOutput").textContent || "N/A";
 
     htmlContent = `
-          <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-            <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
-            <tr><td>THR Elev</td><td>${thrElev} ${thrElevUnit}</td></tr>
-            <tr><td>RDH</td><td>${rdh} ${rdhUnit}</td></tr>
-            <tr><td>GP Angle (°)</td><td>${parseFloat(gpAngle).toFixed(
-              2,
-            )}</td></tr>
-            <tr><td>DA/DH</td><td>${daDh} ${daDhUnit}</td></tr>
-            <tr><td>APV Type</td><td>APV ${apvType}</td></tr>
-            <tr><td>OAS Height</td><td>${oasHeight}</td></tr>
-            <tr><td>OAS Length</td><td>${oasLength}</td></tr>
-            <tr><td>OAS Width</td><td>${oasWidth}</td></tr>
+          <table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
+            <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
+            <tr><td style="padding:8px;text-align:left">THR Elev</td><td style="padding:8px;text-align:left">${thrElev} ${thrElevUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">RDH</td><td style="padding:8px;text-align:left">${rdh} ${rdhUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">GP Angle (°)</td><td style="padding:8px;text-align:left">${parseFloat(
+              gpAngle,
+            ).toFixed(2)}</td></tr>
+            <tr><td style="padding:8px;text-align:left">DA/DH</td><td style="padding:8px;text-align:left">${daDh} ${daDhUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">APV Type</td><td style="padding:8px;text-align:left">APV ${apvType}</td></tr>
+            <tr><td style="padding:8px;text-align:left">OAS Height</td><td style="padding:8px;text-align:left">${oasHeight}</td></tr>
+            <tr><td style="padding:8px;text-align:left">OAS Length</td><td style="padding:8px;text-align:left">${oasLength}</td></tr>
+            <tr><td style="padding:8px;text-align:left">OAS Width</td><td style="padding:8px;text-align:left">${oasWidth}</td></tr>
           </table>`;
 
     textRows = [
@@ -794,20 +794,20 @@ function copyToWordDocument(type) {
       document.getElementById("locOasWidthOutput").textContent || "N/A";
 
     htmlContent = `
-          <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-            <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
-            <tr><td>THR Elev</td><td>${thrElev} ${thrElevUnit}</td></tr>
-            <tr><td>RDH</td><td>${rdh} ${rdhUnit}</td></tr>
-            <tr><td>GP Angle (°)</td><td>${parseFloat(gpAngle).toFixed(
-              2,
-            )}</td></tr>
-            <tr><td>DA/DH</td><td>${daDh} ${daDhUnit}</td></tr>
-            <tr><td>LOC Sensitivity</td><td>${parseFloat(
+          <table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
+            <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
+            <tr><td style="padding:8px;text-align:left">THR Elev</td><td style="padding:8px;text-align:left">${thrElev} ${thrElevUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">RDH</td><td style="padding:8px;text-align:left">${rdh} ${rdhUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">GP Angle (°)</td><td style="padding:8px;text-align:left">${parseFloat(
+              gpAngle,
+            ).toFixed(2)}</td></tr>
+            <tr><td style="padding:8px;text-align:left">DA/DH</td><td style="padding:8px;text-align:left">${daDh} ${daDhUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">LOC Sensitivity</td><td style="padding:8px;text-align:left">${parseFloat(
               locSensitivity,
             ).toFixed(2)}</td></tr>
-            <tr><td>OAS Height</td><td>${oasHeight}</td></tr>
-            <tr><td>OAS Length</td><td>${oasLength}</td></tr>
-            <tr><td>OAS Width</td><td>${oasWidth}</td></tr>
+            <tr><td style="padding:8px;text-align:left">OAS Height</td><td style="padding:8px;text-align:left">${oasHeight}</td></tr>
+            <tr><td style="padding:8px;text-align:left">OAS Length</td><td style="padding:8px;text-align:left">${oasLength}</td></tr>
+            <tr><td style="padding:8px;text-align:left">OAS Width</td><td style="padding:8px;text-align:left">${oasWidth}</td></tr>
           </table>`;
 
     textRows = [
@@ -829,10 +829,7 @@ function copyToWordDocument(type) {
   navigator.clipboard
     .write([new ClipboardItem({ "text/html": blob, "text/plain": textBlob })])
     .then(() => {
-      showToast(
-        "Results copied — paste into Word or a text editor.",
-        "success",
-      );
+      showToast("Results copied — paste into Word.", "success");
     })
     .catch((err) => {
       console.error("Copy failed:", err);

@@ -224,19 +224,19 @@ function copyTable() {
   if (!tbody) return;
   const rows = Array.from(tbody.querySelectorAll("tr"));
 
-  const tableHTML = `<table border="1" style="border-collapse:collapse;width:100%;font-family:sans-serif;font-size:13px">
-  <tr style="background:#0c2240;color:#93c5fd">
-    <th style="padding:8px;text-align:left">Cumul. Angle (°)</th>
-    <th style="padding:8px">Time (s)</th>
-    <th style="padding:8px">Eθ / step (NM)</th>
-    <th style="padding:8px">Cumul. E (NM)</th>
+  const tableHTML = `<table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
+  <tr style="background:#0c2240;color:#ffffff">
+    <th style="padding:8px;text-align:left;font-weight:bold">Cumul. Angle (°)</th>
+    <th style="padding:8px;text-align:left;font-weight:bold">Time (s)</th>
+    <th style="padding:8px;text-align:left;font-weight:bold">Eθ / step (NM)</th>
+    <th style="padding:8px;text-align:left;font-weight:bold">Cumul. E (NM)</th>
   </tr>
   ${rows
     .map((tr) => {
       const cells = Array.from(tr.querySelectorAll("td"));
       const is360 = tr.classList.contains("row-360");
       const rowStyle = is360 ? ' style="font-weight:700;color:#0369a1"' : "";
-      return `<tr${rowStyle}>${cells.map((td) => `<td style="padding:8px">${td.textContent.trim()}</td>`).join("")}</tr>`;
+      return `<tr${rowStyle}>${cells.map((td) => `<td style="padding:8px;text-align:left">${td.textContent.trim()}</td>`).join("")}</tr>`;
     })
     .join("\n  ")}
 </table>`;
