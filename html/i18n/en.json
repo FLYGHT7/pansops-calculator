@@ -29,6 +29,7 @@
     "elevation": "Aerodrome Elevation",
     "tref": "Reference Temperature (T<sub>REF</sub>) °C",
     "roundStep": "Rounding Step (default 5)",
+    "roundStepHint": "Integers only. Use 0 to disable rounding.",
     "resultsTitle": "ISA Deviation Results",
     "tisa": "T<sub>ISA</sub>",
     "delta": "ΔISA",
