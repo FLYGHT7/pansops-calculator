@@ -178,16 +178,16 @@ function copyResultsToClipboard() {
 
   // Create a formatted table as HTML with proper symbols and subscripts
   const htmlContent = `
-        <table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
-          <tr style="background-color: #f1f5f9;"><th>Parameter</th><th>Value</th></tr>
-          <tr><td>ICAO Airport Code</td><td>${icaoCode}</td></tr>
-          <tr><td>Aerodrome Elevation</td><td>${elevation} ${elevationUnit}</td></tr>
-          <tr><td>Reference Temperature</td><td>${tRef} °C</td></tr>
-          <tr><td>Rounding Step</td><td>${roundStep}</td></tr>
-          <tr><td>T<sub>ISA</sub></td><td>${tISA} °C</td></tr>
-          <tr><td>ΔISA</td><td>${deltaISA} °C</td></tr>
-          <tr><td>Rounded ΔISA</td><td>${roundedDeltaISA} °C</td></tr>
-          <tr><td>ISA + ΔISA</td><td>${finalISA}</td></tr>
+        <table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
+          <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
+          <tr><td style="padding:8px;text-align:left">ICAO Airport Code</td><td style="padding:8px;text-align:left">${icaoCode}</td></tr>
+          <tr><td style="padding:8px;text-align:left">Aerodrome Elevation</td><td style="padding:8px;text-align:left">${elevation} ${elevationUnit}</td></tr>
+          <tr><td style="padding:8px;text-align:left">Reference Temperature</td><td style="padding:8px;text-align:left">${tRef} °C</td></tr>
+          <tr><td style="padding:8px;text-align:left">Rounding Step</td><td style="padding:8px;text-align:left">${roundStep}</td></tr>
+          <tr><td style="padding:8px;text-align:left">T<sub>ISA</sub></td><td style="padding:8px;text-align:left">${tISA} °C</td></tr>
+          <tr><td style="padding:8px;text-align:left">ΔISA</td><td style="padding:8px;text-align:left">${deltaISA} °C</td></tr>
+          <tr><td style="padding:8px;text-align:left">Rounded ΔISA</td><td style="padding:8px;text-align:left">${roundedDeltaISA} °C</td></tr>
+          <tr><td style="padding:8px;text-align:left">ISA + ΔISA</td><td style="padding:8px;text-align:left">${finalISA}</td></tr>
         </table>
       `;
 
@@ -219,13 +219,7 @@ function copyResultsToClipboard() {
       }),
     ])
     .then(() => {
-      showToast(
-        I18N.get(
-          "messages.copied",
-          "Formatted table copied to clipboard! You can paste it into Word or any text editor.",
-        ),
-        "success",
-      );
+      showToast("Results copied — paste into Word.", "success");
     })
     .catch((err) => {
       console.error("Error copying content to clipboard:", err);
