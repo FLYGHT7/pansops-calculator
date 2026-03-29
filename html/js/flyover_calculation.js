@@ -96,8 +96,8 @@ function calculateFlyover() {
   const iasVal = parseFloat(document.getElementById("ias").value);
   const altitudeRaw = parseFloat(document.getElementById("altitude").value);
   const altitudeUnit = document.getElementById("altitudeUnit").value;
-  const isaDevVal = parseFloat(document.getElementById("isaDeviation").value);
-  const bankAngleVal = parseInt(document.getElementById("bankAngle").value, 10); // 15, 20, or 25
+  const isaDevVal = 15; // Fixed ISA+15 per PANS-OPS procedure design standard
+  const bankAngleVal = parseFloat(document.getElementById("bankAngle").value);
   const noTurnAtFaf = document.getElementById("noTurnAtFaf").checked;
   const catH = document.getElementById("catH").checked;
   const turnAngleRaw = parseFloat(document.getElementById("turnAngle").value);
@@ -111,8 +111,8 @@ function calculateFlyover() {
     showToast("Please enter a valid altitude (≥ 0).", "error");
     return;
   }
-  if (isNaN(isaDevVal)) {
-    showToast("Please enter a valid ISA deviation.", "error");
+  if (isNaN(bankAngleVal) || bankAngleVal <= 0 || bankAngleVal >= 90) {
+    showToast("Please enter a valid bank angle (1–89°).", "error");
     return;
   }
   if (!noTurnAtFaf && (isNaN(turnAngleRaw) || turnAngleRaw <= 0)) {
@@ -301,7 +301,6 @@ function saveParameters() {
     ias: document.getElementById("ias").value || "",
     altitude: document.getElementById("altitude").value || "",
     altitudeUnit: document.getElementById("altitudeUnit").value || "ft",
-    isaDeviation: document.getElementById("isaDeviation").value || "",
     bankAngle: document.getElementById("bankAngle").value || "",
     turnAngle: document.getElementById("turnAngle").value || "",
     noTurnAtFaf: document.getElementById("noTurnAtFaf").checked,
@@ -340,8 +339,6 @@ function loadParameters(event) {
         sel.dataset.lastUnit = sel.value;
         sel.value = data.altitudeUnit;
       }
-      if (data.isaDeviation !== undefined)
-        document.getElementById("isaDeviation").value = data.isaDeviation;
       if (data.bankAngle !== undefined)
         document.getElementById("bankAngle").value = data.bankAngle;
       if (data.noTurnAtFaf !== undefined) {
@@ -377,9 +374,8 @@ function copyToWord() {
       document.getElementById("altitude").value +
       " " +
       document.getElementById("altitudeUnit").value,
-    "ISA Deviation": document.getElementById("isaDeviation").value + " °C",
     "k Factor": document.getElementById("outKFactor").textContent,
-    "Bank Angle r1": document.getElementById("bankAngle").value + "° (per PANS-OPS §1.4.1.3)",
+    "Bank Angle r1": document.getElementById("bankAngle").value + "°",
     "Turn Angle (input)": document.getElementById("noTurnAtFaf").checked
       ? "No turn at FAF"
       : document.getElementById("turnAngle").value + "°",
