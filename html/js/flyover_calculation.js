@@ -39,22 +39,6 @@ function setupEventListeners() {
   document.getElementById("btnCopy").addEventListener("click", copyToWord);
 
   document
-    .getElementById("noTurnAtFaf")
-    .addEventListener("change", function () {
-      const turnInput = document.getElementById("turnAngle");
-      const hintEl = document.getElementById("turnAngleHint");
-      if (this.checked) {
-        turnInput.disabled = true;
-        turnInput.classList.add("opacity-40", "cursor-not-allowed");
-        if (hintEl) hintEl.classList.add("opacity-40");
-      } else {
-        turnInput.disabled = false;
-        turnInput.classList.remove("opacity-40", "cursor-not-allowed");
-        if (hintEl) hintEl.classList.remove("opacity-40");
-      }
-    });
-
-  document
     .getElementById("altitudeUnit")
     .addEventListener("change", function () {
       handleUnitChange("altitude", "altitudeUnit");
@@ -96,11 +80,8 @@ function calculateFlyover() {
   const iasVal = parseFloat(document.getElementById("ias").value);
   const altitudeRaw = parseFloat(document.getElementById("altitude").value);
   const altitudeUnit = document.getElementById("altitudeUnit").value;
-  const isaDevVal = 15; // Fixed ISA+15 per PANS-OPS procedure design standard
   const bankAngleVal = parseFloat(document.getElementById("bankAngle").value);
-  const noTurnAtFaf = document.getElementById("noTurnAtFaf").checked;
-  const catH = document.getElementById("catH").checked;
-  const turnAngleRaw = parseFloat(document.getElementById("turnAngle").value);
+  const turnAngle = parseFloat(document.getElementById("turnAngle").value);
 
   // --- Validate ---
   if (isNaN(iasVal) || iasVal <= 0) {
@@ -115,11 +96,8 @@ function calculateFlyover() {
     showToast("Please enter a valid bank angle (1–89°).", "error");
     return;
   }
-  if (!noTurnAtFaf && (isNaN(turnAngleRaw) || turnAngleRaw <= 0)) {
-    showToast(
-      "Please enter a valid turn angle, or check 'No turn at FAF'.",
-      "error",
-    );
+  if (isNaN(turnAngle) || turnAngle <= 0) {
+    showToast("Please enter a valid turn angle (> 0).", "error");
     return;
   }
 
@@ -127,53 +105,24 @@ function calculateFlyover() {
   const altitude_ft =
     altitudeUnit === "ft" ? altitudeRaw : altitudeRaw / 0.3048;
 
-  // --- TAS ---
-  const kFactor = calculateKFactor(altitude_ft, isaDevVal);
+  // --- TAS (ISA+15 per PANS-OPS procedure design standard) ---
+  const kFactor = calculateKFactor(altitude_ft, 15);
   const tas = calculateTAS(iasVal, kFactor);
 
   // --- Radii ---
   const r1 = calculateRadius(tas, bankAngleVal); // roll-in (user bank)
-  const r2 = calculateRadius(tas, 15); // roll-out (fixed 15°)
+  const r2 = calculateRadius(tas, 15);           // roll-out fixed 15° §1.4.1.3
 
-  // --- Turn angle effective ---
+  // --- Segment lengths (PANS-OPS Vol II §1.4.1) ---
   const ALPHA_DEG = 30;
-  let thetaEff;
-  let thetaAdjusted = false;
-
-  if (noTurnAtFaf) {
-    thetaEff = 0;
-  } else {
-    if (turnAngleRaw < 50) {
-      thetaEff = 50;
-      thetaAdjusted = true;
-    } else {
-      thetaEff = turnAngleRaw;
-    }
-  }
-
-  // --- Segment lengths ---
-  const theta_rad = thetaEff * (Math.PI / 180);
+  const theta_rad = turnAngle * (Math.PI / 180);
   const alpha_rad = ALPHA_DEG * (Math.PI / 180);
-  const comp90_rad = (90 - ALPHA_DEG) * (Math.PI / 180); // sin(60°)
 
-  let L1, L2, L3;
-  if (thetaEff === 0) {
-    // No turn at FAF — protection is only L4 + L5
-    L1 = 0;
-    L2 = 0;
-    L3 = 0;
-  } else {
-    L1 = r1 * Math.sin(theta_rad);
-    L2 = r1 * Math.cos(theta_rad) * Math.tan(alpha_rad);
-    L3 =
-      r1 *
-      (1 / Math.sin(alpha_rad) -
-        (2 * Math.cos(theta_rad)) / Math.sin(comp90_rad));
-  }
+  const L1 = r1 * Math.sin(theta_rad);
+  const L2 = r1 * Math.cos(theta_rad) * Math.tan(alpha_rad);
+  const L3 = r1 * (1 / Math.sin(alpha_rad) - (2 * Math.cos(theta_rad)) / Math.sin(60 * Math.PI / 180));
   const L4 = r2 * Math.tan(alpha_rad / 2);
-  // c = 10s for Cat A–E; c = 5s for Cat H (PANS-OPS §1.4.1.2)
-  const c = catH ? 5 : 10;
-  const L5 = (c * tas) / 3600;
+  const L5 = (10 * tas) / 3600;
 
   const msd = L1 + L2 + L3 + L4 + L5;
 
@@ -188,24 +137,7 @@ function calculateFlyover() {
   document.getElementById("outL4").textContent = L4.toFixed(4);
   document.getElementById("outL5").textContent = L5.toFixed(4);
   document.getElementById("outMsd").textContent = msd.toFixed(4);
-
-  // Turn angle used display
-  const thetaEffEl = document.getElementById("outThetaEff");
-  if (noTurnAtFaf) {
-    thetaEffEl.textContent = "0° (no turn)";
-  } else if (thetaAdjusted) {
-    thetaEffEl.textContent = "50° (min)";
-  } else {
-    thetaEffEl.textContent = thetaEff + "°";
-  }
-
-  // Warning card
-  const warnCard = document.getElementById("turnAngleWarningCard");
-  if (!noTurnAtFaf && thetaAdjusted) {
-    warnCard.classList.remove("hidden");
-  } else {
-    warnCard.classList.add("hidden");
-  }
+  document.getElementById("outThetaEff").textContent = turnAngle + "°";
 
   // Show results and diagram
   document.getElementById("resultsSection").classList.remove("hidden");
@@ -303,8 +235,6 @@ function saveParameters() {
     altitudeUnit: document.getElementById("altitudeUnit").value || "ft",
     bankAngle: document.getElementById("bankAngle").value || "",
     turnAngle: document.getElementById("turnAngle").value || "",
-    noTurnAtFaf: document.getElementById("noTurnAtFaf").checked,
-    catH: document.getElementById("catH").checked,
   };
 
   const now = new Date();
@@ -341,14 +271,6 @@ function loadParameters(event) {
       }
       if (data.bankAngle !== undefined)
         document.getElementById("bankAngle").value = data.bankAngle;
-      if (data.noTurnAtFaf !== undefined) {
-        const chk = document.getElementById("noTurnAtFaf");
-        chk.checked = data.noTurnAtFaf;
-        chk.dispatchEvent(new Event("change"));
-      }
-      if (data.catH !== undefined) {
-        document.getElementById("catH").checked = data.catH;
-      }
       if (data.turnAngle !== undefined)
         document.getElementById("turnAngle").value = data.turnAngle;
 
