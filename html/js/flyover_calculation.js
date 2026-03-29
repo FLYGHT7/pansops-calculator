@@ -125,7 +125,10 @@ function calculateFlyover() {
     );
   }
   if (!noTurnAtFaf && (isNaN(turnAngleRaw) || turnAngleRaw <= 0)) {
-    showToast("Please enter a valid turn angle, or check 'No turn at FAF'.", "error");
+    showToast(
+      "Please enter a valid turn angle, or check 'No turn at FAF'.",
+      "error",
+    );
     return;
   }
 
@@ -138,8 +141,8 @@ function calculateFlyover() {
   const tas = calculateTAS(iasVal, kFactor);
 
   // --- Radii ---
-  const r1 = calculateRadius(tas, bankAngleVal);   // roll-in (user bank)
-  const r2 = calculateRadius(tas, 15);             // roll-out (fixed 15°)
+  const r1 = calculateRadius(tas, bankAngleVal); // roll-in (user bank)
+  const r2 = calculateRadius(tas, 15); // roll-out (fixed 15°)
 
   // --- Turn angle effective ---
   const ALPHA_DEG = 30;
@@ -177,11 +180,12 @@ function calculateFlyover() {
         (2 * Math.cos(theta_rad)) / Math.sin(comp90_rad));
   }
   const L4 = r2 * Math.tan(alpha_rad / 2);
-  const L5 = (10 * tas) / 3600;   // c = 10s (Cat A–E)
+  const L5 = (10 * tas) / 3600; // c = 10s (Cat A–E)
 
   const msd = L1 + L2 + L3 + L4 + L5;
 
   // --- Populate outputs ---
+  document.getElementById("outKFactor").textContent = kFactor.toFixed(4);
   document.getElementById("outTas").textContent = tas.toFixed(4);
   document.getElementById("outR1").textContent = r1.toFixed(4);
   document.getElementById("outR2").textContent = r2.toFixed(4);
@@ -231,7 +235,7 @@ function renderSegmentDiagram(L1, L2, L3, L4, L5) {
   const PAD = 10;
   const BAR_Y = 44;
   const BAR_H = 32;
-  const LABEL_Y = 36;     // label above bar
+  const LABEL_Y = 36; // label above bar
   const VALUE_Y = BAR_Y + BAR_H + 14; // NM values below bar
 
   const usableW = SVG_W - PAD * 2;
@@ -282,8 +286,7 @@ function renderSegmentDiagram(L1, L2, L3, L4, L5) {
 
   const SVG_H = BAR_Y + BAR_H + 52;
 
-  const isDark =
-    document.documentElement.classList.contains("dark");
+  const isDark = document.documentElement.classList.contains("dark");
   const bgFill = isDark ? "#1f2937" : "#ffffff";
   const separatorColor = isDark ? "#374151" : "#e5e7eb";
 
@@ -378,6 +381,7 @@ function copyToWord() {
       " " +
       document.getElementById("altitudeUnit").value,
     "ISA Deviation": document.getElementById("isaDeviation").value + " °C",
+    "k Factor": document.getElementById("outKFactor").textContent,
     "Bank Angle (roll-in)": document.getElementById("bankAngle").value + "°",
     "Turn Angle (input)": document.getElementById("noTurnAtFaf").checked
       ? "No turn at FAF"
