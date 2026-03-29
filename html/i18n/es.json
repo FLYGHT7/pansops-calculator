@@ -29,6 +29,7 @@
     "elevation": "Elevación del aeródromo",
     "tref": "Temperatura de referencia (T<sub>REF</sub>) °C",
     "roundStep": "Paso de redondeo (por defecto 5)",
+    "roundStepHint": "Solo enteros. Use 0 para desactivar el redondeo.",
     "resultsTitle": "Resultados de desviación ISA",
     "tisa": "T<sub>ISA</sub>",
     "delta": "ΔISA",

@@ -72,7 +72,8 @@ function calculateISA() {
   const elevation = parseFloat(document.getElementById("elevation").value);
   const unit = document.getElementById("elevationUnit").value;
   const tRef = parseFloat(document.getElementById("tRef").value);
-  const roundStep = parseInt(document.getElementById("roundStep").value || 5);
+  const roundStepRaw = document.getElementById("roundStep").value;
+  const roundStep = roundStepRaw === "" ? 5 : parseInt(roundStepRaw, 10);
 
   if (isNaN(elevation) || isNaN(tRef)) {
     showToast(
@@ -97,13 +98,16 @@ function calculateISA() {
   // Calculate the deviation from ISA
   const deltaISA = tRef - tISA;
 
-  // Round up to the nearest step value
-  const roundedDeltaISA = roundUpTo(deltaISA, roundStep);
+  // Round up to nearest step; step=0 means no rounding
+  const roundedDeltaISA =
+    roundStep === 0 ? deltaISA : roundUpTo(deltaISA, roundStep);
+  const roundedDisplay =
+    roundStep === 0 ? roundedDeltaISA.toFixed(5) : String(roundedDeltaISA);
 
   document.getElementById("tISA").textContent = tISA.toFixed(5);
   document.getElementById("deltaISA").textContent = deltaISA.toFixed(5);
-  document.getElementById("roundedDeltaISA").textContent = roundedDeltaISA;
-  document.getElementById("finalISA").textContent = `ISA + ${roundedDeltaISA}`;
+  document.getElementById("roundedDeltaISA").textContent = roundedDisplay;
+  document.getElementById("finalISA").textContent = `ISA + ${roundedDisplay}`;
 
   document.getElementById("results").classList.remove("hidden");
 }
