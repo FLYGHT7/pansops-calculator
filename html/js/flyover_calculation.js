@@ -97,8 +97,9 @@ function calculateFlyover() {
   const altitudeRaw = parseFloat(document.getElementById("altitude").value);
   const altitudeUnit = document.getElementById("altitudeUnit").value;
   const isaDevVal = parseFloat(document.getElementById("isaDeviation").value);
-  const bankAngleVal = parseFloat(document.getElementById("bankAngle").value);
+  const bankAngleVal = parseInt(document.getElementById("bankAngle").value, 10); // 15, 20, or 25
   const noTurnAtFaf = document.getElementById("noTurnAtFaf").checked;
+  const catH = document.getElementById("catH").checked;
   const turnAngleRaw = parseFloat(document.getElementById("turnAngle").value);
 
   // --- Validate ---
@@ -113,16 +114,6 @@ function calculateFlyover() {
   if (isNaN(isaDevVal)) {
     showToast("Please enter a valid ISA deviation.", "error");
     return;
-  }
-  if (isNaN(bankAngleVal) || bankAngleVal <= 0 || bankAngleVal >= 90) {
-    showToast("Please enter a valid bank angle (1–89°).", "error");
-    return;
-  }
-  if (bankAngleVal < 5 || bankAngleVal > 45) {
-    showToast(
-      "Bank angle " + bankAngleVal + "° is outside typical range (5–45°).",
-      "info",
-    );
   }
   if (!noTurnAtFaf && (isNaN(turnAngleRaw) || turnAngleRaw <= 0)) {
     showToast(
@@ -180,7 +171,9 @@ function calculateFlyover() {
         (2 * Math.cos(theta_rad)) / Math.sin(comp90_rad));
   }
   const L4 = r2 * Math.tan(alpha_rad / 2);
-  const L5 = (10 * tas) / 3600; // c = 10s (Cat A–E)
+  // c = 10s for Cat A–E; c = 5s for Cat H (PANS-OPS §1.4.1.2)
+  const c = catH ? 5 : 10;
+  const L5 = (c * tas) / 3600;
 
   const msd = L1 + L2 + L3 + L4 + L5;
 
@@ -312,6 +305,7 @@ function saveParameters() {
     bankAngle: document.getElementById("bankAngle").value || "",
     turnAngle: document.getElementById("turnAngle").value || "",
     noTurnAtFaf: document.getElementById("noTurnAtFaf").checked,
+    catH: document.getElementById("catH").checked,
   };
 
   const now = new Date();
@@ -355,6 +349,9 @@ function loadParameters(event) {
         chk.checked = data.noTurnAtFaf;
         chk.dispatchEvent(new Event("change"));
       }
+      if (data.catH !== undefined) {
+        document.getElementById("catH").checked = data.catH;
+      }
       if (data.turnAngle !== undefined)
         document.getElementById("turnAngle").value = data.turnAngle;
 
@@ -382,7 +379,7 @@ function copyToWord() {
       document.getElementById("altitudeUnit").value,
     "ISA Deviation": document.getElementById("isaDeviation").value + " °C",
     "k Factor": document.getElementById("outKFactor").textContent,
-    "Bank Angle (roll-in)": document.getElementById("bankAngle").value + "°",
+    "Bank Angle r1": document.getElementById("bankAngle").value + "° (per PANS-OPS §1.4.1.3)",
     "Turn Angle (input)": document.getElementById("noTurnAtFaf").checked
       ? "No turn at FAF"
       : document.getElementById("turnAngle").value + "°",
