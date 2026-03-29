@@ -172,7 +172,6 @@
                 </select>
               </div>
             </div>
-
           </div>
 
           <!-- Row 2: Bank angle (select), Turn angle -->
@@ -256,37 +255,6 @@
                 Min 50° applied automatically when turn exists
               </p>
             </div>
-
-          </div>
-
-          <!-- No turn at FAF checkbox -->
-          <div class="mb-4 flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="noTurnAtFaf"
-              class="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
-            />
-            <label
-              for="noTurnAtFaf"
-              class="text-sm font-medium text-gray-700 dark:text-gray-300"
-              data-i18n="flyover.noTurnAtFaf"
-              >No turn at FAF (set A = 0)</label
-            >
-          </div>
-
-          <!-- Cat H toggle → c = 5s instead of 10s -->
-          <div class="mb-4 flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="catH"
-              class="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
-            />
-            <label
-              for="catH"
-              class="text-sm font-medium text-gray-700 dark:text-gray-300"
-              data-i18n="flyover.catH"
-              >Category H aircraft (L5 = 5 × V/3600)</label
-            >
           </div>
 
           <!-- Info notes -->
@@ -359,37 +327,6 @@
         >
           MSD Results
         </h2>
-
-        <!-- Turn angle adjusted warning -->
-        <div
-          id="turnAngleWarningCard"
-          class="hidden mb-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-700 rounded-lg px-4 py-3 flex items-center gap-2"
-        >
-          <svg
-            aria-hidden="true"
-            class="h-5 w-5 text-amber-500 shrink-0"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path
-              d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
-            ></path>
-            <line x1="12" y1="9" x2="12" y2="13"></line>
-            <line x1="12" y1="17" x2="12.01" y2="17"></line>
-          </svg>
-          <p
-            id="turnAngleWarningText"
-            class="text-sm font-medium text-amber-700 dark:text-amber-300"
-            data-i18n="flyover.turnAngleWarning"
-          >
-            Input &lt; 50° — minimum 50° applied
-          </p>
-        </div>
 
         <!-- Intermediate values: kFactor, TAS, turn angle used, r1, r2 -->
         <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
