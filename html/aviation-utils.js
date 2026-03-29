@@ -79,6 +79,16 @@ function calculateTransitionalDistance(tasPlusWind) {
 }
 
 /**
+ * Calculates the radius of turn (PANS-OPS Vol II formula)
+ * @param {number} tas - True Airspeed in knots
+ * @param {number} bankAngle_deg - Bank angle in degrees
+ * @return {number} Radius of turn in nautical miles
+ */
+function calculateRadius(tas, bankAngle_deg) {
+  return (tas * tas) / (68625 * Math.tan(bankAngle_deg * DEG_TO_RAD));
+}
+
+/**
  * Calculates the flight distance (d)
  * @param {number} tasPlusWind - TAS plus wind in knots
  * @return {number} Flight distance in nautical miles
