@@ -3,7 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="theme-color"
+      content="#f9fafb"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#111827"
+      media="(prefers-color-scheme: dark)"
+    />
     <title data-i18n="flyover.title">Flyover MSD Calculator</title>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="shared-config.js"></script>
     <link rel="stylesheet" href="dark-mode.css" />
@@ -118,11 +129,13 @@
               >
                 <input
                   id="ias"
+                  name="ias"
                   type="number"
                   min="0"
                   step="0.1"
                   inputmode="decimal"
-                  class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  autocomplete="off"
+                  class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
                   placeholder="e.g. 180"
                   data-i18n="flyover.phIas"
                   data-i18n-attr="placeholder"
@@ -152,18 +165,22 @@
               >
                 <input
                   id="altitude"
+                  name="altitude"
                   type="number"
                   min="0"
                   step="1"
                   inputmode="numeric"
-                  class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  autocomplete="off"
+                  class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
                   placeholder="e.g. 3000"
                   data-i18n="flyover.phAltitude"
                   data-i18n-attr="placeholder"
                 />
                 <select
                   id="altitudeUnit"
-                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+                  name="altitudeUnit"
+                  aria-label="Altitude unit"
+                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none dark:text-white"
                 >
                   <option value="ft" selected data-i18n="common.feet">
                     ft
@@ -189,13 +206,15 @@
               >
                 <input
                   id="bankAngle"
+                  name="bankAngle"
                   type="number"
                   min="1"
                   max="45"
                   step="1"
                   inputmode="numeric"
+                  autocomplete="off"
                   aria-describedby="bankAngleHint"
-                  class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
                   placeholder="e.g. 25"
                 />
                 <div
@@ -226,13 +245,15 @@
               >
                 <input
                   id="turnAngle"
+                  name="turnAngle"
                   type="number"
                   min="1"
                   max="180"
                   step="0.1"
                   inputmode="decimal"
+                  autocomplete="off"
                   aria-describedby="turnAngleHint"
-                  class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
                   placeholder="e.g. 60"
                   data-i18n="flyover.phTurnAngle"
                   data-i18n-attr="placeholder"
@@ -532,17 +553,17 @@
         </div>
       </section>
 
-      <!-- SVG Segment Diagram -->
+      <!-- SVG Geometric Diagram (PANS-OPS Figure III-2-1-7) -->
       <figure id="diagramSection" class="hidden mt-6">
         <figcaption
           class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3"
           data-i18n="flyover.diagramTitle"
         >
-          Segment Breakdown (ref. PANS-OPS III-2-1-7)
+          Figure III-2-1-7 — Minimum Stabilisation Distance (Flyover)
         </figcaption>
         <div
           id="segmentDiagram"
-          class="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3"
+          class="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-2"
         ></div>
       </figure>
     </main>
