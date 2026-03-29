@@ -37,6 +37,7 @@
   },
   "tas": {
     "title": "True Airspeed (TAS) Calculator",
+    "sidebarLabel": "True Airspeed Calculator",
     "ias": "Indicated Airspeed (IAS)",
     "altitude": "Altitude",
     "isaDeviationVar": "ISA Deviation (VAR) in °C",
