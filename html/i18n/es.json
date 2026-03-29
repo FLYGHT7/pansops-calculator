@@ -37,6 +37,7 @@
   },
   "tas": {
     "title": "Calculadora de Velocidad Verdadera (TAS)",
+    "sidebarLabel": "Calculadora Vel. Verdadera",
     "ias": "Velocidad Indicada (IAS)",
     "altitude": "Altitud",
     "isaDeviationVar": "Desviación ISA (VAR) en °C",
