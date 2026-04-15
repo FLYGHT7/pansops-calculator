@@ -170,9 +170,9 @@ function calculateFlyover() {
   document.getElementById("outMsd").textContent = msd.toFixed(4);
   document.getElementById("outThetaEff").textContent = turnAngle + "°";
 
-  // Show results and diagram
+  // Show results (diagram temporarily hidden — pending geometry fix)
   document.getElementById("resultsSection").classList.remove("hidden");
-  renderSegmentDiagram(L1, L2, L3, L4, L5, r1, r2, turnAngle);
+  // renderSegmentDiagram(L1, L2, L3, L4, L5, r1, r2, turnAngle);
 }
 
 // ─── SVG Diagram ──────────────────────────────────────────────────────────────
@@ -217,16 +217,11 @@ function renderSegmentDiagram(L1, L2, L3, L4, L5, r1, r2, theta_deg) {
   const sc = drawW / msd; // px per NM (horizontal only)
 
   // Visual radii: SCHEMATIC only — preserve r1/r2 ratio but cap to a fixed visual size.
-  // VR1 is bounded so the r1 arc fits cleanly above the baseline.
+  // VR1 is bounded so the dome fits within the canvas.
   // VR2 uses the same scale factor (same px/NM) so ratio is visually preserved.
-  // baseY sits ~72 % of the drawable height below PAD_T so the dome (r1 arc)
-  // fills the upper portion and the inbound track has room below the baseline.
-  const baseY = PAD_T + Math.round((H - PAD_T - PAD_B) * 0.72); // ≈ 271 for H=460
-  // VR1 is bounded so the top of the dome (cy1 − VR1) stays at least PAD_T+4 px.
-  // cy1 = baseY  → top of circle = baseY − VR1 ≥ PAD_T+4 → VR1 ≤ baseY−PAD_T−4
-  // Use half that bound so the dome doesn't fill the whole upper canvas.
-  const VR1 = Math.floor((baseY - PAD_T - 4) / 2); // exactly fits the upper canvas
-  const VR2 = VR1 * (r2 / r1); // preserves r1/r2 ratio
+  // baseY sits ~60 % of the drawable height below PAD_T so there is room for
+  // the dome above AND the dip below the baseline.
+  const baseY = PAD_T + Math.round((H - PAD_T - PAD_B) * 0.6);
 
   const theta = (theta_deg * Math.PI) / 180;
   const alpha = (30 * Math.PI) / 180; // 30° PANS-OPS semi-angle
@@ -239,6 +234,20 @@ function renderSegmentDiagram(L1, L2, L3, L4, L5, r1, r2, theta_deg) {
   const x4 = x3 + L4 * sc;
   const x5 = x4 + L5 * sc;
   const xWP = x1;
+
+  // The dome top is at cy1 − VR1 (see below); the dip is at cy1 + VR1·sin(60°).
+  // cy1 = baseY − VR1·cos(θ).  Top = baseY − VR1·cosθ − VR1 = baseY − VR1·(1+cosθ).
+  // Dip  = baseY − VR1·cosθ + VR1·sin60° = baseY + VR1·(sin60°−cosθ).
+  // Constraints:  Top ≥ PAD_T+4,  Dip ≤ baseY+maxDip,  Left edge ≥ PAD_L−10.
+  const maxDip = 70; // max pixels below baseline for dip
+  const vr1Top = (baseY - PAD_T - 4) / (1 + Math.cos(theta));
+  const vr1Bot =
+    Math.cos(theta) > Math.sin(Math.PI / 3)
+      ? maxDip / (Math.cos(theta) - Math.sin(Math.PI / 3))
+      : 999;
+  const vr1Left = (xWP - PAD_L + 10) / (1 + Math.sin(theta));
+  const VR1 = Math.floor(Math.min(vr1Top, vr1Bot, vr1Left, 130));
+  const VR2 = VR1 * (r2 / r1); // preserves r1/r2 ratio
 
   // ─── Helper SVG primitives ───────────────────────────────────────────────────
   function solidLine(ax, ay, bx, by, col, sw = 1.5) {
@@ -265,87 +274,74 @@ function renderSegmentDiagram(L1, L2, L3, L4, L5, r1, r2, theta_deg) {
 
   // ─── Flight-path geometry ────────────────────────────────────────────────────
   //
-  // PANS-OPS Fig III-2-1-7 geometry (SVG: Y increases downward):
+  // PANS-OPS Fig III-2-1-7 (SVG y-down coordinates).
   //
-  //  Circle r1:
-  //    Centre to the RIGHT of WP at baseline level:
-  //      cx1 = xWP + VR1,  cy1 = baseY
-  //    WP = leftmost point of circle (angle 180° from centre).
+  //  r1 circle — LEFT turn after overflying WP
+  //    Centre is perpendicular-LEFT of the inbound heading at WP.
+  //    Inbound heading at WP: (cos θ, −sin θ) in SVG (right + up).
+  //    Left-perpendicular: rotate 90° CW in SVG → (−sin θ, −cos θ).
+  //    Centre:  cx1 = xWP − VR1·sin θ,   cy1 = baseY − VR1·cos θ.
+  //    WP is on the circle at angle  (π/2 − θ)  from centre.
   //
-  //  TIP (point where inbound track is tangent to circle):
-  //    The inbound arrives from the lower-left at angle θ below horizontal.
-  //    Tangent direction at TIP (going CW): (cos θ, sin θ) in SVG
-  //      → radius at TIP is perpendicular, pointing inward (toward centre):
-  //         radius direction = (−sin θ, cos θ) rotated → (sin θ, −cos θ)
-  //      tipX = cx1 − VR1·sin θ,  tipY = cy1 − VR1·cos θ   [above baseline]
-  //    Inbound line from (x0, y0) to (tipX, tipY):
-  //      slope dy/dx = +tan θ  (y increases going right-downward FROM inbound
-  //      direction, i.e. approaching TIP the track rises: y0 > tipY)
+  //  Dome arc (sweep=1 in SVG, CW on canvas = LEFT turn visually)
+  //    From WP the aircraft heads right-upward, then turns LEFT.
+  //    The arc goes the LONG way around (largeArc=1 always).
+  //    Path: WP → right → up → over top → down-left → below baseline → dip "b".
+  //    It ends at dip point "b" where the tangent exits the circle at angle
+  //    α = 30° above horizontal going rightward (the climb direction).
+  //    Tangent for CW canvas motion at angle t: (sin t, −cos t).
+  //    Condition: (sin t, −cos t) = (cos α, −sin α) → t = π/3 = 60°.
   //
-  //  Arc r1 (CW, large arc 360°−θ):
-  //    From TIP → up left → dome top → down right → WP (leftmost point) →
-  //    continues CW by 30° to DIP point "b".
-  //    largeArc = 1, sweep = 1 (CW in SVG).
+  //  Dip point "b"
+  //    bx = cx1 + VR1·cos 60°   [position depends on θ, can be left or right of WP]
+  //    by = cy1 + VR1·sin 60°   [BELOW baseline when θ > ~30°]
+  //    Vertical depth below baseline: VR1·(sin60° − cosθ).
   //
-  //  DIP point "b" (r1 arc continues CW 30° past WP):
-  //    WP is at angle 180° from centre.  CW +30° → angle 210°.
-  //      dipX = cx1 + VR1·cos(210°) = cx1 − VR1·(√3/2)  [LEFT of centre, RIGHT of WP]
-  //      dipY = cy1 + VR1·sin(210°) = cy1 − VR1·(1/2)   [ABOVE baseline]
-  //    NOTE: in the figure "b" appears slightly BELOW baseline because the figure
-  //    uses the real geometric arc which passes through the 210° point going
-  //    downward.  We keep it above baseline (schematic canvas, VR1 < real r1).
+  //  Inbound track
+  //    Straight line from (x0, y0) to WP at angle θ above horizontal.
   //
-  //  Climb line (30° above horizontal):
-  //    From dipX,dipY toward upper-right at slope −tan(30°) in SVG.
+  //  30° climb line
+  //    From "b" rightward-upward at 30° until reaching L3 boundary or top.
   //
-  //  Arc r2 (CCW = sweep 0):
-  //    Levels the climb out.  Centre perpendicular-right of the 30° travel direction.
+  //  r2 arc (sweep 0) levels the climb to horizontal flight.
 
-  // Circle r1: centre to the RIGHT of WP at baseline
-  const cx1 = xWP + VR1;
-  const cy1 = baseY;
+  // ── Circle r1 ────────────────────────────────────────────────────────────────
+  const cx1 = xWP - VR1 * Math.sin(theta);
+  const cy1 = baseY - VR1 * Math.cos(theta);
 
-  // TIP: tangent point on the upper-left of the circle
-  const tipX = cx1 - VR1 * Math.sin(theta); // = xWP + VR1(1−sinθ)
-  const tipY = cy1 - VR1 * Math.cos(theta); // above baseline (negative SVG)
-
-  // Inbound line: rises from lower-left to TIP.
-  // slope dy/dx = +tanθ in SVG (track goes lower-right to upper-left,
-  // so coming FROM lower-left it rises: y0 > tipY)
+  // ── Inbound straight line to WP ──────────────────────────────────────────────
   const tanTheta =
     Math.abs(Math.cos(theta)) < 0.1
       ? Math.sign(Math.sin(theta)) * 10
       : Math.tan(theta);
-  // Extend back to x0; clamp within canvas vertically
-  const y0raw = tipY + tanTheta * (tipX - x0); // > tipY when tanθ > 0
-  const y0 = Math.min(H - PAD_B - 5, Math.max(tipY + 2, y0raw));
+  // y0 = baseY + tanθ·(xWP − x0)  (below baseline since tanθ > 0 and xWP > x0)
+  const y0raw = baseY + tanTheta * (xWP - x0);
+  const y0 = Math.min(H - PAD_B - 5, Math.max(baseY + 2, y0raw));
 
-  // DIP "b": r1 arc CW 30° past WP.  WP is at 180°; CW+30° → 210°.
-  const dipAngleDeg = 210;
-  const dipAngleRad = (dipAngleDeg * Math.PI) / 180;
-  const dipX = cx1 + VR1 * Math.cos(dipAngleRad); // left-of-centre, right of WP
-  const dipY = cy1 + VR1 * Math.sin(dipAngleRad); // sin(210°)<0 → above baseline
+  // ── Dip point "b" at angle 60° (π/3) from centre ────────────────────────────
+  const dipAngleRad = Math.PI / 3; // 60°
+  const dipX = cx1 + VR1 * Math.cos(dipAngleRad);
+  const dipY = cy1 + VR1 * Math.sin(dipAngleRad);
 
-  // Climb line (30° above horizontal) from dip to climbEnd
-  const climbSlope = -Math.tan(alpha); // dy/dx in SVG (negative = rising rightward)
+  // ── 30° climb from "b" ──────────────────────────────────────────────────────
+  const climbSlope = -Math.tan(alpha); // dy/dx negative = rising rightward
   const climbEndYraw = dipY + climbSlope * (x3 - dipX);
   const climbEndY = Math.max(climbEndYraw, PAD_T + 8);
   const climbEndX =
     climbEndY === climbEndYraw ? x3 : dipX + (climbEndY - dipY) / climbSlope;
 
-  // Arc r2: centre perpendicular-right of 30° travel direction
-  // Travel dir at climb end: (cos α, −sin α) in SVG  →  right-perp = (sin α, cos α)
+  // ── r2 levelling arc ─────────────────────────────────────────────────────────
   const cx2 = climbEndX + VR2 * Math.sin(alpha);
   const cy2 = climbEndY - VR2 * Math.cos(alpha);
   const levelX = cx2;
   const levelY = cy2 + VR2;
 
-  // ─── SVG paths ───────────────────────────────────────────────────────────────
-  const pathInbound = `M ${f(x0)},${f(y0)} L ${f(tipX)},${f(tipY)}`;
-  // Large CW arc (360°−θ): from TIP up-left around dome down-right to WP
-  const pathRollIn = `M ${f(tipX)},${f(tipY)} A ${f(VR1)},${f(VR1)} 0 1,1 ${f(xWP)},${f(baseY)}`;
-  // Small CW arc 30°: WP (180°) → DIP (210°)
-  const pathDipArc = `M ${f(xWP)},${f(baseY)} A ${f(VR1)},${f(VR1)} 0 0,1 ${f(dipX)},${f(dipY)}`;
+  // ── SVG paths ────────────────────────────────────────────────────────────────
+  const pathInbound = `M ${f(x0)},${f(y0)} L ${f(xWP)},${f(baseY)}`;
+  // Dome: WP → b.  sweep=0 picks the upper-left centre (Centre B) so the arc
+  // bulges UPWARD like a mountain.  largeArc=1 because the dome spans ~320°.
+  // Aircraft heads right+up at WP, curves LEFT over the top, dips below baseline.
+  const pathDome = `M ${f(xWP)},${f(baseY)} A ${f(VR1)},${f(VR1)} 0 1,0 ${f(dipX)},${f(dipY)}`;
   const pathClimb = `M ${f(dipX)},${f(dipY)} L ${f(climbEndX)},${f(climbEndY)}`;
   const pathRollHi = `M ${f(climbEndX)},${f(climbEndY)} A ${f(VR2)},${f(VR2)} 0 0,0 ${f(levelX)},${f(levelY)}`;
   const pathLevel = `M ${f(levelX)},${f(levelY)} L ${f(x5)},${f(levelY)}`;
@@ -361,22 +357,24 @@ function renderSegmentDiagram(L1, L2, L3, L4, L5, r1, r2, theta_deg) {
   }
 
   // ─── Angle annotations ───────────────────────────────────────────────────────
-  // θ at waypoint: show angle between the horizontal (baseline) and the inbound track.
-  // The inbound now arrives from the lower-left (track ascends from below).
-  // We draw the arc CCW from the −x axis (pointing left) upward by theta.
+  // θ at waypoint: angle between the horizontal baseline (leftward) and the inbound
+  // track arriving from below-left.  The angle sits BELOW the baseline in the figure.
+  // Inbound ray from WP goes at angle (π − θ) in SVG: left & downward.
+  // We draw the SHORT arc from π to (π − θ) with sweep=0 (CCW).
+  // Since sin(angle) > 0 for angles in (π−θ, π) the arc sits BELOW baseline.
   const thetaR = Math.min(VR1 * 0.12, 38);
   const thA1 = Math.PI; // start: points left along baseline
-  const thA2 = Math.PI - theta; // end: CCW (upward in SVG) by theta
+  const thA2 = Math.PI - theta; // end: inbound direction from WP
   const thSx = xWP + thetaR * Math.cos(thA1);
   const thSy = baseY + thetaR * Math.sin(thA1);
   const thEx = xWP + thetaR * Math.cos(thA2);
   const thEy = baseY + thetaR * Math.sin(thA2);
-  // sweep=0 (CCW in SVG math)
+  // sweep=0 (CCW in SVG): short arc from 180° down to (180°−θ)
   const thetaArcSvg = `<path d="M ${f(thSx)},${f(thSy)} A ${thetaR},${thetaR} 0 0,0 ${f(thEx)},${f(thEy)}" fill="none" stroke="${dim}" stroke-width="1.2"/>`;
   const thetaLblX = xWP + (thetaR + 13) * Math.cos(Math.PI - theta / 2);
   const thetaLblY = baseY + (thetaR + 13) * Math.sin(Math.PI - theta / 2);
 
-  // 30° annotation at dip exit (angle between outbound horizontal and 30° climb line)
+  // 30° annotation at dip exit (angle between horizontal and 30° climb line)
   const a30R = Math.min(VR1 * 0.18, 28);
   const a30Sx = dipX + a30R; // horizontal direction from dipX,dipY
   const a30Sy = dipY;
@@ -385,19 +383,26 @@ function renderSegmentDiagram(L1, L2, L3, L4, L5, r1, r2, theta_deg) {
   const a30Ey = dipY + a30R * Math.sin(-alpha);
   const ang30Svg = `<path d="M ${f(a30Sx)},${f(a30Sy)} A ${a30R},${a30R} 0 0,0 ${f(a30Ex)},${f(a30Ey)}" fill="none" stroke="${dim}" stroke-width="1.2"/>`;
 
-  // 60° annotation at the same point (complement annotation, shown in PANS-OPS fig)
-  const ang60X = dipX - 4;
-  const ang60Y = dipY - a30R - 6;
+  // 60° label: where the climb line crosses the baseline, angle between
+  // the vertical (b arrow) and the climb line = 90° − 30° = 60°.
+  // Position the label near the climb/baseline crossing point.
+  // The climb from dipX,dipY at slope −tan(α) crosses baseY at:
+  const climbBaseX =
+    dipY > baseY ? dipX + (dipY - baseY) / Math.tan(alpha) : dipX;
+  const ang60LblX = climbBaseX - 6;
+  const ang60LblY = baseY - 14;
 
   // 30° annotation near the upper roll-out arc
   const upper30X = climbEndX + 10;
   const upper30Y = climbEndY - 8;
 
-  // r1 dashed radius: point at the TOP of the circle (midway through the large dome arc).
-  // cx1 = xWP+VR1, cy1 = baseY.  Top of circle at angle 3π/2 (270°) = (cx1, cy1−VR1).
-  const r1midA = (3 * Math.PI) / 2; // top of circle
-  const r1midX = cx1 + VR1 * Math.cos(r1midA); // = cx1
-  const r1midY = cy1 + VR1 * Math.sin(r1midA); // = baseY − VR1 (top of dome)
+  // r1 dashed radius: from centre to WP (WP is on the circle).
+  // In the PANS-OPS figure the r1 label is between centre and the arc.
+  const r1midX = (cx1 + xWP) / 2;
+  const r1midY = (cy1 + baseY) / 2;
+
+  // "b" dip depth annotation: vertical arrow from baseline to dip
+  const bAnnotation = dipY > baseY + 4; // only show if dip is noticeably below baseline
 
   // r2 dashed radius from centre to mid-arc
   const r2midA = -(Math.PI / 2) + alpha / 2; // midway through upper roll-out arc
@@ -422,14 +427,14 @@ function renderSegmentDiagram(L1, L2, L3, L4, L5, r1, r2, theta_deg) {
   <!-- Drop lines at segment boundaries -->
   ${dropLine(x0, y0 - 2)}
   ${dropLine(x1, baseY + 2)}
-  ${dropLine(x2, dipY + 2)}
+  ${dropLine(x2, Math.max(dipY, baseY) + 2)}
   ${dropLine(x3, Math.min(climbEndY, levelY) - 2)}
   ${dropLine(x4, levelY - 2)}
   ${dropLine(x5, levelY - 2)}
 
-  <!-- r1 dashed radius line (centre → top of dome) -->
-  ${dashLine(cx1, cy1, r1midX, r1midY, dim)}
-  ${txt(cx1 + 8, cy1 - VR1 * 0.45, "r1", dim, 11, "start", true)}
+  <!-- r1 dashed radius line (centre → WP) -->
+  ${dashLine(cx1, cy1, xWP, baseY, dim)}
+  ${txt(r1midX + 8, r1midY - 4, "r1", dim, 11, "start", true)}
 
   <!-- r2 dashed radius line -->
   ${dashLine(cx2, cy2, r2midX, r2midY, dim)}
@@ -437,8 +442,7 @@ function renderSegmentDiagram(L1, L2, L3, L4, L5, r1, r2, theta_deg) {
 
   <!-- ── FLIGHT PATH ─────────────────────────────────────── -->
   <path d="${pathInbound}"  fill="none" stroke="${stroke}" stroke-width="2.2" stroke-linecap="round"/>
-  <path d="${pathRollIn}"   fill="none" stroke="${stroke}" stroke-width="2.2" stroke-linecap="round"/>
-  <path d="${pathDipArc}"   fill="none" stroke="${stroke}" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="${pathDome}"     fill="none" stroke="${stroke}" stroke-width="2.2" stroke-linecap="round"/>
   <path d="${pathClimb}"    fill="none" stroke="${stroke}" stroke-width="2.2" stroke-linecap="round"/>
   <path d="${pathRollHi}"   fill="none" stroke="${stroke}" stroke-width="2.2" stroke-linecap="round"/>
   <path d="${pathLevel}"    fill="none" stroke="${stroke}" stroke-width="2.2" stroke-linecap="round"/>
@@ -454,8 +458,20 @@ function renderSegmentDiagram(L1, L2, L3, L4, L5, r1, r2, theta_deg) {
   ${ang30Svg}
   ${txt(dipX + a30R + 14, dipY - 2, "30°", dim, 10)}
 
-  <!-- 60° label at dip exit -->
-  ${txt(ang60X, ang60Y, "60°", dim, 10)}
+  <!-- 60° label near climb/baseline crossing -->
+  ${txt(ang60LblX, ang60LblY, "60°", dim, 10)}
+
+  <!-- "b" depth annotation (vertical arrow from baseline to dip) -->
+  ${
+    bAnnotation
+      ? `
+    ${dashLine(dipX, baseY, dipX, dipY, dim, 0.8, "3 3")}
+    <line x1="${f(dipX - 4)}" y1="${f(baseY)}" x2="${f(dipX + 4)}" y2="${f(baseY)}" stroke="${dim}" stroke-width="1"/>
+    <line x1="${f(dipX - 4)}" y1="${f(dipY)}" x2="${f(dipX + 4)}" y2="${f(dipY)}" stroke="${dim}" stroke-width="1"/>
+    ${txt(dipX + 10, (baseY + dipY) / 2 + 4, "b", dim, 11, "start", true)}
+  `
+      : ""
+  }
 
   <!-- 30° label near upper roll-out -->
   ${txt(upper30X, upper30Y, "30°", dim, 10)}
