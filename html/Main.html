@@ -1009,6 +1009,38 @@
                 </li>
                 <li>
                   <button
+                    id="flybyButton"
+                    data-label="Flyby MSD"
+                    onclick="loadPage('Flyby_Calculation.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                  >
+                    <svg
+                      class="text-primary-400 w-5 h-5 mr-3 sidebar-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M3 18 Q7 8 12 12 Q17 16 21 6"></path>
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="2"
+                        fill="currentColor"
+                        stroke="none"
+                      ></circle>
+                    </svg>
+                    <span class="sidebar-label" data-i18n="flyby.sidebarLabel"
+                      >Flyby MSD</span
+                    >
+                  </button>
+                </li>
+                <li>
+                  <button
                     id="circlingButton"
                     data-label="Circling Parameters"
                     onclick="loadPage('Circling_Parameters.html', this)"
@@ -1653,6 +1685,10 @@
         "#flyover": {
           url: "Flyover_Calculation.html",
           buttonId: "flyoverButton",
+        },
+        "#flyby": {
+          url: "Flyby_Calculation.html",
+          buttonId: "flybyButton",
         },
         "#circling": {
           url: "Circling_Parameters.html",

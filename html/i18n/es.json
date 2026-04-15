@@ -303,5 +303,29 @@
     "l5": "L5 (establecimiento de inclinación)",
     "msd": "MSD Total",
     "diagramTitle": "Desglose de segmentos (ref. PANS-OPS III-2-1-7)"
+  },
+  "flyby": {
+    "title": "Calculadora MSD Flyby",
+    "sidebarLabel": "MSD Flyby",
+    "subtitle": "Distancia Mínima de Estabilización — PANS-OPS §1.4.2",
+    "ias": "IAS (nudos)",
+    "altitude": "Altitud h1 (ft)",
+    "bankAngle": "Ángulo de inclinación (°)",
+    "bankAngleHint": "Según PANS-OPS §1.4.1.3 — 15°, 20° o 25° según fase de vuelo",
+    "turnAngle": "Ángulo de giro A (°)",
+    "phIas": "ej. 250",
+    "phAltitude": "ej. 4000",
+    "phBankAngle": "ej. 25",
+    "phTurnAngle": "ej. 105",
+    "resultsTitle": "Resultados MSD",
+    "kFactor": "Factor k",
+    "tas": "TAS",
+    "turnAngleUsed": "Ángulo de giro utilizado (A)",
+    "radius": "Radio (r)",
+    "l1": "L1 = r × tan(A/2)",
+    "l2": "L2 = 5 s × TAS / 3600",
+    "msd": "M Total (MSD Flyby)",
+    "turnAngleWarning": "Mínimo 50° según PANS-OPS §1.4.2.2 — valor ajustado.",
+    "isaNote": "ISA +15°C aplicado según estándar de diseño de procedimientos PANS-OPS (§1.4.1)"
   }
 }
