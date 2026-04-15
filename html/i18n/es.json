@@ -303,5 +303,29 @@
     "l5": "L5 (establecimiento de inclinación)",
     "msd": "MSD Total",
     "diagramTitle": "Desglose de segmentos (ref. PANS-OPS III-2-1-7)"
+  },
+  "msd": {
+    "title": "Calculadora MSD Combinada",
+    "sidebarLabel": "MSD Combinada",
+    "subtitle": "Distancia Mínima de Estabilización — PANS-OPS §1.4.2",
+    "distance": "Distancia IAF-IF D (NM)",
+    "phDistance": "ej. 6",
+    "h1": "Altitud h₁ (IAF)",
+    "h2": "Altitud h₂ (IF)",
+    "iafSection": "IAF — Resultados Flyby",
+    "ifSection": "IF — Resultados Flyby",
+    "turnAngleA": "Ángulo de giro A (°)",
+    "turnAngleB": "Ángulo de giro B (°)",
+    "m1": "M₁ (NM)",
+    "m2": "M₂ (NM)",
+    "flybyNote": "Use la calculadora MSD Flyby para obtener r·tan(θ/2), ángulo de giro y M de cada waypoint.",
+    "resultsTitle": "Resultados",
+    "trd": "TRD (Distancia de Trayecto Requerida)",
+    "r1TanA": "r\u2081\u00b7tan(A/2)",
+    "r1ArcA": "r\u2081\u00b7(A/2)\u00b7\u03c0/180",
+    "r2TanB": "r\u2082\u00b7tan(B/2)",
+    "r2ArcB": "r\u2082\u00b7(B/2)\u00b7\u03c0/180",
+    "gradient": "Gradiente de descenso",
+    "msdTotal": "MSD Total (M₁ + M₂)"
   }
 }

@@ -1009,6 +1009,36 @@
                 </li>
                 <li>
                   <button
+                    id="msdButton"
+                    data-label="MSD Combined"
+                    onclick="loadPage('MSD_Calculation.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                  >
+                    <svg
+                      class="text-primary-400 w-5 h-5 mr-3 sidebar-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M4 19 Q9 9 12 12 Q15 15 20 5"></path>
+                      <path
+                        d="M4 19 Q9 13 12 15 Q15 17 20 9"
+                        stroke-dasharray="3 2"
+                      ></path>
+                      <line x1="4" y1="22" x2="20" y2="22"></line>
+                    </svg>
+                    <span class="sidebar-label" data-i18n="msd.sidebarLabel"
+                      >MSD Combined</span
+                    >
+                  </button>
+                </li>
+                <li>
+                  <button
                     id="circlingButton"
                     data-label="Circling Parameters"
                     onclick="loadPage('Circling_Parameters.html', this)"
@@ -1654,6 +1684,10 @@
           url: "Flyover_Calculation.html",
           buttonId: "flyoverButton",
         },
+        "#msd": {
+          url: "MSD_Calculation.html",
+          buttonId: "msdButton",
+        },
         "#circling": {
           url: "Circling_Parameters.html",
           buttonId: "circlingButton",
@@ -1690,6 +1724,7 @@
         "NPA_SOC_Calculation.html": "NPA SOC Calculation",
         "VSS_OCS.html": "VSS / OCS Parameters",
         "Flyover_Calculation.html": "Flyover MSD",
+        "MSD_Calculation.html": "MSD Combined",
         "Circling_Parameters.html": "Circling Protection Area",
         "ILS_height_calculations.html": "ILS Height Calculations",
         "ILS_distance_calculations.html": "ILS Distance Calculations",

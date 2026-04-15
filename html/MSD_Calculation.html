@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="theme-color"
+      content="#f9fafb"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#111827"
+      media="(prefers-color-scheme: dark)"
+    />
+    <title data-i18n="msd.title">MSD Combined Calculator</title>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="shared-config.js"></script>
+    <link rel="stylesheet" href="dark-mode.css" />
+    <script src="aviation-utils.js"></script>
+    <script src="i18n/i18n.js"></script>
+  </head>
+  <body
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-start justify-center pt-8 p-4"
+  >
+    <main
+      class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
+    >
+      <header>
+        <h1
+          class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 mb-1 flex items-center"
+        >
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-7 w-7 sm:h-8 sm:w-8 mr-2 shrink-0"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M4 19 Q9 9 12 12 Q15 15 20 5"></path>
+            <path
+              d="M4 19 Q9 13 12 15 Q15 17 20 9"
+              stroke-dasharray="3 2"
+            ></path>
+            <line x1="4" y1="22" x2="20" y2="22"></line>
+          </svg>
+          <span data-i18n="msd.title">MSD Combined Calculator</span>
+        </h1>
+        <p
+          class="text-sm text-gray-500 dark:text-gray-400 mb-6 ml-10"
+          data-i18n="msd.subtitle"
+        >
+          Minimum Stabilisation Distance &#8212; PANS-OPS &#167;1.4.2
+        </p>
+      </header>
+
+      <!-- Save / Load buttons -->
+      <div class="flex flex-wrap justify-end mb-6 gap-3">
+        <input id="loadFile" type="file" accept=".json" class="hidden" />
+        <button
+          type="button"
+          id="btnSave"
+          class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
+        >
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-1"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+            ></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          <span data-i18n="common.save">Save Parameters</span>
+        </button>
+        <button
+          type="button"
+          id="btnLoad"
+          class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
+        >
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-1"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <span data-i18n="common.load">Load Parameters</span>
+        </button>
+      </div>
+
+      <!-- Input form -->
+      <form id="msdForm" novalidate>
+        <fieldset>
+          <legend class="sr-only">MSD Combined Parameters</legend>
+
+          <!-- Distance D + Altitudes -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <!-- Distance D -->
+            <div class="space-y-2">
+              <label
+                for="distance"
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="msd.distance"
+                >IAF-IF Distance D (NM)</label
+              >
+              <div
+                class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+              >
+                <input
+                  id="distance"
+                  name="distance"
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  inputmode="decimal"
+                  autocomplete="off"
+                  class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                  placeholder="e.g. 6"
+                  data-i18n="msd.phDistance"
+                  data-i18n-attr="placeholder"
+                />
+                <div
+                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
+                >
+                  <span
+                    class="text-gray-700 dark:text-white"
+                    data-i18n="common.nauticalMiles"
+                    >NM</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Altitude h1 -->
+            <div class="space-y-2">
+              <label
+                for="h1"
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="msd.h1"
+                >Altitude h&#8321; (IAF)</label
+              >
+              <div
+                class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+              >
+                <input
+                  id="h1"
+                  name="h1"
+                  type="number"
+                  min="0"
+                  step="1"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                  placeholder="e.g. 4000"
+                />
+                <select
+                  id="h1Unit"
+                  name="h1Unit"
+                  aria-label="h1 altitude unit"
+                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none dark:text-white"
+                >
+                  <option value="ft" selected data-i18n="common.feet">
+                    ft
+                  </option>
+                  <option value="m" data-i18n="common.meters">m</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Altitude h2 -->
+            <div class="space-y-2">
+              <label
+                for="h2"
+                class="block font-medium text-gray-700 dark:text-gray-300"
+                data-i18n="msd.h2"
+                >Altitude h&#8322; (IF)</label
+              >
+              <div
+                class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+              >
+                <input
+                  id="h2"
+                  name="h2"
+                  type="number"
+                  min="0"
+                  step="1"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                  placeholder="e.g. 3000"
+                />
+                <select
+                  id="h2Unit"
+                  name="h2Unit"
+                  aria-label="h2 altitude unit"
+                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none dark:text-white"
+                >
+                  <option value="ft" selected data-i18n="common.feet">
+                    ft
+                  </option>
+                  <option value="m" data-i18n="common.meters">m</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- IAF flyby results -->
+          <div
+            class="border border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-6 bg-blue-50/30 dark:bg-blue-900/10"
+          >
+            <h2
+              class="text-base font-semibold text-blue-700 dark:text-blue-400 mb-4 uppercase tracking-wide"
+              data-i18n="msd.iafSection"
+            >
+              IAF &#8212; Flyby Results
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <!-- r1*tan(A/2) -->
+              <div class="space-y-2">
+                <label
+                  for="r1TanA"
+                  class="block font-medium text-gray-700 dark:text-gray-300"
+                  data-i18n="msd.r1TanA"
+                  >r&#8321;&#183;tan(A/2) (NM)</label
+                >
+                <div
+                  class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+                >
+                  <input
+                    id="r1TanA"
+                    name="r1TanA"
+                    type="number"
+                    min="0"
+                    step="0.0001"
+                    inputmode="decimal"
+                    autocomplete="off"
+                    class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                    placeholder="e.g. 3.0710"
+                  />
+                  <div
+                    class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
+                  >
+                    <span
+                      class="text-gray-700 dark:text-white"
+                      data-i18n="common.nauticalMiles"
+                      >NM</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <!-- Turn angle A -->
+              <div class="space-y-2">
+                <label
+                  for="turnA"
+                  class="block font-medium text-gray-700 dark:text-gray-300"
+                  data-i18n="msd.turnAngleA"
+                  >Turn Angle A (&#176;)</label
+                >
+                <div
+                  class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+                >
+                  <input
+                    id="turnA"
+                    name="turnA"
+                    type="number"
+                    min="1"
+                    max="359"
+                    step="0.1"
+                    inputmode="decimal"
+                    autocomplete="off"
+                    class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                    placeholder="e.g. 105"
+                  />
+                  <div
+                    class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
+                  >
+                    <span
+                      class="text-gray-700 dark:text-white"
+                      data-i18n="common.degrees"
+                      >&#176;</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <!-- M1 -->
+              <div class="space-y-2">
+                <label
+                  for="m1"
+                  class="block font-medium text-gray-700 dark:text-gray-300"
+                  data-i18n="msd.m1"
+                  >M&#8321; (NM)</label
+                >
+                <div
+                  class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+                >
+                  <input
+                    id="m1"
+                    name="m1"
+                    type="number"
+                    min="0"
+                    step="0.0001"
+                    inputmode="decimal"
+                    autocomplete="off"
+                    class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                    placeholder="e.g. 3.4523"
+                  />
+                  <div
+                    class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
+                  >
+                    <span
+                      class="text-gray-700 dark:text-white"
+                      data-i18n="common.nauticalMiles"
+                      >NM</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- IF flyby results -->
+          <div
+            class="border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6 bg-amber-50/30 dark:bg-amber-900/10"
+          >
+            <h2
+              class="text-base font-semibold text-amber-700 dark:text-amber-400 mb-4 uppercase tracking-wide"
+              data-i18n="msd.ifSection"
+            >
+              IF &#8212; Flyby Results
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <!-- r2*tan(B/2) -->
+              <div class="space-y-2">
+                <label
+                  for="r2TanB"
+                  class="block font-medium text-gray-700 dark:text-gray-300"
+                  data-i18n="msd.r2TanB"
+                  >r&#8322;&#183;tan(B/2) (NM)</label
+                >
+                <div
+                  class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+                >
+                  <input
+                    id="r2TanB"
+                    name="r2TanB"
+                    type="number"
+                    min="0"
+                    step="0.0001"
+                    inputmode="decimal"
+                    autocomplete="off"
+                    class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                    placeholder="e.g. 2.2858"
+                  />
+                  <div
+                    class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
+                  >
+                    <span
+                      class="text-gray-700 dark:text-white"
+                      data-i18n="common.nauticalMiles"
+                      >NM</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <!-- Turn angle B -->
+              <div class="space-y-2">
+                <label
+                  for="turnB"
+                  class="block font-medium text-gray-700 dark:text-gray-300"
+                  data-i18n="msd.turnAngleB"
+                  >Turn Angle B (&#176;)</label
+                >
+                <div
+                  class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+                >
+                  <input
+                    id="turnB"
+                    name="turnB"
+                    type="number"
+                    min="1"
+                    max="359"
+                    step="0.1"
+                    inputmode="decimal"
+                    autocomplete="off"
+                    class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                    placeholder="e.g. 90"
+                  />
+                  <div
+                    class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
+                  >
+                    <span
+                      class="text-gray-700 dark:text-white"
+                      data-i18n="common.degrees"
+                      >&#176;</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <!-- M2 -->
+              <div class="space-y-2">
+                <label
+                  for="m2"
+                  class="block font-medium text-gray-700 dark:text-gray-300"
+                  data-i18n="msd.m2"
+                  >M&#8322; (NM)</label
+                >
+                <div
+                  class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+                >
+                  <input
+                    id="m2"
+                    name="m2"
+                    type="number"
+                    min="0"
+                    step="0.0001"
+                    inputmode="decimal"
+                    autocomplete="off"
+                    class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                    placeholder="e.g. 2.6614"
+                  />
+                  <div
+                    class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
+                  >
+                    <span
+                      class="text-gray-700 dark:text-white"
+                      data-i18n="common.nauticalMiles"
+                      >NM</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Info note -->
+          <div class="space-y-2 mb-2">
+            <div
+              class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-3 flex items-start gap-3"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-5 w-5 text-blue-500 dark:text-blue-400 shrink-0 mt-0.5"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <p
+                class="text-sm text-blue-700 dark:text-blue-300"
+                data-i18n="msd.flybyNote"
+              >
+                Use the Flyby MSD calculator to obtain r&#183;tan(&#952;/2),
+                turn angle, and M for each waypoint.
+              </p>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+
+      <!-- Calculate button -->
+      <div class="flex justify-end mt-6">
+        <button
+          type="button"
+          id="btnCalculate"
+          class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center"
+        >
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          <span data-i18n="common.calculate">Calculate</span>
+        </button>
+      </div>
+
+      <!-- Results section -->
+      <section
+        id="resultsSection"
+        role="region"
+        aria-live="polite"
+        aria-atomic="true"
+        class="hidden mt-8 bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600"
+      >
+        <h2
+          class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
+          data-i18n="msd.resultsTitle"
+        >
+          Results
+        </h2>
+
+        <!-- TRD intermediate breakdown (computed arc terms) -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div
+            class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-700 shadow-sm"
+          >
+            <p
+              class="text-xs text-blue-600 dark:text-blue-400 font-semibold mb-1"
+              data-i18n="msd.r1ArcA"
+            >
+              r&#8321;&#183;(A/2)&#183;&#960;/180
+            </p>
+            <p class="text-base font-bold text-blue-900 dark:text-blue-100">
+              <span id="outR1Arc"></span>
+              <span class="text-sm font-normal">NM</span>
+            </p>
+          </div>
+          <div
+            class="bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg border border-amber-200 dark:border-amber-700 shadow-sm"
+          >
+            <p
+              class="text-xs text-amber-600 dark:text-amber-400 font-semibold mb-1"
+              data-i18n="msd.r2ArcB"
+            >
+              r&#8322;&#183;(B/2)&#183;&#960;/180
+            </p>
+            <p class="text-base font-bold text-amber-900 dark:text-amber-100">
+              <span id="outR2Arc"></span>
+              <span class="text-sm font-normal">NM</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- TRD formula reference -->
+        <p class="text-xs text-gray-500 dark:text-gray-400 text-center mb-4">
+          TRD = D &#8722; r&#8321;&#183;tan(A/2) &#8722; r&#8322;&#183;tan(B/2)
+          + r&#8321;&#183;(A/2)&#183;&#960;/180 +
+          r&#8322;&#183;(B/2)&#183;&#960;/180
+        </p>
+
+        <!-- TRD check -->
+        <div
+          class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm mb-3"
+        >
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <p
+                class="text-xs text-gray-500 dark:text-gray-400"
+                data-i18n="msd.trd"
+              >
+                TRD (Track Required Distance)
+              </p>
+              <p class="text-lg font-bold dark:text-white">
+                <span id="outTRD"></span>
+                <span
+                  class="text-sm font-normal"
+                  data-i18n="common.nauticalMiles"
+                  >NM</span
+                >
+              </p>
+            </div>
+            <span id="outTRDStatus"></span>
+          </div>
+        </div>
+
+        <!-- Gradient check -->
+        <div
+          class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm mb-3"
+        >
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <p
+                class="text-xs text-gray-500 dark:text-gray-400"
+                data-i18n="msd.gradient"
+              >
+                Descent Gradient
+              </p>
+              <p class="text-lg font-bold dark:text-white">
+                <span id="outGradient"></span>
+                <span class="text-sm font-normal">%</span>
+              </p>
+            </div>
+            <span id="outGradientStatus"></span>
+          </div>
+        </div>
+
+        <!-- MSD total (primary highlighted card) -->
+        <div
+          id="msdPrimaryCard"
+          class="bg-primary-700 dark:bg-primary-800 rounded-xl p-5 text-white mb-4 text-center shadow-md"
+        >
+          <p
+            class="text-sm font-medium opacity-80 mb-1 uppercase tracking-wide"
+            data-i18n="msd.msdTotal"
+          >
+            MSD Total (M&#8321; + M&#8322;)
+          </p>
+          <p class="text-4xl font-bold">
+            <span id="outMSD"></span>
+            <span
+              class="text-2xl ml-1 font-normal"
+              data-i18n="common.nauticalMiles"
+              >NM</span
+            >
+          </p>
+          <p class="mt-2">
+            <span id="outMSDStatus"></span>
+          </p>
+        </div>
+
+        <!-- Copy to Word -->
+        <div class="flex justify-end">
+          <button
+            type="button"
+            id="btnCopy"
+            class="bg-gray-600 hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
+          >
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-1"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path
+                d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+              ></path>
+            </svg>
+            <span data-i18n="common.copyToWord">Copy to Word Document</span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <script src="js/msd_calculation.js"></script>
+  </body>
+</html>

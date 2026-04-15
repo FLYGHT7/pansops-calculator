@@ -304,5 +304,29 @@
     "l5": "L5 (bank establishment)",
     "msd": "MSD Total",
     "diagramTitle": "Segment Breakdown (ref. PANS-OPS III-2-1-7)"
+  },
+  "msd": {
+    "title": "MSD Combined Calculator",
+    "sidebarLabel": "MSD Combined",
+    "subtitle": "Minimum Stabilisation Distance — PANS-OPS §1.4.2",
+    "distance": "IAF-IF Distance D (NM)",
+    "phDistance": "e.g. 6",
+    "h1": "Altitude h₁ (IAF)",
+    "h2": "Altitude h₂ (IF)",
+    "iafSection": "IAF — Flyby Results",
+    "ifSection": "IF — Flyby Results",
+    "turnAngleA": "Turn Angle A (°)",
+    "turnAngleB": "Turn Angle B (°)",
+    "m1": "M₁ (NM)",
+    "m2": "M₂ (NM)",
+    "flybyNote": "Use the Flyby MSD calculator to obtain r·tan(θ/2), turn angle, and M for each waypoint.",
+    "resultsTitle": "Results",
+    "trd": "TRD (Track Required Distance)",
+    "r1TanA": "r\u2081\u00b7tan(A/2)",
+    "r1ArcA": "r\u2081\u00b7(A/2)\u00b7\u03c0/180",
+    "r2TanB": "r\u2082\u00b7tan(B/2)",
+    "r2ArcB": "r\u2082\u00b7(B/2)\u00b7\u03c0/180",
+    "gradient": "Descent Gradient",
+    "msdTotal": "MSD Total (M₁ + M₂)"
   }
 }
