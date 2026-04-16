@@ -163,27 +163,46 @@
           </div>
           <div class="space-y-2">
             <label
-              for="roundStep"
+              for="roundMode"
               class="block font-medium text-gray-700 dark:text-gray-300"
-              data-i18n="isa.roundStep"
-              >Rounding Step (default 5)</label
+              data-i18n="isa.roundMode"
+              >Rounding Mode</label
             >
-            <input
-              id="roundStep"
-              type="number"
-              value="5"
-              min="0"
-              step="1"
-              inputmode="numeric"
-              aria-describedby="roundStepHint"
+            <select
+              id="roundMode"
               class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            />
+            >
+              <option value="5" selected data-i18n="isa.roundNext5">
+                Round up to the next 5 (default)
+              </option>
+              <option value="1" data-i18n="isa.roundNext1">
+                Round up to the next integer
+              </option>
+              <option value="0" data-i18n="isa.roundNone">No rounding</option>
+            </select>
+            <div id="roundStepGroup" class="hidden mt-3">
+              <label
+                for="roundStep"
+                class="block font-medium text-gray-700 dark:text-gray-300 text-sm"
+                data-i18n="isa.roundStep"
+                >Rounding Step</label
+              >
+              <input
+                id="roundStep"
+                type="number"
+                value="5"
+                min="0"
+                step="1"
+                class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white mt-1"
+                placeholder="Enter rounding step"
+              />
+            </div>
             <p
               id="roundStepHint"
               class="text-xs text-gray-500 dark:text-gray-400 mt-1"
               data-i18n="isa.roundStepHint"
             >
-              Integers only. Use 0 to disable rounding.
+              Choose a mode or enter a custom integer step.
             </p>
           </div>
         </div>
@@ -225,6 +244,35 @@
         <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">
           <span data-i18n="isa.resultsTitle">ISA Deviation Results</span>
         </h2>
+
+        <!-- Blocking warning for non-integer result -->
+        <div
+          id="nonIntegerWarning"
+          class="hidden mb-4 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 rounded-lg px-4 py-3 flex items-start gap-3"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-5 w-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <p
+            class="text-sm font-semibold text-red-700 dark:text-red-300"
+            data-i18n="isa.nonIntegerWarning"
+          >
+            The rounded ΔISA value is not an integer. Please select a different
+            rounding mode to obtain an integer result.
+          </p>
+        </div>
 
         <!-- Output values in a grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
