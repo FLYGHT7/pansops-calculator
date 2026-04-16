@@ -1009,9 +1009,9 @@
                 </li>
                 <li>
                   <button
-                    id="msdButton"
-                    data-label="MSD Combined"
-                    onclick="loadPage('MSD_Calculation.html', this)"
+                    id="flybyButton"
+                    data-label="Flyby MSD"
+                    onclick="loadPage('Flyby_Calculation.html', this)"
                     class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
                   >
                     <svg
@@ -1025,15 +1025,17 @@
                       stroke-linejoin="round"
                       aria-hidden="true"
                     >
-                      <path d="M4 19 Q9 9 12 12 Q15 15 20 5"></path>
-                      <path
-                        d="M4 19 Q9 13 12 15 Q15 17 20 9"
-                        stroke-dasharray="3 2"
-                      ></path>
-                      <line x1="4" y1="22" x2="20" y2="22"></line>
+                      <path d="M3 18 Q7 8 12 12 Q17 16 21 6"></path>
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="2"
+                        fill="currentColor"
+                        stroke="none"
+                      ></circle>
                     </svg>
-                    <span class="sidebar-label" data-i18n="msd.sidebarLabel"
-                      >MSD Combined</span
+                    <span class="sidebar-label" data-i18n="flyby.sidebarLabel"
+                      >Flyby MSD</span
                     >
                   </button>
                 </li>
@@ -1684,9 +1686,9 @@
           url: "Flyover_Calculation.html",
           buttonId: "flyoverButton",
         },
-        "#msd": {
-          url: "MSD_Calculation.html",
-          buttonId: "msdButton",
+        "#flyby": {
+          url: "Flyby_Calculation.html",
+          buttonId: "flybyButton",
         },
         "#circling": {
           url: "Circling_Parameters.html",

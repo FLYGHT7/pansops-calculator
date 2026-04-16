@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PANS-OPS Figure III-2-1-7 — Prototype v5</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap");
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #0f172a;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .card {
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        padding: 28px 32px 20px;
+        max-width: 940px;
+        width: 100%;
+      }
+      .card h2 {
+        color: #94a3b8;
+        font-size: 14px;
+        font-weight: 400;
+        letter-spacing: 0.04em;
+        margin-bottom: 16px;
+      }
+      svg {
+        width: 100%;
+        border-radius: 8px;
+        background: #1f2937;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h2>Segment Breakdown (ref. PANS-OPS Figure III-2-1-7)</h2>
+
+      <!--
+        ═══════════════════════════════════════════════════════════
+        LAYOUT SPEC (v5f — NO rectangle, only dashed lines like document)
+        ───────────────────────────────────────────────────────────
+        ViewBox: 0 0 860 480
+
+        NO <rect> element — the document uses ONLY dashed lines.
+        baseline = 300  → WP level (dashed horizontal)
+        Vertical dashed dividers at each L boundary (full height)
+
+        WP ⊕ at (80, 300) = on baseline at left edge
+
+        L boundaries (NM-proportional, 750px):
+          L1: 80→302  (222px)   L2: 302→376 (74px)
+          L3: 376→593 (217px)   L4: 593→712 (119px)   L5: 712→830 (118px)
+
+        Flight path (thick solid line, always above baseline except dip):
+          · Inbound: (-20,430) → WP(80,300)
+          · Dome: WP(80,300) → peak(302,100) → dip(376,340)
+          · 30° climb: (376,340) → crosses baseline → continues up
+          · r2 rollout near L4 boundary
+          · Level flight: near baseline (y≈295) → exit right at (830,295)
+        ═══════════════════════════════════════════════════════════
+      -->
+
+      <svg viewBox="0 0 860 480" xmlns="http://www.w3.org/2000/svg">
+        <!-- ═══ NO <rect> — only dashed lines, like the PANS-OPS document ═══ -->
+
+        <!-- ═══ VERTICAL DASHED DIVIDERS (full diagram height) ═══ -->
+        <line
+          x1="80"
+          y1="80"
+          x2="80"
+          y2="400"
+          stroke="#475569"
+          stroke-width="1"
+          stroke-dasharray="6 4"
+        />
+        <line
+          x1="302"
+          y1="80"
+          x2="302"
+          y2="400"
+          stroke="#475569"
+          stroke-width="1"
+          stroke-dasharray="6 4"
+        />
+        <line
+          x1="376"
+          y1="80"
+          x2="376"
+          y2="400"
+          stroke="#475569"
+          stroke-width="1"
+          stroke-dasharray="6 4"
+        />
+        <line
+          x1="593"
+          y1="80"
+          x2="593"
+          y2="400"
+          stroke="#475569"
+          stroke-width="1"
+          stroke-dasharray="6 4"
+        />
+        <line
+          x1="712"
+          y1="80"
+          x2="712"
+          y2="400"
+          stroke="#475569"
+          stroke-width="1"
+          stroke-dasharray="6 4"
+        />
+        <line
+          x1="830"
+          y1="80"
+          x2="830"
+          y2="400"
+          stroke="#475569"
+          stroke-width="1"
+          stroke-dasharray="6 4"
+        />
+
+        <!-- ═══ BASELINE (dashed horizontal, extends beyond dividers) ═══ -->
+        <line
+          x1="20"
+          y1="300"
+          x2="845"
+          y2="300"
+          stroke="#475569"
+          stroke-width="1"
+          stroke-dasharray="6 4"
+        />
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  FLIGHT PATH                                           -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+
+        <!-- 1. Inbound track — ascending from outside to WP(80,300) -->
+        <line
+          x1="-20"
+          y1="443"
+          x2="80"
+          y2="300"
+          stroke="#c8d6e8"
+          stroke-width="2.2"
+          stroke-linecap="round"
+        />
+
+        <!-- 2. Smooth arc: WP(80,300) → peak(302,100) → descends like rainbow → touches baseline at mid-L4(652,295) -->
+        <path
+          d="M 80,300 C 172,169 252,100 302,100 C 450,100 600,295 652,295"
+          fill="none"
+          stroke="#c8d6e8"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+
+        <!-- 3. Level flight from touchdown to exit right -->
+        <line
+          x1="652"
+          y1="295"
+          x2="850"
+          y2="295"
+          stroke="#c8d6e8"
+          stroke-width="2.2"
+          stroke-linecap="round"
+        />
+
+        <!-- ═══ WAYPOINT SYMBOL ⊕ — top-left of rectangle, on baseline ═══ -->
+        <circle
+          cx="80"
+          cy="300"
+          r="11"
+          fill="#1f2937"
+          stroke="#c8d6e8"
+          stroke-width="1.8"
+        />
+        <line
+          x1="69"
+          y1="300"
+          x2="91"
+          y2="300"
+          stroke="#c8d6e8"
+          stroke-width="1.2"
+        />
+        <line
+          x1="80"
+          y1="289"
+          x2="80"
+          y2="311"
+          stroke="#c8d6e8"
+          stroke-width="1.2"
+        />
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  ANNOTATIONS                                           -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+
+        <!-- θ angle arc at WP -->
+        <path
+          d="M 58,300 A 22,22 0 0,0 67,280"
+          fill="none"
+          stroke="#64748b"
+          stroke-width="1.2"
+        />
+        <text
+          x="48"
+          y="290"
+          font-size="13"
+          fill="#64748b"
+          font-family="sans-serif"
+          font-style="italic"
+        >
+          θ
+        </text>
+
+        <!-- r1 dashed radius line from WP toward turn centre -->
+        <line
+          x1="80"
+          y1="300"
+          x2="200"
+          y2="190"
+          stroke="#64748b"
+          stroke-width="1"
+          stroke-dasharray="5 3"
+        />
+        <text
+          x="125"
+          y="237"
+          font-size="11"
+          fill="#64748b"
+          font-family="sans-serif"
+          font-style="italic"
+        >
+          r₁
+        </text>
+
+        <!-- Vertical dashed line at WP going up -->
+        <line
+          x1="80"
+          y1="295"
+          x2="80"
+          y2="255"
+          stroke="#64748b"
+          stroke-width="1"
+          stroke-dasharray="5 3"
+        />
+        <polygon points="77,258 80,248 83,258" fill="#64748b" />
+
+        <!-- "b" depth bracket: BL(300) → dip(340) next to dip -->
+        <line
+          x1="386"
+          y1="300"
+          x2="386"
+          y2="340"
+          stroke="#64748b"
+          stroke-width="1"
+          stroke-dasharray="3 2"
+        />
+        <line
+          x1="382"
+          y1="300"
+          x2="390"
+          y2="300"
+          stroke="#64748b"
+          stroke-width="1"
+        />
+        <line
+          x1="382"
+          y1="340"
+          x2="390"
+          y2="340"
+          stroke="#64748b"
+          stroke-width="1"
+        />
+        <text
+          x="394"
+          y="325"
+          font-size="12"
+          fill="#64748b"
+          font-family="sans-serif"
+          font-style="italic"
+        >
+          b
+        </text>
+
+        <!-- 60° label near dip -->
+        <path
+          d="M 394,340 A 16,16 0 0,0 390,325"
+          fill="none"
+          stroke="#64748b"
+          stroke-width="1.1"
+        />
+        <text
+          x="399"
+          y="333"
+          font-size="9"
+          fill="#64748b"
+          font-family="sans-serif"
+        >
+          60°
+        </text>
+
+        <!-- 30° at dip (climb angle) -->
+        <path
+          d="M 395,340 A 18,18 0 0,1 410,333"
+          fill="none"
+          stroke="#64748b"
+          stroke-width="1.1"
+        />
+        <text
+          x="413"
+          y="331"
+          font-size="9"
+          fill="#64748b"
+          font-family="sans-serif"
+        >
+          30°
+        </text>
+
+        <!-- 30° at r2 rollout -->
+        <path
+          d="M 610,265 A 16,16 0 0,0 618,253"
+          fill="none"
+          stroke="#64748b"
+          stroke-width="1.1"
+        />
+        <text
+          x="622"
+          y="258"
+          font-size="9"
+          fill="#64748b"
+          font-family="sans-serif"
+        >
+          30°
+        </text>
+
+        <!-- r2 dashed radius line -->
+        <line
+          x1="665"
+          y1="275"
+          x2="655"
+          y2="252"
+          stroke="#64748b"
+          stroke-width="1"
+          stroke-dasharray="5 3"
+        />
+        <text
+          x="668"
+          y="270"
+          font-size="11"
+          fill="#64748b"
+          font-family="sans-serif"
+          font-style="italic"
+        >
+          r₂
+        </text>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  DROP LINES  (rectangle bottom → dimension row)        -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <line
+          x1="80"
+          y1="400"
+          x2="80"
+          y2="420"
+          stroke="#64748b"
+          stroke-width="0.7"
+          stroke-dasharray="3 3"
+        />
+        <line
+          x1="302"
+          y1="400"
+          x2="302"
+          y2="420"
+          stroke="#64748b"
+          stroke-width="0.7"
+          stroke-dasharray="3 3"
+        />
+        <line
+          x1="376"
+          y1="400"
+          x2="376"
+          y2="420"
+          stroke="#64748b"
+          stroke-width="0.7"
+          stroke-dasharray="3 3"
+        />
+        <line
+          x1="593"
+          y1="400"
+          x2="593"
+          y2="420"
+          stroke="#64748b"
+          stroke-width="0.7"
+          stroke-dasharray="3 3"
+        />
+        <line
+          x1="712"
+          y1="400"
+          x2="712"
+          y2="420"
+          stroke="#64748b"
+          stroke-width="0.7"
+          stroke-dasharray="3 3"
+        />
+        <line
+          x1="830"
+          y1="400"
+          x2="830"
+          y2="420"
+          stroke="#64748b"
+          stroke-width="0.7"
+          stroke-dasharray="3 3"
+        />
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  DIMENSION ARROWS — L1–L5 at y=415                     -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+
+        <!-- L1: 80→302 -->
+        <line
+          x1="80"
+          y1="415"
+          x2="302"
+          y2="415"
+          stroke="#2563eb"
+          stroke-width="1.5"
+        />
+        <line
+          x1="80"
+          y1="409"
+          x2="80"
+          y2="421"
+          stroke="#2563eb"
+          stroke-width="1.5"
+        />
+        <line
+          x1="302"
+          y1="409"
+          x2="302"
+          y2="421"
+          stroke="#2563eb"
+          stroke-width="1.5"
+        />
+        <text
+          x="191"
+          y="413"
+          text-anchor="middle"
+          font-size="11"
+          font-weight="700"
+          fill="#2563eb"
+          font-family="monospace"
+        >
+          L1
+        </text>
+        <text
+          x="191"
+          y="429"
+          text-anchor="middle"
+          font-size="9"
+          fill="#2563eb"
+          font-family="monospace"
+        >
+          1.009 NM
+        </text>
+
+        <!-- L2: 302→376 -->
+        <line
+          x1="302"
+          y1="415"
+          x2="376"
+          y2="415"
+          stroke="#6366f1"
+          stroke-width="1.5"
+        />
+        <line
+          x1="302"
+          y1="409"
+          x2="302"
+          y2="421"
+          stroke="#6366f1"
+          stroke-width="1.5"
+        />
+        <line
+          x1="376"
+          y1="409"
+          x2="376"
+          y2="421"
+          stroke="#6366f1"
+          stroke-width="1.5"
+        />
+        <text
+          x="339"
+          y="413"
+          text-anchor="middle"
+          font-size="11"
+          font-weight="700"
+          fill="#6366f1"
+          font-family="monospace"
+        >
+          L2
+        </text>
+        <text
+          x="339"
+          y="429"
+          text-anchor="middle"
+          font-size="9"
+          fill="#6366f1"
+          font-family="monospace"
+        >
+          0.336 NM
+        </text>
+
+        <!-- L3: 376→593 -->
+        <line
+          x1="376"
+          y1="415"
+          x2="593"
+          y2="415"
+          stroke="#9ca3af"
+          stroke-width="1.5"
+        />
+        <line
+          x1="376"
+          y1="409"
+          x2="376"
+          y2="421"
+          stroke="#9ca3af"
+          stroke-width="1.5"
+        />
+        <line
+          x1="593"
+          y1="409"
+          x2="593"
+          y2="421"
+          stroke="#9ca3af"
+          stroke-width="1.5"
+        />
+        <text
+          x="485"
+          y="413"
+          text-anchor="middle"
+          font-size="11"
+          font-weight="700"
+          fill="#9ca3af"
+          font-family="monospace"
+        >
+          L3
+        </text>
+        <text
+          x="485"
+          y="429"
+          text-anchor="middle"
+          font-size="9"
+          fill="#9ca3af"
+          font-family="monospace"
+        >
+          0.985 NM
+        </text>
+
+        <!-- L4: 593→712 -->
+        <line
+          x1="593"
+          y1="415"
+          x2="712"
+          y2="415"
+          stroke="#f59e0b"
+          stroke-width="1.5"
+        />
+        <line
+          x1="593"
+          y1="409"
+          x2="593"
+          y2="421"
+          stroke="#f59e0b"
+          stroke-width="1.5"
+        />
+        <line
+          x1="712"
+          y1="409"
+          x2="712"
+          y2="421"
+          stroke="#f59e0b"
+          stroke-width="1.5"
+        />
+        <text
+          x="653"
+          y="413"
+          text-anchor="middle"
+          font-size="11"
+          font-weight="700"
+          fill="#f59e0b"
+          font-family="monospace"
+        >
+          L4
+        </text>
+        <text
+          x="653"
+          y="429"
+          text-anchor="middle"
+          font-size="9"
+          fill="#f59e0b"
+          font-family="monospace"
+        >
+          0.543 NM
+        </text>
+
+        <!-- L5: 712→830 -->
+        <line
+          x1="712"
+          y1="415"
+          x2="830"
+          y2="415"
+          stroke="#22c55e"
+          stroke-width="1.5"
+        />
+        <line
+          x1="712"
+          y1="409"
+          x2="712"
+          y2="421"
+          stroke="#22c55e"
+          stroke-width="1.5"
+        />
+        <line
+          x1="830"
+          y1="409"
+          x2="830"
+          y2="421"
+          stroke="#22c55e"
+          stroke-width="1.5"
+        />
+        <text
+          x="771"
+          y="413"
+          text-anchor="middle"
+          font-size="11"
+          font-weight="700"
+          fill="#22c55e"
+          font-family="monospace"
+        >
+          L5
+        </text>
+        <text
+          x="771"
+          y="429"
+          text-anchor="middle"
+          font-size="9"
+          fill="#22c55e"
+          font-family="monospace"
+        >
+          0.536 NM
+        </text>
+
+        <!-- MSD total -->
+        <line
+          x1="80"
+          y1="455"
+          x2="830"
+          y2="455"
+          stroke="#e2e8f0"
+          stroke-width="1.2"
+        />
+        <line
+          x1="80"
+          y1="449"
+          x2="80"
+          y2="461"
+          stroke="#e2e8f0"
+          stroke-width="1.2"
+        />
+        <line
+          x1="830"
+          y1="449"
+          x2="830"
+          y2="461"
+          stroke="#e2e8f0"
+          stroke-width="1.2"
+        />
+        <text
+          x="455"
+          y="453"
+          text-anchor="middle"
+          font-size="12"
+          font-weight="700"
+          fill="#e2e8f0"
+          font-family="monospace"
+        >
+          MSD = 3.4102 NM
+        </text>
+      </svg>
+    </div>
+  </body>
+</html>
