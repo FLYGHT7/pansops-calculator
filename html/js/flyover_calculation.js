@@ -61,10 +61,11 @@ function setupEventListeners() {
   document
     .getElementById("loadFile")
     .addEventListener("change", loadParameters);
-  document
-    .getElementById("btnCalculate")
-    .addEventListener("click", calculateFlyover);
+  document.getElementById("btnCalculate").addEventListener("click", calculateFlyover);
   document.getElementById("btnCopy").addEventListener("click", copyToWord);
+  document
+    .getElementById("copyPrecision")
+    .addEventListener("change", applyDisplayPrecision);
 
   document
     .getElementById("altitudeUnit")
@@ -92,13 +93,34 @@ function handleUnitChange(inputId, unitSelectId) {
     const newUnit = unitSelect.value;
     if (oldUnit !== newUnit) {
       if (oldUnit === "ft" && newUnit === "m") {
-        input.value = (currentValue * 0.3048).toFixed(2);
+        input.value = (currentValue * 0.3048).toFixed(4);
       } else if (oldUnit === "m" && newUnit === "ft") {
-        input.value = (currentValue / 0.3048).toFixed(2);
+        input.value = (currentValue / 0.3048).toFixed(4);
       }
     }
   }
   unitSelect.dataset.lastUnit = unitSelect.value;
+}
+
+// ─── Stored raw results ───────────────────────────────────────────────────────
+
+const _raw = {};
+
+// Re-render all result spans using the selected precision mode
+function applyDisplayPrecision() {
+  if (_raw.msd === undefined) return;
+  const exact = document.getElementById("copyPrecision").value === "exact";
+  const fmt = (v) => (exact ? v.toString() : v.toFixed(4));
+  document.getElementById("outKFactor").textContent = fmt(_raw.kFactor);
+  document.getElementById("outTas").textContent = fmt(_raw.tas);
+  document.getElementById("outR1").textContent = fmt(_raw.r1);
+  document.getElementById("outR2").textContent = fmt(_raw.r2);
+  document.getElementById("outL1").textContent = fmt(_raw.L1);
+  document.getElementById("outL2").textContent = fmt(_raw.L2);
+  document.getElementById("outL3").textContent = fmt(_raw.L3);
+  document.getElementById("outL4").textContent = fmt(_raw.L4);
+  document.getElementById("outL5").textContent = fmt(_raw.L5);
+  document.getElementById("outMsd").textContent = fmt(_raw.msd);
 }
 
 // ─── Core calculation ─────────────────────────────────────────────────────────
@@ -110,6 +132,8 @@ function calculateFlyover() {
   const altitudeUnit = document.getElementById("altitudeUnit").value;
   const bankAngleVal = parseFloat(document.getElementById("bankAngle").value);
   const turnAngle = parseFloat(document.getElementById("turnAngle").value);
+  const isaRaw = document.getElementById("isaDeviation").value.trim();
+  const isaDeviation = isaRaw === "" ? 0 : parseFloat(isaRaw);
 
   // --- Validate ---
   if (isNaN(iasVal) || iasVal <= 0) {
@@ -128,13 +152,17 @@ function calculateFlyover() {
     showToast("Please enter a valid turn angle (> 0).", "error");
     return;
   }
+  if (!isNaN(parseFloat(isaRaw)) && isNaN(isaDeviation)) {
+    showToast("Please enter a valid ISA Deviation.", "error");
+    return;
+  }
 
   // --- Convert altitude to feet ---
   const altitude_ft =
     altitudeUnit === "ft" ? altitudeRaw : altitudeRaw / 0.3048;
 
-  // --- TAS (ISA+15 per PANS-OPS procedure design standard) ---
-  const kFactor = calculateKFactor(altitude_ft, 15);
+  // --- TAS ---
+  const kFactor = calculateKFactor(altitude_ft, isaDeviation);
   const tas = calculateTAS(iasVal, kFactor);
 
   // --- Radii ---
@@ -157,18 +185,21 @@ function calculateFlyover() {
 
   const msd = L1 + L2 + L3 + L4 + L5;
 
+  // --- Store raw values ---
+  _raw.kFactor = kFactor;
+  _raw.tas = tas;
+  _raw.r1 = r1;
+  _raw.r2 = r2;
+  _raw.L1 = L1;
+  _raw.L2 = L2;
+  _raw.L3 = L3;
+  _raw.L4 = L4;
+  _raw.L5 = L5;
+  _raw.msd = msd;
+
   // --- Populate outputs ---
-  document.getElementById("outKFactor").textContent = kFactor.toFixed(4);
-  document.getElementById("outTas").textContent = tas.toFixed(4);
-  document.getElementById("outR1").textContent = r1.toFixed(4);
-  document.getElementById("outR2").textContent = r2.toFixed(4);
-  document.getElementById("outL1").textContent = L1.toFixed(4);
-  document.getElementById("outL2").textContent = L2.toFixed(4);
-  document.getElementById("outL3").textContent = L3.toFixed(4);
-  document.getElementById("outL4").textContent = L4.toFixed(4);
-  document.getElementById("outL5").textContent = L5.toFixed(4);
-  document.getElementById("outMsd").textContent = msd.toFixed(4);
   document.getElementById("outThetaEff").textContent = turnAngle + "°";
+  applyDisplayPrecision();
 
   // Show results (diagram temporarily hidden — pending geometry fix)
   document.getElementById("resultsSection").classList.remove("hidden");
@@ -502,6 +533,7 @@ function saveParameters() {
     altitudeUnit: document.getElementById("altitudeUnit").value || "ft",
     bankAngle: document.getElementById("bankAngle").value || "",
     turnAngle: document.getElementById("turnAngle").value || "",
+    isaDeviation: document.getElementById("isaDeviation").value || "",
   };
 
   const now = new Date();
@@ -542,6 +574,8 @@ function loadParameters(event) {
         document.getElementById("bankAngle").value = data.bankAngle;
       if (data.turnAngle !== undefined)
         document.getElementById("turnAngle").value = data.turnAngle;
+      if (data.isaDeviation !== undefined)
+        document.getElementById("isaDeviation").value = data.isaDeviation;
 
       showToast("Parameters loaded.", "success");
     } catch {
@@ -556,8 +590,10 @@ function loadParameters(event) {
 // ─── Copy to Word ─────────────────────────────────────────────────────────────
 
 function copyToWord() {
-  const msdVal = document.getElementById("outMsd").textContent;
-  if (!msdVal) return;
+  if (_raw.msd === undefined) return;
+
+  const exact = document.getElementById("copyPrecision").value === "exact";
+  const fmt = (v) => (exact ? v.toString() : v.toFixed(4));
 
   const tableData = {
     IAS: document.getElementById("ias").value + " KT",
@@ -565,21 +601,20 @@ function copyToWord() {
       document.getElementById("altitude").value +
       " " +
       document.getElementById("altitudeUnit").value,
-    "k Factor": document.getElementById("outKFactor").textContent,
+    "ISA Deviation (VAR)": (document.getElementById("isaDeviation").value || "0") + " °C",
+    "k Factor": fmt(_raw.kFactor),
     "Bank Angle r1": document.getElementById("bankAngle").value + "°",
     "Turn Angle (input)": document.getElementById("turnAngle").value + "°",
-    TAS: document.getElementById("outTas").textContent + " KT",
+    TAS: fmt(_raw.tas) + " KT",
     "Turn Angle Used": document.getElementById("outThetaEff").textContent,
-    "r1 (roll-in)": document.getElementById("outR1").textContent + " NM",
-    "r2 (roll-out, 15° fixed)":
-      document.getElementById("outR2").textContent + " NM",
-    L1: document.getElementById("outL1").textContent + " NM",
-    L2: document.getElementById("outL2").textContent + " NM",
-    L3: document.getElementById("outL3").textContent + " NM",
-    L4: document.getElementById("outL4").textContent + " NM",
-    "L5 (bank establishment)":
-      document.getElementById("outL5").textContent + " NM",
-    "MSD Total": msdVal + " NM",
+    "r1 (roll-in)": fmt(_raw.r1) + " NM",
+    "r2 (roll-out, 15° fixed)": fmt(_raw.r2) + " NM",
+    L1: fmt(_raw.L1) + " NM",
+    L2: fmt(_raw.L2) + " NM",
+    L3: fmt(_raw.L3) + " NM",
+    L4: fmt(_raw.L4) + " NM",
+    "L5 (bank establishment)": fmt(_raw.L5) + " NM",
+    "MSD Total": fmt(_raw.msd) + " NM",
   };
 
   const htmlContent = createHTMLTable(

@@ -333,6 +333,6 @@
     "l2": "L2 = 5 s × TAS / 3600",
     "msd": "M Total (Flyby MSD)",
     "turnAngleWarning": "Minimum 50° per PANS-OPS §1.4.2.2 — value adjusted.",
-    "isaNote": "ISA +15°C applied per PANS-OPS procedure design standard (§1.4.1)"
+    "isaNote": "Blank = 0°C (ISA standard). Roll-out r2 uses fixed 15° bank per PANS-OPS §1.4.1.3."
   }
 }

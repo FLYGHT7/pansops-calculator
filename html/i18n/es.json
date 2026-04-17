@@ -332,6 +332,6 @@
     "l2": "L2 = 5 s × TAS / 3600",
     "msd": "M Total (MSD Flyby)",
     "turnAngleWarning": "Mínimo 50° según PANS-OPS §1.4.2.2 — valor ajustado.",
-    "isaNote": "ISA +15°C aplicado según estándar de diseño de procedimientos PANS-OPS (§1.4.1)"
+    "isaNote": "Vacío = 0°C (ISA estándar). r2 de salida usa banco fijo de 15° según PANS-OPS §1.4.1.3."
   }
 }
