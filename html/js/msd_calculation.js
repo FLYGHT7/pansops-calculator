@@ -27,7 +27,9 @@ var _raw2 = null;
 function applyDisplayPrecision() {
   if (!_raw1 || !_raw2) return;
   var exact = document.getElementById("copyPrecision").value === "exact";
-  var fmt = function (v) { return exact ? v.toString() : v.toFixed(4); };
+  var fmt = function (v) {
+    return exact ? v.toString() : v.toFixed(4);
+  };
   var FT_PER_NM = 1852 / 0.3048;
   var DEG_TO_RAD = Math.PI / 180;
 
@@ -108,35 +110,49 @@ function setupEventListeners() {
   document.getElementById("btnLoad").addEventListener("click", function () {
     document.getElementById("loadFile").click();
   });
-  document.getElementById("loadFile").addEventListener("change", loadParameters);
-  document.getElementById("btnCalculate").addEventListener("click", calculateMSD);
+  document
+    .getElementById("loadFile")
+    .addEventListener("change", loadParameters);
+  document
+    .getElementById("btnCalculate")
+    .addEventListener("click", calculateMSD);
   document.getElementById("btnCopy").addEventListener("click", copyToWord);
-  document.getElementById("copyPrecision").addEventListener("change", applyDisplayPrecision);
+  document
+    .getElementById("copyPrecision")
+    .addEventListener("change", applyDisplayPrecision);
 
-  document.getElementById("wp1AltitudeUnit").addEventListener("change", function () {
-    handleUnitChange("wp1Altitude", "wp1AltitudeUnit");
-  });
-  document.getElementById("wp2AltitudeUnit").addEventListener("change", function () {
-    handleUnitChange("wp2Altitude", "wp2AltitudeUnit");
-  });
+  document
+    .getElementById("wp1AltitudeUnit")
+    .addEventListener("change", function () {
+      handleUnitChange("wp1Altitude", "wp1AltitudeUnit");
+    });
+  document
+    .getElementById("wp2AltitudeUnit")
+    .addEventListener("change", function () {
+      handleUnitChange("wp2Altitude", "wp2AltitudeUnit");
+    });
 
   // Show/hide turn-angle warning badges in real time
   ["wp1", "wp2"].forEach(function (prefix) {
-    document.getElementById(prefix + "TurnAngle").addEventListener("input", function () {
-      var val = parseFloat(this.value);
-      var type = document.getElementById(prefix + "Type").value;
-      var warning = document.getElementById(prefix + "TurnWarning");
-      if (type === "flyby" && !isNaN(val) && val < 50) {
-        warning.classList.remove("hidden");
-      } else {
-        warning.classList.add("hidden");
-      }
-    });
-    document.getElementById(prefix + "Type").addEventListener("change", function () {
-      // Re-check warning when type changes
-      var angleEl = document.getElementById(prefix + "TurnAngle");
-      angleEl.dispatchEvent(new Event("input"));
-    });
+    document
+      .getElementById(prefix + "TurnAngle")
+      .addEventListener("input", function () {
+        var val = parseFloat(this.value);
+        var type = document.getElementById(prefix + "Type").value;
+        var warning = document.getElementById(prefix + "TurnWarning");
+        if (type === "flyby" && !isNaN(val) && val < 50) {
+          warning.classList.remove("hidden");
+        } else {
+          warning.classList.add("hidden");
+        }
+      });
+    document
+      .getElementById(prefix + "Type")
+      .addEventListener("change", function () {
+        // Re-check warning when type changes
+        var angleEl = document.getElementById(prefix + "TurnAngle");
+        angleEl.dispatchEvent(new Event("input"));
+      });
   });
 }
 
@@ -202,11 +218,14 @@ function computeFlyover(ias, altitude_ft, bankAngle, turnAngle, isaDeviation) {
   var alpha_rad = 30 * DEG_TO_RAD;
   var L1fo = r1 * Math.sin(theta_rad);
   var L2fo = r1 * Math.cos(theta_rad) * Math.tan(alpha_rad);
-  var L3fo = r1 * (1 / Math.sin(alpha_rad) - (2 * Math.cos(theta_rad)) / Math.sin(60 * DEG_TO_RAD));
+  var L3fo =
+    r1 *
+    (1 / Math.sin(alpha_rad) -
+      (2 * Math.cos(theta_rad)) / Math.sin(60 * DEG_TO_RAD));
   var L4fo = r2 * Math.tan(alpha_rad / 2);
   var L5fo = (10 * tas) / 3600;
   var arcPlusTrans = L1fo + L2fo + L3fo + L4fo; // "L1 display"
-  var bankEstab = L5fo;                           // "L2 display"
+  var bankEstab = L5fo; // "L2 display"
   var M = arcPlusTrans + bankEstab;
   return {
     type: "flyover",
@@ -291,13 +310,15 @@ function calculateMSD() {
   var wp2Alt_ft = wp2AltUnit === "m" ? wp2AltRaw / 0.3048 : wp2AltRaw;
 
   // Compute per WP
-  var res1 = wp1Type === "flyby"
-    ? computeFlyby(wp1Ias, wp1Alt_ft, wp1Bank, wp1Turn, isaDeviation)
-    : computeFlyover(wp1Ias, wp1Alt_ft, wp1Bank, wp1Turn, isaDeviation);
+  var res1 =
+    wp1Type === "flyby"
+      ? computeFlyby(wp1Ias, wp1Alt_ft, wp1Bank, wp1Turn, isaDeviation)
+      : computeFlyover(wp1Ias, wp1Alt_ft, wp1Bank, wp1Turn, isaDeviation);
 
-  var res2 = wp2Type === "flyby"
-    ? computeFlyby(wp2Ias, wp2Alt_ft, wp2Bank, wp2Turn, isaDeviation)
-    : computeFlyover(wp2Ias, wp2Alt_ft, wp2Bank, wp2Turn, isaDeviation);
+  var res2 =
+    wp2Type === "flyby"
+      ? computeFlyby(wp2Ias, wp2Alt_ft, wp2Bank, wp2Turn, isaDeviation)
+      : computeFlyover(wp2Ias, wp2Alt_ft, wp2Bank, wp2Turn, isaDeviation);
 
   // Store
   _raw1 = res1;
@@ -328,10 +349,12 @@ function calculateMSD() {
     var trdStatus = document.getElementById("outTRDStatus");
     if (trd > 0) {
       trdStatus.textContent = "OK";
-      trdStatus.className = "text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300";
+      trdStatus.className =
+        "text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300";
     } else {
       trdStatus.textContent = "Negative";
-      trdStatus.className = "text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300";
+      trdStatus.className =
+        "text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300";
     }
 
     var gradient = null;
@@ -342,10 +365,12 @@ function calculateMSD() {
       var maxGradient = 8.0;
       if (gradient <= maxGradient) {
         gradientStatus.textContent = "\u2264 8% OK";
-        gradientStatus.className = "text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300";
+        gradientStatus.className =
+          "text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300";
       } else {
         gradientStatus.textContent = "> 8% STEEP";
-        gradientStatus.className = "text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300";
+        gradientStatus.className =
+          "text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300";
       }
     } else {
       document.getElementById("outGradient").textContent = "N/A";
@@ -368,11 +393,13 @@ function calculateMSD() {
   if (distanceD >= msd) {
     msdStatus.textContent = "\u2265 MSD \u2714 PASS";
     msdStatus.className = "font-bold";
-    msdCard.className = "bg-green-600 dark:bg-green-700 rounded-xl p-5 text-white text-center shadow-md";
+    msdCard.className =
+      "bg-green-600 dark:bg-green-700 rounded-xl p-5 text-white text-center shadow-md";
   } else {
     msdStatus.textContent = "< MSD \u2718 FAIL";
     msdStatus.className = "font-bold";
-    msdCard.className = "bg-red-600 dark:bg-red-700 rounded-xl p-5 text-white text-center shadow-md";
+    msdCard.className =
+      "bg-red-600 dark:bg-red-700 rounded-xl p-5 text-white text-center shadow-md";
   }
 
   // Apply current precision mode to all outputs
@@ -380,7 +407,9 @@ function calculateMSD() {
 
   // Show results
   document.getElementById("resultsSection").classList.remove("hidden");
-  document.getElementById("resultsSection").scrollIntoView({ behavior: "smooth", block: "start" });
+  document
+    .getElementById("resultsSection")
+    .scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 // ── Render WP output ──────────────────────────────────────────────────────────
@@ -431,7 +460,9 @@ function saveParameters() {
     wp2TurnAngle: document.getElementById("wp2TurnAngle").value,
   };
 
-  var blob = new Blob([JSON.stringify(params, null, 2)], { type: "application/json" });
+  var blob = new Blob([JSON.stringify(params, null, 2)], {
+    type: "application/json",
+  });
   var url = URL.createObjectURL(blob);
   var a = document.createElement("a");
   a.href = url;
@@ -495,7 +526,9 @@ function copyToWord() {
   }
 
   var exact = document.getElementById("copyPrecision").value === "exact";
-  var fmt = function (v) { return exact ? v.toString() : v.toFixed(4); };
+  var fmt = function (v) {
+    return exact ? v.toString() : v.toFixed(4);
+  };
   var FT_PER_NM = 1852 / 0.3048;
 
   // Build WP1 rows
@@ -537,7 +570,7 @@ function copyToWord() {
   var combinedRows = {
     "D (NM)": fmt(_distanceD),
     "MSD = M\u2081 + M\u2082 (NM)": fmt(msd),
-    "Result": _distanceD >= msd ? "PASS (D \u2265 MSD)" : "FAIL (D < MSD)",
+    Result: _distanceD >= msd ? "PASS (D \u2265 MSD)" : "FAIL (D < MSD)",
   };
 
   // TRD rows if flyby+flyby
@@ -558,6 +591,9 @@ function copyToWord() {
   }
 
   var allRows = Object.assign({}, wp1Rows, wp2Rows, combinedRows);
-  var htmlContent = createHTMLTable(allRows, "MSD Combined \u2014 PANS-OPS Vol II \u00A7 1.4.2");
+  var htmlContent = createHTMLTable(
+    allRows,
+    "MSD Combined \u2014 PANS-OPS Vol II \u00A7 1.4.2",
+  );
   copyToClipboard(htmlContent);
 }
