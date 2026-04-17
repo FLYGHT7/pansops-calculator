@@ -61,11 +61,24 @@ function setupEventListeners() {
   document
     .getElementById("loadFile")
     .addEventListener("change", loadParameters);
-  document.getElementById("btnCalculate").addEventListener("click", calculateFlyover);
-  document.getElementById("btnCopy").addEventListener("click", copyToWord);
   document
-    .getElementById("copyPrecision")
-    .addEventListener("change", applyDisplayPrecision);
+    .getElementById("btnCalculate")
+    .addEventListener("click", calculateFlyover);
+  document.getElementById("btnCopy").addEventListener("click", copyToWord);
+  document.getElementById("copyPrecision").addEventListener("click", () => {
+    const btn = document.getElementById("copyPrecision");
+    const nowExact = btn.dataset.value !== "exact";
+    btn.dataset.value = nowExact ? "exact" : "rounded";
+    const span = btn.querySelector("span");
+    if (span) {
+      const key = nowExact ? "common.copyExact" : "common.copyRounded";
+      span.dataset.i18n = key;
+      span.textContent =
+        (window.I18N && I18N.get(key)) ||
+        (nowExact ? "Exact" : "Rounded (4 dec.)");
+    }
+    applyDisplayPrecision();
+  });
 
   document
     .getElementById("altitudeUnit")
@@ -109,7 +122,7 @@ const _raw = {};
 // Re-render all result spans using the selected precision mode
 function applyDisplayPrecision() {
   if (_raw.msd === undefined) return;
-  const exact = document.getElementById("copyPrecision").value === "exact";
+  const exact = document.getElementById("copyPrecision").dataset.value === "exact";
   const fmt = (v) => (exact ? v.toString() : v.toFixed(4));
   document.getElementById("outKFactor").textContent = fmt(_raw.kFactor);
   document.getElementById("outTas").textContent = fmt(_raw.tas);
@@ -592,7 +605,7 @@ function loadParameters(event) {
 function copyToWord() {
   if (_raw.msd === undefined) return;
 
-  const exact = document.getElementById("copyPrecision").value === "exact";
+  const exact = document.getElementById("copyPrecision").dataset.value === "exact";
   const fmt = (v) => (exact ? v.toString() : v.toFixed(4));
 
   const tableData = {
@@ -601,7 +614,8 @@ function copyToWord() {
       document.getElementById("altitude").value +
       " " +
       document.getElementById("altitudeUnit").value,
-    "ISA Deviation (VAR)": (document.getElementById("isaDeviation").value || "0") + " °C",
+    "ISA Deviation (VAR)":
+      (document.getElementById("isaDeviation").value || "0") + " °C",
     "k Factor": fmt(_raw.kFactor),
     "Bank Angle r1": document.getElementById("bankAngle").value + "°",
     "Turn Angle (input)": document.getElementById("turnAngle").value + "°",
