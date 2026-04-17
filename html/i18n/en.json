@@ -241,7 +241,8 @@
     "ils": "ILS",
     "subGeneral": "General",
     "subApproach": "Approach & Manoeuvring",
-    "subDepartures": "Departures"
+    "subDepartures": "Departures",
+    "subPBN": "PBN"
   },
   "circling": {
     "title": "Circling Protection Area",
