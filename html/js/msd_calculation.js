@@ -22,6 +22,64 @@ if (typeof calculateRadius === "undefined") {
 // Module-level stored results for copy-to-word
 var _raw1 = null;
 var _raw2 = null;
+
+// Update all displayed result values based on the selected precision mode
+function applyDisplayPrecision() {
+  if (!_raw1 || !_raw2) return;
+  var exact = document.getElementById("copyPrecision").value === "exact";
+  var fmt = function (v) { return exact ? v.toString() : v.toFixed(4); };
+  var FT_PER_NM = 1852 / 0.3048;
+  var DEG_TO_RAD = Math.PI / 180;
+
+  // WP1
+  document.getElementById("out1KFactor").textContent = fmt(_raw1.kFactor);
+  document.getElementById("out1Tas").textContent = fmt(_raw1.tas);
+  if (_raw1.type === "flyby") {
+    document.getElementById("out1Radius").textContent = fmt(_raw1.r);
+    document.getElementById("out1L1").textContent = fmt(_raw1.L1);
+    document.getElementById("out1L2").textContent = fmt(_raw1.L2);
+  } else {
+    document.getElementById("out1Radius").textContent = fmt(_raw1.r1);
+    document.getElementById("out1L1").textContent = fmt(_raw1.arcPlusTrans);
+    document.getElementById("out1L2").textContent = fmt(_raw1.bankEstab);
+  }
+  document.getElementById("out1M").textContent = fmt(_raw1.M);
+
+  // WP2
+  document.getElementById("out2KFactor").textContent = fmt(_raw2.kFactor);
+  document.getElementById("out2Tas").textContent = fmt(_raw2.tas);
+  if (_raw2.type === "flyby") {
+    document.getElementById("out2Radius").textContent = fmt(_raw2.r);
+    document.getElementById("out2L1").textContent = fmt(_raw2.L1);
+    document.getElementById("out2L2").textContent = fmt(_raw2.L2);
+  } else {
+    document.getElementById("out2Radius").textContent = fmt(_raw2.r1);
+    document.getElementById("out2L1").textContent = fmt(_raw2.arcPlusTrans);
+    document.getElementById("out2L2").textContent = fmt(_raw2.bankEstab);
+  }
+  document.getElementById("out2M").textContent = fmt(_raw2.M);
+
+  // MSD total
+  var msd = _raw1.M + _raw2.M;
+  document.getElementById("outMSD").textContent = fmt(msd);
+  document.getElementById("outDValue").textContent = fmt(_distanceD);
+
+  // TRD (only if visible)
+  if (_raw1.type === "flyby" && _raw2.type === "flyby") {
+    var halfA_rad = (_raw1.effectiveTurn / 2) * DEG_TO_RAD;
+    var halfB_rad = (_raw2.effectiveTurn / 2) * DEG_TO_RAD;
+    var r1Arc = _raw1.r * halfA_rad;
+    var r2Arc = _raw2.r * halfB_rad;
+    var trd = _distanceD - _raw1.L1 - _raw2.L1 + r1Arc + r2Arc;
+    document.getElementById("outR1Arc").textContent = fmt(r1Arc);
+    document.getElementById("outR2Arc").textContent = fmt(r2Arc);
+    document.getElementById("outTRD").textContent = fmt(trd);
+    if (trd > 0 && _alt1_ft !== null && _alt2_ft !== null) {
+      var gradient = ((_alt1_ft - _alt2_ft) / (trd * FT_PER_NM)) * 100;
+      document.getElementById("outGradient").textContent = fmt(gradient);
+    }
+  }
+}
 // Store validated altitude values in ft for gradient calculation
 var _alt1_ft = null;
 var _alt2_ft = null;
@@ -53,6 +111,7 @@ function setupEventListeners() {
   document.getElementById("loadFile").addEventListener("change", loadParameters);
   document.getElementById("btnCalculate").addEventListener("click", calculateMSD);
   document.getElementById("btnCopy").addEventListener("click", copyToWord);
+  document.getElementById("copyPrecision").addEventListener("change", applyDisplayPrecision);
 
   document.getElementById("wp1AltitudeUnit").addEventListener("change", function () {
     handleUnitChange("wp1Altitude", "wp1AltitudeUnit");
@@ -316,6 +375,9 @@ function calculateMSD() {
     msdCard.className = "bg-red-600 dark:bg-red-700 rounded-xl p-5 text-white text-center shadow-md";
   }
 
+  // Apply current precision mode to all outputs
+  applyDisplayPrecision();
+
   // Show results
   document.getElementById("resultsSection").classList.remove("hidden");
   document.getElementById("resultsSection").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -325,9 +387,7 @@ function calculateMSD() {
 
 function renderWPResults(n, result) {
   var prefix = "out" + n;
-  document.getElementById(prefix + "KFactor").textContent = result.kFactor.toFixed(4);
-  document.getElementById(prefix + "Tas").textContent = result.tas.toFixed(1);
-
+  // Labels and structural changes only — numeric values are set by applyDisplayPrecision()
   var typeBadge = document.getElementById(prefix + "TypeBadge");
   var radiusLabel = document.getElementById(prefix + "RadiusLabel");
   var l1Label = document.getElementById(prefix + "L1Label");
@@ -335,31 +395,20 @@ function renderWPResults(n, result) {
 
   if (result.type === "flyby") {
     typeBadge.textContent = "Flyby";
-    document.getElementById(prefix + "Radius").textContent = result.r.toFixed(4);
     radiusLabel.textContent = "Radius r";
-    document.getElementById(prefix + "L1").textContent = result.L1.toFixed(4);
     l1Label.textContent = "r\u00B7tan(A/2)";
-    document.getElementById(prefix + "L2").textContent = result.L2.toFixed(4);
     l2Label.textContent = "5s\u00B7TAS/3600";
-    document.getElementById(prefix + "L1Cell").classList.remove("hidden");
-    document.getElementById(prefix + "L2Cell").classList.remove("hidden");
-    document.getElementById(prefix + "L2Cell").classList.remove("col-span-2");
-    document.getElementById(prefix + "L2Cell").classList.add("col-span-2");
   } else {
     typeBadge.textContent = "Flyover";
-    document.getElementById(prefix + "Radius").textContent = result.r1.toFixed(4);
     radiusLabel.textContent = "r\u2081 (roll-in)";
-    document.getElementById(prefix + "L1").textContent = result.arcPlusTrans.toFixed(4);
     l1Label.textContent = "Arc+transition (L1\u2013L4)";
-    document.getElementById(prefix + "L2").textContent = result.bankEstab.toFixed(4);
     l2Label.textContent = "L5 (bank estab.)";
-    document.getElementById(prefix + "L1Cell").classList.remove("hidden");
-    document.getElementById(prefix + "L2Cell").classList.remove("hidden");
-    document.getElementById(prefix + "L2Cell").classList.remove("col-span-2");
-    document.getElementById(prefix + "L2Cell").classList.add("col-span-2");
   }
 
-  document.getElementById(prefix + "M").textContent = result.M.toFixed(4);
+  document.getElementById(prefix + "L1Cell").classList.remove("hidden");
+  document.getElementById(prefix + "L2Cell").classList.remove("hidden");
+  document.getElementById(prefix + "L2Cell").classList.remove("col-span-2");
+  document.getElementById(prefix + "L2Cell").classList.add("col-span-2");
 }
 
 // ── Save / Load ───────────────────────────────────────────────────────────────
@@ -445,47 +494,49 @@ function copyToWord() {
     return;
   }
 
+  var exact = document.getElementById("copyPrecision").value === "exact";
+  var fmt = function (v) { return exact ? v.toString() : v.toFixed(4); };
   var FT_PER_NM = 1852 / 0.3048;
 
   // Build WP1 rows
   var wp1Rows = {
     "WP1 Type": _raw1.type.charAt(0).toUpperCase() + _raw1.type.slice(1),
-    "WP1 k Factor": _raw1.kFactor.toFixed(4),
-    "WP1 TAS (KT)": _raw1.tas.toFixed(1),
+    "WP1 k Factor": fmt(_raw1.kFactor),
+    "WP1 TAS (KT)": fmt(_raw1.tas),
   };
   if (_raw1.type === "flyby") {
-    wp1Rows["WP1 Radius r (NM)"] = _raw1.r.toFixed(4);
-    wp1Rows["WP1 r\u00B7tan(A/2) (NM)"] = _raw1.L1.toFixed(4);
-    wp1Rows["WP1 5s\u00B7TAS/3600 (NM)"] = _raw1.L2.toFixed(4);
+    wp1Rows["WP1 Radius r (NM)"] = fmt(_raw1.r);
+    wp1Rows["WP1 r\u00B7tan(A/2) (NM)"] = fmt(_raw1.L1);
+    wp1Rows["WP1 5s\u00B7TAS/3600 (NM)"] = fmt(_raw1.L2);
   } else {
-    wp1Rows["WP1 r\u2081 roll-in (NM)"] = _raw1.r1.toFixed(4);
-    wp1Rows["WP1 Arc+transition L1\u2013L4 (NM)"] = _raw1.arcPlusTrans.toFixed(4);
-    wp1Rows["WP1 L5 bank estab. (NM)"] = _raw1.bankEstab.toFixed(4);
+    wp1Rows["WP1 r\u2081 roll-in (NM)"] = fmt(_raw1.r1);
+    wp1Rows["WP1 Arc+transition L1\u2013L4 (NM)"] = fmt(_raw1.arcPlusTrans);
+    wp1Rows["WP1 L5 bank estab. (NM)"] = fmt(_raw1.bankEstab);
   }
-  wp1Rows["M\u2081 (NM)"] = _raw1.M.toFixed(4);
+  wp1Rows["M\u2081 (NM)"] = fmt(_raw1.M);
 
   // Build WP2 rows
   var wp2Rows = {
     "WP2 Type": _raw2.type.charAt(0).toUpperCase() + _raw2.type.slice(1),
-    "WP2 k Factor": _raw2.kFactor.toFixed(4),
-    "WP2 TAS (KT)": _raw2.tas.toFixed(1),
+    "WP2 k Factor": fmt(_raw2.kFactor),
+    "WP2 TAS (KT)": fmt(_raw2.tas),
   };
   if (_raw2.type === "flyby") {
-    wp2Rows["WP2 Radius r (NM)"] = _raw2.r.toFixed(4);
-    wp2Rows["WP2 r\u00B7tan(B/2) (NM)"] = _raw2.L1.toFixed(4);
-    wp2Rows["WP2 5s\u00B7TAS/3600 (NM)"] = _raw2.L2.toFixed(4);
+    wp2Rows["WP2 Radius r (NM)"] = fmt(_raw2.r);
+    wp2Rows["WP2 r\u00B7tan(B/2) (NM)"] = fmt(_raw2.L1);
+    wp2Rows["WP2 5s\u00B7TAS/3600 (NM)"] = fmt(_raw2.L2);
   } else {
-    wp2Rows["WP2 r\u2081 roll-in (NM)"] = _raw2.r1.toFixed(4);
-    wp2Rows["WP2 Arc+transition L1\u2013L4 (NM)"] = _raw2.arcPlusTrans.toFixed(4);
-    wp2Rows["WP2 L5 bank estab. (NM)"] = _raw2.bankEstab.toFixed(4);
+    wp2Rows["WP2 r\u2081 roll-in (NM)"] = fmt(_raw2.r1);
+    wp2Rows["WP2 Arc+transition L1\u2013L4 (NM)"] = fmt(_raw2.arcPlusTrans);
+    wp2Rows["WP2 L5 bank estab. (NM)"] = fmt(_raw2.bankEstab);
   }
-  wp2Rows["M\u2082 (NM)"] = _raw2.M.toFixed(4);
+  wp2Rows["M\u2082 (NM)"] = fmt(_raw2.M);
 
   // Combined rows
   var msd = _raw1.M + _raw2.M;
   var combinedRows = {
-    "D (NM)": _distanceD.toFixed(4),
-    "MSD = M\u2081 + M\u2082 (NM)": msd.toFixed(4),
+    "D (NM)": fmt(_distanceD),
+    "MSD = M\u2081 + M\u2082 (NM)": fmt(msd),
     "Result": _distanceD >= msd ? "PASS (D \u2265 MSD)" : "FAIL (D < MSD)",
   };
 
@@ -497,12 +548,12 @@ function copyToWord() {
     var r1Arc = _raw1.r * halfA_rad;
     var r2Arc = _raw2.r * halfB_rad;
     var trd = _distanceD - _raw1.L1 - _raw2.L1 + r1Arc + r2Arc;
-    combinedRows["r\u2081\u00B7(A/2)\u00B7\u03C0/180 (NM)"] = r1Arc.toFixed(4);
-    combinedRows["r\u2082\u00B7(B/2)\u00B7\u03C0/180 (NM)"] = r2Arc.toFixed(4);
-    combinedRows["TRD (NM)"] = trd.toFixed(4);
+    combinedRows["r\u2081\u00B7(A/2)\u00B7\u03C0/180 (NM)"] = fmt(r1Arc);
+    combinedRows["r\u2082\u00B7(B/2)\u00B7\u03C0/180 (NM)"] = fmt(r2Arc);
+    combinedRows["TRD (NM)"] = fmt(trd);
     if (trd > 0 && _alt1_ft !== null && _alt2_ft !== null) {
       var gradient = ((_alt1_ft - _alt2_ft) / (trd * FT_PER_NM)) * 100;
-      combinedRows["Descent Gradient (%)"] = gradient.toFixed(2);
+      combinedRows["Descent Gradient (%)"] = fmt(gradient);
     }
   }
 

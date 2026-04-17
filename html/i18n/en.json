@@ -17,7 +17,9 @@
     "knots": "knots",
     "degrees": "°",
     "nauticalMiles": "NM",
-    "celsius": "°C"
+    "celsius": "°C",
+    "copyRounded": "Rounded (4 dec.)",
+    "copyExact": "Exact"
   },
   "rateTurn": {
     "title": "Rate & Radius of Turn",

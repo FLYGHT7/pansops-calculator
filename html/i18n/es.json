@@ -17,7 +17,9 @@
     "knots": "nudos",
     "degrees": "°",
     "nauticalMiles": "NM",
-    "celsius": "°C"
+    "celsius": "°C",
+    "copyRounded": "Redondeado (4 dec.)",
+    "copyExact": "Exacto"
   },
   "rateTurn": {
     "title": "Tasa y Radio de Giro",
