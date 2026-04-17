@@ -122,7 +122,8 @@ const _raw = {};
 // Re-render all result spans using the selected precision mode
 function applyDisplayPrecision() {
   if (_raw.msd === undefined) return;
-  const exact = document.getElementById("copyPrecision").dataset.value === "exact";
+  const exact =
+    document.getElementById("copyPrecision").dataset.value === "exact";
   const fmt = (v) => (exact ? v.toString() : v.toFixed(4));
   document.getElementById("outKFactor").textContent = fmt(_raw.kFactor);
   document.getElementById("outTas").textContent = fmt(_raw.tas);
@@ -605,7 +606,8 @@ function loadParameters(event) {
 function copyToWord() {
   if (_raw.msd === undefined) return;
 
-  const exact = document.getElementById("copyPrecision").dataset.value === "exact";
+  const exact =
+    document.getElementById("copyPrecision").dataset.value === "exact";
   const fmt = (v) => (exact ? v.toString() : v.toFixed(4));
 
   const tableData = {
