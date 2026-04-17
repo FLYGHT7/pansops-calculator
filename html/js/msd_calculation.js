@@ -99,9 +99,9 @@ function handleUnitChange(inputId, unitSelectId) {
     var newUnit = unitSelect.value;
     if (oldUnit !== newUnit) {
       if (oldUnit === "ft" && newUnit === "m") {
-        input.value = (currentValue * 0.3048).toFixed(6);
+        input.value = (currentValue * 0.3048).toFixed(4);
       } else if (oldUnit === "m" && newUnit === "ft") {
-        input.value = (currentValue / 0.3048).toFixed(6);
+        input.value = (currentValue / 0.3048).toFixed(4);
       }
     }
   }
