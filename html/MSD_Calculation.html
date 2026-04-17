@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -118,15 +118,14 @@
         <fieldset>
           <legend class="sr-only">MSD Combined Parameters</legend>
 
-          <!-- Distance D + Altitudes -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <!-- Distance D -->
+          <!-- Shared inputs: Distance D + ISA Deviation -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
             <div class="space-y-2">
               <label
                 for="distance"
-                class="block font-medium text-gray-700 dark:text-gray-300"
+                class="block text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
                 data-i18n="msd.distance"
-                >IAF-IF Distance D (NM)</label
+                >IAF&#8202;&#8211;&#8202;IF Distance D</label
               >
               <div
                 class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
@@ -139,375 +138,206 @@
                   step="0.1"
                   inputmode="decimal"
                   autocomplete="off"
-                  class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                  class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
                   placeholder="e.g. 6"
                   data-i18n="msd.phDistance"
                   data-i18n-attr="placeholder"
                 />
-                <div
-                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
-                >
-                  <span
-                    class="text-gray-700 dark:text-white"
-                    data-i18n="common.nauticalMiles"
-                    >NM</span
-                  >
+                <div class="bg-gray-100 dark:bg-gray-600 px-3 flex items-center border-l border-gray-300 dark:border-gray-600">
+                  <span class="text-gray-700 dark:text-white font-medium text-sm" data-i18n="common.nauticalMiles">NM</span>
                 </div>
               </div>
             </div>
 
-            <!-- Altitude h1 -->
             <div class="space-y-2">
               <label
-                for="h1"
-                class="block font-medium text-gray-700 dark:text-gray-300"
-                data-i18n="msd.h1"
-                >Altitude h&#8321; (IAF)</label
+                for="isaDeviation"
+                class="block text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+                data-i18n="msd.isaDeviation"
+                >ISA Deviation (VAR) &#176;C</label
               >
               <div
                 class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
               >
                 <input
-                  id="h1"
-                  name="h1"
+                  id="isaDeviation"
+                  name="isaDeviation"
                   type="number"
-                  min="0"
-                  step="1"
-                  inputmode="numeric"
+                  step="0.1"
+                  inputmode="decimal"
                   autocomplete="off"
-                  class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-                  placeholder="e.g. 4000"
+                  class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                  placeholder="e.g. 15"
+                  data-i18n="msd.phIsaDeviation"
+                  data-i18n-attr="placeholder"
                 />
-                <select
-                  id="h1Unit"
-                  name="h1Unit"
-                  aria-label="h1 altitude unit"
-                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none dark:text-white"
-                >
-                  <option value="ft" selected data-i18n="common.feet">
-                    ft
-                  </option>
-                  <option value="m" data-i18n="common.meters">m</option>
-                </select>
+                <div class="bg-gray-100 dark:bg-gray-600 px-3 flex items-center border-l border-gray-300 dark:border-gray-600">
+                  <span class="text-gray-700 dark:text-white font-medium text-sm" data-i18n="common.celsius">&#176;C</span>
+                </div>
               </div>
-            </div>
-
-            <!-- Altitude h2 -->
-            <div class="space-y-2">
-              <label
-                for="h2"
-                class="block font-medium text-gray-700 dark:text-gray-300"
-                data-i18n="msd.h2"
-                >Altitude h&#8322; (IF)</label
-              >
-              <div
-                class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
-              >
-                <input
-                  id="h2"
-                  name="h2"
-                  type="number"
-                  min="0"
-                  step="1"
-                  inputmode="numeric"
-                  autocomplete="off"
-                  class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-                  placeholder="e.g. 3000"
-                />
-                <select
-                  id="h2Unit"
-                  name="h2Unit"
-                  aria-label="h2 altitude unit"
-                  class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none dark:text-white"
-                >
-                  <option value="ft" selected data-i18n="common.feet">
-                    ft
-                  </option>
-                  <option value="m" data-i18n="common.meters">m</option>
-                </select>
-              </div>
+              <p class="text-xs text-gray-400 dark:text-gray-500" data-i18n="msd.isaNote">Blank = 0&#176;C (ISA standard). Applied to both waypoints.</p>
             </div>
           </div>
 
-          <!-- IAF flyby results -->
-          <div
-            class="border border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-6 bg-blue-50/30 dark:bg-blue-900/10"
-          >
-            <h2
-              class="text-base font-semibold text-blue-700 dark:text-blue-400 mb-4 uppercase tracking-wide"
-              data-i18n="msd.iafSection"
-            >
-              IAF &#8212; Flyby Results
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <!-- r1*tan(A/2) -->
-              <div class="space-y-2">
-                <label
-                  for="r1TanA"
-                  class="block font-medium text-gray-700 dark:text-gray-300"
-                  data-i18n="msd.r1TanA"
-                  >r&#8321;&#183;tan(A/2) (NM)</label
-                >
-                <div
-                  class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
-                >
-                  <input
-                    id="r1TanA"
-                    name="r1TanA"
-                    type="number"
-                    min="0"
-                    step="0.0001"
-                    inputmode="decimal"
-                    autocomplete="off"
-                    class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-                    placeholder="e.g. 3.0710"
-                  />
-                  <div
-                    class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
-                  >
-                    <span
-                      class="text-gray-700 dark:text-white"
-                      data-i18n="common.nauticalMiles"
-                      >NM</span
-                    >
-                  </div>
-                </div>
-              </div>
-              <!-- Turn angle A -->
-              <div class="space-y-2">
-                <label
-                  for="turnA"
-                  class="block font-medium text-gray-700 dark:text-gray-300"
-                  data-i18n="msd.turnAngleA"
-                  >Turn Angle A (&#176;)</label
-                >
-                <div
-                  class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
-                >
-                  <input
-                    id="turnA"
-                    name="turnA"
-                    type="number"
-                    min="1"
-                    max="359"
-                    step="0.1"
-                    inputmode="decimal"
-                    autocomplete="off"
-                    class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-                    placeholder="e.g. 105"
-                  />
-                  <div
-                    class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
-                  >
-                    <span
-                      class="text-gray-700 dark:text-white"
-                      data-i18n="common.degrees"
-                      >&#176;</span
-                    >
-                  </div>
-                </div>
-              </div>
-              <!-- M1 -->
-              <div class="space-y-2">
-                <label
-                  for="m1"
-                  class="block font-medium text-gray-700 dark:text-gray-300"
-                  data-i18n="msd.m1"
-                  >M&#8321; (NM)</label
-                >
-                <div
-                  class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
-                >
-                  <input
-                    id="m1"
-                    name="m1"
-                    type="number"
-                    min="0"
-                    step="0.0001"
-                    inputmode="decimal"
-                    autocomplete="off"
-                    class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-                    placeholder="e.g. 3.4523"
-                  />
-                  <div
-                    class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
-                  >
-                    <span
-                      class="text-gray-700 dark:text-white"
-                      data-i18n="common.nauticalMiles"
-                      >NM</span
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <!-- Two-column WP input cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
 
-          <!-- IF flyby results -->
-          <div
-            class="border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6 bg-amber-50/30 dark:bg-amber-900/10"
-          >
-            <h2
-              class="text-base font-semibold text-amber-700 dark:text-amber-400 mb-4 uppercase tracking-wide"
-              data-i18n="msd.ifSection"
-            >
-              IF &#8212; Flyby Results
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <!-- r2*tan(B/2) -->
-              <div class="space-y-2">
-                <label
-                  for="r2TanB"
-                  class="block font-medium text-gray-700 dark:text-gray-300"
-                  data-i18n="msd.r2TanB"
-                  >r&#8322;&#183;tan(B/2) (NM)</label
-                >
-                <div
-                  class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
-                >
-                  <input
-                    id="r2TanB"
-                    name="r2TanB"
-                    type="number"
-                    min="0"
-                    step="0.0001"
-                    inputmode="decimal"
-                    autocomplete="off"
-                    class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-                    placeholder="e.g. 2.2858"
-                  />
-                  <div
-                    class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
+            <!-- WP1 (IAF) -->
+            <div class="border border-blue-200 dark:border-blue-800 rounded-xl p-4 bg-blue-50/30 dark:bg-blue-900/10">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-base font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wide" data-i18n="msd.wp1Header">WP&#8202;1 &#8212; IAF</h2>
+                <div class="flex items-center gap-2">
+                  <label for="wp1Type" class="text-xs text-gray-500 dark:text-gray-400 font-medium" data-i18n="msd.typeLabel">Type</label>
+                  <select
+                    id="wp1Type"
+                    name="wp1Type"
+                    class="rounded-lg border border-blue-300 dark:border-blue-700 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-sm font-semibold px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   >
-                    <span
-                      class="text-gray-700 dark:text-white"
-                      data-i18n="common.nauticalMiles"
-                      >NM</span
-                    >
-                  </div>
+                    <option value="flyover" data-i18n="msd.flyover">Flyover</option>
+                    <option value="flyby" data-i18n="msd.flyby">Flyby</option>
+                  </select>
                 </div>
               </div>
-              <!-- Turn angle B -->
-              <div class="space-y-2">
-                <label
-                  for="turnB"
-                  class="block font-medium text-gray-700 dark:text-gray-300"
-                  data-i18n="msd.turnAngleB"
-                  >Turn Angle B (&#176;)</label
-                >
-                <div
-                  class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
-                >
-                  <input
-                    id="turnB"
-                    name="turnB"
-                    type="number"
-                    min="1"
-                    max="359"
-                    step="0.1"
-                    inputmode="decimal"
-                    autocomplete="off"
-                    class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-                    placeholder="e.g. 90"
-                  />
-                  <div
-                    class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
-                  >
-                    <span
-                      class="text-gray-700 dark:text-white"
-                      data-i18n="common.degrees"
-                      >&#176;</span
-                    >
+              <div class="space-y-4">
+                <div class="space-y-1">
+                  <label for="wp1Ias" class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400" data-i18n="msd.ias">IAS (knots)</label>
+                  <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+                    <input id="wp1Ias" name="wp1Ias" type="number" min="1" step="1" inputmode="numeric" autocomplete="off"
+                      class="flex-grow p-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="e.g. 185" data-i18n="msd.phIas" data-i18n-attr="placeholder" />
+                    <div class="bg-gray-100 dark:bg-gray-600 px-3 flex items-center border-l border-gray-300 dark:border-gray-600">
+                      <span class="text-gray-600 dark:text-gray-300 text-xs font-medium" data-i18n="common.knots">knots</span>
+                    </div>
                   </div>
+                </div>
+                <div class="space-y-1">
+                  <label for="wp1Altitude" class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400" data-i18n="msd.altitudeH1">Altitude h&#8321;</label>
+                  <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+                    <input id="wp1Altitude" name="wp1Altitude" type="number" min="0" step="1" inputmode="numeric" autocomplete="off"
+                      class="flex-grow p-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="e.g. 4200" data-i18n="msd.phAltitude" data-i18n-attr="placeholder" />
+                    <select id="wp1AltitudeUnit" name="wp1AltitudeUnit" aria-label="WP1 altitude unit"
+                      class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white text-sm">
+                      <option value="ft" selected data-i18n="common.feet">ft</option>
+                      <option value="m" data-i18n="common.meters">m</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="space-y-1">
+                  <label for="wp1BankAngle" class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400" data-i18n="msd.bankAngle">Bank Angle (&#176;)</label>
+                  <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+                    <input id="wp1BankAngle" name="wp1BankAngle" type="number" min="1" max="89" step="1" inputmode="numeric" autocomplete="off"
+                      class="flex-grow p-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="e.g. 25" data-i18n="msd.phBankAngle" data-i18n-attr="placeholder" />
+                    <div class="bg-gray-100 dark:bg-gray-600 px-3 flex items-center border-l border-gray-300 dark:border-gray-600">
+                      <span class="text-gray-600 dark:text-gray-300 text-xs font-medium" data-i18n="common.degrees">&#176;</span>
+                    </div>
+                  </div>
+                  <p class="text-xs text-gray-400 dark:text-gray-500" data-i18n="msd.bankAngleHint">Per PANS-OPS &#167;1.4.1.3 &#8212; 15&#176;, 20&#176; or 25&#176;</p>
+                </div>
+                <div class="space-y-1">
+                  <label for="wp1TurnAngle" class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400" data-i18n="msd.turnAngleA">Turn Angle A (&#176;)</label>
+                  <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+                    <input id="wp1TurnAngle" name="wp1TurnAngle" type="number" min="1" max="359" step="0.1" inputmode="decimal" autocomplete="off"
+                      class="flex-grow p-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="e.g. 90" data-i18n="msd.phTurnAngle" data-i18n-attr="placeholder" />
+                    <div class="bg-gray-100 dark:bg-gray-600 px-3 flex items-center border-l border-gray-300 dark:border-gray-600">
+                      <span class="text-gray-600 dark:text-gray-300 text-xs font-medium" data-i18n="common.degrees">&#176;</span>
+                    </div>
+                  </div>
+                  <p class="text-xs text-gray-400 dark:text-gray-500" data-i18n="msd.turnAngleNote">Min 50&#176; applied automatically when turn exists (Flyby)</p>
                 </div>
               </div>
-              <!-- M2 -->
-              <div class="space-y-2">
-                <label
-                  for="m2"
-                  class="block font-medium text-gray-700 dark:text-gray-300"
-                  data-i18n="msd.m2"
-                  >M&#8322; (NM)</label
-                >
-                <div
-                  class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
-                >
-                  <input
-                    id="m2"
-                    name="m2"
-                    type="number"
-                    min="0"
-                    step="0.0001"
-                    inputmode="decimal"
-                    autocomplete="off"
-                    class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-                    placeholder="e.g. 2.6614"
-                  />
-                  <div
-                    class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
-                  >
-                    <span
-                      class="text-gray-700 dark:text-white"
-                      data-i18n="common.nauticalMiles"
-                      >NM</span
-                    >
-                  </div>
-                </div>
+              <div id="wp1TurnWarning" class="hidden mt-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2 flex items-start gap-2">
+                <svg aria-hidden="true" class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <p class="text-xs text-amber-700 dark:text-amber-300" data-i18n="msd.turnAngleWarning">Input &lt; 50&#176; &#8212; minimum 50&#176; applied (Flyby only)</p>
               </div>
             </div>
-          </div>
 
-          <!-- Info note -->
-          <div class="space-y-2 mb-2">
-            <div
-              class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-3 flex items-start gap-3"
-            >
-              <svg
-                aria-hidden="true"
-                class="h-5 w-5 text-blue-500 dark:text-blue-400 shrink-0 mt-0.5"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-              </svg>
-              <p
-                class="text-sm text-blue-700 dark:text-blue-300"
-                data-i18n="msd.flybyNote"
-              >
-                Use the Flyby MSD calculator to obtain r&#183;tan(&#952;/2),
-                turn angle, and M for each waypoint.
-              </p>
+            <!-- WP2 (IF) -->
+            <div class="border border-amber-200 dark:border-amber-800 rounded-xl p-4 bg-amber-50/30 dark:bg-amber-900/10">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-base font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide" data-i18n="msd.wp2Header">WP&#8202;2 &#8212; IF</h2>
+                <div class="flex items-center gap-2">
+                  <label for="wp2Type" class="text-xs text-gray-500 dark:text-gray-400 font-medium" data-i18n="msd.typeLabel">Type</label>
+                  <select
+                    id="wp2Type"
+                    name="wp2Type"
+                    class="rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 text-sm font-semibold px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                  >
+                    <option value="flyover" data-i18n="msd.flyover">Flyover</option>
+                    <option value="flyby" data-i18n="msd.flyby">Flyby</option>
+                  </select>
+                </div>
+              </div>
+              <div class="space-y-4">
+                <div class="space-y-1">
+                  <label for="wp2Ias" class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400" data-i18n="msd.ias">IAS (knots)</label>
+                  <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+                    <input id="wp2Ias" name="wp2Ias" type="number" min="1" step="1" inputmode="numeric" autocomplete="off"
+                      class="flex-grow p-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="e.g. 185" data-i18n="msd.phIas" data-i18n-attr="placeholder" />
+                    <div class="bg-gray-100 dark:bg-gray-600 px-3 flex items-center border-l border-gray-300 dark:border-gray-600">
+                      <span class="text-gray-600 dark:text-gray-300 text-xs font-medium" data-i18n="common.knots">knots</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="space-y-1">
+                  <label for="wp2Altitude" class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400" data-i18n="msd.altitudeH2">Altitude h&#8322;</label>
+                  <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+                    <input id="wp2Altitude" name="wp2Altitude" type="number" min="0" step="1" inputmode="numeric" autocomplete="off"
+                      class="flex-grow p-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="e.g. 3180" data-i18n="msd.phAltitude2" data-i18n-attr="placeholder" />
+                    <select id="wp2AltitudeUnit" name="wp2AltitudeUnit" aria-label="WP2 altitude unit"
+                      class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white text-sm">
+                      <option value="ft" selected data-i18n="common.feet">ft</option>
+                      <option value="m" data-i18n="common.meters">m</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="space-y-1">
+                  <label for="wp2BankAngle" class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400" data-i18n="msd.bankAngle">Bank Angle (&#176;)</label>
+                  <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+                    <input id="wp2BankAngle" name="wp2BankAngle" type="number" min="1" max="89" step="1" inputmode="numeric" autocomplete="off"
+                      class="flex-grow p-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="e.g. 25" data-i18n="msd.phBankAngle" data-i18n-attr="placeholder" />
+                    <div class="bg-gray-100 dark:bg-gray-600 px-3 flex items-center border-l border-gray-300 dark:border-gray-600">
+                      <span class="text-gray-600 dark:text-gray-300 text-xs font-medium" data-i18n="common.degrees">&#176;</span>
+                    </div>
+                  </div>
+                  <p class="text-xs text-gray-400 dark:text-gray-500" data-i18n="msd.bankAngleHint">Per PANS-OPS &#167;1.4.1.3 &#8212; 15&#176;, 20&#176; or 25&#176;</p>
+                </div>
+                <div class="space-y-1">
+                  <label for="wp2TurnAngle" class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400" data-i18n="msd.turnAngleB">Turn Angle B (&#176;)</label>
+                  <div class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600">
+                    <input id="wp2TurnAngle" name="wp2TurnAngle" type="number" min="1" max="359" step="0.1" inputmode="decimal" autocomplete="off"
+                      class="flex-grow p-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="e.g. 90" data-i18n="msd.phTurnAngle" data-i18n-attr="placeholder" />
+                    <div class="bg-gray-100 dark:bg-gray-600 px-3 flex items-center border-l border-gray-300 dark:border-gray-600">
+                      <span class="text-gray-600 dark:text-gray-300 text-xs font-medium" data-i18n="common.degrees">&#176;</span>
+                    </div>
+                  </div>
+                  <p class="text-xs text-gray-400 dark:text-gray-500" data-i18n="msd.turnAngleNote">Min 50&#176; applied automatically when turn exists (Flyby)</p>
+                </div>
+              </div>
+              <div id="wp2TurnWarning" class="hidden mt-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2 flex items-start gap-2">
+                <svg aria-hidden="true" class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <p class="text-xs text-amber-700 dark:text-amber-300" data-i18n="msd.turnAngleWarning">Input &lt; 50&#176; &#8212; minimum 50&#176; applied (Flyby only)</p>
+              </div>
             </div>
+
           </div>
         </fieldset>
       </form>
 
       <!-- Calculate button -->
-      <div class="flex justify-end mt-6">
+      <div class="flex justify-end mt-4">
         <button
           type="button"
           id="btnCalculate"
           class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center"
         >
-          <svg
-            aria-hidden="true"
-            focusable="false"
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5 mr-2"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
           </svg>
           <span data-i18n="common.calculate">Calculate</span>
@@ -520,121 +350,131 @@
         role="region"
         aria-live="polite"
         aria-atomic="true"
-        class="hidden mt-8 bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600"
+        class="hidden mt-8 space-y-4"
       >
-        <h2
-          class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
-          data-i18n="msd.resultsTitle"
-        >
-          Results
-        </h2>
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100" data-i18n="msd.resultsTitle">Results</h2>
 
-        <!-- TRD intermediate breakdown (computed arc terms) -->
-        <div class="grid grid-cols-2 gap-3 mb-4">
-          <div
-            class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-700 shadow-sm"
-          >
-            <p
-              class="text-xs text-blue-600 dark:text-blue-400 font-semibold mb-1"
-              data-i18n="msd.r1ArcA"
-            >
-              r&#8321;&#183;(A/2)&#183;&#960;/180
-            </p>
-            <p class="text-base font-bold text-blue-900 dark:text-blue-100">
-              <span id="outR1Arc"></span>
-              <span class="text-sm font-normal">NM</span>
-            </p>
-          </div>
-          <div
-            class="bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg border border-amber-200 dark:border-amber-700 shadow-sm"
-          >
-            <p
-              class="text-xs text-amber-600 dark:text-amber-400 font-semibold mb-1"
-              data-i18n="msd.r2ArcB"
-            >
-              r&#8322;&#183;(B/2)&#183;&#960;/180
-            </p>
-            <p class="text-base font-bold text-amber-900 dark:text-amber-100">
-              <span id="outR2Arc"></span>
-              <span class="text-sm font-normal">NM</span>
-            </p>
-          </div>
-        </div>
+        <!-- Per-WP result columns -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        <!-- TRD formula reference -->
-        <p class="text-xs text-gray-500 dark:text-gray-400 text-center mb-4">
-          TRD = D &#8722; r&#8321;&#183;tan(A/2) &#8722; r&#8322;&#183;tan(B/2)
-          + r&#8321;&#183;(A/2)&#183;&#960;/180 +
-          r&#8322;&#183;(B/2)&#183;&#960;/180
-        </p>
-
-        <!-- TRD check -->
-        <div
-          class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm mb-3"
-        >
-          <div class="flex items-center justify-between flex-wrap gap-2">
-            <div>
-              <p
-                class="text-xs text-gray-500 dark:text-gray-400"
-                data-i18n="msd.trd"
-              >
-                TRD (Track Required Distance)
-              </p>
-              <p class="text-lg font-bold dark:text-white">
-                <span id="outTRD"></span>
-                <span
-                  class="text-sm font-normal"
-                  data-i18n="common.nauticalMiles"
-                  >NM</span
-                >
-              </p>
+          <!-- WP1 results -->
+          <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-200 dark:border-blue-700">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wide" data-i18n="msd.wp1Header">WP 1 &#8212; IAF</h3>
+              <span id="out1TypeBadge" class="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-200"></span>
             </div>
-            <span id="outTRDStatus"></span>
-          </div>
-        </div>
-
-        <!-- Gradient check -->
-        <div
-          class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm mb-3"
-        >
-          <div class="flex items-center justify-between flex-wrap gap-2">
-            <div>
-              <p
-                class="text-xs text-gray-500 dark:text-gray-400"
-                data-i18n="msd.gradient"
-              >
-                Descent Gradient
-              </p>
-              <p class="text-lg font-bold dark:text-white">
-                <span id="outGradient"></span>
-                <span class="text-sm font-normal">%</span>
-              </p>
+            <div class="grid grid-cols-2 gap-2 text-sm">
+              <div class="bg-white dark:bg-gray-800 rounded-lg p-2.5 border border-blue-100 dark:border-blue-900">
+                <p class="text-xs text-gray-500 dark:text-gray-400" data-i18n="msd.kFactor">k Factor</p>
+                <p class="font-bold text-gray-900 dark:text-white"><span id="out1KFactor">&#8212;</span></p>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-lg p-2.5 border border-blue-100 dark:border-blue-900">
+                <p class="text-xs text-gray-500 dark:text-gray-400" data-i18n="msd.tas">TAS</p>
+                <p class="font-bold text-gray-900 dark:text-white"><span id="out1Tas">&#8212;</span> <span class="text-xs font-normal">KT</span></p>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-lg p-2.5 border border-blue-100 dark:border-blue-900">
+                <p class="text-xs text-gray-500 dark:text-gray-400" id="out1RadiusLabel" data-i18n="msd.radius">Radius r</p>
+                <p class="font-bold text-gray-900 dark:text-white"><span id="out1Radius">&#8212;</span> <span class="text-xs font-normal">NM</span></p>
+              </div>
+              <div id="out1L1Cell" class="bg-white dark:bg-gray-800 rounded-lg p-2.5 border border-blue-100 dark:border-blue-900">
+                <p class="text-xs text-gray-500 dark:text-gray-400" id="out1L1Label">L1</p>
+                <p class="font-bold text-gray-900 dark:text-white"><span id="out1L1">&#8212;</span> <span class="text-xs font-normal">NM</span></p>
+              </div>
+              <div id="out1L2Cell" class="bg-white dark:bg-gray-800 rounded-lg p-2.5 border border-blue-100 dark:border-blue-900 col-span-2">
+                <p class="text-xs text-gray-500 dark:text-gray-400" id="out1L2Label">L2</p>
+                <p class="font-bold text-gray-900 dark:text-white"><span id="out1L2">&#8212;</span> <span class="text-xs font-normal">NM</span></p>
+              </div>
             </div>
-            <span id="outGradientStatus"></span>
+            <div class="mt-2 bg-blue-600 dark:bg-blue-700 rounded-lg p-3 text-white text-center">
+              <p class="text-xs font-medium opacity-80 uppercase tracking-wide" data-i18n="msd.m1Label">M&#8321; (IAF)</p>
+              <p class="text-2xl font-bold"><span id="out1M">&#8212;</span> <span class="text-base font-normal">NM</span></p>
+            </div>
+          </div>
+
+          <!-- WP2 results -->
+          <div class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-200 dark:border-amber-700">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wide" data-i18n="msd.wp2Header">WP 2 &#8212; IF</h3>
+              <span id="out2TypeBadge" class="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200"></span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-sm">
+              <div class="bg-white dark:bg-gray-800 rounded-lg p-2.5 border border-amber-100 dark:border-amber-900">
+                <p class="text-xs text-gray-500 dark:text-gray-400" data-i18n="msd.kFactor">k Factor</p>
+                <p class="font-bold text-gray-900 dark:text-white"><span id="out2KFactor">&#8212;</span></p>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-lg p-2.5 border border-amber-100 dark:border-amber-900">
+                <p class="text-xs text-gray-500 dark:text-gray-400" data-i18n="msd.tas">TAS</p>
+                <p class="font-bold text-gray-900 dark:text-white"><span id="out2Tas">&#8212;</span> <span class="text-xs font-normal">KT</span></p>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-lg p-2.5 border border-amber-100 dark:border-amber-900">
+                <p class="text-xs text-gray-500 dark:text-gray-400" id="out2RadiusLabel" data-i18n="msd.radius">Radius r</p>
+                <p class="font-bold text-gray-900 dark:text-white"><span id="out2Radius">&#8212;</span> <span class="text-xs font-normal">NM</span></p>
+              </div>
+              <div id="out2L1Cell" class="bg-white dark:bg-gray-800 rounded-lg p-2.5 border border-amber-100 dark:border-amber-900">
+                <p class="text-xs text-gray-500 dark:text-gray-400" id="out2L1Label">L1</p>
+                <p class="font-bold text-gray-900 dark:text-white"><span id="out2L1">&#8212;</span> <span class="text-xs font-normal">NM</span></p>
+              </div>
+              <div id="out2L2Cell" class="bg-white dark:bg-gray-800 rounded-lg p-2.5 border border-amber-100 dark:border-amber-900 col-span-2">
+                <p class="text-xs text-gray-500 dark:text-gray-400" id="out2L2Label">L2</p>
+                <p class="font-bold text-gray-900 dark:text-white"><span id="out2L2">&#8212;</span> <span class="text-xs font-normal">NM</span></p>
+              </div>
+            </div>
+            <div class="mt-2 bg-amber-600 dark:bg-amber-700 rounded-lg p-3 text-white text-center">
+              <p class="text-xs font-medium opacity-80 uppercase tracking-wide" data-i18n="msd.m2Label">M&#8322; (IF)</p>
+              <p class="text-2xl font-bold"><span id="out2M">&#8212;</span> <span class="text-base font-normal">NM</span></p>
+            </div>
           </div>
         </div>
 
-        <!-- MSD total (primary highlighted card) -->
+        <!-- TRD section (flyby-flyby only) -->
+        <div id="trdSection" class="hidden bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-600">
+          <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-3" data-i18n="msd.trdSectionTitle">Track Required Distance (Flyby&#8202;&#8211;&#8202;Flyby)</h3>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div class="bg-blue-50 dark:bg-blue-900/20 p-2.5 rounded-lg border border-blue-100 dark:border-blue-900">
+              <p class="text-xs text-blue-600 dark:text-blue-400 font-semibold mb-0.5" data-i18n="msd.r1ArcA">r&#8321;&#183;(A/2)&#183;&#960;/180</p>
+              <p class="text-sm font-bold text-blue-900 dark:text-blue-100"><span id="outR1Arc">&#8212;</span> <span class="text-xs font-normal">NM</span></p>
+            </div>
+            <div class="bg-amber-50 dark:bg-amber-900/20 p-2.5 rounded-lg border border-amber-100 dark:border-amber-900">
+              <p class="text-xs text-amber-600 dark:text-amber-400 font-semibold mb-0.5" data-i18n="msd.r2ArcB">r&#8322;&#183;(B/2)&#183;&#960;/180</p>
+              <p class="text-sm font-bold text-amber-900 dark:text-amber-100"><span id="outR2Arc">&#8212;</span> <span class="text-xs font-normal">NM</span></p>
+            </div>
+          </div>
+          <p class="text-xs text-gray-400 dark:text-gray-500 text-center mb-3">TRD = D &#8722; r&#8321;&#183;tan(A/2) &#8722; r&#8322;&#183;tan(B/2) + r&#8321;&#183;(A/2)&#183;&#960;/180 + r&#8322;&#183;(B/2)&#183;&#960;/180</p>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg border border-gray-200 dark:border-gray-600">
+              <div class="flex items-center justify-between flex-wrap gap-1">
+                <div>
+                  <p class="text-xs text-gray-500 dark:text-gray-400" data-i18n="msd.trd">TRD</p>
+                  <p class="font-bold dark:text-white"><span id="outTRD">&#8212;</span> <span class="text-xs font-normal">NM</span></p>
+                </div>
+                <span id="outTRDStatus"></span>
+              </div>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg border border-gray-200 dark:border-gray-600">
+              <div class="flex items-center justify-between flex-wrap gap-1">
+                <div>
+                  <p class="text-xs text-gray-500 dark:text-gray-400" data-i18n="msd.gradient">Descent Gradient</p>
+                  <p class="font-bold dark:text-white"><span id="outGradient">&#8212;</span> <span class="text-xs font-normal">%</span></p>
+                </div>
+                <span id="outGradientStatus"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MSD Total primary card -->
         <div
           id="msdPrimaryCard"
-          class="bg-primary-700 dark:bg-primary-800 rounded-xl p-5 text-white mb-4 text-center shadow-md"
+          class="bg-primary-700 dark:bg-primary-800 rounded-xl p-5 text-white text-center shadow-md"
         >
-          <p
-            class="text-sm font-medium opacity-80 mb-1 uppercase tracking-wide"
-            data-i18n="msd.msdTotal"
-          >
-            MSD Total (M&#8321; + M&#8322;)
-          </p>
+          <p class="text-sm font-medium opacity-80 mb-1 uppercase tracking-wide" data-i18n="msd.msdTotal">MSD Total (M&#8321; + M&#8322;)</p>
           <p class="text-4xl font-bold">
-            <span id="outMSD"></span>
-            <span
-              class="text-2xl ml-1 font-normal"
-              data-i18n="common.nauticalMiles"
-              >NM</span
-            >
+            <span id="outMSD">&#8212;</span>
+            <span class="text-2xl ml-1 font-normal" data-i18n="common.nauticalMiles">NM</span>
           </p>
-          <p class="mt-2">
-            <span id="outMSDStatus"></span>
+          <p class="mt-2 text-sm opacity-90">
+            D = <span id="outDValue">&#8212;</span> NM
+            <span id="outMSDStatus" class="ml-2"></span>
           </p>
         </div>
 
@@ -645,22 +485,9 @@
             id="btnCopy"
             class="bg-gray-600 hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
           >
-            <svg
-              aria-hidden="true"
-              focusable="false"
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-1"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
+            <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path
-                d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
-              ></path>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
             </svg>
             <span data-i18n="common.copyToWord">Copy to Word Document</span>
           </button>

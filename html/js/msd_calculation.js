@@ -1,57 +1,92 @@
-// Initialize on page load
+// Fallback stubs — replaced at runtime by aviation-utils.js if loaded first
+if (typeof calculateKFactor === "undefined") {
+  var calculateKFactor = function (altitude_ft, isaDeviation) {
+    return (
+      (171233 * Math.sqrt(288 + isaDeviation - 0.00198 * altitude_ft)) /
+      Math.pow(288 - 0.00198 * altitude_ft, 2.628)
+    );
+  };
+}
+if (typeof calculateTAS === "undefined") {
+  var calculateTAS = function (ias, kFactor) {
+    return ias * kFactor;
+  };
+}
+if (typeof calculateRadius === "undefined") {
+  var calculateRadius = function (tas, bankAngle_deg) {
+    var DEG_TO_RAD = Math.PI / 180;
+    return (tas * tas) / (68625 * Math.tan(bankAngle_deg * DEG_TO_RAD));
+  };
+}
+
+// Module-level stored results for copy-to-word
+var _raw1 = null;
+var _raw2 = null;
+// Store validated altitude values in ft for gradient calculation
+var _alt1_ft = null;
+var _alt2_ft = null;
+var _distanceD = null;
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+
 document.addEventListener("DOMContentLoaded", function () {
   checkDarkMode();
   initializeUnitSelectors();
   setupEventListeners();
 
-  // Initialize i18n
-  (function () {
-    function initI18n() {
-      if (window.I18N) {
-        I18N.init({
-          defaultLang: "en",
-          supported: ["en", "es"],
-          path: "i18n",
-        }).catch(console.error);
-      }
-    }
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", initI18n);
-    } else {
-      initI18n();
-    }
-  })();
+  if (window.I18N) {
+    I18N.init({
+      defaultLang: "en",
+      supported: ["en", "es"],
+      path: "i18n",
+    }).catch(console.error);
+  }
 });
 
-// --- Event listeners ---
+// ── Event listeners ───────────────────────────────────────────────────────────
 
 function setupEventListeners() {
   document.getElementById("btnSave").addEventListener("click", saveParameters);
   document.getElementById("btnLoad").addEventListener("click", function () {
     document.getElementById("loadFile").click();
   });
-  document
-    .getElementById("loadFile")
-    .addEventListener("change", loadParameters);
-  document
-    .getElementById("btnCalculate")
-    .addEventListener("click", calculateMSD);
+  document.getElementById("loadFile").addEventListener("change", loadParameters);
+  document.getElementById("btnCalculate").addEventListener("click", calculateMSD);
   document.getElementById("btnCopy").addEventListener("click", copyToWord);
 
-  document.getElementById("h1Unit").addEventListener("change", function () {
-    handleUnitChange("h1", "h1Unit");
+  document.getElementById("wp1AltitudeUnit").addEventListener("change", function () {
+    handleUnitChange("wp1Altitude", "wp1AltitudeUnit");
   });
-  document.getElementById("h2Unit").addEventListener("change", function () {
-    handleUnitChange("h2", "h2Unit");
+  document.getElementById("wp2AltitudeUnit").addEventListener("change", function () {
+    handleUnitChange("wp2Altitude", "wp2AltitudeUnit");
+  });
+
+  // Show/hide turn-angle warning badges in real time
+  ["wp1", "wp2"].forEach(function (prefix) {
+    document.getElementById(prefix + "TurnAngle").addEventListener("input", function () {
+      var val = parseFloat(this.value);
+      var type = document.getElementById(prefix + "Type").value;
+      var warning = document.getElementById(prefix + "TurnWarning");
+      if (type === "flyby" && !isNaN(val) && val < 50) {
+        warning.classList.remove("hidden");
+      } else {
+        warning.classList.add("hidden");
+      }
+    });
+    document.getElementById(prefix + "Type").addEventListener("change", function () {
+      // Re-check warning when type changes
+      var angleEl = document.getElementById(prefix + "TurnAngle");
+      angleEl.dispatchEvent(new Event("input"));
+    });
   });
 }
 
-// --- Unit handling ---
+// ── Unit handling ─────────────────────────────────────────────────────────────
 
 function initializeUnitSelectors() {
-  var unitSelectors = document.querySelectorAll('select[id$="Unit"]');
-  unitSelectors.forEach(function (selector) {
-    selector.dataset.lastUnit = selector.value;
+  var unitSelectors = document.querySelectorAll('select[id$="AltitudeUnit"]');
+  unitSelectors.forEach(function (sel) {
+    sel.dataset.lastUnit = sel.value;
   });
 }
 
@@ -59,7 +94,6 @@ function handleUnitChange(inputId, unitSelectId) {
   var input = document.getElementById(inputId);
   var unitSelect = document.getElementById(unitSelectId);
   var currentValue = parseFloat(input.value);
-
   if (!isNaN(currentValue)) {
     var oldUnit = unitSelect.dataset.lastUnit || unitSelect.value;
     var newUnit = unitSelect.value;
@@ -74,258 +108,405 @@ function handleUnitChange(inputId, unitSelectId) {
   unitSelect.dataset.lastUnit = unitSelect.value;
 }
 
-// --- Core calculation ---
+// ── Aviation formulas ─────────────────────────────────────────────────────────
+
+function computeFlyby(ias, altitude_ft, bankAngle, turnAngle, isaDeviation) {
+  var DEG_TO_RAD = Math.PI / 180;
+  var kFactor = calculateKFactor(altitude_ft, isaDeviation);
+  var tas = calculateTAS(ias, kFactor);
+  var r = calculateRadius(tas, bankAngle);
+  var effectiveTurn = Math.max(turnAngle, 50);
+  var minApplied = effectiveTurn !== turnAngle;
+  var L1 = r * Math.tan((effectiveTurn / 2) * DEG_TO_RAD);
+  var L2 = (5 * tas) / 3600;
+  var M = L1 + L2;
+  return {
+    type: "flyby",
+    kFactor: kFactor,
+    tas: tas,
+    r: r,
+    L1: L1,
+    L2: L2,
+    M: M,
+    effectiveTurn: effectiveTurn,
+    minApplied: minApplied,
+  };
+}
+
+function computeFlyover(ias, altitude_ft, bankAngle, turnAngle, isaDeviation) {
+  var DEG_TO_RAD = Math.PI / 180;
+  var kFactor = calculateKFactor(altitude_ft, isaDeviation);
+  var tas = calculateTAS(ias, kFactor);
+  var r1 = calculateRadius(tas, bankAngle);
+  var r2 = calculateRadius(tas, 15); // fixed 15° roll-out bank per §1.4.1.3
+  var theta_rad = turnAngle * DEG_TO_RAD;
+  var alpha_rad = 30 * DEG_TO_RAD;
+  var L1fo = r1 * Math.sin(theta_rad);
+  var L2fo = r1 * Math.cos(theta_rad) * Math.tan(alpha_rad);
+  var L3fo = r1 * (1 / Math.sin(alpha_rad) - (2 * Math.cos(theta_rad)) / Math.sin(60 * DEG_TO_RAD));
+  var L4fo = r2 * Math.tan(alpha_rad / 2);
+  var L5fo = (10 * tas) / 3600;
+  var arcPlusTrans = L1fo + L2fo + L3fo + L4fo; // "L1 display"
+  var bankEstab = L5fo;                           // "L2 display"
+  var M = arcPlusTrans + bankEstab;
+  return {
+    type: "flyover",
+    kFactor: kFactor,
+    tas: tas,
+    r1: r1,
+    r2: r2,
+    arcPlusTrans: arcPlusTrans,
+    bankEstab: bankEstab,
+    M: M,
+  };
+}
+
+// ── Main calculation ──────────────────────────────────────────────────────────
 
 function calculateMSD() {
-  // Read inputs
+  // Read shared inputs
   var distanceD = parseFloat(document.getElementById("distance").value);
-  var h1Raw = parseFloat(document.getElementById("h1").value);
-  var h1Unit = document.getElementById("h1Unit").value;
-  var h2Raw = parseFloat(document.getElementById("h2").value);
-  var h2Unit = document.getElementById("h2Unit").value;
+  var isaRaw = document.getElementById("isaDeviation").value.trim();
+  var isaDeviation = isaRaw === "" ? 0 : parseFloat(isaRaw);
 
-  var r1TanHalfInput = parseFloat(document.getElementById("r1TanA").value);
-  var turnA = parseFloat(document.getElementById("turnA").value);
-  var m1 = parseFloat(document.getElementById("m1").value);
+  // Read WP1 inputs
+  var wp1Type = document.getElementById("wp1Type").value;
+  var wp1Ias = parseFloat(document.getElementById("wp1Ias").value);
+  var wp1AltRaw = parseFloat(document.getElementById("wp1Altitude").value);
+  var wp1AltUnit = document.getElementById("wp1AltitudeUnit").value;
+  var wp1Bank = parseFloat(document.getElementById("wp1BankAngle").value);
+  var wp1Turn = parseFloat(document.getElementById("wp1TurnAngle").value);
 
-  var r2TanHalfInput = parseFloat(document.getElementById("r2TanB").value);
-  var turnB = parseFloat(document.getElementById("turnB").value);
-  var m2 = parseFloat(document.getElementById("m2").value);
+  // Read WP2 inputs
+  var wp2Type = document.getElementById("wp2Type").value;
+  var wp2Ias = parseFloat(document.getElementById("wp2Ias").value);
+  var wp2AltRaw = parseFloat(document.getElementById("wp2Altitude").value);
+  var wp2AltUnit = document.getElementById("wp2AltitudeUnit").value;
+  var wp2Bank = parseFloat(document.getElementById("wp2BankAngle").value);
+  var wp2Turn = parseFloat(document.getElementById("wp2TurnAngle").value);
 
   // Validate
   if (isNaN(distanceD) || distanceD <= 0) {
-    showToast("Please enter a valid IAF-IF distance (> 0).", "error");
+    showToast("Please enter a valid IAF–IF distance (D > 0).", "error");
     return;
   }
-  if (isNaN(h1Raw) || h1Raw < 0) {
-    showToast("Please enter a valid altitude h1 (>= 0).", "error");
+  if (isNaN(isaDeviation)) {
+    showToast("ISA Deviation must be a number (or left blank for 0).", "error");
     return;
   }
-  if (isNaN(h2Raw) || h2Raw < 0) {
-    showToast("Please enter a valid altitude h2 (>= 0).", "error");
+  if (isNaN(wp1Ias) || wp1Ias <= 0) {
+    showToast("WP1: Please enter a valid IAS.", "error");
     return;
   }
-  if (isNaN(r1TanHalfInput) || r1TanHalfInput <= 0) {
-    showToast("IAF: Please enter a valid r1·tan(A/2) (> 0).", "error");
+  if (isNaN(wp1AltRaw) || wp1AltRaw < 0) {
+    showToast("WP1: Please enter a valid altitude.", "error");
     return;
   }
-  if (isNaN(turnA) || turnA <= 0) {
-    showToast("IAF: Please enter a valid turn angle A (> 0).", "error");
+  if (isNaN(wp1Bank) || wp1Bank <= 0 || wp1Bank >= 90) {
+    showToast("WP1: Bank angle must be between 1° and 89°.", "error");
     return;
   }
-  if (isNaN(m1) || m1 <= 0) {
-    showToast("IAF: Please enter a valid M1 (> 0).", "error");
+  if (isNaN(wp1Turn) || wp1Turn <= 0 || wp1Turn >= 360) {
+    showToast("WP1: Turn angle must be between 1° and 359°.", "error");
     return;
   }
-  if (isNaN(r2TanHalfInput) || r2TanHalfInput <= 0) {
-    showToast("IF: Please enter a valid r2·tan(B/2) (> 0).", "error");
+  if (isNaN(wp2Ias) || wp2Ias <= 0) {
+    showToast("WP2: Please enter a valid IAS.", "error");
     return;
   }
-  if (isNaN(turnB) || turnB <= 0) {
-    showToast("IF: Please enter a valid turn angle B (> 0).", "error");
+  if (isNaN(wp2AltRaw) || wp2AltRaw < 0) {
+    showToast("WP2: Please enter a valid altitude.", "error");
     return;
   }
-  if (isNaN(m2) || m2 <= 0) {
-    showToast("IF: Please enter a valid M2 (> 0).", "error");
+  if (isNaN(wp2Bank) || wp2Bank <= 0 || wp2Bank >= 90) {
+    showToast("WP2: Bank angle must be between 1° and 89°.", "error");
+    return;
+  }
+  if (isNaN(wp2Turn) || wp2Turn <= 0 || wp2Turn >= 360) {
+    showToast("WP2: Turn angle must be between 1° and 359°.", "error");
     return;
   }
 
-  // Convert altitudes to feet
-  var h1_ft = h1Unit === "ft" ? h1Raw : h1Raw / 0.3048;
-  var h2_ft = h2Unit === "ft" ? h2Raw : h2Raw / 0.3048;
+  // Convert altitudes to ft
+  var wp1Alt_ft = wp1AltUnit === "m" ? wp1AltRaw / 0.3048 : wp1AltRaw;
+  var wp2Alt_ft = wp2AltUnit === "m" ? wp2AltRaw / 0.3048 : wp2AltRaw;
 
-  // TRD = D - r1*tan(A/2) - r2*tan(B/2) + r1*(A/2)*(pi/180) + r2*(B/2)*(pi/180)
-  var halfA_rad = (turnA / 2) * DEG_TO_RAD;
-  var halfB_rad = (turnB / 2) * DEG_TO_RAD;
+  // Compute per WP
+  var res1 = wp1Type === "flyby"
+    ? computeFlyby(wp1Ias, wp1Alt_ft, wp1Bank, wp1Turn, isaDeviation)
+    : computeFlyover(wp1Ias, wp1Alt_ft, wp1Bank, wp1Turn, isaDeviation);
 
-  // Inputs are r1*tan(A/2) and r2*tan(B/2) directly
-  var r1TanHalf = r1TanHalfInput;
-  var r2TanHalf = r2TanHalfInput;
+  var res2 = wp2Type === "flyby"
+    ? computeFlyby(wp2Ias, wp2Alt_ft, wp2Bank, wp2Turn, isaDeviation)
+    : computeFlyover(wp2Ias, wp2Alt_ft, wp2Bank, wp2Turn, isaDeviation);
 
-  // Derive r from input: r = r*tan(A/2) / tan(A/2), then arc = r * (A/2) * (pi/180)
-  var r1 = r1TanHalf / Math.tan(halfA_rad);
-  var r2 = r2TanHalf / Math.tan(halfB_rad);
-  var r1ArcHalf = r1 * halfA_rad;
-  var r2ArcHalf = r2 * halfB_rad;
+  // Store
+  _raw1 = res1;
+  _raw2 = res2;
+  _alt1_ft = wp1Alt_ft;
+  _alt2_ft = wp2Alt_ft;
+  _distanceD = distanceD;
 
-  var trd = distanceD - r1TanHalf - r2TanHalf + r1ArcHalf + r2ArcHalf;
-  var gradient =
-    trd > 0 ? ((h1_ft - h2_ft) / (trd * FT_PER_NM)) * 100 : Infinity;
-  var msdTotal = m1 + m2;
+  // Render WP results
+  renderWPResults(1, res1);
+  renderWPResults(2, res2);
 
-  var trdPass = trd > 0;
-  var gradientPass = Math.abs(gradient) < 8;
-  var msdPass = msdTotal <= distanceD;
+  // TRD section (flyby + flyby only)
+  var trdSection = document.getElementById("trdSection");
+  if (res1.type === "flyby" && res2.type === "flyby") {
+    var DEG_TO_RAD = Math.PI / 180;
+    var FT_PER_NM = 1852 / 0.3048;
+    var halfA_rad = (res1.effectiveTurn / 2) * DEG_TO_RAD;
+    var halfB_rad = (res2.effectiveTurn / 2) * DEG_TO_RAD;
+    var r1Arc = res1.r * halfA_rad;
+    var r2Arc = res2.r * halfB_rad;
+    var trd = distanceD - res1.L1 - res2.L1 + r1Arc + r2Arc;
 
-  // Populate intermediate breakdown
-  document.getElementById("outR1Arc").textContent = r1ArcHalf.toFixed(4);
-  document.getElementById("outR2Arc").textContent = r2ArcHalf.toFixed(4);
+    document.getElementById("outR1Arc").textContent = r1Arc.toFixed(4);
+    document.getElementById("outR2Arc").textContent = r2Arc.toFixed(4);
+    document.getElementById("outTRD").textContent = trd.toFixed(4);
 
-  // Populate outputs
-  document.getElementById("outTRD").textContent = trd.toFixed(4);
-  var trdBadge = document.getElementById("outTRDStatus");
-  trdBadge.textContent = trdPass ? "\u2705 PASS" : "\u274C FAIL";
-  trdBadge.className = trdPass
-    ? "ml-2 px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
-    : "ml-2 px-2 py-0.5 rounded text-xs font-bold bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300";
+    var trdStatus = document.getElementById("outTRDStatus");
+    if (trd > 0) {
+      trdStatus.textContent = "OK";
+      trdStatus.className = "text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300";
+    } else {
+      trdStatus.textContent = "Negative";
+      trdStatus.className = "text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300";
+    }
 
-  document.getElementById("outGradient").textContent = trdPass
-    ? gradient.toFixed(2)
-    : "N/A";
-  var gradBadge = document.getElementById("outGradientStatus");
-  if (!trdPass) {
-    gradBadge.textContent = "\u2014";
-    gradBadge.className =
-      "ml-2 px-2 py-0.5 rounded text-xs font-bold bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400";
+    var gradient = null;
+    var gradientStatus = document.getElementById("outGradientStatus");
+    if (trd > 0) {
+      gradient = ((wp1Alt_ft - wp2Alt_ft) / (trd * FT_PER_NM)) * 100;
+      document.getElementById("outGradient").textContent = gradient.toFixed(2);
+      var maxGradient = 8.0;
+      if (gradient <= maxGradient) {
+        gradientStatus.textContent = "\u2264 8% OK";
+        gradientStatus.className = "text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300";
+      } else {
+        gradientStatus.textContent = "> 8% STEEP";
+        gradientStatus.className = "text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300";
+      }
+    } else {
+      document.getElementById("outGradient").textContent = "N/A";
+      gradientStatus.textContent = "";
+      gradientStatus.className = "";
+    }
+
+    trdSection.classList.remove("hidden");
   } else {
-    gradBadge.textContent = gradientPass ? "\u2705 PASS" : "\u274C FAIL";
-    gradBadge.className = gradientPass
-      ? "ml-2 px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
-      : "ml-2 px-2 py-0.5 rounded text-xs font-bold bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300";
+    trdSection.classList.add("hidden");
   }
 
-  document.getElementById("outMSD").textContent = msdTotal.toFixed(4);
-  var msdBadge = document.getElementById("outMSDStatus");
-  msdBadge.textContent = msdPass ? "\u2705 PASS" : "\u274C FAIL";
-  msdBadge.className = msdPass
-    ? "ml-2 px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
-    : "ml-2 px-2 py-0.5 rounded text-xs font-bold bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300";
+  // MSD total
+  var msd = res1.M + res2.M;
+  var msdCard = document.getElementById("msdPrimaryCard");
+  document.getElementById("outMSD").textContent = msd.toFixed(4);
+  document.getElementById("outDValue").textContent = distanceD.toFixed(4);
 
-  // Primary card color
-  var primaryCard = document.getElementById("msdPrimaryCard");
-  if (msdPass) {
-    primaryCard.className =
-      "bg-primary-700 dark:bg-primary-800 rounded-xl p-5 text-white mb-4 text-center shadow-md";
+  var msdStatus = document.getElementById("outMSDStatus");
+  if (distanceD >= msd) {
+    msdStatus.textContent = "\u2265 MSD \u2714 PASS";
+    msdStatus.className = "font-bold";
+    msdCard.className = "bg-green-600 dark:bg-green-700 rounded-xl p-5 text-white text-center shadow-md";
   } else {
-    primaryCard.className =
-      "bg-red-600 dark:bg-red-800 rounded-xl p-5 text-white mb-4 text-center shadow-md";
+    msdStatus.textContent = "< MSD \u2718 FAIL";
+    msdStatus.className = "font-bold";
+    msdCard.className = "bg-red-600 dark:bg-red-700 rounded-xl p-5 text-white text-center shadow-md";
   }
 
   // Show results
   document.getElementById("resultsSection").classList.remove("hidden");
+  document.getElementById("resultsSection").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-// --- Save / Load parameters ---
+// ── Render WP output ──────────────────────────────────────────────────────────
+
+function renderWPResults(n, result) {
+  var prefix = "out" + n;
+  document.getElementById(prefix + "KFactor").textContent = result.kFactor.toFixed(4);
+  document.getElementById(prefix + "Tas").textContent = result.tas.toFixed(1);
+
+  var typeBadge = document.getElementById(prefix + "TypeBadge");
+  var radiusLabel = document.getElementById(prefix + "RadiusLabel");
+  var l1Label = document.getElementById(prefix + "L1Label");
+  var l2Label = document.getElementById(prefix + "L2Label");
+
+  if (result.type === "flyby") {
+    typeBadge.textContent = "Flyby";
+    document.getElementById(prefix + "Radius").textContent = result.r.toFixed(4);
+    radiusLabel.textContent = "Radius r";
+    document.getElementById(prefix + "L1").textContent = result.L1.toFixed(4);
+    l1Label.textContent = "r\u00B7tan(A/2)";
+    document.getElementById(prefix + "L2").textContent = result.L2.toFixed(4);
+    l2Label.textContent = "5s\u00B7TAS/3600";
+    document.getElementById(prefix + "L1Cell").classList.remove("hidden");
+    document.getElementById(prefix + "L2Cell").classList.remove("hidden");
+    document.getElementById(prefix + "L2Cell").classList.remove("col-span-2");
+    document.getElementById(prefix + "L2Cell").classList.add("col-span-2");
+  } else {
+    typeBadge.textContent = "Flyover";
+    document.getElementById(prefix + "Radius").textContent = result.r1.toFixed(4);
+    radiusLabel.textContent = "r\u2081 (roll-in)";
+    document.getElementById(prefix + "L1").textContent = result.arcPlusTrans.toFixed(4);
+    l1Label.textContent = "Arc+transition (L1\u2013L4)";
+    document.getElementById(prefix + "L2").textContent = result.bankEstab.toFixed(4);
+    l2Label.textContent = "L5 (bank estab.)";
+    document.getElementById(prefix + "L1Cell").classList.remove("hidden");
+    document.getElementById(prefix + "L2Cell").classList.remove("hidden");
+    document.getElementById(prefix + "L2Cell").classList.remove("col-span-2");
+    document.getElementById(prefix + "L2Cell").classList.add("col-span-2");
+  }
+
+  document.getElementById(prefix + "M").textContent = result.M.toFixed(4);
+}
+
+// ── Save / Load ───────────────────────────────────────────────────────────────
 
 function saveParameters() {
-  var data = {
-    distance: document.getElementById("distance").value || "",
-    h1: document.getElementById("h1").value || "",
-    h1Unit: document.getElementById("h1Unit").value || "ft",
-    h2: document.getElementById("h2").value || "",
-    h2Unit: document.getElementById("h2Unit").value || "ft",
-    r1TanA: document.getElementById("r1TanA").value || "",
-    turnA: document.getElementById("turnA").value || "",
-    m1: document.getElementById("m1").value || "",
-    r2TanB: document.getElementById("r2TanB").value || "",
-    turnB: document.getElementById("turnB").value || "",
-    m2: document.getElementById("m2").value || "",
+  var params = {
+    distance: document.getElementById("distance").value,
+    isaDeviation: document.getElementById("isaDeviation").value,
+    wp1Type: document.getElementById("wp1Type").value,
+    wp1Ias: document.getElementById("wp1Ias").value,
+    wp1Altitude: document.getElementById("wp1Altitude").value,
+    wp1AltitudeUnit: document.getElementById("wp1AltitudeUnit").value,
+    wp1BankAngle: document.getElementById("wp1BankAngle").value,
+    wp1TurnAngle: document.getElementById("wp1TurnAngle").value,
+    wp2Type: document.getElementById("wp2Type").value,
+    wp2Ias: document.getElementById("wp2Ias").value,
+    wp2Altitude: document.getElementById("wp2Altitude").value,
+    wp2AltitudeUnit: document.getElementById("wp2AltitudeUnit").value,
+    wp2BankAngle: document.getElementById("wp2BankAngle").value,
+    wp2TurnAngle: document.getElementById("wp2TurnAngle").value,
   };
 
-  var now = new Date();
-  var timestamp = now.toISOString().replace(/[:.]/g, "-");
-  var filename = timestamp + "_msd_combined.json";
-  var blob = new Blob([JSON.stringify(data, null, 2)], {
-    type: "application/json",
-  });
+  var blob = new Blob([JSON.stringify(params, null, 2)], { type: "application/json" });
   var url = URL.createObjectURL(blob);
   var a = document.createElement("a");
   a.href = url;
-  a.download = filename;
+  a.download = "msd_parameters.json";
   a.click();
   URL.revokeObjectURL(url);
+  showToast("Parameters saved.", "success");
 }
 
 function loadParameters(event) {
   var file = event.target.files[0];
-  if (!file) {
-    showToast("Please select a valid JSON file.", "error");
-    return;
-  }
+  if (!file) return;
+
   var reader = new FileReader();
   reader.onload = function (e) {
     try {
-      var data = JSON.parse(e.target.result);
+      var params = JSON.parse(e.target.result);
 
-      if (data.distance !== undefined)
-        document.getElementById("distance").value = data.distance;
-      if (data.h1 !== undefined) document.getElementById("h1").value = data.h1;
-      if (data.h1Unit) {
-        var sel1 = document.getElementById("h1Unit");
-        sel1.dataset.lastUnit = sel1.value;
-        sel1.value = data.h1Unit;
-      }
-      if (data.h2 !== undefined) document.getElementById("h2").value = data.h2;
-      if (data.h2Unit) {
-        var sel2 = document.getElementById("h2Unit");
-        sel2.dataset.lastUnit = sel2.value;
-        sel2.value = data.h2Unit;
-      }
-      if (data.r1TanA !== undefined)
-        document.getElementById("r1TanA").value = data.r1TanA;
-      if (data.turnA !== undefined)
-        document.getElementById("turnA").value = data.turnA;
-      if (data.m1 !== undefined) document.getElementById("m1").value = data.m1;
-      if (data.r2TanB !== undefined)
-        document.getElementById("r2TanB").value = data.r2TanB;
-      if (data.turnB !== undefined)
-        document.getElementById("turnB").value = data.turnB;
-      if (data.m2 !== undefined) document.getElementById("m2").value = data.m2;
+      var setVal = function (id, val) {
+        var el = document.getElementById(id);
+        if (el && val !== undefined && val !== null) el.value = val;
+      };
+
+      setVal("distance", params.distance);
+      setVal("isaDeviation", params.isaDeviation);
+      setVal("wp1Type", params.wp1Type);
+      setVal("wp1Ias", params.wp1Ias);
+      setVal("wp1Altitude", params.wp1Altitude);
+      setVal("wp1AltitudeUnit", params.wp1AltitudeUnit);
+      setVal("wp1BankAngle", params.wp1BankAngle);
+      setVal("wp1TurnAngle", params.wp1TurnAngle);
+      setVal("wp2Type", params.wp2Type);
+      setVal("wp2Ias", params.wp2Ias);
+      setVal("wp2Altitude", params.wp2Altitude);
+      setVal("wp2AltitudeUnit", params.wp2AltitudeUnit);
+      setVal("wp2BankAngle", params.wp2BankAngle);
+      setVal("wp2TurnAngle", params.wp2TurnAngle);
+
+      // Sync lastUnit for unit selectors
+      ["wp1AltitudeUnit", "wp2AltitudeUnit"].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.dataset.lastUnit = el.value;
+      });
 
       showToast("Parameters loaded.", "success");
     } catch (err) {
-      showToast("Invalid JSON file.", "error");
+      showToast("Failed to load parameters: " + err.message, "error");
     }
   };
   reader.readAsText(file);
+  // Reset input so the same file can be loaded again
   event.target.value = "";
 }
 
-// --- Copy to Word ---
+// ── Copy to Word ──────────────────────────────────────────────────────────────
 
 function copyToWord() {
-  var msdVal = document.getElementById("outMSD").textContent;
-  if (!msdVal) return;
+  if (!_raw1 || !_raw2) {
+    showToast("Please calculate first.", "error");
+    return;
+  }
 
-  var tableData = {
-    "IAF-IF Distance (D)": document.getElementById("distance").value + " NM",
-    "Altitude h\u2081":
-      document.getElementById("h1").value +
-      " " +
-      document.getElementById("h1Unit").value,
-    "Altitude h\u2082":
-      document.getElementById("h2").value +
-      " " +
-      document.getElementById("h2Unit").value,
-    "IAF: r\u2081\u00B7tan(A/2)":
-      document.getElementById("r1TanA").value + " NM",
-    "IAF: Turn Angle A": document.getElementById("turnA").value + "\u00B0",
-    "IAF: M\u2081": document.getElementById("m1").value + " NM",
-    "IAF: r\u2081\u00B7(A/2)\u00B7\u03C0/180":
-      document.getElementById("outR1Arc").textContent + " NM",
-    "IF: r\u2082\u00B7tan(B/2)":
-      document.getElementById("r2TanB").value + " NM",
-    "IF: Turn Angle B": document.getElementById("turnB").value + "\u00B0",
-    "IF: M\u2082": document.getElementById("m2").value + " NM",
-    "IF: r\u2082\u00B7(B/2)\u00B7\u03C0/180":
-      document.getElementById("outR2Arc").textContent + " NM",
-    TRD:
-      document.getElementById("outTRD").textContent +
-      " NM \u2014 " +
-      document.getElementById("outTRDStatus").textContent,
-    Gradient:
-      document.getElementById("outGradient").textContent +
-      "% \u2014 " +
-      document.getElementById("outGradientStatus").textContent,
-    "MSD (M\u2081 + M\u2082)":
-      msdVal +
-      " NM \u2014 " +
-      document.getElementById("outMSDStatus").textContent,
+  var FT_PER_NM = 1852 / 0.3048;
+
+  // Build WP1 rows
+  var wp1Rows = {
+    "WP1 Type": _raw1.type.charAt(0).toUpperCase() + _raw1.type.slice(1),
+    "WP1 k Factor": _raw1.kFactor.toFixed(4),
+    "WP1 TAS (KT)": _raw1.tas.toFixed(1),
+  };
+  if (_raw1.type === "flyby") {
+    wp1Rows["WP1 Radius r (NM)"] = _raw1.r.toFixed(4);
+    wp1Rows["WP1 r\u00B7tan(A/2) (NM)"] = _raw1.L1.toFixed(4);
+    wp1Rows["WP1 5s\u00B7TAS/3600 (NM)"] = _raw1.L2.toFixed(4);
+  } else {
+    wp1Rows["WP1 r\u2081 roll-in (NM)"] = _raw1.r1.toFixed(4);
+    wp1Rows["WP1 Arc+transition L1\u2013L4 (NM)"] = _raw1.arcPlusTrans.toFixed(4);
+    wp1Rows["WP1 L5 bank estab. (NM)"] = _raw1.bankEstab.toFixed(4);
+  }
+  wp1Rows["M\u2081 (NM)"] = _raw1.M.toFixed(4);
+
+  // Build WP2 rows
+  var wp2Rows = {
+    "WP2 Type": _raw2.type.charAt(0).toUpperCase() + _raw2.type.slice(1),
+    "WP2 k Factor": _raw2.kFactor.toFixed(4),
+    "WP2 TAS (KT)": _raw2.tas.toFixed(1),
+  };
+  if (_raw2.type === "flyby") {
+    wp2Rows["WP2 Radius r (NM)"] = _raw2.r.toFixed(4);
+    wp2Rows["WP2 r\u00B7tan(B/2) (NM)"] = _raw2.L1.toFixed(4);
+    wp2Rows["WP2 5s\u00B7TAS/3600 (NM)"] = _raw2.L2.toFixed(4);
+  } else {
+    wp2Rows["WP2 r\u2081 roll-in (NM)"] = _raw2.r1.toFixed(4);
+    wp2Rows["WP2 Arc+transition L1\u2013L4 (NM)"] = _raw2.arcPlusTrans.toFixed(4);
+    wp2Rows["WP2 L5 bank estab. (NM)"] = _raw2.bankEstab.toFixed(4);
+  }
+  wp2Rows["M\u2082 (NM)"] = _raw2.M.toFixed(4);
+
+  // Combined rows
+  var msd = _raw1.M + _raw2.M;
+  var combinedRows = {
+    "D (NM)": _distanceD.toFixed(4),
+    "MSD = M\u2081 + M\u2082 (NM)": msd.toFixed(4),
+    "Result": _distanceD >= msd ? "PASS (D \u2265 MSD)" : "FAIL (D < MSD)",
   };
 
-  var htmlContent = createHTMLTable(
-    tableData,
-    "MSD Combined \u2014 PANS-OPS Vol II \u00A71.4.2",
-  );
+  // TRD rows if flyby+flyby
+  if (_raw1.type === "flyby" && _raw2.type === "flyby") {
+    var DEG_TO_RAD = Math.PI / 180;
+    var halfA_rad = (_raw1.effectiveTurn / 2) * DEG_TO_RAD;
+    var halfB_rad = (_raw2.effectiveTurn / 2) * DEG_TO_RAD;
+    var r1Arc = _raw1.r * halfA_rad;
+    var r2Arc = _raw2.r * halfB_rad;
+    var trd = _distanceD - _raw1.L1 - _raw2.L1 + r1Arc + r2Arc;
+    combinedRows["r\u2081\u00B7(A/2)\u00B7\u03C0/180 (NM)"] = r1Arc.toFixed(4);
+    combinedRows["r\u2082\u00B7(B/2)\u00B7\u03C0/180 (NM)"] = r2Arc.toFixed(4);
+    combinedRows["TRD (NM)"] = trd.toFixed(4);
+    if (trd > 0 && _alt1_ft !== null && _alt2_ft !== null) {
+      var gradient = ((_alt1_ft - _alt2_ft) / (trd * FT_PER_NM)) * 100;
+      combinedRows["Descent Gradient (%)"] = gradient.toFixed(2);
+    }
+  }
+
+  var allRows = Object.assign({}, wp1Rows, wp2Rows, combinedRows);
+  var htmlContent = createHTMLTable(allRows, "MSD Combined \u2014 PANS-OPS Vol II \u00A7 1.4.2");
   copyToClipboard(htmlContent);
 }
