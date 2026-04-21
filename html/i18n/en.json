@@ -19,7 +19,9 @@
     "knots": "knots",
     "degrees": "°",
     "nauticalMiles": "NM",
-    "celsius": "°C"
+    "celsius": "°C",
+    "copyRounded": "Rounded (4 dec.)",
+    "copyExact": "Exact"
   },
   "rateTurn": {
     "title": "Rate & Radius of Turn",
@@ -247,7 +249,8 @@
     "ils": "ILS",
     "subGeneral": "General",
     "subApproach": "Approach & Manoeuvring",
-    "subDepartures": "Departures"
+    "subDepartures": "Departures",
+    "subPBN": "PBN"
   },
   "circling": {
     "title": "Circling Protection Area",

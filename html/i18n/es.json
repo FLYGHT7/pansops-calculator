@@ -19,7 +19,9 @@
     "knots": "nudos",
     "degrees": "°",
     "nauticalMiles": "NM",
-    "celsius": "°C"
+    "celsius": "°C",
+    "copyRounded": "Redondeado (4 dec.)",
+    "copyExact": "Exacto"
   },
   "rateTurn": {
     "title": "Tasa y Radio de Giro",
@@ -247,7 +249,8 @@
     "ils": "ILS",
     "subGeneral": "General",
     "subApproach": "Aproximación y Maniobra",
-    "subDepartures": "Salidas"
+    "subDepartures": "Salidas",
+    "subPBN": "PBN"
   },
   "circling": {
     "title": "Área de Protección para Maniobra Visual",
