@@ -26,6 +26,22 @@ if (typeof calculateRadius === "undefined") {
   }
 }
 
+// Raw results store — populated after each calculation
+const _raw = {};
+
+// Update displayed result values based on the selected precision mode
+function applyDisplayPrecision() {
+  if (_raw.M === undefined) return;
+  const exact = document.getElementById("copyPrecision").value === "exact";
+  const fmt = (v) => (exact ? v.toString() : v.toFixed(4));
+  document.getElementById("outKFactor").textContent = fmt(_raw.kFactor);
+  document.getElementById("outTas").textContent = fmt(_raw.tas);
+  document.getElementById("outR").textContent = fmt(_raw.r);
+  document.getElementById("outL1").textContent = fmt(_raw.L1);
+  document.getElementById("outL2").textContent = fmt(_raw.L2);
+  document.getElementById("outM").textContent = fmt(_raw.M);
+}
+
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", function () {
   checkDarkMode();
@@ -64,6 +80,9 @@ function setupEventListeners() {
     .getElementById("loadFile")
     .addEventListener("change", loadParameters);
   document.getElementById("btnCopy").addEventListener("click", copyToWord);
+  document
+    .getElementById("copyPrecision")
+    .addEventListener("change", applyDisplayPrecision);
 
   const altUnit = document.getElementById("altitudeUnit");
   if (altUnit) {
@@ -76,12 +95,14 @@ function setupEventListeners() {
 // --- Core calculation ---------------------------------------------------------
 
 function calculateFlyby() {
-  // --- Read inputs (4 inputs only) ---
+  // --- Read inputs ---
   const iasVal = parseFloat(document.getElementById("ias").value);
   const altitudeRaw = parseFloat(document.getElementById("altitude").value);
   const altitudeUnit = document.getElementById("altitudeUnit").value;
   const bankAngleVal = parseFloat(document.getElementById("bankAngle").value);
   const turnAngleRaw = parseFloat(document.getElementById("turnAngle").value);
+  const isaDeviationRaw = document.getElementById("isaDeviation").value;
+  const isaDeviation = isaDeviationRaw === "" ? 0 : parseFloat(isaDeviationRaw);
 
   // --- Validate ---
   if (isNaN(iasVal) || iasVal <= 0) {
@@ -100,6 +121,10 @@ function calculateFlyby() {
     showToast("Please enter a valid turn angle (1-359).", "error");
     return;
   }
+  if (isNaN(isaDeviation)) {
+    showToast("Please enter a valid ISA deviation.", "error");
+    return;
+  }
 
   // --- PANS-OPS S1.4.2.2: minimum 50 for regular aircraft ---
   const minAngle = 50;
@@ -110,8 +135,8 @@ function calculateFlyby() {
   const altitude_ft =
     altitudeUnit === "ft" ? altitudeRaw : altitudeRaw / 0.3048;
 
-  // --- kFactor and TAS (ISA+15 hardcoded per PANS-OPS procedure design standard) ---
-  const kFactor = calculateKFactor(altitude_ft, 15);
+  // --- kFactor and TAS ---
+  const kFactor = calculateKFactor(altitude_ft, isaDeviation);
   const tas = calculateTAS(iasVal, kFactor);
 
   // --- Radius ---
@@ -125,14 +150,15 @@ function calculateFlyby() {
   const L2 = (5 * tas) / 3600;
   const M = L1 + L2;
 
-  // --- Populate outputs ---
-  document.getElementById("outKFactor").textContent = kFactor.toFixed(4);
-  document.getElementById("outTas").textContent = tas.toFixed(4);
-  document.getElementById("outR").textContent = r.toFixed(4);
+  // --- Store raw results and render with current precision ---
+  _raw.kFactor = kFactor;
+  _raw.tas = tas;
+  _raw.r = r;
+  _raw.L1 = L1;
+  _raw.L2 = L2;
+  _raw.M = M;
   document.getElementById("outTurnUsed").textContent = turnAngle + "\u00b0";
-  document.getElementById("outL1").textContent = L1.toFixed(4);
-  document.getElementById("outL2").textContent = L2.toFixed(4);
-  document.getElementById("outM").textContent = M.toFixed(4);
+  applyDisplayPrecision();
 
   const warnEl = document.getElementById("turnAngleWarning");
   if (minApplied) {
@@ -148,11 +174,10 @@ function calculateFlyby() {
 // --- SVG Diagram --------------------------------------------------------------
 
 function renderFlybyDiagram(L1, L2, r, theta_deg) {
-  const M = L1 + L2;
   const container = document.getElementById("flybyDiagram");
   const diagramSection = document.getElementById("diagramSection");
 
-  if (M <= 0) {
+  if (L1 + L2 <= 0) {
     diagramSection.classList.add("hidden");
     return;
   }
@@ -165,236 +190,230 @@ function renderFlybyDiagram(L1, L2, r, theta_deg) {
   const textC = isDark ? "#e2e8f0" : "#1e293b";
   const CL1 = "#2563eb";
   const CL2 = "#22c55e";
+  const CMSD = "#f97316";
+  const CNORTH = "#3b82f6";
 
-  const W = 760,
-    H = 340;
-  const PAD_L = 40,
-    PAD_R = 40,
-    PAD_T = 28,
-    PAD_B = 70;
-
-  const VR = Math.min((H - PAD_T - PAD_B) * 0.5, 100);
-
-  // WP near horizontal centre-left so arc and outbound have room to the right
-  const wpX = PAD_L + (W - PAD_L - PAD_R) * 0.4;
-  const wpY = PAD_T + (H - PAD_T - PAD_B) / 2;
+  const W = 860,
+    H = 460;
+  const PAD_L = 60,
+    PAD_R = 60,
+    PAD_T = 32,
+    PAD_B = 48;
+  const drawW = W - PAD_L - PAD_R;
+  const drawH = H - PAD_T - PAD_B;
 
   const theta = theta_deg * (Math.PI / 180);
-  const halfTheta = theta / 2;
 
-  // Horizontal scale for L1/L2 annotations (schematic)
-  const availW = wpX - PAD_L - 10;
-  const scL = Math.min((availW * 0.65) / Math.max(L1, 0.01), 80);
-  const L1px = Math.min(L1 * scL, availW * 0.65);
-  const L2px = Math.min(L2 * scL, 60);
+  // ── PANS-OPS Flyby geometry ───────────────────────────────────────────────
+  // WP = (0,0) = intersection of nominal inbound & outbound tracks.
+  // INBOUND = north = straight DOWN from WP (so the north arrow IS the inbound
+  // extension above WP, giving a clear θ arc from 0° to outbound).
+  // SVG: x→right, y→down.
+  //
+  // Inbound direction (toward WP, from below): (0, -1)
+  // Right-perpendicular (CW turn): (1, 0)  → arc center to the right of SOT
+  //
+  // SOT  = [0, L1]   (directly below WP by L1)
+  // cNM  = [r, L1]   (right of SOT by r)
+  // sotAng = π        (SOT is directly left of center)
+  // eotAng = π + θ
+  // oDX = sin(θ),  oDY = -cos(θ)   (outbound goes lower-right)
 
-  // Inbound arrives from lower-left at halfTheta below horizontal, ends at WP
-  const inbLen = L1px + 50;
-  const inbStartX = wpX - inbLen * Math.cos(halfTheta);
-  const inbStartY = wpY + inbLen * Math.sin(halfTheta);
+  const sotNM = [0, L1];
+  const cNM = [r, L1];
+  const sotAng = Math.PI;
+  const eotAng = Math.PI + theta;
+  const eotNM = [r + r * Math.cos(eotAng), L1 + r * Math.sin(eotAng)];
+  const oDX = Math.sin(theta); // = -sin(eotAng)
+  const oDY = -Math.cos(theta); // =  cos(eotAng)
 
-  // Arc centre: perpendicular left of the heading direction at WP
-  // Heading at WP = (cos(halfTheta), -sin(halfTheta)) (right + up in SVG, inbound direction)
-  // Left perp (CCW 90 deg) = (sin(halfTheta), cos(halfTheta))
-  const cx = wpX + VR * Math.sin(halfTheta);
-  const cy = wpY + VR * Math.cos(halfTheta);
+  const l2EndNM = [eotNM[0] + L2 * oDX, eotNM[1] + L2 * oDY];
 
-  // Angle from centre to WP in SVG
-  const wpAngle = Math.atan2(wpY - cy, wpX - cx);
+  const inbExt = Math.max(r * 0.28, L1 * 0.3);
+  const outExt = Math.max(r * 0.28, L2 * 0.3);
+  const inbStNM = [0, L1 + inbExt]; // below SOT (inbound goes straight down)
+  const outEndNM = [l2EndNM[0] + outExt * oDX, l2EndNM[1] + outExt * oDY];
 
-  // Arc end: rotate CW by theta
-  const arcEndAngle = wpAngle + theta;
-  const arcEndX = cx + VR * Math.cos(arcEndAngle);
-  const arcEndY = cy + VR * Math.sin(arcEndAngle);
+  // Arc midpoint for r label
+  const rMidAng = Math.PI + theta / 2;
+  const rMidNM = [r + r * Math.cos(rMidAng), L1 + r * Math.sin(rMidAng)];
 
-  // Outbound direction: CW tangent at arcEnd = (sin(arcEndAngle), -cos(arcEndAngle))
-  const outDirX = Math.sin(arcEndAngle);
-  const outDirY = -Math.cos(arcEndAngle);
-  const outLen = L2px + 60;
-  const outEndX = arcEndX + outLen * outDirX;
-  const outEndY = arcEndY + outLen * outDirY;
+  // ── Bounding box in NM ───────────────────────────────────────────────────
+  // WP (0,0) is the topmost, left-most point; all content is at x≥0, y≥0.
+  const allNMx = [0, eotNM[0], l2EndNM[0], outEndNM[0], rMidNM[0]];
+  const allNMy = [
+    inbStNM[1],
+    sotNM[1],
+    0,
+    eotNM[1],
+    l2EndNM[1],
+    outEndNM[1],
+    rMidNM[1],
+  ];
+  const minXnm = 0; // inbound is on x=0
+  const maxXnm = Math.max(...allNMx);
+  const maxYnm = Math.max(...allNMy);
 
-  // L2 endpoint on the outbound (for dimension)
-  const l2EndX = arcEndX + L2px * outDirX;
-  const l2EndY = arcEndY + L2px * outDirY;
+  // ── Scale & WP position ──────────────────────────────────────────────────
+  const northLen = 64;
+  const northLblMg = 18;
+  const topPad = northLen + northLblMg + 4;
 
-  // Start-of-turn point on inbound (L1 back from WP)
-  const sotX = wpX - L1px * Math.cos(halfTheta);
-  const sotY = wpY + L1px * Math.sin(halfTheta);
+  const contentH = drawH - topPad - 4;
+  const contentW = drawW;
+  const scH = contentH / Math.max(maxYnm, 0.01);
+  // reserve ~60px left of WP for the M dimension label offset
+  const dimLeftPad = 60;
+  const scW = (contentW - dimLeftPad) / Math.max(maxXnm + 0.1, 0.01);
+  const sc = Math.min(scH, scW) * 0.9;
 
+  // Center the full scene (dimLeftPad + scene width) in the draw area
+  const scenePxW = dimLeftPad + maxXnm * sc;
+  const wpX = PAD_L + dimLeftPad + Math.round((contentW - scenePxW) / 2);
+  const wpY = PAD_T + topPad;
+
+  // NM → SVG pixel
+  function px(nm) {
+    return [wpX + nm[0] * sc, wpY + nm[1] * sc];
+  }
+  const rPx = r * sc;
+
+  const [sotX, sotY] = px(sotNM);
+  const [inbStX, inbStY] = px(inbStNM);
+  const [cX, cY] = px(cNM);
+  const [eotX, eotY] = px(eotNM);
+  const [l2EndX, l2EndY] = px(l2EndNM);
+  const [outEndX, outEndY] = px(outEndNM);
+  const [rMidX, rMidY] = px(rMidNM);
+
+  const largeArc = theta > Math.PI ? 1 : 0;
+
+  // ── SVG helpers ───────────────────────────────────────────────────────────
   function f(v) {
     return v.toFixed(1);
   }
-  function solidLine(ax, ay, bx, by, col, sw) {
-    sw = sw || 1.5;
-    return (
+
+  function line(x1, y1, x2, y2, col, sw, dash) {
+    let s =
       '<line x1="' +
-      f(ax) +
+      f(x1) +
       '" y1="' +
-      f(ay) +
+      f(y1) +
       '" x2="' +
-      f(bx) +
+      f(x2) +
       '" y2="' +
-      f(by) +
+      f(y2) +
       '" stroke="' +
       col +
       '" stroke-width="' +
-      sw +
-      '"/>'
-    );
+      (sw || 1.5) +
+      '"';
+    if (dash) s += ' stroke-dasharray="' + dash + '"';
+    return s + "/>";
   }
-  function dashLine(ax, ay, bx, by, col, sw, da) {
-    sw = sw || 1;
-    da = da || "5 3";
-    return (
-      '<line x1="' +
-      f(ax) +
-      '" y1="' +
-      f(ay) +
-      '" x2="' +
-      f(bx) +
-      '" y2="' +
-      f(by) +
-      '" stroke="' +
-      col +
-      '" stroke-width="' +
-      sw +
-      '" stroke-dasharray="' +
-      da +
-      '"/>'
-    );
-  }
-  function txt(x, y, s, col, sz, anchor, italic) {
-    sz = sz || 11;
-    anchor = anchor || "middle";
+
+  function txt(x, y, s, col, sz, anchor, bold) {
     return (
       '<text x="' +
       f(x) +
       '" y="' +
       f(y) +
       '" text-anchor="' +
-      anchor +
+      (anchor || "middle") +
       '" font-size="' +
-      sz +
+      (sz || 11) +
       '" fill="' +
       col +
       '" font-family="sans-serif"' +
-      (italic ? ' font-style="italic"' : "") +
+      (bold ? ' font-weight="700"' : "") +
       ">" +
       s +
       "</text>"
     );
   }
 
-  // Dimension arrow helper (axis-aligned horizontal only for simplicity)
-  function hArrow(x1, x2, y, col, lbl, val) {
-    const mid = (x1 + x2) / 2,
-      tk = 5;
+  // Parallel-offset dimension line along a track segment
+  function dimLine(ax, ay, bx, by, col, lbl, val, od) {
+    od = od || 20;
+    const dx = bx - ax,
+      dy = by - ay,
+      len = Math.sqrt(dx * dx + dy * dy);
+    if (len < 2) return "";
+    const px2 = (-dy / len) * od,
+      py2 = (dx / len) * od; // left-perpendicular offset
+    const ax2 = ax + px2,
+      ay2 = ay + py2,
+      bx2 = bx + px2,
+      by2 = by + py2;
+    const mx = (ax2 + bx2) / 2,
+      my = (ay2 + by2) / 2;
+    const tk = 5,
+      nx = (-dy / len) * tk,
+      ny = (dx / len) * tk;
     return (
-      solidLine(x1, y, x2, y, col, 1.5) +
-      '<line x1="' +
-      f(x1) +
-      '" y1="' +
-      f(y - tk) +
-      '" x2="' +
-      f(x1) +
-      '" y2="' +
-      f(y + tk) +
-      '" stroke="' +
-      col +
-      '" stroke-width="1.5"/>' +
-      '<line x1="' +
-      f(x2) +
-      '" y1="' +
-      f(y - tk) +
-      '" x2="' +
-      f(x2) +
-      '" y2="' +
-      f(y + tk) +
-      '" stroke="' +
-      col +
-      '" stroke-width="1.5"/>' +
-      '<text x="' +
-      f(mid) +
-      '" y="' +
-      f(y - 8) +
-      '" text-anchor="middle" font-size="11" font-weight="700" fill="' +
-      col +
-      '" font-family="monospace">' +
-      lbl +
-      "</text>" +
-      '<text x="' +
-      f(mid) +
-      '" y="' +
-      f(y + 18) +
-      '" text-anchor="middle" font-size="10" fill="' +
-      col +
-      '" font-family="monospace">' +
-      val +
-      "</text>"
+      line(ax2, ay2, bx2, by2, col, 1.5) +
+      line(ax2 - nx, ay2 - ny, ax2 + nx, ay2 + ny, col, 1.5) +
+      line(bx2 - nx, by2 - ny, bx2 + nx, by2 + ny, col, 1.5) +
+      line(ax, ay, ax2, ay2, col, 0.6, "3 3") +
+      line(bx, by, bx2, by2, col, 0.6, "3 3") +
+      txt(mx, my - 7, lbl, col, 11, "middle", true) +
+      txt(mx, my + 14, val, col, 10, "middle", false)
     );
   }
 
-  // Dimension annotation row (below the diagram)
-  const annY = H - PAD_B + 16;
+  // Waypoint symbol (circle with crosshair)
+  function wpSym(x, y) {
+    const wr = 9;
+    return (
+      '<circle cx="' +
+      f(x) +
+      '" cy="' +
+      f(y) +
+      '" r="' +
+      wr +
+      '" fill="' +
+      white +
+      '" stroke="' +
+      stroke +
+      '" stroke-width="1.8"/>' +
+      line(x - wr, y, x + wr, y, stroke, 1.2) +
+      line(x, y - wr, x, y + wr, stroke, 1.2)
+    );
+  }
 
-  // For L1 annotation: project WP and SOT horizontally to annY row
-  const l1AnnX1 = sotX;
-  const l1AnnX2 = wpX;
-
-  // For L2 annotation: project arcEnd and l2End horizontally to annY row
-  const l2AnnX1 = arcEndX;
-  const l2AnnX2 = arcEndX + L2px; // use horizontal projection
-
-  // Large arc flag
-  const largeArc = theta > Math.PI ? 1 : 0;
-
-  // WP symbol
-  const wpR2 = 8;
-  const wpSvg =
-    '<circle cx="' +
-    f(wpX) +
-    '" cy="' +
-    f(wpY) +
-    '" r="' +
-    wpR2 +
+  // ── North arrow ───────────────────────────────────────────────────────────
+  const northTopX = wpX,
+    northTopY = wpY - northLen;
+  const northSvg =
+    line(wpX, wpY, northTopX, northTopY, CNORTH, 1.8, "6 3") +
+    '<polygon points="' +
+    f(northTopX) +
+    "," +
+    f(northTopY - 7) +
+    " " +
+    f(northTopX - 4) +
+    "," +
+    f(northTopY + 4) +
+    " " +
+    f(northTopX + 4) +
+    "," +
+    f(northTopY + 4) +
     '" fill="' +
-    white +
-    '" stroke="' +
-    stroke +
-    '" stroke-width="1.8"/>' +
-    '<line x1="' +
-    f(wpX - wpR2) +
-    '" y1="' +
-    f(wpY) +
-    '" x2="' +
-    f(wpX + wpR2) +
-    '" y2="' +
-    f(wpY) +
-    '" stroke="' +
-    stroke +
-    '" stroke-width="1.2"/>' +
-    '<line x1="' +
-    f(wpX) +
-    '" y1="' +
-    f(wpY - wpR2) +
-    '" x2="' +
-    f(wpX) +
-    '" y2="' +
-    f(wpY + wpR2) +
-    '" stroke="' +
-    stroke +
-    '" stroke-width="1.2"/>';
+    CNORTH +
+    '"/>' +
+    txt(northTopX, northTopY - 10, "0\u00b0", CNORTH, 10, "middle", false);
 
-  // Angle annotation arc
-  const tR = Math.min(VR * 0.22, 28);
-  // From inbound departure direction at WP to outbound departure direction
-  const inbDirAngle = Math.PI + halfTheta; // backward along inbound
-  const outbDirAngle = wpAngle + Math.PI / 2; // CW tangent at WP
-  const tSx = wpX + tR * Math.cos(inbDirAngle);
-  const tSy = wpY + tR * Math.sin(inbDirAngle);
-  const tEx = wpX + tR * Math.cos(outbDirAngle);
-  const tEy = wpY + tR * Math.sin(outbDirAngle);
+  // ── Angle annotation arc at WP ────────────────────────────────────────────
+  // Sweep CW from north (0° = up, touching the north arrow) to the outbound
+  // direction (touching the outbound solid line). Arc spans exactly θ.
+  const tR = Math.min(rPx * 0.28, 36);
+  const tSAng = -Math.PI / 2; // north = straight up in SVG
+  const tEAng = tSAng + theta; // CW sweep of theta → outbound direction
+  const tSx = wpX + tR * Math.cos(tSAng); // = wpX (on north arrow line)
+  const tSy = wpY + tR * Math.sin(tSAng); // = wpY - tR (above WP)
+  const tEx = wpX + tR * Math.cos(tEAng);
+  const tEy = wpY + tR * Math.sin(tEAng);
+  const tLargeArc = theta > Math.PI ? 1 : 0;
   const tArc =
     '<path d="M ' +
     f(tSx) +
@@ -405,36 +424,57 @@ function renderFlybyDiagram(L1, L2, r, theta_deg) {
     "," +
     tR +
     " 0 " +
-    largeArc +
+    tLargeArc +
     ",1 " +
     f(tEx) +
     "," +
     f(tEy) +
     '" fill="none" stroke="' +
     dim +
-    '" stroke-width="1.2"/>';
-  const tMidAngle = inbDirAngle + theta / 2;
-  const tLblX = wpX + (tR + 16) * Math.cos(tMidAngle);
-  const tLblY = wpY + (tR + 16) * Math.sin(tMidAngle);
+    '" stroke-width="1.5"/>';
+  const tMidA = tSAng + theta / 2;
+  const tLblX = wpX + (tR + 20) * Math.cos(tMidA);
+  const tLblY = wpY + (tR + 20) * Math.sin(tMidA);
 
-  // Dashed radius
-  const rMidAngle = wpAngle + theta / 2;
-  const rMidX = cx + VR * Math.cos(rMidAngle);
-  const rMidY = cy + VR * Math.sin(rMidAngle);
+  // ── MSD highlight path: SOT → arc → EOT → l2End ──────────────────────────
+  const msdPath =
+    '<path d="M ' +
+    f(sotX) +
+    "," +
+    f(sotY) +
+    " A " +
+    f(rPx) +
+    "," +
+    f(rPx) +
+    " 0 " +
+    largeArc +
+    ",1 " +
+    f(eotX) +
+    "," +
+    f(eotY) +
+    " L " +
+    f(l2EndX) +
+    "," +
+    f(l2EndY) +
+    '" fill="none" stroke="' +
+    CMSD +
+    '" stroke-width="2.5" stroke-dasharray="8 3" opacity="0.75"/>';
 
-  const svgContent =
+  // ── Assemble SVG ──────────────────────────────────────────────────────────
+  const svg =
     '<svg viewBox="0 0 ' +
     W +
     " " +
     H +
-    '" class="w-full" role="img" aria-label="Flyby MSD diagram PANS-OPS III-2-1-8" style="background:' +
+    '" class="w-full" role="img" ' +
+    'aria-label="Flyby MSD diagram PANS-OPS III-2-1-8" style="background:' +
     bg +
     ';border-radius:8px;font-family:sans-serif">\n' +
-    "<!-- Inbound track -->\n" +
+    "<!-- Inbound nominal track (\u2192 WP corner) -->\n" +
     '<path d="M ' +
-    f(inbStartX) +
+    f(inbStX) +
     "," +
-    f(inbStartY) +
+    f(inbStY) +
     " L " +
     f(wpX) +
     "," +
@@ -442,29 +482,29 @@ function renderFlybyDiagram(L1, L2, r, theta_deg) {
     '" fill="none" stroke="' +
     stroke +
     '" stroke-width="2.2" stroke-linecap="round"/>\n' +
-    "<!-- Turn arc (CW, left turn) -->\n" +
+    "<!-- Aircraft path arc (SOT→EOT, cuts the corner before WP) -->\n" +
+    '<path d="M ' +
+    f(sotX) +
+    "," +
+    f(sotY) +
+    " A " +
+    f(rPx) +
+    "," +
+    f(rPx) +
+    " 0 " +
+    largeArc +
+    ",1 " +
+    f(eotX) +
+    "," +
+    f(eotY) +
+    '" fill="none" stroke="' +
+    stroke +
+    '" stroke-width="2.2" stroke-dasharray="6 3" stroke-linecap="round"/>\n' +
+    "<!-- Outbound nominal track (from WP) -->\n" +
     '<path d="M ' +
     f(wpX) +
     "," +
     f(wpY) +
-    " A " +
-    f(VR) +
-    "," +
-    f(VR) +
-    " 0 " +
-    largeArc +
-    ",1 " +
-    f(arcEndX) +
-    "," +
-    f(arcEndY) +
-    '" fill="none" stroke="' +
-    stroke +
-    '" stroke-width="2.2" stroke-linecap="round"/>\n' +
-    "<!-- Outbound track -->\n" +
-    '<path d="M ' +
-    f(arcEndX) +
-    "," +
-    f(arcEndY) +
     " L " +
     f(outEndX) +
     "," +
@@ -472,63 +512,63 @@ function renderFlybyDiagram(L1, L2, r, theta_deg) {
     '" fill="none" stroke="' +
     stroke +
     '" stroke-width="2.2" stroke-linecap="round"/>\n' +
+    "<!-- MSD path highlight -->\n" +
+    msdPath +
+    "\n" +
     "<!-- Dashed radius -->\n" +
-    dashLine(cx, cy, rMidX, rMidY, dim) +
+    line(cX, cY, rMidX, rMidY, dim, 1, "5 3") +
     "\n" +
     txt(
-      cx + (rMidX - cx) * 0.55 + 8,
-      cy + (rMidY - cy) * 0.55,
+      cX + (rMidX - cX) * 0.58 + 8,
+      cY + (rMidY - cY) * 0.58,
       "r",
       dim,
       11,
       "start",
-      true,
+      false,
     ) +
+    "\n" +
+    "<!-- M dimension (MSD total, shown along inbound) -->\n" +
+    dimLine(sotX, sotY, wpX, wpY, CL1, "M", (L1 + L2).toFixed(3) + " NM", -26) +
+    "\n" +
+    "<!-- North arrow -->\n" +
+    northSvg +
     "\n" +
     "<!-- WP symbol -->\n" +
-    wpSvg +
+    wpSym(wpX, wpY) +
     "\n" +
-    "<!-- Theta annotation -->\n" +
+    "<!-- Angle arc -->\n" +
     tArc +
     "\n" +
-    txt(
-      tLblX,
-      tLblY + 4,
-      "\u03b8 = " + theta_deg + "\u00b0",
-      dim,
-      10,
-      "middle",
-      true,
-    ) +
+    txt(tLblX, tLblY + 4, theta_deg + "\u00b0", dim, 10, "middle", false) +
     "\n" +
-    "<!-- Drop lines for dimension row -->\n" +
-    dashLine(sotX, sotY, l1AnnX1, annY - 18, dim, 0.7, "3 3") +
+    "<!-- MSD label box -->\n" +
+    '<rect x="' +
+    f(PAD_L) +
+    '" y="' +
+    f(PAD_T) +
+    '" width="110" height="22" rx="4" fill="' +
+    CMSD +
+    '" fill-opacity="0.12" stroke="' +
+    CMSD +
+    '" stroke-width="1"/>\n' +
+    txt(PAD_L + 55, PAD_T + 15, "MSD = L1 + L2", CMSD, 11, "middle", true) +
     "\n" +
-    dashLine(wpX, wpY, l1AnnX2, annY - 18, dim, 0.7, "3 3") +
-    "\n" +
-    dashLine(arcEndX, arcEndY, l2AnnX1, annY - 18, dim, 0.7, "3 3") +
-    "\n" +
-    dashLine(l2EndX, l2EndY, l2AnnX2, annY - 18, dim, 0.7, "3 3") +
-    "\n" +
-    "<!-- L1 dimension -->\n" +
-    hArrow(l1AnnX1, l1AnnX2, annY, CL1, "L1", L1.toFixed(3) + " NM") +
-    "\n" +
-    "<!-- L2 dimension -->\n" +
-    hArrow(l2AnnX1, l2AnnX2, annY, CL2, "L2", L2.toFixed(3) + " NM") +
-    "\n" +
-    "<!-- MSD total -->\n" +
+    "<!-- Total -->\n" +
     '<text x="' +
     f(W / 2) +
     '" y="' +
-    f(H - 12) +
-    '" text-anchor="middle" font-size="12" font-weight="700" fill="' +
+    f(H - 14) +
+    '" text-anchor="middle" font-size="12" ' +
+    'font-weight="700" fill="' +
     textC +
-    '" font-family="monospace">M = L1 + L2 = ' +
+    '" font-family="monospace">' +
+    "M = L1 + L2 = " +
     (L1 + L2).toFixed(4) +
     " NM</text>\n" +
     "</svg>";
 
-  container.innerHTML = svgContent;
+  container.innerHTML = svg;
   diagramSection.classList.remove("hidden");
 }
 
@@ -539,6 +579,7 @@ function saveParameters() {
     ias: document.getElementById("ias").value || "",
     altitude: document.getElementById("altitude").value || "",
     altitudeUnit: document.getElementById("altitudeUnit").value || "ft",
+    isaDeviation: document.getElementById("isaDeviation").value || "",
     bankAngle: document.getElementById("bankAngle").value || "",
     turnAngle: document.getElementById("turnAngle").value || "",
   };
@@ -580,6 +621,8 @@ function loadParameters(event) {
         document.getElementById("bankAngle").value = data.bankAngle;
       if (data.turnAngle !== undefined)
         document.getElementById("turnAngle").value = data.turnAngle;
+      if (data.isaDeviation !== undefined)
+        document.getElementById("isaDeviation").value = data.isaDeviation;
       showToast("Parameters loaded.", "success");
     } catch {
       showToast("Invalid JSON file.", "error");
@@ -592,8 +635,10 @@ function loadParameters(event) {
 // --- Copy to Word -------------------------------------------------------------
 
 function copyToWord() {
-  const mVal = document.getElementById("outM").textContent;
-  if (!mVal) return;
+  if (_raw.M === undefined) return;
+
+  const exact = document.getElementById("copyPrecision").value === "exact";
+  const fmt = (v) => (exact ? v.toString() : v.toFixed(4));
 
   const tableData = {
     IAS: document.getElementById("ias").value + " KT",
@@ -601,16 +646,21 @@ function copyToWord() {
       document.getElementById("altitude").value +
       " " +
       document.getElementById("altitudeUnit").value,
-    "k Factor": document.getElementById("outKFactor").textContent,
+    "ISA Deviation (VAR)":
+      document.getElementById("isaDeviation").value + " \u00b0C",
+    "k Factor": fmt(_raw.kFactor),
     "Bank Angle": document.getElementById("bankAngle").value + "\u00b0",
     "Turn Angle A": document.getElementById("outTurnUsed").textContent,
-    TAS: document.getElementById("outTas").textContent + " KT",
-    "Radius (r)": document.getElementById("outR").textContent + " NM",
-    "L1 = r x tan(A/2)": document.getElementById("outL1").textContent + " NM",
-    "L2 = 5 x V/3600": document.getElementById("outL2").textContent + " NM",
-    "M (Flyby MSD)": mVal + " NM",
+    TAS: fmt(_raw.tas) + " KT",
+    "Radius (r)": fmt(_raw.r) + " NM",
+    "L1 = r x tan(A/2)": fmt(_raw.L1) + " NM",
+    "L2 = 5 x V/3600": fmt(_raw.L2) + " NM",
+    "M (Flyby MSD)": fmt(_raw.M) + " NM",
   };
 
-  const htmlContent = createHTMLTable(tableData, "Flyby MSD � PANS-OPS S1.4.2");
+  const htmlContent = createHTMLTable(
+    tableData,
+    "Flyby MSD \u2014 PANS-OPS S1.4.2",
+  );
   copyToClipboard(htmlContent);
 }

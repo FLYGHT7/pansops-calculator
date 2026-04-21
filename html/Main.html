@@ -983,6 +983,39 @@
                 </li>
                 <li>
                   <button
+                    id="circlingButton"
+                    data-label="Circling Parameters"
+                    onclick="loadPage('Circling_Parameters.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                  >
+                    <svg
+                      class="text-primary-400 w-5 h-5 mr-3 sidebar-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <circle cx="12" cy="12" r="9"></circle>
+                      <circle cx="12" cy="12" r="3"></circle>
+                      <path
+                        d="M12 3 A9 9 0 0 1 21 12"
+                        stroke-dasharray="3 2"
+                      ></path>
+                    </svg>
+                    <span class="sidebar-label" data-i18n="circling.title"
+                      >Circling Protection Area</span
+                    >
+                  </button>
+                </li>
+                <li class="sub-section-label" aria-hidden="true">
+                  <span data-i18n="sections.subPBN">PBN</span>
+                </li>
+                <li>
+                  <button
                     id="flyoverButton"
                     data-label="Flyover MSD"
                     onclick="loadPage('Flyover_Calculation.html', this)"
@@ -1041,9 +1074,9 @@
                 </li>
                 <li>
                   <button
-                    id="circlingButton"
-                    data-label="Circling Parameters"
-                    onclick="loadPage('Circling_Parameters.html', this)"
+                    id="msdCombinedButton"
+                    data-label="MSD Combined"
+                    onclick="loadPage('MSD_Calculation.html', this)"
                     class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
                   >
                     <svg
@@ -1057,15 +1090,15 @@
                       stroke-linejoin="round"
                       aria-hidden="true"
                     >
-                      <circle cx="12" cy="12" r="9"></circle>
-                      <circle cx="12" cy="12" r="3"></circle>
+                      <path d="M4 19 Q9 9 12 12 Q15 15 20 5"></path>
                       <path
-                        d="M12 3 A9 9 0 0 1 21 12"
+                        d="M4 19 Q9 13 12 15 Q15 17 20 9"
                         stroke-dasharray="3 2"
                       ></path>
+                      <line x1="4" y1="22" x2="20" y2="22"></line>
                     </svg>
-                    <span class="sidebar-label" data-i18n="circling.title"
-                      >Circling Protection Area</span
+                    <span class="sidebar-label" data-i18n="msd.sidebarLabel"
+                      >MSD Combined</span
                     >
                   </button>
                 </li>
@@ -1689,6 +1722,10 @@
         "#flyby": {
           url: "Flyby_Calculation.html",
           buttonId: "flybyButton",
+        },
+        "#msd": {
+          url: "MSD_Calculation.html",
+          buttonId: "msdCombinedButton",
         },
         "#circling": {
           url: "Circling_Parameters.html",
