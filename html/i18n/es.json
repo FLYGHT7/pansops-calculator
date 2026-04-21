@@ -5,6 +5,8 @@
     "calculate": "Calcular",
     "copyTable": "Copiar resultados como tabla",
     "copyToWord": "Copiar al documento Word",
+    "copyRounded": "Redondeado (4 dec.)",
+    "copyExact": "Exacto (precisión completa)",
     "unit": "Unidad",
     "language": "Idioma",
     "darkMode": "Modo oscuro",
@@ -323,6 +325,8 @@
     "phAltitude": "ej. 4000",
     "phBankAngle": "ej. 25",
     "phTurnAngle": "ej. 105",
+    "isaDeviationVar": "Desviaci\u00f3n ISA (VAR) \u00b0C",
+    "phIsaDeviation": "ej. 15",
     "resultsTitle": "Resultados MSD",
     "kFactor": "Factor k",
     "tas": "TAS",
@@ -332,6 +336,7 @@
     "l2": "L2 = 5 s × TAS / 3600",
     "msd": "M Total (MSD Flyby)",
     "turnAngleWarning": "Mínimo 50° según PANS-OPS §1.4.2.2 — valor ajustado.",
-    "isaNote": "ISA +15°C aplicado según estándar de diseño de procedimientos PANS-OPS (§1.4.1)"
+    "isaDeviationVar": "Desviación ISA (VAR) °C",
+    "phIsaDeviation": "ej. 15"
   }
 }
