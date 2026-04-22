@@ -681,8 +681,22 @@
                   aria-hidden="true"
                 >
                   <path d="M3 12h18M3 12l4-4m-4 4 4 4" />
-                  <circle cx="17" cy="12" r="3" fill="rgba(99,102,241,0.18)" stroke="#6366f1" stroke-width="2" />
-                  <circle cx="7" cy="12" r="3" fill="rgba(99,102,241,0.18)" stroke="#6366f1" stroke-width="2" />
+                  <circle
+                    cx="17"
+                    cy="12"
+                    r="3"
+                    fill="rgba(99,102,241,0.18)"
+                    stroke="#6366f1"
+                    stroke-width="2"
+                  />
+                  <circle
+                    cx="7"
+                    cy="12"
+                    r="3"
+                    fill="rgba(99,102,241,0.18)"
+                    stroke="#6366f1"
+                    stroke-width="2"
+                  />
                 </svg>
               </div>
               <div class="flex-1">
@@ -975,35 +989,47 @@
               "
             >
               <li>
-                New <strong style="color:var(--text)">Flyover MSD Calculator</strong> — dual-radius geometry (r₁ 25°, r₂ 15°
-                fixed), five-segment formula, SVG diagram (PANS-OPS Vol II §1.4.1)
+                New
+                <strong style="color: var(--text)"
+                  >Flyover MSD Calculator</strong
+                >
+                — dual-radius geometry (r₁ 25°, r₂ 15° fixed), five-segment
+                formula, SVG diagram (PANS-OPS Vol II §1.4.1)
               </li>
               <li>
-                New <strong style="color:var(--text)">Flyby MSD Calculator</strong> — r·tan(A/2) + 5·TAS/3600
-                formula, 50° minimum turn angle, ISA deviation input (PANS-OPS §1.4.2)
+                New
+                <strong style="color: var(--text)">Flyby MSD Calculator</strong>
+                — r·tan(A/2) + 5·TAS/3600 formula, 50° minimum turn angle, ISA
+                deviation input (PANS-OPS §1.4.2)
               </li>
               <li>
-                New <strong style="color:var(--text)">MSD Combined Calculator</strong> — self-contained two-WP tool
-                (Flyby or Flyover per WP), TRD section, PASS / FAIL badge
+                New
+                <strong style="color: var(--text)"
+                  >MSD Combined Calculator</strong
+                >
+                — self-contained two-WP tool (Flyby or Flyover per WP), TRD
+                section, PASS / FAIL badge
               </li>
               <li>
-                <strong style="color:var(--text)">PBN sub-section</strong> added to sidebar — Flyover MSD, Flyby MSD
-                and MSD Combined grouped under PBN label
+                <strong style="color: var(--text)">PBN sub-section</strong>
+                added to sidebar — Flyover MSD, Flyby MSD and MSD Combined
+                grouped under PBN label
               </li>
               <li>
-                <strong style="color:var(--text)">ISA Deviation input</strong> on Flyover and Flyby calculators —
-                replaces hardcoded ISA +15°C; blank defaults to 0°C (ISA standard)
+                <strong style="color: var(--text)">ISA Deviation input</strong>
+                on Flyover and Flyby calculators — replaces hardcoded ISA +15°C;
+                blank defaults to 0°C (ISA standard)
               </li>
               <li>
-                <strong style="color:var(--text)">Precision toggle</strong> (Rounded 4 dec. / Exact) on Copy to Word
-                for Flyover, Flyby and MSD Combined
+                <strong style="color: var(--text)">Precision toggle</strong>
+                (Rounded 4 dec. / Exact) on Copy to Word for Flyover, Flyby and
+                MSD Combined
               </li>
-              <li>
-                ISA rounding step selector in ISA Deviation calculator
-              </li>
+              <li>ISA rounding step selector in ISA Deviation calculator</li>
               <li>
                 Rounding fixes — exact float64 throughout all calculations;
-                <code style="font-size:0.75rem">.toFixed()</code> called only at display layer
+                <code style="font-size: 0.75rem">.toFixed()</code> called only
+                at display layer
               </li>
             </ul>
           </div>
