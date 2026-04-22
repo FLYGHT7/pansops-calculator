@@ -657,6 +657,124 @@
               </div>
             </div>
           </article>
+
+          <!-- PBN / Manoeuvring -->
+          <article
+            class="calc-card md:col-span-2 bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm"
+            style="border-left: 3px solid #6366f1"
+          >
+            <div class="flex items-start gap-3">
+              <div
+                class="flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center"
+                style="background: rgba(99, 102, 241, 0.1)"
+              >
+                <!-- Route waypoint icon -->
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="#6366f1"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 12h18M3 12l4-4m-4 4 4 4" />
+                  <circle cx="17" cy="12" r="3" fill="rgba(99,102,241,0.18)" stroke="#6366f1" stroke-width="2" />
+                  <circle cx="7" cy="12" r="3" fill="rgba(99,102,241,0.18)" stroke="#6366f1" stroke-width="2" />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <h3
+                  style="
+                    font-family: &quot;Rajdhani&quot;, sans-serif;
+                    font-weight: 700;
+                    font-size: 1rem;
+                    letter-spacing: 0.04em;
+                    color: var(--text);
+                  "
+                >
+                  PBN &amp; Manoeuvring
+                </h3>
+                <p
+                  style="
+                    font-size: 0.78rem;
+                    color: var(--text-muted);
+                    margin-top: 2px;
+                    line-height: 1.5;
+                    font-family: &quot;Barlow&quot;, sans-serif;
+                  "
+                >
+                  Minimum Stabilisation Distance (MSD) for flyby and flyover
+                  waypoints, combined two-WP tool, circling protection area and
+                  wind spiral — PANS-OPS Vol II §1.4.
+                </p>
+                <div class="flex flex-wrap gap-1 mt-2">
+                  <span
+                    style="
+                      font-family: &quot;Share Tech Mono&quot;, monospace;
+                      font-size: 0.65rem;
+                      background: rgba(99, 102, 241, 0.08);
+                      color: #6366f1;
+                      border: 1px solid rgba(99, 102, 241, 0.2);
+                      padding: 1px 7px;
+                      border-radius: 4px;
+                    "
+                    >Flyover MSD</span
+                  >
+                  <span
+                    style="
+                      font-family: &quot;Share Tech Mono&quot;, monospace;
+                      font-size: 0.65rem;
+                      background: rgba(99, 102, 241, 0.08);
+                      color: #6366f1;
+                      border: 1px solid rgba(99, 102, 241, 0.2);
+                      padding: 1px 7px;
+                      border-radius: 4px;
+                    "
+                    >Flyby MSD</span
+                  >
+                  <span
+                    style="
+                      font-family: &quot;Share Tech Mono&quot;, monospace;
+                      font-size: 0.65rem;
+                      background: rgba(99, 102, 241, 0.08);
+                      color: #6366f1;
+                      border: 1px solid rgba(99, 102, 241, 0.2);
+                      padding: 1px 7px;
+                      border-radius: 4px;
+                    "
+                    >MSD Combined</span
+                  >
+                  <span
+                    style="
+                      font-family: &quot;Share Tech Mono&quot;, monospace;
+                      font-size: 0.65rem;
+                      background: rgba(99, 102, 241, 0.08);
+                      color: #6366f1;
+                      border: 1px solid rgba(99, 102, 241, 0.2);
+                      padding: 1px 7px;
+                      border-radius: 4px;
+                    "
+                    >Circling Parameters</span
+                  >
+                  <span
+                    style="
+                      font-family: &quot;Share Tech Mono&quot;, monospace;
+                      font-size: 0.65rem;
+                      background: rgba(99, 102, 241, 0.08);
+                      color: #6366f1;
+                      border: 1px solid rgba(99, 102, 241, 0.2);
+                      padding: 1px 7px;
+                      border-radius: 4px;
+                    "
+                    >Wind Spiral</span
+                  >
+                </div>
+              </div>
+            </div>
+          </article>
         </div>
       </section>
 
@@ -823,6 +941,7 @@
         </h2>
 
         <div class="space-y-1">
+          <!-- v0.4.0 — current -->
           <div
             class="timeline-item bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5"
           >
@@ -833,6 +952,73 @@
                   background: rgba(56, 189, 248, 0.12);
                   border: 1px solid rgba(56, 189, 248, 0.3);
                   color: #0284c7;
+                "
+                >v0.4.0</span
+              >
+              <span
+                style="
+                  font-family: &quot;Barlow&quot;, sans-serif;
+                  font-size: 0.7rem;
+                  color: var(--text-muted);
+                "
+                >2026 — PBN Calculators &amp; Precision</span
+              >
+            </div>
+            <ul
+              style="
+                font-family: &quot;Barlow&quot;, sans-serif;
+                font-size: 0.82rem;
+                color: var(--text-muted);
+                list-style: disc;
+                padding-left: 1.25rem;
+                line-height: 1.8;
+              "
+            >
+              <li>
+                New <strong style="color:var(--text)">Flyover MSD Calculator</strong> — dual-radius geometry (r₁ 25°, r₂ 15°
+                fixed), five-segment formula, SVG diagram (PANS-OPS Vol II §1.4.1)
+              </li>
+              <li>
+                New <strong style="color:var(--text)">Flyby MSD Calculator</strong> — r·tan(A/2) + 5·TAS/3600
+                formula, 50° minimum turn angle, ISA deviation input (PANS-OPS §1.4.2)
+              </li>
+              <li>
+                New <strong style="color:var(--text)">MSD Combined Calculator</strong> — self-contained two-WP tool
+                (Flyby or Flyover per WP), TRD section, PASS / FAIL badge
+              </li>
+              <li>
+                <strong style="color:var(--text)">PBN sub-section</strong> added to sidebar — Flyover MSD, Flyby MSD
+                and MSD Combined grouped under PBN label
+              </li>
+              <li>
+                <strong style="color:var(--text)">ISA Deviation input</strong> on Flyover and Flyby calculators —
+                replaces hardcoded ISA +15°C; blank defaults to 0°C (ISA standard)
+              </li>
+              <li>
+                <strong style="color:var(--text)">Precision toggle</strong> (Rounded 4 dec. / Exact) on Copy to Word
+                for Flyover, Flyby and MSD Combined
+              </li>
+              <li>
+                ISA rounding step selector in ISA Deviation calculator
+              </li>
+              <li>
+                Rounding fixes — exact float64 throughout all calculations;
+                <code style="font-size:0.75rem">.toFixed()</code> called only at display layer
+              </li>
+            </ul>
+          </div>
+
+          <!-- v0.3.0 -->
+          <div
+            class="timeline-item bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5"
+          >
+            <div class="flex items-center gap-3 mb-2">
+              <span
+                class="ver-badge px-2 py-0.5 rounded"
+                style="
+                  background: rgba(100, 116, 139, 0.1);
+                  border: 1px solid rgba(100, 116, 139, 0.25);
+                  color: var(--text-muted);
                 "
                 >v0.3.0</span
               >
