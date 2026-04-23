@@ -147,7 +147,6 @@ function calculateFlyover() {
   const bankAngleVal = parseFloat(document.getElementById("bankAngle").value);
   const turnAngle = parseFloat(document.getElementById("turnAngle").value);
   const isaRaw = document.getElementById("isaDeviation").value.trim();
-  const isaDeviation = isaRaw === "" ? 0 : parseFloat(isaRaw);
 
   // --- Validate ---
   if (isNaN(iasVal) || iasVal <= 0) {
@@ -166,7 +165,12 @@ function calculateFlyover() {
     showToast("Please enter a valid turn angle (> 0).", "error");
     return;
   }
-  if (!isNaN(parseFloat(isaRaw)) && isNaN(isaDeviation)) {
+  if (isaRaw === "") {
+    showToast("ISA Deviation is required.", "error");
+    return;
+  }
+  const isaDeviation = parseFloat(isaRaw);
+  if (isNaN(isaDeviation)) {
     showToast("Please enter a valid ISA Deviation.", "error");
     return;
   }
