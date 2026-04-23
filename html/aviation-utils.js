@@ -114,9 +114,7 @@ function calculateRadiusWithRateOfTurnCap(tas, bankAngle_deg) {
   const rateOfTurn = calculateRateOfTurn(tas, radius);
   const rateOfTurnCapped = Math.min(rateOfTurn, 3);
   const radiusForCalc =
-    rateOfTurnCapped < rateOfTurn
-      ? tas / (111.95 * rateOfTurnCapped)
-      : radius;
+    rateOfTurnCapped < rateOfTurn ? tas / (111.95 * rateOfTurnCapped) : radius;
 
   return {
     radius,
