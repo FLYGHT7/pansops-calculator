@@ -172,6 +172,7 @@
                   step="0.1"
                   inputmode="decimal"
                   autocomplete="off"
+                  value="15"
                   class="flex-grow p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
                   placeholder="e.g. 15"
                   data-i18n="msd.phIsaDeviation"
@@ -191,7 +192,7 @@
                 class="text-xs text-gray-400 dark:text-gray-500"
                 data-i18n="msd.isaNote"
               >
-                Blank = 0&#176;C (ISA standard). Applied to both waypoints.
+                Default: 15&#176;C. Applied to both waypoints.
               </p>
             </div>
           </div>
@@ -224,7 +225,7 @@
                     <option value="flyover" data-i18n="msd.flyover">
                       Flyover
                     </option>
-                    <option value="flyby" data-i18n="msd.flyby">Flyby</option>
+                    <option value="flyby" selected data-i18n="msd.flyby">Flyby</option>
                   </select>
                 </div>
               </div>
@@ -318,6 +319,7 @@
                       step="1"
                       inputmode="numeric"
                       autocomplete="off"
+                      value="25"
                       class="flex-grow p-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
                       placeholder="e.g. 25"
                       data-i18n="msd.phBankAngle"
@@ -438,7 +440,7 @@
                     <option value="flyover" data-i18n="msd.flyover">
                       Flyover
                     </option>
-                    <option value="flyby" data-i18n="msd.flyby">Flyby</option>
+                    <option value="flyby" selected data-i18n="msd.flyby">Flyby</option>
                   </select>
                 </div>
               </div>
@@ -532,6 +534,7 @@
                       step="1"
                       inputmode="numeric"
                       autocomplete="off"
+                      value="25"
                       class="flex-grow p-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
                       placeholder="e.g. 25"
                       data-i18n="msd.phBankAngle"
