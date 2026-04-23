@@ -8,4 +8,6 @@ REDESIGN_PLAN.md
 .agent/
 .agents/
 .claude/
+.augmente/
+CLAUDE.md
 skills-lock.json
