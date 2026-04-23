@@ -25,6 +25,32 @@ if (typeof calculateRadius === "undefined") {
     return (tas * tas) / (68625 * Math.tan(bankAngle_deg * _DEG_TO_RAD_FB));
   }
 }
+if (typeof calculateRateOfTurn === "undefined") {
+  // eslint-disable-next-line no-unused-vars
+  function calculateRateOfTurn(tas, radius_nm) {
+    return tas / (111.95 * radius_nm);
+  }
+}
+if (typeof calculateRadiusWithRateOfTurnCap === "undefined") {
+  var _DEG_TO_RAD_FB2 = Math.PI / 180;
+  // eslint-disable-next-line no-unused-vars
+  function calculateRadiusWithRateOfTurnCap(tas, bankAngle_deg) {
+    var radius =
+      (tas * tas) / (68625 * Math.tan(bankAngle_deg * _DEG_TO_RAD_FB2));
+    var rateOfTurn = tas / (111.95 * radius);
+    var rateOfTurnCapped = Math.min(rateOfTurn, 3);
+    var radiusForCalc =
+      rateOfTurnCapped < rateOfTurn
+        ? tas / (111.95 * rateOfTurnCapped)
+        : radius;
+    return {
+      radius: radius,
+      rateOfTurn: rateOfTurn,
+      rateOfTurnCapped: rateOfTurnCapped,
+      radiusForCalc: radiusForCalc,
+    };
+  }
+}
 
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", function () {
@@ -179,9 +205,11 @@ function calculateFlyover() {
   const kFactor = calculateKFactor(altitude_ft, isaDeviation);
   const tas = calculateTAS(iasVal, kFactor);
 
-  // --- Radii ---
-  const r1 = calculateRadius(tas, bankAngleVal); // roll-in (user bank)
-  const r2 = calculateRadius(tas, 15); // roll-out fixed 15° §1.4.1.3
+  // --- Radii (with rate of turn cap: max 3°/s per PANS-OPS) ---
+  const r1Obj = calculateRadiusWithRateOfTurnCap(tas, bankAngleVal); // roll-in (user bank)
+  const r1 = r1Obj.radiusForCalc;
+  const r2Obj = calculateRadiusWithRateOfTurnCap(tas, 15); // roll-out fixed 15° §1.4.1.3
+  const r2 = r2Obj.radiusForCalc;
 
   // --- Segment lengths (PANS-OPS Vol II §1.4.1) ---
   const ALPHA_DEG = 30;
