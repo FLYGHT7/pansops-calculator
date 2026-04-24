@@ -116,6 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
   checkDarkMode();
   initializeUnitSelectors();
   setupEventListeners();
+  updateCaseDiagram();
 
   if (window.I18N) {
     I18N.init({
@@ -175,8 +176,29 @@ function setupEventListeners() {
         // Re-check warning when type changes
         var angleEl = document.getElementById(prefix + "TurnAngle");
         angleEl.dispatchEvent(new Event("input"));
+        updateCaseDiagram();
       });
   });
+}
+
+// ── Case diagram ──────────────────────────────────────────────────────────────
+
+function updateCaseDiagram() {
+  var wp1Type = document.getElementById("wp1Type").value;
+  var wp2Type = document.getElementById("wp2Type").value;
+  var cases = {
+    "flyby-flyby":     { src: "img/two fly-by waypoints.png",          fig: "Fig. III-2-1-2", label: "Two Flyby Waypoints" },
+    "flyby-flyover":   { src: "img/fly-by,then flyover waypoint.png",  fig: "Fig. III-2-1-3", label: "Flyby then Flyover" },
+    "flyover-flyover": { src: "img/two flyover waypoints.png",          fig: "Fig. III-2-1-4", label: "Two Flyover Waypoints" },
+    "flyover-flyby":   { src: "img/flyover, then fly-by waypoint.png",  fig: "Fig. III-2-1-5", label: "Flyover then Flyby" },
+  };
+  var match = cases[wp1Type + "-" + wp2Type];
+  if (!match) return;
+  var img = document.getElementById("caseDiagramImg");
+  img.src = match.src;
+  img.alt = match.label;
+  document.getElementById("caseFigBadge").textContent = match.fig;
+  document.getElementById("caseDiagramCaption").textContent = match.label;
 }
 
 // ── Unit handling ─────────────────────────────────────────────────────────────
