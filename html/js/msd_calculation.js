@@ -294,6 +294,10 @@ function calculateMSD() {
   var distanceD = parseFloat(document.getElementById("distance").value);
   var isaRaw = document.getElementById("isaDeviation").value.trim();
 
+  // Read WP names (optional — fall back to defaults)
+  var wp1Name = document.getElementById("wp1Name").value.trim() || "WP 1";
+  var wp2Name = document.getElementById("wp2Name").value.trim() || "WP 2";
+
   // Read WP1 inputs
   var wp1Type = document.getElementById("wp1Type").value;
   var wp1Ias = parseFloat(document.getElementById("wp1Ias").value);
@@ -380,8 +384,8 @@ function calculateMSD() {
   _distanceD = distanceD;
 
   // Render WP results
-  renderWPResults(1, res1);
-  renderWPResults(2, res2);
+  renderWPResults(1, res1, wp1Name);
+  renderWPResults(2, res2, wp2Name);
 
   // TRD section (flyby + flyby only)
   var trdSection = document.getElementById("trdSection");
@@ -466,9 +470,11 @@ function calculateMSD() {
 
 // ── Render WP output ──────────────────────────────────────────────────────────
 
-function renderWPResults(n, result) {
+function renderWPResults(n, result, name) {
   var prefix = "out" + n;
   // Labels and structural changes only — numeric values are set by applyDisplayPrecision()
+  var suffix = n === 1 ? "IAF" : "IF";
+  document.getElementById(prefix + "WPHeader").textContent = name + " — " + suffix;
   var typeBadge = document.getElementById(prefix + "TypeBadge");
   var radiusLabel = document.getElementById(prefix + "RadiusLabel");
   var l1Label = document.getElementById(prefix + "L1Label");
@@ -498,6 +504,8 @@ function saveParameters() {
   var params = {
     distance: document.getElementById("distance").value,
     isaDeviation: document.getElementById("isaDeviation").value,
+    wp1Name: document.getElementById("wp1Name").value,
+    wp2Name: document.getElementById("wp2Name").value,
     wp1Type: document.getElementById("wp1Type").value,
     wp1Ias: document.getElementById("wp1Ias").value,
     wp1Altitude: document.getElementById("wp1Altitude").value,
@@ -540,6 +548,8 @@ function loadParameters(event) {
 
       setVal("distance", params.distance);
       setVal("isaDeviation", params.isaDeviation);
+      setVal("wp1Name", params.wp1Name);
+      setVal("wp2Name", params.wp2Name);
       setVal("wp1Type", params.wp1Type);
       setVal("wp1Ias", params.wp1Ias);
       setVal("wp1Altitude", params.wp1Altitude);
@@ -582,6 +592,8 @@ function copyToWord() {
     return exact ? v.toString() : v.toFixed(4);
   };
   var FT_PER_NM = 1852 / 0.3048;
+  var wp1Name = document.getElementById("wp1Name").value.trim() || "WP 1";
+  var wp2Name = document.getElementById("wp2Name").value.trim() || "WP 2";
 
   // Build WP1 rows
   var wp1Rows = {
@@ -642,7 +654,16 @@ function copyToWord() {
     }
   }
 
-  var allRows = Object.assign({}, wp1Rows, wp2Rows, combinedRows);
+  // Rename WP1/WP2 key prefixes to use custom names
+  var renamedWp1 = {};
+  Object.keys(wp1Rows).forEach(function (k) {
+    renamedWp1[k.slice(0, 3) === "WP1" ? wp1Name + k.slice(3) : k] = wp1Rows[k];
+  });
+  var renamedWp2 = {};
+  Object.keys(wp2Rows).forEach(function (k) {
+    renamedWp2[k.slice(0, 3) === "WP2" ? wp2Name + k.slice(3) : k] = wp2Rows[k];
+  });
+  var allRows = Object.assign({}, renamedWp1, renamedWp2, combinedRows);
   var htmlContent = createHTMLTable(
     allRows,
     "MSD Combined \u2014 PANS-OPS Vol II \u00A7 1.4.2",
