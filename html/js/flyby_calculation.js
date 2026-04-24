@@ -25,6 +25,32 @@ if (typeof calculateRadius === "undefined") {
     return (tas * tas) / (68625 * Math.tan(bankAngle_deg * _DEG_TO_RAD_FB2));
   }
 }
+if (typeof calculateRateOfTurn === "undefined") {
+  // eslint-disable-next-line no-unused-vars
+  function calculateRateOfTurn(tas, radius_nm) {
+    return tas / (111.95 * radius_nm);
+  }
+}
+if (typeof calculateRadiusWithRateOfTurnCap === "undefined") {
+  var _DEG_TO_RAD_FB3 = Math.PI / 180;
+  // eslint-disable-next-line no-unused-vars
+  function calculateRadiusWithRateOfTurnCap(tas, bankAngle_deg) {
+    var radius =
+      (tas * tas) / (68625 * Math.tan(bankAngle_deg * _DEG_TO_RAD_FB3));
+    var rateOfTurn = tas / (111.95 * radius);
+    var rateOfTurnCapped = Math.min(rateOfTurn, 3);
+    var radiusForCalc =
+      rateOfTurnCapped < rateOfTurn
+        ? tas / (111.95 * rateOfTurnCapped)
+        : radius;
+    return {
+      radius: radius,
+      rateOfTurn: rateOfTurn,
+      rateOfTurnCapped: rateOfTurnCapped,
+      radiusForCalc: radiusForCalc,
+    };
+  }
+}
 
 // Raw results store — populated after each calculation
 const _raw = {};
@@ -101,8 +127,7 @@ function calculateFlyby() {
   const altitudeUnit = document.getElementById("altitudeUnit").value;
   const bankAngleVal = parseFloat(document.getElementById("bankAngle").value);
   const turnAngleRaw = parseFloat(document.getElementById("turnAngle").value);
-  const isaDeviationRaw = document.getElementById("isaDeviation").value;
-  const isaDeviation = isaDeviationRaw === "" ? 0 : parseFloat(isaDeviationRaw);
+  const isaDeviationRaw = document.getElementById("isaDeviation").value.trim();
 
   // --- Validate ---
   if (isNaN(iasVal) || iasVal <= 0) {
@@ -121,8 +146,13 @@ function calculateFlyby() {
     showToast("Please enter a valid turn angle (1-359).", "error");
     return;
   }
+  if (isaDeviationRaw === "") {
+    showToast("ISA Deviation is required.", "error");
+    return;
+  }
+  const isaDeviation = parseFloat(isaDeviationRaw);
   if (isNaN(isaDeviation)) {
-    showToast("Please enter a valid ISA deviation.", "error");
+    showToast("Please enter a valid ISA Deviation.", "error");
     return;
   }
 
@@ -139,8 +169,9 @@ function calculateFlyby() {
   const kFactor = calculateKFactor(altitude_ft, isaDeviation);
   const tas = calculateTAS(iasVal, kFactor);
 
-  // --- Radius ---
-  const r = calculateRadius(tas, bankAngleVal);
+  // --- Radius (with rate of turn cap: max 3°/s per PANS-OPS) ---
+  const radiusObj = calculateRadiusWithRateOfTurnCap(tas, bankAngleVal);
+  const r = radiusObj.radiusForCalc;
 
   // --- Flyby MSD (PANS-OPS S1.4.2.1) ---
   // L1 = r x tan(A/2)

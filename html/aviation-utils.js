@@ -89,6 +89,42 @@ function calculateRadius(tas, bankAngle_deg) {
 }
 
 /**
+ * Calculates the rate of turn (PANS-OPS Vol II)
+ * @param {number} tas - True Airspeed in knots
+ * @param {number} radius_nm - Radius of turn in nautical miles
+ * @return {number} Rate of turn in degrees per second
+ */
+function calculateRateOfTurn(tas, radius_nm) {
+  return tas / (111.95 * radius_nm);
+}
+
+/**
+ * Calculates radius of turn with Rate of Turn cap (max 3°/s per PANS-OPS Vol II)
+ * If calculated rate of turn > 3°/s, uses 3°/s to calculate the radius instead
+ * @param {number} tas - True Airspeed in knots
+ * @param {number} bankAngle_deg - Bank angle in degrees
+ * @return {object} Object with { radius, rateOfTurn, rateOfTurnCapped, radiusForCalc }
+ *   - radius: uncapped radius
+ *   - rateOfTurn: calculated rate of turn
+ *   - rateOfTurnCapped: min(rateOfTurn, 3)
+ *   - radiusForCalc: radius to use for further calculations (uses capped rate)
+ */
+function calculateRadiusWithRateOfTurnCap(tas, bankAngle_deg) {
+  const radius = calculateRadius(tas, bankAngle_deg);
+  const rateOfTurn = calculateRateOfTurn(tas, radius);
+  const rateOfTurnCapped = Math.min(rateOfTurn, 3);
+  const radiusForCalc =
+    rateOfTurnCapped < rateOfTurn ? tas / (111.95 * rateOfTurnCapped) : radius;
+
+  return {
+    radius,
+    rateOfTurn,
+    rateOfTurnCapped,
+    radiusForCalc,
+  };
+}
+
+/**
  * Calculates the flight distance (d)
  * @param {number} tasPlusWind - TAS plus wind in knots
  * @return {number} Flight distance in nautical miles
