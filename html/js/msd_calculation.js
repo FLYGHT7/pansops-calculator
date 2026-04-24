@@ -18,6 +18,29 @@ if (typeof calculateRadius === "undefined") {
     return (tas * tas) / (68625 * Math.tan(bankAngle_deg * DEG_TO_RAD));
   };
 }
+if (typeof calculateRateOfTurn === "undefined") {
+  var calculateRateOfTurn = function (tas, radius_nm) {
+    return tas / (111.95 * radius_nm);
+  };
+}
+if (typeof calculateRadiusWithRateOfTurnCap === "undefined") {
+  var calculateRadiusWithRateOfTurnCap = function (tas, bankAngle_deg) {
+    var DEG_TO_RAD = Math.PI / 180;
+    var radius = (tas * tas) / (68625 * Math.tan(bankAngle_deg * DEG_TO_RAD));
+    var rateOfTurn = tas / (111.95 * radius);
+    var rateOfTurnCapped = Math.min(rateOfTurn, 3);
+    var radiusForCalc =
+      rateOfTurnCapped < rateOfTurn
+        ? tas / (111.95 * rateOfTurnCapped)
+        : radius;
+    return {
+      radius: radius,
+      rateOfTurn: rateOfTurn,
+      rateOfTurnCapped: rateOfTurnCapped,
+      radiusForCalc: radiusForCalc,
+    };
+  };
+}
 
 // Module-level stored results for copy-to-word
 var _raw1 = null;
@@ -189,7 +212,8 @@ function computeFlyby(ias, altitude_ft, bankAngle, turnAngle, isaDeviation) {
   var DEG_TO_RAD = Math.PI / 180;
   var kFactor = calculateKFactor(altitude_ft, isaDeviation);
   var tas = calculateTAS(ias, kFactor);
-  var r = calculateRadius(tas, bankAngle);
+  var rObj = calculateRadiusWithRateOfTurnCap(tas, bankAngle);
+  var r = rObj.radiusForCalc;
   var effectiveTurn = Math.max(turnAngle, 50);
   var minApplied = effectiveTurn !== turnAngle;
   var L1 = r * Math.tan((effectiveTurn / 2) * DEG_TO_RAD);
@@ -212,8 +236,10 @@ function computeFlyover(ias, altitude_ft, bankAngle, turnAngle, isaDeviation) {
   var DEG_TO_RAD = Math.PI / 180;
   var kFactor = calculateKFactor(altitude_ft, isaDeviation);
   var tas = calculateTAS(ias, kFactor);
-  var r1 = calculateRadius(tas, bankAngle);
-  var r2 = calculateRadius(tas, 15); // fixed 15° roll-out bank per §1.4.1.3
+  var r1Obj = calculateRadiusWithRateOfTurnCap(tas, bankAngle);
+  var r1 = r1Obj.radiusForCalc;
+  var r2Obj = calculateRadiusWithRateOfTurnCap(tas, 15); // fixed 15° roll-out bank per §1.4.1.3
+  var r2 = r2Obj.radiusForCalc;
   var theta_rad = turnAngle * DEG_TO_RAD;
   var alpha_rad = 30 * DEG_TO_RAD;
   var L1fo = r1 * Math.sin(theta_rad);
