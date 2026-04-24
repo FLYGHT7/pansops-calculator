@@ -20,6 +20,12 @@
     <link rel="stylesheet" href="dark-mode.css" />
     <script src="aviation-utils.js"></script>
     <script src="i18n/i18n.js"></script>
+  <style>
+    @media (min-width: 1024px) {
+      #caseRefSidebar { transition: width 0.3s ease, opacity 0.2s ease; }
+      #caseRefSidebar.sidebar-collapsed { width: 0 !important; overflow: hidden; opacity: 0; }
+    }
+  </style>
   </head>
   <body class="bg-gray-50 dark:bg-gray-900 min-h-screen">
     <div class="flex flex-col lg:flex-row items-start lg:justify-center gap-6 w-full max-w-6xl mx-auto pt-8 px-4 pb-12">
@@ -1065,10 +1071,23 @@
     </main>
 
     <!-- Case Reference Sidebar -->
-    <aside class="w-full lg:w-96 shrink-0 lg:sticky lg:top-8">
-      <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-2 lg:text-right">
-        Case Reference
-      </p>
+    <aside id="caseRefSidebar" class="w-full lg:w-96 shrink-0 lg:sticky lg:top-8">
+      <div class="flex items-center justify-between mb-2">
+        <button
+          id="sidebarCollapseBtn"
+          class="hidden lg:flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-primary-400 bg-gray-900/70 dark:bg-gray-950/80 backdrop-blur-sm border border-primary-500/25 rounded-full pl-2.5 pr-3 py-1.5 shadow-sm hover:text-primary-300 hover:border-primary-400/45 hover:bg-gray-800/90 hover:shadow-[0_2px_12px_rgba(14,165,233,0.15)] transition-all duration-200 shrink-0"
+          title="Hide case reference"
+          aria-label="Hide case reference"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3 h-3 shrink-0 opacity-80">
+            <path fill-rule="evenodd" d="M9.78 4.22a.75.75 0 0 1 0 1.06L7.06 8l2.72 2.72a.75.75 0 1 1-1.06 1.06L5.47 8.53a.75.75 0 0 1 0-1.06l3.25-3.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+          </svg>
+          Hide
+        </button>
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+          Case Reference
+        </p>
+      </div>
       <figure
         id="caseDiagramSection"
         class="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm"
@@ -1099,6 +1118,46 @@
     </aside>
     </div><!-- /layout wrapper -->
 
+    <!-- Floating button to reopen sidebar after collapse (desktop only) -->
+    <button
+      id="sidebarExpandBtn"
+      style="display:none"
+      class="fixed right-4 top-20 z-50 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-primary-400 bg-gray-900/80 dark:bg-gray-950/85 backdrop-blur-md border border-primary-500/25 rounded-full pl-3.5 pr-4 py-2.5 shadow-[0_4px_24px_rgba(0,0,0,0.35)] hover:text-primary-300 hover:border-primary-400/50 hover:bg-gray-800/90 hover:shadow-[0_6px_28px_rgba(14,165,233,0.18)] transition-all duration-200"
+      title="Show case reference"
+      aria-label="Show case reference"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5 shrink-0 opacity-80">
+        <path fill-rule="evenodd" d="M6.22 4.22a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06L7.28 11.78a.75.75 0 0 1-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+      </svg>
+      Case Ref
+    </button>
+
     <script src="js/msd_calculation.js"></script>
+    <script>
+      (function () {
+        var sidebar = document.getElementById("caseRefSidebar");
+        var collapseBtn = document.getElementById("sidebarCollapseBtn");
+        var expandBtn = document.getElementById("sidebarExpandBtn");
+
+        function collapse() {
+          sidebar.classList.add("sidebar-collapsed");
+          expandBtn.style.display = "flex";
+          setTimeout(function () { sidebar.classList.add("hidden"); }, 300);
+        }
+
+        function expand() {
+          sidebar.classList.remove("hidden");
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              sidebar.classList.remove("sidebar-collapsed");
+            });
+          });
+          expandBtn.style.display = "none";
+        }
+
+        collapseBtn.addEventListener("click", collapse);
+        expandBtn.addEventListener("click", expand);
+      })();
+    </script>
   </body>
 </html>
