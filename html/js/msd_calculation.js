@@ -340,8 +340,8 @@ function calculateMSD() {
     showToast("WP1: Bank angle must be between 1° and 89°.", "error");
     return;
   }
-  if (isNaN(wp1Turn) || wp1Turn <= 0 || wp1Turn >= 360) {
-    showToast("WP1: Turn angle must be between 1° and 359°.", "error");
+  if (isNaN(wp1Turn) || wp1Turn < 50 || wp1Turn >= 360) {
+    showToast("WP1: Turn angle must be at least 50°.", "error");
     return;
   }
   if (isNaN(wp2Ias) || wp2Ias <= 0) {
@@ -356,8 +356,8 @@ function calculateMSD() {
     showToast("WP2: Bank angle must be between 1° and 89°.", "error");
     return;
   }
-  if (isNaN(wp2Turn) || wp2Turn <= 0 || wp2Turn >= 360) {
-    showToast("WP2: Turn angle must be between 1° and 359°.", "error");
+  if (isNaN(wp2Turn) || wp2Turn < 50 || wp2Turn >= 360) {
+    showToast("WP2: Turn angle must be at least 50°.", "error");
     return;
   }
 
