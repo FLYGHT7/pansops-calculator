@@ -299,7 +299,7 @@
     "phAltitude": "ej. 3000",
     "phBankAngle": "ej. 25",
     "phTurnAngle": "ej. 60",
-    "phIsaDeviation": "ej. 0",
+    "phIsaDeviation": "ej. 15",
     "resultsTitle": "Resultados MSD",
     "tas": "TAS",
     "kFactor": "Factor k",

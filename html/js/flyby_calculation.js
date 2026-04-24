@@ -127,8 +127,7 @@ function calculateFlyby() {
   const altitudeUnit = document.getElementById("altitudeUnit").value;
   const bankAngleVal = parseFloat(document.getElementById("bankAngle").value);
   const turnAngleRaw = parseFloat(document.getElementById("turnAngle").value);
-  const isaDeviationRaw = document.getElementById("isaDeviation").value;
-  const isaDeviation = isaDeviationRaw === "" ? 0 : parseFloat(isaDeviationRaw);
+  const isaDeviationRaw = document.getElementById("isaDeviation").value.trim();
 
   // --- Validate ---
   if (isNaN(iasVal) || iasVal <= 0) {
@@ -147,8 +146,13 @@ function calculateFlyby() {
     showToast("Please enter a valid turn angle (1-359).", "error");
     return;
   }
+  if (isaDeviationRaw === "") {
+    showToast("ISA Deviation is required.", "error");
+    return;
+  }
+  const isaDeviation = parseFloat(isaDeviationRaw);
   if (isNaN(isaDeviation)) {
-    showToast("Please enter a valid ISA deviation.", "error");
+    showToast("Please enter a valid ISA Deviation.", "error");
     return;
   }
 

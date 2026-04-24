@@ -271,7 +271,6 @@ function calculateMSD() {
   // Read shared inputs
   var distanceD = parseFloat(document.getElementById("distance").value);
   var isaRaw = document.getElementById("isaDeviation").value.trim();
-  var isaDeviation = isaRaw === "" ? 0 : parseFloat(isaRaw);
 
   // Read WP1 inputs
   var wp1Type = document.getElementById("wp1Type").value;
@@ -294,8 +293,13 @@ function calculateMSD() {
     showToast("Please enter a valid IAF–IF distance (D > 0).", "error");
     return;
   }
+  if (isaRaw === "") {
+    showToast("ISA Deviation is required.", "error");
+    return;
+  }
+  var isaDeviation = parseFloat(isaRaw);
   if (isNaN(isaDeviation)) {
-    showToast("ISA Deviation must be a number (or left blank for 0).", "error");
+    showToast("Please enter a valid ISA Deviation.", "error");
     return;
   }
   if (isNaN(wp1Ias) || wp1Ias <= 0) {
