@@ -672,6 +672,7 @@ function copyToWord() {
   Object.keys(wp2Rows).forEach(function (k) {
     renamedWp2[k.slice(0, 3) === "WP2" ? wp2Name + k.slice(3) : k] = wp2Rows[k];
   });
+
   var allRows = Object.assign({}, renamedWp1, renamedWp2, combinedRows);
   var htmlContent = createHTMLTable(
     allRows,
