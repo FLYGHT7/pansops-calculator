@@ -826,17 +826,7 @@ function copyToWordDocument(type) {
     ];
   }
 
-  const blob = new Blob([htmlContent], { type: "text/html" });
-  const textContent = textRows.map((r) => r.join("\t")).join("\n");
-  const textBlob = new Blob([textContent], { type: "text/plain" });
-  navigator.clipboard
-    .write([new ClipboardItem({ "text/html": blob, "text/plain": textBlob })])
-    .then(() => {
-      showToast("Results copied — paste into Word.", "success");
-    })
-    .catch((err) => {
-      console.error("Copy failed:", err);
-    });
+  copyToClipboard(htmlContent);
 }
 
 (function () {
