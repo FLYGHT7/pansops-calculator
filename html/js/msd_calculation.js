@@ -623,10 +623,13 @@ function copyToWord() {
     "WP1 TAS (KT)": fmt(_raw1.tas),
   };
   if (_raw1.type === "flyby") {
+    wp1Rows["WP1 Rate of Turn R (\u00B0/s)"] = fmt(_raw1.rateOfTurn);
     wp1Rows["WP1 Radius r (NM)"] = fmt(_raw1.r);
     wp1Rows["WP1 r\u00B7tan(A/2) (NM)"] = fmt(_raw1.L1);
     wp1Rows["WP1 5s\u00B7TAS/3600 (NM)"] = fmt(_raw1.L2);
   } else {
+    wp1Rows["WP1 R1 roll-in (\u00B0/s)"] = fmt(_raw1.rot1);
+    wp1Rows["WP1 R2 roll-out 15\u00B0 (\u00B0/s)"] = fmt(_raw1.rot2);
     wp1Rows["WP1 r\u2081 roll-in (NM)"] = fmt(_raw1.r1);
     wp1Rows["WP1 Arc+transition L1\u2013L4 (NM)"] = fmt(_raw1.arcPlusTrans);
     wp1Rows["WP1 L5 bank estab. (NM)"] = fmt(_raw1.bankEstab);
@@ -645,10 +648,13 @@ function copyToWord() {
       "WP2 TAS (KT)": fmt(_raw2.tas),
     };
     if (_raw2.type === "flyby") {
+      wp2Rows["WP2 Rate of Turn R (\u00B0/s)"] = fmt(_raw2.rateOfTurn);
       wp2Rows["WP2 Radius r (NM)"] = fmt(_raw2.r);
       wp2Rows["WP2 r\u00B7tan(B/2) (NM)"] = fmt(_raw2.L1);
       wp2Rows["WP2 5s\u00B7TAS/3600 (NM)"] = fmt(_raw2.L2);
     } else {
+      wp2Rows["WP2 R1 roll-in (\u00B0/s)"] = fmt(_raw2.rot1);
+      wp2Rows["WP2 R2 roll-out 15\u00B0 (\u00B0/s)"] = fmt(_raw2.rot2);
       wp2Rows["WP2 r\u2081 roll-in (NM)"] = fmt(_raw2.r1);
       wp2Rows["WP2 Arc+transition L1\u2013L4 (NM)"] = fmt(_raw2.arcPlusTrans);
       wp2Rows["WP2 L5 bank estab. (NM)"] = fmt(_raw2.bankEstab);
