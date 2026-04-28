@@ -95,7 +95,8 @@ function calculateRadius(tas, bankAngle_deg) {
  * @return {number} Rate of turn in degrees per second
  */
 function calculateRateOfTurn(tas, radius_nm) {
-  return tas / (111.95 * radius_nm);
+  // ω (°/s) = TAS (kt) / (r (NM) × 20π)  — exact derivation from ω=V/r with unit conversion
+  return tas / (20 * Math.PI * radius_nm);
 }
 
 /**
@@ -114,7 +115,7 @@ function calculateRadiusWithRateOfTurnCap(tas, bankAngle_deg) {
   const rateOfTurn = calculateRateOfTurn(tas, radius);
   const rateOfTurnCapped = Math.min(rateOfTurn, 3);
   const radiusForCalc =
-    rateOfTurnCapped < rateOfTurn ? tas / (111.95 * rateOfTurnCapped) : radius;
+    rateOfTurnCapped < rateOfTurn ? tas / (20 * Math.PI * rateOfTurnCapped) : radius;
 
   return {
     radius,

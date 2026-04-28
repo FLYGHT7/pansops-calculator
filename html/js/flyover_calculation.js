@@ -28,7 +28,7 @@ if (typeof calculateRadius === "undefined") {
 if (typeof calculateRateOfTurn === "undefined") {
   // eslint-disable-next-line no-unused-vars
   function calculateRateOfTurn(tas, radius_nm) {
-    return tas / (111.95 * radius_nm);
+    return tas / (20 * Math.PI * radius_nm);
   }
 }
 if (typeof calculateRadiusWithRateOfTurnCap === "undefined") {
@@ -41,7 +41,7 @@ if (typeof calculateRadiusWithRateOfTurnCap === "undefined") {
     var rateOfTurnCapped = Math.min(rateOfTurn, 3);
     var radiusForCalc =
       rateOfTurnCapped < rateOfTurn
-        ? tas / (111.95 * rateOfTurnCapped)
+        ? tas / (20 * Math.PI * rateOfTurnCapped)
         : radius;
     return {
       radius: radius,
@@ -153,6 +153,8 @@ function applyDisplayPrecision() {
   const fmt = (v) => (exact ? v.toString() : v.toFixed(4));
   document.getElementById("outKFactor").textContent = fmt(_raw.kFactor);
   document.getElementById("outTas").textContent = fmt(_raw.tas);
+  document.getElementById("outRot1").textContent = fmt(_raw.rot1);
+  document.getElementById("outRot2").textContent = fmt(_raw.rot2);
   document.getElementById("outR1").textContent = fmt(_raw.r1);
   document.getElementById("outR2").textContent = fmt(_raw.r2);
   document.getElementById("outL1").textContent = fmt(_raw.L1);
@@ -234,6 +236,8 @@ function calculateFlyover() {
   // --- Store raw values ---
   _raw.kFactor = kFactor;
   _raw.tas = tas;
+  _raw.rot1 = r1Obj.rateOfTurnCapped;
+  _raw.rot2 = r2Obj.rateOfTurnCapped;
   _raw.r1 = r1;
   _raw.r2 = r2;
   _raw.L1 = L1;
@@ -642,9 +646,6 @@ function copyToWord() {
     document.getElementById("copyPrecision").dataset.value === "exact";
   const fmt = (v) => (exact ? v.toString() : v.toFixed(4));
 
-  var rateR1 = (_raw.tas / _raw.r1) * (180 / Math.PI) / 60;
-  var rateR2 = (_raw.tas / _raw.r2) * (180 / Math.PI) / 60;
-
   const tableData = {
     IAS: document.getElementById("ias").value + " KT",
     "Altitude h1":
@@ -657,9 +658,9 @@ function copyToWord() {
     "Bank Angle r1": document.getElementById("bankAngle").value + "°",
     "Turn Angle (input)": document.getElementById("turnAngle").value + "°",
     TAS: fmt(_raw.tas) + " KT",
-    "R1": fmt(rateR1) + " °/min",
+    "R1 (rate of turn)": fmt(_raw.rot1) + " °/s",
     "Turn Angle Used": document.getElementById("outThetaEff").textContent,
-    "R2": fmt(rateR2) + " °/min",
+    "R2 (rate of turn)": fmt(_raw.rot2) + " °/s",
     "r1 (roll-in)": fmt(_raw.r1) + " NM",
     "r2 (roll-out, 15° fixed)": fmt(_raw.r2) + " NM",
     L1: fmt(_raw.L1) + " NM",
