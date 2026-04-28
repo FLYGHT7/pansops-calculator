@@ -383,7 +383,7 @@
         </h2>
 
         <!-- Intermediate values: kFactor, TAS, turn angle used, r1, r2 -->
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-2">
           <div
             class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
           >
@@ -459,6 +459,36 @@
               <span class="text-sm font-normal" data-i18n="common.nauticalMiles"
                 >NM</span
               >
+            </p>
+          </div>
+        </div>
+
+        <!-- Rate of turn row: R1 (roll-in) and R2 (roll-out) -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p
+              class="text-xs text-gray-500 dark:text-gray-400"
+              data-i18n="flyover.rateOfTurnR1"
+            >
+              Rate of Turn R1 (roll-in)
+            </p>
+            <p class="text-base font-semibold dark:text-white">
+              <span id="outRot1"></span>
+              <span class="text-sm font-normal">°/s</span>
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              <span data-i18n="flyover.rateOfTurnR2">Rate of Turn R2</span>
+              <span class="ml-1 text-gray-400 dark:text-gray-500 text-xs" data-i18n="flyover.r2Fixed">(15° fixed)</span>
+            </p>
+            <p class="text-base font-semibold dark:text-white">
+              <span id="outRot2"></span>
+              <span class="text-sm font-normal">°/s</span>
             </p>
           </div>
         </div>

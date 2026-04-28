@@ -28,7 +28,7 @@ if (typeof calculateRadius === "undefined") {
 if (typeof calculateRateOfTurn === "undefined") {
   // eslint-disable-next-line no-unused-vars
   function calculateRateOfTurn(tas, radius_nm) {
-    return tas / (111.95 * radius_nm);
+    return tas / (20 * Math.PI * radius_nm);
   }
 }
 if (typeof calculateRadiusWithRateOfTurnCap === "undefined") {
@@ -41,7 +41,7 @@ if (typeof calculateRadiusWithRateOfTurnCap === "undefined") {
     var rateOfTurnCapped = Math.min(rateOfTurn, 3);
     var radiusForCalc =
       rateOfTurnCapped < rateOfTurn
-        ? tas / (111.95 * rateOfTurnCapped)
+        ? tas / (20 * Math.PI * rateOfTurnCapped)
         : radius;
     return {
       radius: radius,
@@ -62,6 +62,7 @@ function applyDisplayPrecision() {
   const fmt = (v) => (exact ? v.toString() : v.toFixed(4));
   document.getElementById("outKFactor").textContent = fmt(_raw.kFactor);
   document.getElementById("outTas").textContent = fmt(_raw.tas);
+  document.getElementById("outRateOfTurn").textContent = fmt(_raw.rateOfTurn);
   document.getElementById("outR").textContent = fmt(_raw.r);
   document.getElementById("outL1").textContent = fmt(_raw.L1);
   document.getElementById("outL2").textContent = fmt(_raw.L2);
@@ -184,6 +185,7 @@ function calculateFlyby() {
   // --- Store raw results and render with current precision ---
   _raw.kFactor = kFactor;
   _raw.tas = tas;
+  _raw.rateOfTurn = radiusObj.rateOfTurnCapped;
   _raw.r = r;
   _raw.L1 = L1;
   _raw.L2 = L2;

@@ -358,8 +358,8 @@
           MSD Results
         </h2>
 
-        <!-- Intermediate values: kFactor, TAS, TurnUsed, Radius -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        <!-- Intermediate values: kFactor, TAS, TurnUsed, RateOfTurn, Radius -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
           <div
             class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
           >
@@ -401,6 +401,20 @@
             <p class="text-base font-semibold dark:text-white">
               <span id="outTurnUsed"></span>
               <span class="text-sm font-normal">°</span>
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p
+              class="text-xs text-gray-500 dark:text-gray-400"
+              data-i18n="flyby.rateOfTurn"
+            >
+              Rate of Turn (R)
+            </p>
+            <p class="text-base font-semibold dark:text-white">
+              <span id="outRateOfTurn"></span>
+              <span class="text-sm font-normal">°/s</span>
             </p>
           </div>
           <div
