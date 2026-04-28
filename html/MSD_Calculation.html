@@ -363,7 +363,7 @@
                       id="wp1TurnAngle"
                       name="wp1TurnAngle"
                       type="number"
-                      min="50"
+                      min="1"
                       max="359"
                       step="0.1"
                       inputmode="decimal"
@@ -410,13 +410,25 @@
                   <line x1="12" y1="9" x2="12" y2="13"></line>
                   <line x1="12" y1="17" x2="12.01" y2="17"></line>
                 </svg>
-                <p
-                  class="text-xs text-amber-700 dark:text-amber-300"
-                  data-i18n="msd.turnAngleWarning"
-                >
-                  Input &lt; 50&#176; &#8212; minimum 50&#176; applied (Flyby
-                  only)
-                </p>
+                <div>
+                  <p
+                    class="text-xs text-amber-700 dark:text-amber-300"
+                    data-i18n="msd.turnAngleWarning"
+                  >
+                    Input &lt; 50&#176; &#8212; minimum 50&#176; applied (Flyby
+                    only)
+                  </p>
+                  <label class="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      id="wp1TurnOverride"
+                      class="accent-amber-600 h-3.5 w-3.5"
+                    />
+                    <span class="text-xs text-amber-700 dark:text-amber-300"
+                      >Override 50&#176; requirement and use exact turn angle</span
+                    >
+                  </label>
+                </div>
               </div>
             </div>
 
@@ -589,7 +601,7 @@
                       id="wp2TurnAngle"
                       name="wp2TurnAngle"
                       type="number"
-                      min="50"
+                      min="1"
                       max="359"
                       step="0.1"
                       inputmode="decimal"
@@ -636,13 +648,25 @@
                   <line x1="12" y1="9" x2="12" y2="13"></line>
                   <line x1="12" y1="17" x2="12.01" y2="17"></line>
                 </svg>
-                <p
-                  class="text-xs text-amber-700 dark:text-amber-300"
-                  data-i18n="msd.turnAngleWarning"
-                >
-                  Input &lt; 50&#176; &#8212; minimum 50&#176; applied (Flyby
-                  only)
-                </p>
+                <div>
+                  <p
+                    class="text-xs text-amber-700 dark:text-amber-300"
+                    data-i18n="msd.turnAngleWarning"
+                  >
+                    Input &lt; 50&#176; &#8212; minimum 50&#176; applied (Flyby
+                    only)
+                  </p>
+                  <label class="flex items-center gap-1.5 mt-1.5 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      id="wp2TurnOverride"
+                      class="accent-amber-600 h-3.5 w-3.5"
+                    />
+                    <span class="text-xs text-amber-700 dark:text-amber-300"
+                      >Override 50&#176; requirement and use exact turn angle</span
+                    >
+                  </label>
+                </div>
               </div>
             </div>
           </div>
@@ -708,6 +732,10 @@
                 class="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-200"
               ></span>
             </div>
+            <p
+              id="out1MinAppliedNote"
+              class="hidden text-xs text-amber-600 dark:text-amber-400 mb-2"
+            ></p>
             <div class="grid grid-cols-2 gap-2 text-sm">
               <div
                 class="bg-white dark:bg-gray-800 rounded-lg p-2.5 border border-blue-100 dark:border-blue-900"
@@ -815,6 +843,10 @@
                 class="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200"
               ></span>
             </div>
+            <p
+              id="out2MinAppliedNote"
+              class="hidden text-xs text-amber-600 dark:text-amber-400 mb-2"
+            ></p>
             <div class="grid grid-cols-2 gap-2 text-sm">
               <div
                 class="bg-white dark:bg-gray-800 rounded-lg p-2.5 border border-amber-100 dark:border-amber-900"
