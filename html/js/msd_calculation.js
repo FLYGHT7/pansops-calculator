@@ -20,7 +20,7 @@ if (typeof calculateRadius === "undefined") {
 }
 if (typeof calculateRateOfTurn === "undefined") {
   var calculateRateOfTurn = function (tas, radius_nm) {
-    return tas / (111.95 * radius_nm);
+    return tas / (20 * Math.PI * radius_nm);
   };
 }
 if (typeof calculateRadiusWithRateOfTurnCap === "undefined") {
@@ -31,7 +31,7 @@ if (typeof calculateRadiusWithRateOfTurnCap === "undefined") {
     var rateOfTurnCapped = Math.min(rateOfTurn, 3);
     var radiusForCalc =
       rateOfTurnCapped < rateOfTurn
-        ? tas / (111.95 * rateOfTurnCapped)
+        ? tas / (20 * Math.PI * rateOfTurnCapped)
         : radius;
     return {
       radius: radius,
@@ -250,6 +250,7 @@ function computeFlyby(ias, altitude_ft, bankAngle, turnAngle, isaDeviation) {
     type: "flyby",
     kFactor: kFactor,
     tas: tas,
+    rateOfTurn: rObj.rateOfTurnCapped,
     r: r,
     L1: L1,
     L2: L2,
@@ -284,6 +285,8 @@ function computeFlyover(ias, altitude_ft, bankAngle, turnAngle, isaDeviation) {
     type: "flyover",
     kFactor: kFactor,
     tas: tas,
+    rot1: r1Obj.rateOfTurnCapped,
+    rot2: r2Obj.rateOfTurnCapped,
     r1: r1,
     r2: r2,
     arcPlusTrans: arcPlusTrans,
