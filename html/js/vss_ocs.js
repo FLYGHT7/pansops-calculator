@@ -193,6 +193,7 @@ function calculateDVSS() {
   document.getElementById("rdhOutput").textContent =
     rdh + " " + document.getElementById("rdhUnit").value;
   document.getElementById("vpaOutput").textContent = vpa.toFixed(2);
+  document.getElementById("vssAngleOutput").textContent = (vpa - 1.12).toFixed(2);
   document.getElementById("ochOutput").textContent =
     parseFloat(och).toFixed(4) + " " + ochUnit;
 
@@ -632,6 +633,7 @@ function copyToWordDocument(type) {
             <tr><td style="padding:8px;text-align:left">THR Elev</td><td style="padding:8px;text-align:left">${thrElev} ${thrElevUnit}</td></tr>
             <tr><td style="padding:8px;text-align:left">RDH</td><td style="padding:8px;text-align:left">${rdh} ${rdhUnit}</td></tr>
             <tr><td style="padding:8px;text-align:left">VPA (°)</td><td style="padding:8px;text-align:left">${parseFloat(vpa).toFixed(2)}</td></tr>
+            <tr><td style="padding:8px;text-align:left">VSS Angle (°)</td><td style="padding:8px;text-align:left">${(parseFloat(vpa) - 1.12).toFixed(2)}</td></tr>
             <tr><td style="padding:8px;text-align:left">OCH</td><td style="padding:8px;text-align:left">${parseFloat(
               och,
             ).toFixed(4)} ${ochUnit}</td></tr>
@@ -643,6 +645,7 @@ function copyToWordDocument(type) {
       ["THR Elev", `${thrElev} ${thrElevUnit}`],
       ["RDH", `${rdh} ${rdhUnit}`],
       ["VPA (°)", `${parseFloat(vpa).toFixed(2)}`],
+      ["VSS Angle (°)", `${(parseFloat(vpa) - 1.12).toFixed(2)}`],
       ["OCH", `${parseFloat(och).toFixed(4)} ${ochUnit}`],
       ["VSS Distance", `${vssDistance}`],
     ];
@@ -823,17 +826,7 @@ function copyToWordDocument(type) {
     ];
   }
 
-  const blob = new Blob([htmlContent], { type: "text/html" });
-  const textContent = textRows.map((r) => r.join("\t")).join("\n");
-  const textBlob = new Blob([textContent], { type: "text/plain" });
-  navigator.clipboard
-    .write([new ClipboardItem({ "text/html": blob, "text/plain": textBlob })])
-    .then(() => {
-      showToast("Results copied — paste into Word.", "success");
-    })
-    .catch((err) => {
-      console.error("Copy failed:", err);
-    });
+  copyToClipboard(htmlContent);
 }
 
 (function () {
