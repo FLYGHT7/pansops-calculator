@@ -178,6 +178,8 @@ function setupEventListeners() {
     document
       .getElementById(prefix + "Type")
       .addEventListener("change", function () {
+        // Reset override when type changes — override only applies to flyby
+        document.getElementById(prefix + "TurnOverride").checked = false;
         // Re-check warning when type changes
         var angleEl = document.getElementById(prefix + "TurnAngle");
         angleEl.dispatchEvent(new Event("input"));
@@ -235,14 +237,14 @@ function handleUnitChange(inputId, unitSelectId) {
 
 // ── Aviation formulas ─────────────────────────────────────────────────────────
 
-function computeFlyby(ias, altitude_ft, bankAngle, turnAngle, isaDeviation) {
+function computeFlyby(ias, altitude_ft, bankAngle, turnAngle, isaDeviation, override) {
   var DEG_TO_RAD = Math.PI / 180;
   var kFactor = calculateKFactor(altitude_ft, isaDeviation);
   var tas = calculateTAS(ias, kFactor);
   var rObj = calculateRadiusWithRateOfTurnCap(tas, bankAngle);
   var r = rObj.radiusForCalc;
-  var effectiveTurn = Math.max(turnAngle, 50);
-  var minApplied = effectiveTurn !== turnAngle;
+  var effectiveTurn = override ? turnAngle : Math.max(turnAngle, 50);
+  var minApplied = !override && effectiveTurn !== turnAngle;
   var L1 = r * Math.tan((effectiveTurn / 2) * DEG_TO_RAD);
   var L2 = (5 * tas) / 3600;
   var M = L1 + L2;
@@ -255,6 +257,7 @@ function computeFlyby(ias, altitude_ft, bankAngle, turnAngle, isaDeviation) {
     L1: L1,
     L2: L2,
     M: M,
+    inputTurn: turnAngle,
     effectiveTurn: effectiveTurn,
     minApplied: minApplied,
   };
@@ -352,8 +355,8 @@ function calculateMSD() {
     showToast("WP1: Bank angle must be between 1° and 89°.", "error");
     return;
   }
-  if (isNaN(wp1Turn) || wp1Turn < 50 || wp1Turn >= 360) {
-    showToast("WP1: Turn angle must be at least 50°.", "error");
+  if (isNaN(wp1Turn) || wp1Turn <= 0 || wp1Turn >= 360) {
+    showToast("WP1: Enter a turn angle between 1° and 359°.", "error");
     return;
   }
   if (wp2Active) {
@@ -382,7 +385,7 @@ function calculateMSD() {
   // Compute per WP — WP2 flyover cases use M₂=0 per PANS-OPS §1.4.2
   var res1 =
     wp1Type === "flyby"
-      ? computeFlyby(wp1Ias, wp1Alt_ft, wp1Bank, wp1Turn, isaDeviation)
+      ? computeFlyby(wp1Ias, wp1Alt_ft, wp1Bank, wp1Turn, isaDeviation, wp1Override)
       : computeFlyover(wp1Ias, wp1Alt_ft, wp1Bank, wp1Turn, isaDeviation);
 
   var res2 = wp2Active
@@ -516,6 +519,16 @@ function renderWPResults(n, result, name) {
     l2Label.textContent = "L5 (bank estab.)";
   }
 
+  var minNote = document.getElementById(prefix + "MinAppliedNote");
+  if (result.type === "flyby" && result.minApplied) {
+    minNote.textContent =
+      "\u26A0\uFE0F 50\u00B0 minimum applied \u2014 entered " +
+      result.inputTurn.toFixed(1) + "\u00B0, using 50\u00B0";
+    minNote.classList.remove("hidden");
+  } else {
+    minNote.classList.add("hidden");
+  }
+
   document.getElementById(prefix + "L1Cell").classList.remove("hidden");
   document.getElementById(prefix + "L2Cell").classList.remove("hidden");
   document.getElementById(prefix + "L2Cell").classList.remove("col-span-2");
@@ -626,6 +639,10 @@ function copyToWord() {
     "WP1 TAS (KT)": fmt(_raw1.tas),
   };
   if (_raw1.type === "flyby") {
+    if (_raw1.minApplied) {
+      wp1Rows["WP1 Turn Angle entered (\u00B0)"] = fmt(_raw1.inputTurn);
+      wp1Rows["WP1 Effective Turn \u2265 50\u00B0 (\u00B0)"] = fmt(_raw1.effectiveTurn) + " (50\u00B0 min applied)";
+    }
     wp1Rows["WP1 Rate of Turn R (\u00B0/s)"] = fmt(_raw1.rateOfTurn);
     wp1Rows["WP1 Radius r (NM)"] = fmt(_raw1.r);
     wp1Rows["WP1 r\u00B7tan(A/2) (NM)"] = fmt(_raw1.L1);
