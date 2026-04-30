@@ -278,6 +278,33 @@
     "formulaRef": "Referencia de Fórmulas PANS-OPS",
     "globalParams": "Parámetros Globales"
   },
+  "rod": {
+    "title": "Constructor de Tabla GS / Razón de Descenso",
+    "sidebarLabel": "GS / Razón de Descenso",
+    "tableParams": "Parámetros de tabla",
+    "distance": "Distancia (NM)",
+    "gradient": "Gradiente (%)",
+    "titleRow": "Fila de título",
+    "footerRow": "Fila de pie",
+    "timingLabel": "Etiqueta de tiempo",
+    "rodLabel": "Etiqueta ROD",
+    "gsUnit": "Unidad GS",
+    "timingUnit": "Unidad de tiempo",
+    "gsValues": "Valores GS",
+    "gsValuesHint": "Enteros separados por comas (nudos)",
+    "phDistance": "ej. 5.2",
+    "phGradient": "ej. 5.3",
+    "phTitleRow": "ej. Razón de Descenso",
+    "phFooterRow": "Dejar en blanco para omitir",
+    "phTimingLabel": "Auto",
+    "phRODLabel": "Auto",
+    "phGSUnit": "KT",
+    "phTimingUnit": "min:s",
+    "phGSValues": "ej. 70, 90, 100, 120, 140, 160",
+    "previewTitle": "Vista previa",
+    "buildTable": "Construir tabla",
+    "addTable": "Agregar"
+  },
   "windSpiral": {
     "title": "Calculadora de Espiral de Viento"
   },

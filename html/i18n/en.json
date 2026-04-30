@@ -278,6 +278,33 @@
     "formulaRef": "PANS-OPS Formula Reference",
     "globalParams": "Global Parameters"
   },
+  "rod": {
+    "title": "GS / Rate of Descent Table Builder",
+    "sidebarLabel": "GS / Rate of Descent",
+    "tableParams": "Table Parameters",
+    "distance": "Distance (NM)",
+    "gradient": "Gradient (%)",
+    "titleRow": "Title Row",
+    "footerRow": "Footer Row",
+    "timingLabel": "Timing Label",
+    "rodLabel": "ROD Label",
+    "gsUnit": "GS Unit",
+    "timingUnit": "Timing Unit",
+    "gsValues": "GS Values",
+    "gsValuesHint": "Comma-separated integers (knots)",
+    "phDistance": "e.g. 5.2",
+    "phGradient": "e.g. 5.3",
+    "phTitleRow": "e.g. Rate of Descent",
+    "phFooterRow": "Leave blank to omit",
+    "phTimingLabel": "Auto",
+    "phRODLabel": "Auto",
+    "phGSUnit": "KT",
+    "phTimingUnit": "min:s",
+    "phGSValues": "e.g. 70, 90, 100, 120, 140, 160",
+    "previewTitle": "Preview",
+    "buildTable": "Build Table",
+    "addTable": "Add"
+  },
   "windSpiral": {
     "title": "Wind Spiral Calculator"
   },
