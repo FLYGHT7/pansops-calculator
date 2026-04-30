@@ -372,8 +372,8 @@ function calculateMSD() {
       showToast("WP2: Bank angle must be between 1° and 89°.", "error");
       return;
     }
-    if (isNaN(wp2Turn) || wp2Turn < 50 || wp2Turn >= 360) {
-      showToast("WP2: Turn angle must be at least 50°.", "error");
+    if (isNaN(wp2Turn) || wp2Turn <= 0 || wp2Turn >= 360) {
+      showToast("WP2: Enter a turn angle between 1° and 359°.", "error");
       return;
     }
   }
@@ -382,6 +382,10 @@ function calculateMSD() {
   var wp1Alt_ft = wp1AltUnit === "m" ? wp1AltRaw / 0.3048 : wp1AltRaw;
   var wp2Alt_ft = wp2Active ? (wp2AltUnit === "m" ? wp2AltRaw / 0.3048 : wp2AltRaw) : 0;
 
+  // Read override checkboxes (visible only when turn < 50°)
+  var wp1Override = wp1Type === "flyby" && document.getElementById("wp1TurnOverride").checked;
+  var wp2Override = wp2Type === "flyby" && document.getElementById("wp2TurnOverride").checked;
+
   // Compute per WP — WP2 flyover cases use M₂=0 per PANS-OPS §1.4.2
   var res1 =
     wp1Type === "flyby"
@@ -389,7 +393,7 @@ function calculateMSD() {
       : computeFlyover(wp1Ias, wp1Alt_ft, wp1Bank, wp1Turn, isaDeviation);
 
   var res2 = wp2Active
-    ? computeFlyby(wp2Ias, wp2Alt_ft, wp2Bank, wp2Turn, isaDeviation)
+    ? computeFlyby(wp2Ias, wp2Alt_ft, wp2Bank, wp2Turn, isaDeviation, wp2Override)
     : { type: "flyover", M: 0, kFactor: 0, tas: 0 };
 
   // Store
@@ -707,16 +711,17 @@ function copyToWord() {
     }
   }
 
-  // Rename WP1/WP2 key prefixes to use custom names
-  var renamedWp1 = {};
+  // Build final rows with named section headers, stripping WP1/WP2 prefix from keys
+  var allRows = {};
+  allRows[wp1Name + " — IAF"] = "__section__";
   Object.keys(wp1Rows).forEach(function (k) {
-    renamedWp1[k.slice(0, 3) === "WP1" ? wp1Name + k.slice(3) : k] = wp1Rows[k];
+    allRows[k.startsWith("WP1 ") ? k.slice(4) : k] = wp1Rows[k];
   });
-  var renamedWp2 = {};
+  allRows[wp2Name + " — IF"] = "__section__";
   Object.keys(wp2Rows).forEach(function (k) {
-    renamedWp2[k.slice(0, 3) === "WP2" ? wp2Name + k.slice(3) : k] = wp2Rows[k];
+    allRows[k.startsWith("WP2 ") ? k.slice(4) : k] = wp2Rows[k];
   });
-  var allRows = Object.assign({}, renamedWp1, renamedWp2, combinedRows);
+  Object.assign(allRows, combinedRows);
   var htmlContent = createHTMLTable(
     allRows,
     "MSD Combined \u2014 PANS-OPS Vol II \u00A7 1.4.2",
