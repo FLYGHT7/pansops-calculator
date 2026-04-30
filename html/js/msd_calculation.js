@@ -707,16 +707,17 @@ function copyToWord() {
     }
   }
 
-  // Rename WP1/WP2 key prefixes to use custom names
-  var renamedWp1 = {};
+  // Build final rows with named section headers, stripping WP1/WP2 prefix from keys
+  var allRows = {};
+  allRows[wp1Name + " — IAF"] = "__section__";
   Object.keys(wp1Rows).forEach(function (k) {
-    renamedWp1[k.slice(0, 3) === "WP1" ? wp1Name + k.slice(3) : k] = wp1Rows[k];
+    allRows[k.startsWith("WP1 ") ? k.slice(4) : k] = wp1Rows[k];
   });
-  var renamedWp2 = {};
+  allRows[wp2Name + " — IF"] = "__section__";
   Object.keys(wp2Rows).forEach(function (k) {
-    renamedWp2[k.slice(0, 3) === "WP2" ? wp2Name + k.slice(3) : k] = wp2Rows[k];
+    allRows[k.startsWith("WP2 ") ? k.slice(4) : k] = wp2Rows[k];
   });
-  var allRows = Object.assign({}, renamedWp1, renamedWp2, combinedRows);
+  Object.assign(allRows, combinedRows);
   var htmlContent = createHTMLTable(
     allRows,
     "MSD Combined \u2014 PANS-OPS Vol II \u00A7 1.4.2",
