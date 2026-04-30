@@ -58,7 +58,7 @@ const _raw = {};
 // Update displayed result values based on the selected precision mode
 function applyDisplayPrecision() {
   if (_raw.M === undefined) return;
-  const exact = document.getElementById("copyPrecision").value === "exact";
+  const exact = document.getElementById("copyPrecision").dataset.value === "exact";
   const fmt = (v) => (exact ? v.toString() : v.toFixed(4));
   document.getElementById("outKFactor").textContent = fmt(_raw.kFactor);
   document.getElementById("outTas").textContent = fmt(_raw.tas);
@@ -107,9 +107,20 @@ function setupEventListeners() {
     .getElementById("loadFile")
     .addEventListener("change", loadParameters);
   document.getElementById("btnCopy").addEventListener("click", copyToWord);
-  document
-    .getElementById("copyPrecision")
-    .addEventListener("change", applyDisplayPrecision);
+  document.getElementById("copyPrecision").addEventListener("click", () => {
+    const btn = document.getElementById("copyPrecision");
+    const nowExact = btn.dataset.value !== "exact";
+    btn.dataset.value = nowExact ? "exact" : "rounded";
+    const span = btn.querySelector("span");
+    if (span) {
+      const key = nowExact ? "common.copyExact" : "common.copyRounded";
+      span.dataset.i18n = key;
+      span.textContent =
+        (window.I18N && I18N.get(key)) ||
+        (nowExact ? "Exact" : "Rounded (4 dec.)");
+    }
+    applyDisplayPrecision();
+  });
 
   const altUnit = document.getElementById("altitudeUnit");
   if (altUnit) {
@@ -670,7 +681,7 @@ function loadParameters(event) {
 function copyToWord() {
   if (_raw.M === undefined) return;
 
-  const exact = document.getElementById("copyPrecision").value === "exact";
+  const exact = document.getElementById("copyPrecision").dataset.value === "exact";
   const fmt = (v) => (exact ? v.toString() : v.toFixed(4));
 
   var rateOfTurn = (_raw.tas / _raw.r) * (180 / Math.PI) / 60;

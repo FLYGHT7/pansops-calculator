@@ -383,11 +383,11 @@
             >
               TAS
             </p>
-            <p class="text-base font-semibold dark:text-white">
+            <p class="font-semibold dark:text-white break-all">
               <span id="outTas"></span>
-              <span class="text-sm font-normal" data-i18n="common.knots"
-                >knots</span
-              >
+            </p>
+            <p class="text-xs text-gray-400 dark:text-gray-500">
+              <span data-i18n="common.knots">knots</span>
             </p>
           </div>
           <div
@@ -413,10 +413,10 @@
             >
               Rate of Turn (R)
             </p>
-            <p class="text-base font-semibold dark:text-white">
+            <p class="font-semibold dark:text-white break-all">
               <span id="outRateOfTurn"></span>
-              <span class="text-sm font-normal">°/s</span>
             </p>
+            <p class="text-xs text-gray-400 dark:text-gray-500">°/s</p>
           </div>
           <div
             class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
@@ -427,11 +427,11 @@
             >
               Radius (r)
             </p>
-            <p class="text-base font-semibold dark:text-white">
+            <p class="font-semibold dark:text-white break-all">
               <span id="outR"></span>
-              <span class="text-sm font-normal" data-i18n="common.nauticalMiles"
-                >NM</span
-              >
+            </p>
+            <p class="text-xs text-gray-400 dark:text-gray-500">
+              <span data-i18n="common.nauticalMiles">NM</span>
             </p>
           </div>
         </div>
@@ -447,10 +447,10 @@
             >
               L1 = r × tan(A/2)
             </p>
-            <p class="text-base font-bold text-blue-800 dark:text-blue-200">
+            <p class="font-bold text-blue-800 dark:text-blue-200 break-all">
               <span id="outL1"></span>
-              <span class="text-sm font-normal">NM</span>
             </p>
+            <p class="text-xs text-blue-500 dark:text-blue-400">NM</p>
           </div>
           <div
             class="bg-green-100 dark:bg-green-900/20 p-3 rounded-lg border border-green-200 dark:border-green-700 shadow-sm"
@@ -461,10 +461,10 @@
             >
               L2 = 5 s × TAS / 3600
             </p>
-            <p class="text-base font-bold text-green-800 dark:text-green-200">
+            <p class="font-bold text-green-800 dark:text-green-200 break-all">
               <span id="outL2"></span>
-              <span class="text-sm font-normal">NM</span>
             </p>
+            <p class="text-xs text-green-500 dark:text-green-400">NM</p>
           </div>
         </div>
 
@@ -478,13 +478,14 @@
           >
             M Total (Flyby MSD)
           </p>
-          <p class="text-4xl font-bold">
+          <p class="text-4xl font-bold break-all">
             <span id="outM"></span>
-            <span
-              class="text-2xl ml-1 font-normal"
-              data-i18n="common.nauticalMiles"
-              >NM</span
-            >
+          </p>
+          <p
+            class="text-xl font-normal opacity-80"
+            data-i18n="common.nauticalMiles"
+          >
+            NM
           </p>
         </div>
 
@@ -500,24 +501,16 @@
           <div
             class="inline-flex rounded-lg overflow-hidden shadow border border-gray-300 dark:border-gray-600 text-sm"
           >
-            <!-- Precision selector -->
-            <label class="sr-only" for="copyPrecision">Precision</label>
-            <div
-              class="relative flex items-center bg-gray-100 dark:bg-gray-700 border-r border-gray-300 dark:border-gray-600"
+            <!-- Precision toggle -->
+            <button
+              type="button"
+              id="copyPrecision"
+              data-value="rounded"
+              class="flex items-center gap-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium pl-3 pr-2.5 py-2 border-r border-gray-300 dark:border-gray-600 focus:outline-none transition-colors whitespace-nowrap"
             >
-              <select
-                id="copyPrecision"
-                class="appearance-none bg-transparent text-gray-700 dark:text-gray-200 font-medium pl-3 pr-8 py-2 focus:outline-none cursor-pointer"
-              >
-                <option value="rounded" data-i18n="common.copyRounded">
-                  Rounded (4 dec.)
-                </option>
-                <option value="exact" data-i18n="common.copyExact">
-                  Exact
-                </option>
-              </select>
+              <span data-i18n="common.copyRounded">Rounded (4 dec.)</span>
               <svg
-                class="absolute right-2 h-3.5 w-3.5 text-gray-400 pointer-events-none"
+                class="h-3.5 w-3.5 text-gray-400 shrink-0"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -530,7 +523,7 @@
                   d="M19 9l-7 7-7-7"
                 />
               </svg>
-            </div>
+            </button>
             <!-- Copy button -->
             <button
               type="button"

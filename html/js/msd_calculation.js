@@ -71,18 +71,23 @@ function applyDisplayPrecision() {
   document.getElementById("out1M").textContent = fmt(_raw1.M);
 
   // WP2
-  document.getElementById("out2KFactor").textContent = fmt(_raw2.kFactor);
-  document.getElementById("out2Tas").textContent = fmt(_raw2.tas);
-  if (_raw2.type === "flyby") {
-    document.getElementById("out2Radius").textContent = fmt(_raw2.r);
-    document.getElementById("out2L1").textContent = fmt(_raw2.L1);
-    document.getElementById("out2L2").textContent = fmt(_raw2.L2);
+  if (_raw2.kFactor === 0) {
+    // WP2 flyover zero case — only show M₂=0
+    document.getElementById("out2M").textContent = fmt(0);
   } else {
-    document.getElementById("out2Radius").textContent = fmt(_raw2.r1);
-    document.getElementById("out2L1").textContent = fmt(_raw2.arcPlusTrans);
-    document.getElementById("out2L2").textContent = fmt(_raw2.bankEstab);
+    document.getElementById("out2KFactor").textContent = fmt(_raw2.kFactor);
+    document.getElementById("out2Tas").textContent = fmt(_raw2.tas);
+    if (_raw2.type === "flyby") {
+      document.getElementById("out2Radius").textContent = fmt(_raw2.r);
+      document.getElementById("out2L1").textContent = fmt(_raw2.L1);
+      document.getElementById("out2L2").textContent = fmt(_raw2.L2);
+    } else {
+      document.getElementById("out2Radius").textContent = fmt(_raw2.r1);
+      document.getElementById("out2L1").textContent = fmt(_raw2.arcPlusTrans);
+      document.getElementById("out2L2").textContent = fmt(_raw2.bankEstab);
+    }
+    document.getElementById("out2M").textContent = fmt(_raw2.M);
   }
-  document.getElementById("out2M").textContent = fmt(_raw2.M);
 
   // MSD total
   var msd = _raw1.M + _raw2.M;
@@ -173,6 +178,8 @@ function setupEventListeners() {
     document
       .getElementById(prefix + "Type")
       .addEventListener("change", function () {
+        // Reset override when type changes — override only applies to flyby
+        document.getElementById(prefix + "TurnOverride").checked = false;
         // Re-check warning when type changes
         var angleEl = document.getElementById(prefix + "TurnAngle");
         angleEl.dispatchEvent(new Event("input"));
@@ -230,14 +237,14 @@ function handleUnitChange(inputId, unitSelectId) {
 
 // ── Aviation formulas ─────────────────────────────────────────────────────────
 
-function computeFlyby(ias, altitude_ft, bankAngle, turnAngle, isaDeviation) {
+function computeFlyby(ias, altitude_ft, bankAngle, turnAngle, isaDeviation, override) {
   var DEG_TO_RAD = Math.PI / 180;
   var kFactor = calculateKFactor(altitude_ft, isaDeviation);
   var tas = calculateTAS(ias, kFactor);
   var rObj = calculateRadiusWithRateOfTurnCap(tas, bankAngle);
   var r = rObj.radiusForCalc;
-  var effectiveTurn = Math.max(turnAngle, 50);
-  var minApplied = effectiveTurn !== turnAngle;
+  var effectiveTurn = override ? turnAngle : Math.max(turnAngle, 50);
+  var minApplied = !override && effectiveTurn !== turnAngle;
   var L1 = r * Math.tan((effectiveTurn / 2) * DEG_TO_RAD);
   var L2 = (5 * tas) / 3600;
   var M = L1 + L2;
@@ -250,6 +257,7 @@ function computeFlyby(ias, altitude_ft, bankAngle, turnAngle, isaDeviation) {
     L1: L1,
     L2: L2,
     M: M,
+    inputTurn: turnAngle,
     effectiveTurn: effectiveTurn,
     minApplied: minApplied,
   };
@@ -293,6 +301,8 @@ function computeFlyover(ias, altitude_ft, bankAngle, turnAngle, isaDeviation) {
 // ── Main calculation ──────────────────────────────────────────────────────────
 
 function calculateMSD() {
+  updateCaseDiagram();
+
   // Read shared inputs
   var distanceD = parseFloat(document.getElementById("distance").value);
   var isaRaw = document.getElementById("isaDeviation").value.trim();
@@ -311,6 +321,8 @@ function calculateMSD() {
 
   // Read WP2 inputs
   var wp2Type = document.getElementById("wp2Type").value;
+  // WP2 only contributes M₂ when it is a Flyby (PANS-OPS §1.4.2 cases 2, 3, 4)
+  var wp2Active = wp2Type === "flyby";
   var wp2Ias = parseFloat(document.getElementById("wp2Ias").value);
   var wp2AltRaw = parseFloat(document.getElementById("wp2Altitude").value);
   var wp2AltUnit = document.getElementById("wp2AltitudeUnit").value;
@@ -343,41 +355,42 @@ function calculateMSD() {
     showToast("WP1: Bank angle must be between 1° and 89°.", "error");
     return;
   }
-  if (isNaN(wp1Turn) || wp1Turn < 50 || wp1Turn >= 360) {
-    showToast("WP1: Turn angle must be at least 50°.", "error");
+  if (isNaN(wp1Turn) || wp1Turn <= 0 || wp1Turn >= 360) {
+    showToast("WP1: Enter a turn angle between 1° and 359°.", "error");
     return;
   }
-  if (isNaN(wp2Ias) || wp2Ias <= 0) {
-    showToast("WP2: Please enter a valid IAS.", "error");
-    return;
-  }
-  if (isNaN(wp2AltRaw) || wp2AltRaw < 0) {
-    showToast("WP2: Please enter a valid altitude.", "error");
-    return;
-  }
-  if (isNaN(wp2Bank) || wp2Bank <= 0 || wp2Bank >= 90) {
-    showToast("WP2: Bank angle must be between 1° and 89°.", "error");
-    return;
-  }
-  if (isNaN(wp2Turn) || wp2Turn < 50 || wp2Turn >= 360) {
-    showToast("WP2: Turn angle must be at least 50°.", "error");
-    return;
+  if (wp2Active) {
+    if (isNaN(wp2Ias) || wp2Ias <= 0) {
+      showToast("WP2: Please enter a valid IAS.", "error");
+      return;
+    }
+    if (isNaN(wp2AltRaw) || wp2AltRaw < 0) {
+      showToast("WP2: Please enter a valid altitude.", "error");
+      return;
+    }
+    if (isNaN(wp2Bank) || wp2Bank <= 0 || wp2Bank >= 90) {
+      showToast("WP2: Bank angle must be between 1° and 89°.", "error");
+      return;
+    }
+    if (isNaN(wp2Turn) || wp2Turn < 50 || wp2Turn >= 360) {
+      showToast("WP2: Turn angle must be at least 50°.", "error");
+      return;
+    }
   }
 
   // Convert altitudes to ft
   var wp1Alt_ft = wp1AltUnit === "m" ? wp1AltRaw / 0.3048 : wp1AltRaw;
-  var wp2Alt_ft = wp2AltUnit === "m" ? wp2AltRaw / 0.3048 : wp2AltRaw;
+  var wp2Alt_ft = wp2Active ? (wp2AltUnit === "m" ? wp2AltRaw / 0.3048 : wp2AltRaw) : 0;
 
-  // Compute per WP
+  // Compute per WP — WP2 flyover cases use M₂=0 per PANS-OPS §1.4.2
   var res1 =
     wp1Type === "flyby"
-      ? computeFlyby(wp1Ias, wp1Alt_ft, wp1Bank, wp1Turn, isaDeviation)
+      ? computeFlyby(wp1Ias, wp1Alt_ft, wp1Bank, wp1Turn, isaDeviation, wp1Override)
       : computeFlyover(wp1Ias, wp1Alt_ft, wp1Bank, wp1Turn, isaDeviation);
 
-  var res2 =
-    wp2Type === "flyby"
-      ? computeFlyby(wp2Ias, wp2Alt_ft, wp2Bank, wp2Turn, isaDeviation)
-      : computeFlyover(wp2Ias, wp2Alt_ft, wp2Bank, wp2Turn, isaDeviation);
+  var res2 = wp2Active
+    ? computeFlyby(wp2Ias, wp2Alt_ft, wp2Bank, wp2Turn, isaDeviation)
+    : { type: "flyover", M: 0, kFactor: 0, tas: 0 };
 
   // Store
   _raw1 = res1;
@@ -483,6 +496,17 @@ function renderWPResults(n, result, name) {
   var l1Label = document.getElementById(prefix + "L1Label");
   var l2Label = document.getElementById(prefix + "L2Label");
 
+  // WP2 flyover zero case — hide intermediate grid, show only M₂=0
+  if (n === 2 && result.kFactor === 0) {
+    typeBadge.textContent = "Flyover";
+    document.getElementById("out2Grid").classList.add("hidden");
+    return;
+  }
+
+  if (n === 2) {
+    document.getElementById("out2Grid").classList.remove("hidden");
+  }
+
   if (result.type === "flyby") {
     typeBadge.textContent = "Flyby";
     radiusLabel.textContent = "Radius r";
@@ -493,6 +517,16 @@ function renderWPResults(n, result, name) {
     radiusLabel.textContent = "r\u2081 (roll-in)";
     l1Label.textContent = "Arc+transition (L1\u2013L4)";
     l2Label.textContent = "L5 (bank estab.)";
+  }
+
+  var minNote = document.getElementById(prefix + "MinAppliedNote");
+  if (result.type === "flyby" && result.minApplied) {
+    minNote.textContent =
+      "\u26A0\uFE0F 50\u00B0 minimum applied \u2014 entered " +
+      result.inputTurn.toFixed(1) + "\u00B0, using 50\u00B0";
+    minNote.classList.remove("hidden");
+  } else {
+    minNote.classList.add("hidden");
   }
 
   document.getElementById(prefix + "L1Cell").classList.remove("hidden");
@@ -605,6 +639,10 @@ function copyToWord() {
     "WP1 TAS (KT)": fmt(_raw1.tas),
   };
   if (_raw1.type === "flyby") {
+    if (_raw1.minApplied) {
+      wp1Rows["WP1 Turn Angle entered (\u00B0)"] = fmt(_raw1.inputTurn);
+      wp1Rows["WP1 Effective Turn \u2265 50\u00B0 (\u00B0)"] = fmt(_raw1.effectiveTurn) + " (50\u00B0 min applied)";
+    }
     wp1Rows["WP1 Rate of Turn R (\u00B0/s)"] = fmt(_raw1.rateOfTurn);
     wp1Rows["WP1 Radius r (NM)"] = fmt(_raw1.r);
     wp1Rows["WP1 r\u00B7tan(A/2) (NM)"] = fmt(_raw1.L1);
@@ -618,25 +656,31 @@ function copyToWord() {
   }
   wp1Rows["M\u2081 (NM)"] = fmt(_raw1.M);
 
-  // Build WP2 rows
-  var wp2Rows = {
-    "WP2 Type": _raw2.type.charAt(0).toUpperCase() + _raw2.type.slice(1),
-    "WP2 k Factor": fmt(_raw2.kFactor),
-    "WP2 TAS (KT)": fmt(_raw2.tas),
-  };
-  if (_raw2.type === "flyby") {
-    wp2Rows["WP2 Rate of Turn R (\u00B0/s)"] = fmt(_raw2.rateOfTurn);
-    wp2Rows["WP2 Radius r (NM)"] = fmt(_raw2.r);
-    wp2Rows["WP2 r\u00B7tan(B/2) (NM)"] = fmt(_raw2.L1);
-    wp2Rows["WP2 5s\u00B7TAS/3600 (NM)"] = fmt(_raw2.L2);
+  // Build WP2 rows — flyover zero case omits intermediate values
+  var wp2Rows;
+  if (_raw2.kFactor === 0) {
+    wp2Rows = { "WP2 Type": "Flyover (M₂ = 0)" };
+    wp2Rows["M₂ (NM)"] = fmt(0);
   } else {
-    wp2Rows["WP2 R1 roll-in (\u00B0/s)"] = fmt(_raw2.rot1);
-    wp2Rows["WP2 R2 roll-out 15\u00B0 (\u00B0/s)"] = fmt(_raw2.rot2);
-    wp2Rows["WP2 r\u2081 roll-in (NM)"] = fmt(_raw2.r1);
-    wp2Rows["WP2 Arc+transition L1\u2013L4 (NM)"] = fmt(_raw2.arcPlusTrans);
-    wp2Rows["WP2 L5 bank estab. (NM)"] = fmt(_raw2.bankEstab);
+    wp2Rows = {
+      "WP2 Type": _raw2.type.charAt(0).toUpperCase() + _raw2.type.slice(1),
+      "WP2 k Factor": fmt(_raw2.kFactor),
+      "WP2 TAS (KT)": fmt(_raw2.tas),
+    };
+    if (_raw2.type === "flyby") {
+      wp2Rows["WP2 Rate of Turn R (\u00B0/s)"] = fmt(_raw2.rateOfTurn);
+      wp2Rows["WP2 Radius r (NM)"] = fmt(_raw2.r);
+      wp2Rows["WP2 r\u00B7tan(B/2) (NM)"] = fmt(_raw2.L1);
+      wp2Rows["WP2 5s\u00B7TAS/3600 (NM)"] = fmt(_raw2.L2);
+    } else {
+      wp2Rows["WP2 R1 roll-in (\u00B0/s)"] = fmt(_raw2.rot1);
+      wp2Rows["WP2 R2 roll-out 15\u00B0 (\u00B0/s)"] = fmt(_raw2.rot2);
+      wp2Rows["WP2 r\u2081 roll-in (NM)"] = fmt(_raw2.r1);
+      wp2Rows["WP2 Arc+transition L1\u2013L4 (NM)"] = fmt(_raw2.arcPlusTrans);
+      wp2Rows["WP2 L5 bank estab. (NM)"] = fmt(_raw2.bankEstab);
+    }
+    wp2Rows["M\u2082 (NM)"] = fmt(_raw2.M);
   }
-  wp2Rows["M\u2082 (NM)"] = fmt(_raw2.M);
 
   // Combined rows
   var msd = _raw1.M + _raw2.M;
