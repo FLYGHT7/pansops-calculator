@@ -231,7 +231,11 @@ function createHTMLTable(data, title) {
   `;
 
   for (const [key, value] of Object.entries(data)) {
-    htmlContent += `<tr><td style="padding:8px;text-align:left">${key}</td><td style="padding:8px;text-align:left">${value}</td></tr>`;
+    if (value === "__section__") {
+      htmlContent += `<tr style="background:#1e3a5f;color:#ffffff"><td colspan="2" style="padding:6px 8px;font-weight:bold">${key}</td></tr>`;
+    } else {
+      htmlContent += `<tr><td style="padding:8px;text-align:left">${key}</td><td style="padding:8px;text-align:left">${value}</td></tr>`;
+    }
   }
 
   htmlContent += `</table>`;
