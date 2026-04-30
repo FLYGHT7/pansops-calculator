@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="rod.title">GS / Rate of Descent Table Builder</title>
+    <script src="suppress-tailwind-warn.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="shared-config.js"></script>
+    <link rel="stylesheet" href="dark-mode.css" />
+    <script src="aviation-utils.js"></script>
+    <script src="i18n/i18n.js"></script>
+    <style>
+      /* ── Layout ─────────────────────────────────────── */
+      #rodApp {
+        display: grid;
+        gap: 1.25rem;
+        align-items: start;
+        transition: grid-template-columns 360ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      #rodFormPanel {
+        max-width: 42rem;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+        transition: max-width 360ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      #rodApp.split #rodFormPanel {
+        max-width: none;
+        margin-left: 0;
+        margin-right: 0;
+      }
+      #rodApp.split {
+        grid-template-columns: 340px 1fr;
+      }
+      @media (max-width: 800px) {
+        #rodApp.split {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ── Editor panel ───────────────────────────────── */
+      #rodEditor {
+        display: none;
+        min-width: 0;
+      }
+      #rodEditor.visible {
+        display: block;
+      }
+
+      /* ── Table ──────────────────────────────────────── */
+      .rod-table {
+        border-collapse: collapse;
+        width: 100%;
+        font-family: Calibri, Arial, sans-serif;
+        font-size: 13px;
+        border: 2px solid rgba(100, 116, 139, 0.55);
+      }
+      .rod-table td,
+      .rod-table th {
+        border: 1px solid rgba(100, 116, 139, 0.35);
+      }
+      .rod-table [contenteditable] {
+        outline: none;
+        cursor: text;
+        border-radius: 3px;
+        transition: box-shadow 120ms, background 120ms;
+      }
+      .rod-table [contenteditable]:focus {
+        box-shadow: inset 0 0 0 2px rgba(99, 102, 241, 0.6);
+        background: rgba(99, 102, 241, 0.1) !important;
+      }
+      .rod-table [contenteditable][data-ph]:empty:before {
+        content: attr(data-ph);
+        color: #64748b;
+        pointer-events: none;
+        font-style: italic;
+      }
+
+      /* ── Control buttons — light mode ───────────────── */
+      .rod-cbtn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        font-size: 12px;
+        font-weight: 700;
+        border-radius: 4px;
+        border: 1px solid #d1d5db;
+        background: #f1f5f9;
+        color: #374151;
+        cursor: pointer;
+        line-height: 1;
+        transition: background 120ms, color 120ms, border-color 120ms;
+        vertical-align: middle;
+      }
+      .rod-cbtn:hover:not(:disabled) {
+        background: rgba(99, 102, 241, 0.12);
+        border-color: rgba(99, 102, 241, 0.5);
+        color: #4338ca;
+      }
+      .rod-cbtn:disabled {
+        opacity: 0.25;
+        cursor: default;
+      }
+      .rod-cbtn.danger {
+        background: #fee2e2;
+        border-color: rgba(239, 68, 68, 0.5);
+        color: #dc2626;
+      }
+      .rod-cbtn.danger:hover:not(:disabled) {
+        background: #fecaca;
+        border-color: #ef4444;
+        color: #991b1b;
+      }
+
+      /* dark mode overrides */
+      .dark .rod-cbtn {
+        background: rgba(51, 65, 85, 0.65);
+        border-color: rgba(148, 163, 184, 0.4);
+        color: #cbd5e1;
+      }
+      .dark .rod-cbtn:hover:not(:disabled) {
+        background: rgba(99, 102, 241, 0.5);
+        border-color: rgba(99, 102, 241, 0.7);
+        color: #e0e7ff;
+      }
+      .dark .rod-cbtn.danger {
+        background: rgba(127, 29, 29, 0.45);
+        border-color: rgba(239, 68, 68, 0.5);
+        color: #fca5a5;
+      }
+      .dark .rod-cbtn.danger:hover:not(:disabled) {
+        background: rgba(239, 68, 68, 0.5);
+        border-color: rgba(239, 68, 68, 0.8);
+        color: #fff;
+      }
+
+      /* ── Column control row background ───────────────── */
+      .rod-col-ctrl-tr { background: #f1f5f9; }
+      .dark .rod-col-ctrl-tr { background: rgba(15, 23, 42, 0.35); }
+
+      /* ── Unit cell color ──────────────────────────────── */
+      .rod-unit-cell { color: #6b7280; }
+      .dark .rod-unit-cell { color: #94a3b8; }
+
+      /* ── Add row / col buttons — light mode ──────────── */
+      .rod-add-row-btn,
+      .rod-add-col-btn {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 5px;
+        border: 1px dashed #9ca3af;
+        background: #f9fafb;
+        color: #6b7280;
+        cursor: pointer;
+        transition: border-color 120ms, color 120ms, background 120ms;
+        white-space: nowrap;
+      }
+      .rod-add-row-btn:hover,
+      .rod-add-col-btn:hover {
+        border-color: #6366f1;
+        color: #4338ca;
+        background: rgba(99, 102, 241, 0.08);
+      }
+      .dark .rod-add-row-btn,
+      .dark .rod-add-col-btn {
+        border-color: rgba(148, 163, 184, 0.55);
+        background: rgba(51, 65, 85, 0.3);
+        color: #94a3b8;
+      }
+      .dark .rod-add-row-btn:hover,
+      .dark .rod-add-col-btn:hover {
+        border-color: rgba(99, 102, 241, 0.7);
+        color: #c7d2fe;
+        background: rgba(99, 102, 241, 0.15);
+      }
+
+      /* ── Delete block button ──────────────────────────── */
+      .rod-del-block-btn {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 4px;
+        border: 1px solid rgba(239, 68, 68, 0.55);
+        background: #fee2e2;
+        color: #dc2626;
+        cursor: pointer;
+        transition: background 120ms, border-color 120ms;
+      }
+      .rod-del-block-btn:hover {
+        background: #fecaca;
+        border-color: #ef4444;
+      }
+      .dark .rod-del-block-btn {
+        background: rgba(127, 29, 29, 0.25);
+        color: #fca5a5;
+        border-color: rgba(239, 68, 68, 0.5);
+      }
+      .dark .rod-del-block-btn:hover {
+        background: rgba(239, 68, 68, 0.25);
+        border-color: rgba(239, 68, 68, 0.8);
+      }
+
+      /* ── Block separator ────────────────────────────── */
+      .rod-block + .rod-block {
+        margin-top: 1.75rem;
+        padding-top: 1.75rem;
+        border-top: 2px solid rgba(100, 116, 139, 0.3);
+      }
+
+      /* ── Add button disabled state ──────────────────── */
+      #btnAddBlock:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+    </style>
+  </head>
+
+  <body class="bg-gray-50 dark:bg-gray-900 min-h-screen p-4">
+    <div id="rodApp">
+
+      <!-- ═══════════════════════════════════════════════
+           LEFT PANEL — Calculator form
+      ════════════════════════════════════════════════ -->
+      <div id="rodFormPanel">
+        <div class="bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+
+          <!-- Header -->
+          <header class="mb-5">
+            <h1 class="text-xl sm:text-2xl font-bold text-primary-700 dark:text-primary-300 flex items-center gap-2">
+              <svg class="w-6 h-6 shrink-0 text-primary-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                <line x1="3" y1="9" x2="21" y2="9"></line>
+                <line x1="3" y1="15" x2="21" y2="15"></line>
+                <line x1="9" y1="9" x2="9" y2="21"></line>
+              </svg>
+              <span data-i18n="rod.title">GS / Rate of Descent Table Builder</span>
+            </h1>
+          </header>
+
+          <!-- Save / Load -->
+          <div class="flex flex-wrap gap-2 mb-5">
+            <button id="btnSave" type="button"
+              class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+              <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              <span data-i18n="common.save">Save</span>
+            </button>
+            <button id="btnLoad" type="button"
+              class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+              <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <span data-i18n="common.load">Load</span>
+            </button>
+            <input id="loadFile" type="file" accept=".json" class="hidden" />
+          </div>
+
+          <!-- Inputs -->
+          <fieldset>
+            <legend class="sr-only" data-i18n="rod.tableParams">Table Parameters</legend>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+              <div>
+                <label for="rodDistance"
+                  class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1"
+                  data-i18n="rod.distance">Distance (NM)</label>
+                <input id="rodDistance" type="number" step="0.1" min="0.1"
+                  class="w-full px-2.5 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  data-i18n-attr="placeholder" data-i18n="rod.phDistance" placeholder="e.g. 5.2" />
+              </div>
+              <div>
+                <label for="rodGradient"
+                  class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1"
+                  data-i18n="rod.gradient">Gradient (%)</label>
+                <input id="rodGradient" type="number" step="0.1" min="0.1" max="30"
+                  class="w-full px-2.5 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  data-i18n-attr="placeholder" data-i18n="rod.phGradient" placeholder="e.g. 5.3" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+              <div>
+                <label for="rodTitleRow"
+                  class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1"
+                  data-i18n="rod.titleRow">Title Row</label>
+                <input id="rodTitleRow" type="text"
+                  class="w-full px-2.5 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  data-i18n-attr="placeholder" data-i18n="rod.phTitleRow" placeholder="e.g. Rate of Descent" />
+              </div>
+              <div>
+                <label for="rodFooterRow"
+                  class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1"
+                  data-i18n="rod.footerRow">Footer Row</label>
+                <input id="rodFooterRow" type="text"
+                  class="w-full px-2.5 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  data-i18n-attr="placeholder" data-i18n="rod.phFooterRow" placeholder="Leave blank to omit" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+              <div>
+                <label for="rodTimingLabel"
+                  class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1"
+                  data-i18n="rod.timingLabel">Timing Label</label>
+                <input id="rodTimingLabel" type="text"
+                  class="w-full px-2.5 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  data-i18n-attr="placeholder" data-i18n="rod.phTimingLabel" placeholder="Auto" />
+              </div>
+              <div>
+                <label for="rodRODLabel"
+                  class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1"
+                  data-i18n="rod.rodLabel">ROD Label</label>
+                <input id="rodRODLabel" type="text"
+                  class="w-full px-2.5 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  data-i18n-attr="placeholder" data-i18n="rod.phRODLabel" placeholder="Auto" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+              <div>
+                <label for="rodGSUnit"
+                  class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1"
+                  data-i18n="rod.gsUnit">GS Unit</label>
+                <select id="rodGSUnit"
+                  class="w-full px-2.5 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                  <option value="KT" selected>KT</option>
+                  <option value="km/h">km/h</option>
+                </select>
+              </div>
+              <div>
+                <label for="rodTimingUnit"
+                  class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1"
+                  data-i18n="rod.timingUnit">Timing Unit</label>
+                <select id="rodTimingUnit"
+                  class="w-full px-2.5 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500">
+                  <option value="min:s" selected>min:s</option>
+                  <option value="min">min</option>
+                  <option value="s">s</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="rodGSValues"
+                class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1"
+                data-i18n="rod.gsValues">GS Values</label>
+              <input id="rodGSValues" type="text" value="70, 90, 100, 120, 140, 160"
+                class="w-full px-2.5 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                data-i18n-attr="placeholder" data-i18n="rod.phGSValues" placeholder="e.g. 70, 90, 100, 120, 140, 160" />
+              <p class="mt-1 text-xs text-gray-400" data-i18n="rod.gsValuesHint">Comma-separated integers (knots)</p>
+            </div>
+          </fieldset>
+
+          <!-- Action buttons -->
+          <div class="flex gap-2 justify-end mt-2">
+            <button id="btnCalcROD" type="button"
+              class="px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+              <span data-i18n="rod.buildTable">Build Table</span>
+            </button>
+            <button id="btnAddBlock" type="button" disabled
+              class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-600 text-white text-sm font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
+              <span data-i18n="rod.addTable">Add</span>
+            </button>
+          </div>
+
+        </div>
+      </div><!-- /rodFormPanel -->
+
+      <!-- ═══════════════════════════════════════════════
+           RIGHT PANEL — Table editor
+      ════════════════════════════════════════════════ -->
+      <div id="rodEditor" role="region" aria-live="polite" aria-atomic="false">
+        <div class="bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+
+          <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+            <h2 class="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-primary-500 inline-block"></span>
+              <span data-i18n="rod.previewTitle">Preview</span>
+            </h2>
+            <button id="btnCopy" type="button"
+              class="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors">
+              <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span data-i18n="common.copyToWord">Copy to Word</span>
+            </button>
+          </div>
+
+          <div id="rodBlocks" class="overflow-x-auto"></div>
+
+        </div>
+      </div><!-- /rodEditor -->
+
+    </div><!-- /rodApp -->
+
+    <script src="js/rod_timing.js"></script>
+  </body>
+</html>
