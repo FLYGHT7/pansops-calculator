@@ -303,7 +303,8 @@
     "phGSValues": "e.g. 70, 90, 100, 120, 140, 160",
     "previewTitle": "Preview",
     "buildTable": "Build Table",
-    "addTable": "Add"
+    "addTable": "Add",
+    "roundROD": "Round ROD to nearest 5"
   },
   "windSpiral": {
     "title": "Wind Spiral Calculator"

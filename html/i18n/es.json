@@ -303,7 +303,8 @@
     "phGSValues": "ej. 70, 90, 100, 120, 140, 160",
     "previewTitle": "Vista previa",
     "buildTable": "Construir tabla",
-    "addTable": "Agregar"
+    "addTable": "Agregar",
+    "roundROD": "Redondear ROD al múltiplo de 5 más cercano"
   },
   "windSpiral": {
     "title": "Calculadora de Espiral de Viento"

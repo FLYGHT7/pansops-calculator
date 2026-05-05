@@ -56,6 +56,7 @@ function createBlockFromInputs() {
   var gsValues   = parseGSValues(document.getElementById("rodGSValues").value);
   var timingLabelInput = document.getElementById("rodTimingLabel").value.trim();
   var rodLabelInput    = document.getElementById("rodRODLabel").value.trim();
+  var round5           = document.getElementById("rodRoundROD").checked;
 
   var timingLabel = timingLabelInput || "FAF-MAPt " + distance + "NM";
   var rodLabel    = rodLabelInput    || "Rate of Descent " + gradient + "%";
@@ -75,7 +76,10 @@ function createBlockFromInputs() {
       {
         label : rodLabel,
         unit  : "ft/min",
-        values: gsValues.map(function (gs) { return String(computeROD(gs, gradient)); })
+        values: gsValues.map(function (gs) {
+          var v = computeROD(gs, gradient);
+          return String(round5 ? Math.round(v / 5) * 5 : v);
+        })
       }
     ]
   };
@@ -91,8 +95,19 @@ function validateInputs() {
   if (isNaN(gradient) || gradient <= 0 || gradient > 30) {
     showToast("Please enter a gradient between 0.1% and 30%.", "error"); return false;
   }
-  if (parseGSValues(document.getElementById("rodGSValues").value).length === 0) {
+  var gsValues = parseGSValues(document.getElementById("rodGSValues").value);
+  if (gsValues.length === 0) {
     showToast("Please enter at least one valid GS value.", "error"); return false;
+  }
+  var seen = {};
+  var dupes = [];
+  gsValues.forEach(function (v) {
+    if (seen[v]) dupes.push(v);
+    else seen[v] = true;
+  });
+  if (dupes.length > 0) {
+    showToast("Duplicate GS value(s): " + dupes.join(", ") + ". Remove duplicates before building.", "error");
+    return false;
   }
   return true;
 }
