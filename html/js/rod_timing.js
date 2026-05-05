@@ -140,7 +140,7 @@ function buildBlockElement(block, bi) {
   h += '<tr>';
   h += '<td colspan="' + totalCols + '" contenteditable="true" ' +
     'data-field="title" data-block="' + bi + '" data-ph="Title (leave blank to hide)" ' +
-    'style="background:#0c2240;color:#fff;padding:7px 10px;font-weight:bold;font-size:13px">' +
+    'style="background:#0c2240;color:#fff;padding:7px 10px;font-weight:bold;font-size:0.8125rem">' +
     escapeHtml(block.title) + '</td>';
   h += '</tr>';
 
@@ -228,7 +228,7 @@ function buildBlockElement(block, bi) {
   h += '<tr>';
   h += '<td colspan="' + totalCols + '" contenteditable="true" ' +
     'data-field="footer" data-block="' + bi + '" data-ph="Footer (leave blank to hide)" ' +
-    'style="padding:7px 10px;font-style:italic;color:#94a3b8;font-size:12px">' +
+    'style="padding:7px 10px;font-style:italic;color:#94a3b8;font-size:0.75rem">' +
     escapeHtml(block.footer) + '</td>';
   h += '</tr>';
 
