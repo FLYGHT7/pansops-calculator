@@ -944,6 +944,23 @@
                 </li>
                 <li>
                   <button
+                    id="fafEstimatorButton"
+                    data-label="FAF Estimator"
+                    onclick="loadPage('FAF_Estimator.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                  >
+                    <svg aria-hidden="true" focusable="false" class="text-primary-400 w-5 h-5 mr-3 sidebar-icon shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 20L20 5"/>
+                      <circle cx="12" cy="12" r="2.5"/>
+                      <path d="M12 14.5V20" stroke-dasharray="2 2"/>
+                    </svg>
+                    <span class="sidebar-label" data-i18n="faf.title"
+                      >FAF Estimator</span
+                    >
+                  </button>
+                </li>
+                <li>
+                  <button
                     id="npaSocButton"
                     data-label="NPA SOC Calculation"
                     onclick="loadPage('NPA_SOC_Calculation.html', this)"
@@ -1727,6 +1744,7 @@
         "#rate-turn": { url: "rate_turn.html", buttonId: "rateTurnButton" },
         "#dme": { url: "dme_tolerance.html", buttonId: "dmeButton" },
         "#profile": { url: "Profile_Check.html", buttonId: "elevationButton" },
+        "#faf-estimator": { url: "FAF_Estimator.html", buttonId: "fafEstimatorButton" },
         "#npa-soc": {
           url: "NPA_SOC_Calculation.html",
           buttonId: "npaSocButton",
@@ -1782,6 +1800,7 @@
         "rate_turn.html": "Rate & Radius of Turn",
         "dme_tolerance.html": "DME Tolerance",
         "Profile_Check.html": "Profile Estimator",
+        "FAF_Estimator.html": "FAF Estimator",
         "NPA_SOC_Calculation.html": "NPA SOC Calculation",
         "VSS_OCS.html": "VSS / OCS Parameters",
         "Flyover_Calculation.html": "Flyover MSD",
