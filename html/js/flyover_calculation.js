@@ -37,7 +37,7 @@ if (typeof calculateRadiusWithRateOfTurnCap === "undefined") {
   function calculateRadiusWithRateOfTurnCap(tas, bankAngle_deg) {
     var radius =
       (tas * tas) / (68625 * Math.tan(bankAngle_deg * _DEG_TO_RAD_FB2));
-    var rateOfTurn = tas / (111.95 * radius);
+    var rateOfTurn = tas / (20 * Math.PI * radius);
     var rateOfTurnCapped = Math.min(rateOfTurn, 3);
     var radiusForCalc =
       rateOfTurnCapped < rateOfTurn
@@ -646,9 +646,6 @@ function copyToWord() {
     document.getElementById("copyPrecision").dataset.value === "exact";
   const fmt = (v) => (exact ? v.toString() : v.toFixed(4));
 
-  var rateR1 = (_raw.tas / _raw.r1) * (180 / Math.PI) / 60;
-  var rateR2 = (_raw.tas / _raw.r2) * (180 / Math.PI) / 60;
-
   const tableData = {
     IAS: document.getElementById("ias").value + " KT",
     "Altitude h1":
@@ -661,9 +658,9 @@ function copyToWord() {
     "Bank Angle r1": document.getElementById("bankAngle").value + "°",
     "Turn Angle (input)": document.getElementById("turnAngle").value + "°",
     TAS: fmt(_raw.tas) + " KT",
-    "R1": fmt(rateR1) + " °/min",
+    "R1 (rate of turn roll-in)": fmt(_raw.rot1) + " °/s",
     "Turn Angle Used": document.getElementById("outThetaEff").textContent,
-    "R2": fmt(rateR2) + " °/min",
+    "R2 (rate of turn roll-out 15°)": fmt(_raw.rot2) + " °/s",
     "r1 (roll-in)": fmt(_raw.r1) + " NM",
     "r2 (roll-out, 15° fixed)": fmt(_raw.r2) + " NM",
     L1: fmt(_raw.L1) + " NM",
