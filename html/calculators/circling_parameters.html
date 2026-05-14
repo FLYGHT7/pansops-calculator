@@ -4,12 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Circling Protection Area</title>
-    <script src="suppress-tailwind-warn.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="shared-config.js"></script>
-    <link rel="stylesheet" href="dark-mode.css" />
-    <script src="aviation-utils.js"></script>
-    <script src="i18n/i18n.js"></script>
+    <link rel="stylesheet" href="../css/tailwind.css" />
+    <script src="../js/shared/shared-config.js" defer></script>
+    <link rel="stylesheet" href="../css/dark-mode.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script src="../js/shared/aviation-utils.js" defer></script>
+    <script src="../i18n/i18n.js" defer></script>
     <style>
       /* Results table — highlight output row */
       .result-output td {
@@ -153,8 +154,10 @@
       }
 
       /* Validation banner */
-      .validation-banner {
+      .validation-banner:not(.hidden) {
         display: flex;
+      }
+      .validation-banner {
         align-items: flex-start;
         gap: 10px;
         background: rgba(239, 68, 68, 0.07);
@@ -299,7 +302,7 @@
     </style>
   </head>
   <body
-    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-start justify-center p-4"
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4"
   >
     <main
       class="max-w-5xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"

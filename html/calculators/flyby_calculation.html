@@ -14,16 +14,14 @@
       media="(prefers-color-scheme: dark)"
     />
     <title data-i18n="flyby.title">Flyby MSD Calculator</title>
-    <link rel="preconnect" href="https://cdn.tailwindcss.com" />
-    <script src="suppress-tailwind-warn.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="shared-config.js"></script>
-    <link rel="stylesheet" href="dark-mode.css" />
-    <script src="aviation-utils.js"></script>
-    <script src="i18n/i18n.js"></script>
+    <link rel="stylesheet" href="../css/tailwind.css" />
+    <script src="../js/shared/shared-config.js" defer></script>
+    <link rel="stylesheet" href="../css/dark-mode.css" />
+    <script src="../js/shared/aviation-utils.js" defer></script>
+    <script src="../i18n/i18n.js" defer></script>
   </head>
   <body
-    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-start justify-center pt-8 p-4"
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4"
   >
     <main
       class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
@@ -567,6 +565,6 @@
       </figure>
     </main>
 
-    <script src="js/flyby_calculation.js"></script>
+    <script src="../js/flyby_calculation.js" defer></script>
   </body>
 </html>

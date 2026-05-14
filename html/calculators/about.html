@@ -4,9 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-i18n="about.title">About — PANSOPS Calculator Suite</title>
-    <script src="suppress-tailwind-warn.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="shared-config.js"></script>
+    <link rel="stylesheet" href="../css/tailwind.css" />
+    <script src="../js/shared/shared-config.js" defer></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll(".app-version").forEach(function (el) {
@@ -14,8 +13,10 @@
         });
       });
     </script>
-    <link rel="stylesheet" href="dark-mode.css" />
-    <script src="i18n/i18n.js"></script>
+    <link rel="stylesheet" href="../css/dark-mode.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script src="../i18n/i18n.js" defer></script>
     <style>
       /* Page-level background — mirrors dark-mode.css body bg in dark */
       body {

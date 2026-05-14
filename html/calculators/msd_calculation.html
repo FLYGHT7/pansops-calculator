@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -14,13 +14,11 @@
       media="(prefers-color-scheme: dark)"
     />
     <title data-i18n="msd.title">MSD Combined Calculator</title>
-    <link rel="preconnect" href="https://cdn.tailwindcss.com" />
-    <script src="suppress-tailwind-warn.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="shared-config.js"></script>
-    <link rel="stylesheet" href="dark-mode.css" />
-    <script src="aviation-utils.js"></script>
-    <script src="i18n/i18n.js"></script>
+    <link rel="stylesheet" href="../css/tailwind.css" />
+    <script src="../js/shared/shared-config.js" defer></script>
+    <link rel="stylesheet" href="../css/dark-mode.css" />
+    <script src="../js/shared/aviation-utils.js" defer></script>
+    <script src="../i18n/i18n.js" defer></script>
   <style>
     @media (min-width: 1024px) {
       #caseRefSidebar { transition: width 0.3s ease, opacity 0.2s ease; }
@@ -1132,7 +1130,7 @@
         <div class="bg-white p-2">
           <img
             id="caseDiagramImg"
-            src="img/two fly-by waypoints.png"
+            src="../img/two-fly-by-waypoints.png"
             alt="Two Flyby Waypoints"
             class="w-full object-contain"
           />
@@ -1161,7 +1159,7 @@
       Case Ref
     </button>
 
-    <script src="js/msd_calculation.js"></script>
+    <script src="../js/msd_calculation.js" defer></script>
     <script>
       (function () {
         var sidebar = document.getElementById("caseRefSidebar");
