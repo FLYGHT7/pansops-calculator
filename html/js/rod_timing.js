@@ -56,6 +56,7 @@ function createBlockFromInputs() {
   var gsValues   = parseGSValues(document.getElementById("rodGSValues").value);
   var timingLabelInput = document.getElementById("rodTimingLabel").value.trim();
   var rodLabelInput    = document.getElementById("rodRODLabel").value.trim();
+  var round5           = document.getElementById("rodRoundROD").checked;
 
   var timingLabel = timingLabelInput || "FAF-MAPt " + distance + "NM";
   var rodLabel    = rodLabelInput    || "Rate of Descent " + gradient + "%";
@@ -75,7 +76,10 @@ function createBlockFromInputs() {
       {
         label : rodLabel,
         unit  : "ft/min",
-        values: gsValues.map(function (gs) { return String(computeROD(gs, gradient)); })
+        values: gsValues.map(function (gs) {
+          var v = computeROD(gs, gradient);
+          return String(round5 ? Math.round(v / 5) * 5 : v);
+        })
       }
     ]
   };
@@ -91,8 +95,19 @@ function validateInputs() {
   if (isNaN(gradient) || gradient <= 0 || gradient > 30) {
     showToast("Please enter a gradient between 0.1% and 30%.", "error"); return false;
   }
-  if (parseGSValues(document.getElementById("rodGSValues").value).length === 0) {
+  var gsValues = parseGSValues(document.getElementById("rodGSValues").value);
+  if (gsValues.length === 0) {
     showToast("Please enter at least one valid GS value.", "error"); return false;
+  }
+  var seen = {};
+  var dupes = [];
+  gsValues.forEach(function (v) {
+    if (seen[v]) dupes.push(v);
+    else seen[v] = true;
+  });
+  if (dupes.length > 0) {
+    showToast("Duplicate GS value(s): " + dupes.join(", ") + ". Remove duplicates before building.", "error");
+    return false;
   }
   return true;
 }
@@ -140,7 +155,7 @@ function buildBlockElement(block, bi) {
   h += '<tr>';
   h += '<td colspan="' + totalCols + '" contenteditable="true" ' +
     'data-field="title" data-block="' + bi + '" data-ph="Title (leave blank to hide)" ' +
-    'style="background:#0c2240;color:#fff;padding:7px 10px;font-weight:bold;font-size:13px">' +
+    'style="background:#0c2240;color:#fff;padding:7px 10px;font-weight:bold;font-size:0.8125rem">' +
     escapeHtml(block.title) + '</td>';
   h += '</tr>';
 
@@ -228,7 +243,7 @@ function buildBlockElement(block, bi) {
   h += '<tr>';
   h += '<td colspan="' + totalCols + '" contenteditable="true" ' +
     'data-field="footer" data-block="' + bi + '" data-ph="Footer (leave blank to hide)" ' +
-    'style="padding:7px 10px;font-style:italic;color:#94a3b8;font-size:12px">' +
+    'style="padding:7px 10px;font-style:italic;color:#94a3b8;font-size:0.75rem">' +
     escapeHtml(block.footer) + '</td>';
   h += '</tr>';
 
