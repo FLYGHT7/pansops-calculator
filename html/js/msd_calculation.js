@@ -27,7 +27,7 @@ if (typeof calculateRadiusWithRateOfTurnCap === "undefined") {
   var calculateRadiusWithRateOfTurnCap = function (tas, bankAngle_deg) {
     var DEG_TO_RAD = Math.PI / 180;
     var radius = (tas * tas) / (68625 * Math.tan(bankAngle_deg * DEG_TO_RAD));
-    var rateOfTurn = tas / (111.95 * radius);
+    var rateOfTurn = tas / (20 * Math.PI * radius);
     var rateOfTurnCapped = Math.min(rateOfTurn, 3);
     var radiusForCalc =
       rateOfTurnCapped < rateOfTurn
