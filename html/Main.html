@@ -1479,6 +1479,20 @@
               </select>
             </div>
 
+            <!-- Font size toggle -->
+            <button
+              id="fontSizeToggle"
+              type="button"
+              aria-label="Toggle font size"
+              title="Toggle font size (Normal / Large)"
+              class="flex items-center justify-center w-8 h-8 rounded-lg text-primary-400 hover:bg-white/10 transition-colors"
+            >
+              <span aria-hidden="true" class="font-bold leading-none select-none"
+                style="font-family:'Barlow',sans-serif">
+                <span style="font-size:0.6rem;opacity:0.7">A</span><span style="font-size:0.9rem">A</span>
+              </span>
+            </button>
+
             <!-- Separator -->
             <span class="w-px h-4 bg-gray-700" aria-hidden="true"></span>
 
@@ -1911,10 +1925,13 @@
           const lang = localStorage.getItem("lang") || "en";
           iframe.onload = function () {
             try {
+              const idoc = iframe.contentDocument || iframe.contentWindow.document;
               if (document.documentElement.classList.contains("dark")) {
-                const idoc =
-                  iframe.contentDocument || iframe.contentWindow.document;
                 idoc?.documentElement?.classList?.add("dark");
+              }
+              const scale = localStorage.getItem("pansops-font-scale");
+              if (idoc?.documentElement) {
+                idoc.documentElement.style.fontSize = (scale === "large") ? "112.5%" : "";
               }
               try {
                 const iw = iframe.contentWindow;
@@ -2005,10 +2022,13 @@
           url.searchParams.set("lang", lang);
           iframe.onload = function () {
             try {
+              const idoc = iframe.contentDocument || iframe.contentWindow.document;
               if (document.documentElement.classList.contains("dark")) {
-                const idoc =
-                  iframe.contentDocument || iframe.contentWindow.document;
                 idoc?.documentElement?.classList?.add("dark");
+              }
+              const scale = localStorage.getItem("pansops-font-scale");
+              if (idoc?.documentElement) {
+                idoc.documentElement.style.fontSize = (scale === "large") ? "112.5%" : "";
               }
               // Force-set language inside the iframe as an extra safeguard
               try {
@@ -2066,6 +2086,26 @@
           if (navigator.vibrate) {
             navigator.vibrate(20);
           }
+        });
+
+        // Font size toggle
+        const fontSizeToggle = document.getElementById("fontSizeToggle");
+        const savedScale = localStorage.getItem("pansops-font-scale");
+        if (savedScale === "large") {
+          html.style.fontSize = "112.5%";
+          fontSizeToggle.classList.add("bg-white/10");
+        }
+        fontSizeToggle.addEventListener("click", function () {
+          const isLarge = html.style.fontSize === "112.5%";
+          const nextSize = isLarge ? "" : "112.5%";
+          html.style.fontSize = nextSize;
+          localStorage.setItem("pansops-font-scale", isLarge ? "normal" : "large");
+          fontSizeToggle.classList.toggle("bg-white/10", !isLarge);
+          try {
+            const idoc = iframe.contentDocument || iframe.contentWindow.document;
+            if (idoc?.documentElement) idoc.documentElement.style.fontSize = nextSize;
+          } catch (e) {}
+          if (navigator.vibrate) navigator.vibrate(15);
         });
 
         // Initialize and handle language changes globally - OPTIMIZED

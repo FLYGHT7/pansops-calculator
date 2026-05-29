@@ -351,4 +351,13 @@ document.addEventListener("DOMContentLoaded", function () {
       attributeFilter: ["class"],
     });
   });
-});
+})();
+
+// ─── Font size preference ─────────────────────────────────────────────────────
+function checkFontSize() {
+  try {
+    var scale = localStorage.getItem("pansops-font-scale");
+    document.documentElement.style.fontSize = (scale === "large") ? "112.5%" : "";
+  } catch (e) {}
+}
+checkFontSize();
