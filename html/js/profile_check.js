@@ -232,12 +232,13 @@ function estimateProfile() {
   // Determine total distance to cover.
   const totalDistance = distToFaf + intermediateLength + initialLength;
   const gridMax = Math.ceil(totalDistance / 5) * 5 || 5;
-  const newSvgWidth = gridMax * xScale + 20;
+  const viewBoxWidth = gridMax * xScale + 100;
 
   // Update the SVG width and viewBox.
   const profileSvg = document.getElementById("profileSvg");
-  profileSvg.setAttribute("width", newSvgWidth);
-  profileSvg.setAttribute("viewBox", `-20 0 ${newSvgWidth} 400`);
+  profileSvg.setAttribute("width", "100%");
+  profileSvg.setAttribute("preserveAspectRatio", "none");
+  profileSvg.setAttribute("viewBox", `-20 0 ${viewBoxWidth} 400`);
 
   // Prepare grid/annotation HTML.
   const isDark = document.documentElement.classList.contains("dark");
@@ -248,7 +249,7 @@ function estimateProfile() {
   gridHtml += `<polygon points="${areaPoints}" fill="${isDark ? "rgba(56,189,248,0.07)" : "rgba(2,132,199,0.08)"}" />`;
 
   // Horizontal datum line.
-  gridHtml += `<line x1="0" y1="${baseY}" x2="${newSvgWidth}" y2="${baseY}" stroke="#94a3b8" class="dark:stroke-slate-500" stroke-width="1" stroke-dasharray="6,3" />`;
+  gridHtml += `<line x1="0" y1="${baseY}" x2="${viewBoxWidth}" y2="${baseY}" stroke="#94a3b8" class="dark:stroke-slate-500" stroke-width="1" stroke-dasharray="6,3" />`;
 
   // Vertical key lines for THR, FAF, IF, IAF.
   const stations = [
@@ -279,7 +280,7 @@ function estimateProfile() {
     }
   }
   // Distance axis label
-  gridHtml += `<text x="${newSvgWidth / 2}" y="${baseY + 32}" font-size="9" font-family="Rajdhani, sans-serif" font-weight="600" text-anchor="middle" fill="#64748b" class="dark:fill-slate-400" letter-spacing="1">NM</text>`;
+  gridHtml += `<text x="${viewBoxWidth / 2}" y="${baseY + 32}" font-size="9" font-family="Rajdhani, sans-serif" font-weight="600" text-anchor="middle" fill="#64748b" class="dark:fill-slate-400" letter-spacing="1">NM</text>`;
 
   // Annotate key profile points with double-ring markers + elevation labels.
   const keyPoints = [
