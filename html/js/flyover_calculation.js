@@ -646,8 +646,8 @@ function copyToWord() {
     document.getElementById("copyPrecision").dataset.value === "exact";
   const fmt = (v) => (exact ? v.toString() : v.toFixed(4));
 
-  var rateR1 = (_raw.tas / _raw.r1) * (180 / Math.PI) / 60;
-  var rateR2 = (_raw.tas / _raw.r2) * (180 / Math.PI) / 60;
+  var rateR1 = (_raw.tas / _raw.r1) * (180 / Math.PI) / 3600;
+  var rateR2 = (_raw.tas / _raw.r2) * (180 / Math.PI) / 3600;
 
   const tableData = {
     IAS: document.getElementById("ias").value + " KT",
@@ -661,9 +661,9 @@ function copyToWord() {
     "Bank Angle r1": document.getElementById("bankAngle").value + "°",
     "Turn Angle (input)": document.getElementById("turnAngle").value + "°",
     TAS: fmt(_raw.tas) + " KT",
-    "R1": fmt(rateR1) + " °/min",
+    "R1": fmt(rateR1) + " °/s",
     "Turn Angle Used": document.getElementById("outThetaEff").textContent,
-    "R2": fmt(rateR2) + " °/min",
+    "R2": fmt(rateR2) + " °/s",
     "r1 (roll-in)": fmt(_raw.r1) + " NM",
     "r2 (roll-out, 15° fixed)": fmt(_raw.r2) + " NM",
     L1: fmt(_raw.L1) + " NM",
