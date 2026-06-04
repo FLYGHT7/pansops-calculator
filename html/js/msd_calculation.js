@@ -355,8 +355,10 @@ function calculateMSD() {
     showToast("WP1: Bank angle must be between 1° and 89°.", "error");
     return;
   }
-  if (isNaN(wp1Turn) || wp1Turn <= 0 || wp1Turn >= 360) {
-    showToast("WP1: Enter a turn angle between 1° and 359°.", "error");
+  var wp1OverrideChecked = wp1Type === "flyby" && document.getElementById("wp1TurnOverride").checked;
+  var wp1TurnMin = wp1OverrideChecked ? 0 : 1;
+  if (isNaN(wp1Turn) || wp1Turn < wp1TurnMin || wp1Turn >= 360) {
+    showToast("WP1: Enter a turn angle between " + wp1TurnMin + "° and 359°.", "error");
     return;
   }
   if (wp2Active) {
@@ -372,8 +374,10 @@ function calculateMSD() {
       showToast("WP2: Bank angle must be between 1° and 89°.", "error");
       return;
     }
-    if (isNaN(wp2Turn) || wp2Turn <= 0 || wp2Turn >= 360) {
-      showToast("WP2: Enter a turn angle between 1° and 359°.", "error");
+    var wp2OverrideChecked = wp2Type === "flyby" && document.getElementById("wp2TurnOverride").checked;
+    var wp2TurnMin = wp2OverrideChecked ? 0 : 1;
+    if (isNaN(wp2Turn) || wp2Turn < wp2TurnMin || wp2Turn >= 360) {
+      showToast("WP2: Enter a turn angle between " + wp2TurnMin + "° and 359°.", "error");
       return;
     }
   }

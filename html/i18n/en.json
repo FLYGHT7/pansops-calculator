@@ -137,6 +137,30 @@
     "resultsTitle": "Profile Results",
     "diagramTitle": "Profile Diagram:"
   },
+  "faf": {
+    "title": "FAF Estimator",
+    "thr": "THR Elevation",
+    "rdh": "RDH",
+    "vpa": "VPA (°)",
+    "lowerValue": "Lower limit (°)",
+    "upperValue": "Upper limit (°)",
+    "lowerHint": "Auto-fills to VPA − 0.05",
+    "upperHint": "Auto-fills to VPA + 0.05",
+    "calculate": "Calculate",
+    "resultsTitle": "FAF Altitude Table",
+    "usableLabel": "usable",
+    "showAll": "Show All",
+    "usableOnly": "Usable Only",
+    "notUsableOnly": "Not Usable Only",
+    "distRange": "Distance range",
+    "vpaTolerance": "VPA tolerance",
+    "distStep": "Distance step",
+    "colDist": "Dist (NM)",
+    "colExact": "Exact Alt (ft)",
+    "colRounded": "Rounded (ft)",
+    "colBackVpa": "Back VPA (°)",
+    "colUsable": "Usable"
+  },
   "vssOcs": {
     "title": "VSS/OCS Parameters",
     "thrElev": "THR Elev",
@@ -303,7 +327,8 @@
     "phGSValues": "e.g. 70, 90, 100, 120, 140, 160",
     "previewTitle": "Preview",
     "buildTable": "Build Table",
-    "addTable": "Add"
+    "addTable": "Add",
+    "roundROD": "Round ROD to nearest 5"
   },
   "windSpiral": {
     "title": "Wind Spiral Calculator"
