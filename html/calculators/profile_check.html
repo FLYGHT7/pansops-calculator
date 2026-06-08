@@ -1,18 +1,19 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TAS Calculator</title>
-    <script src="suppress-tailwind-warn.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="shared-config.js"></script>
-    <link rel="stylesheet" href="dark-mode.css" />
-    <script src="aviation-utils.js"></script>
-    <script src="i18n/i18n.js"></script>
+    <title data-i18n="profile.title">Profile Estimator</title>
+    <link rel="stylesheet" href="../css/tailwind.css" />
+    <script src="../js/shared/shared-config.js" defer></script>
+    <link rel="stylesheet" href="../css/dark-mode.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script src="../js/shared/aviation-utils.js" defer></script>
+    <script src="../i18n/i18n.js" defer></script>
   </head>
   <body
-    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-start justify-center pt-8 p-4"
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4"
   >
     <main
       class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
@@ -33,16 +34,13 @@
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <path d="M22 2L2 22"></path>
-            <path d="M18 12H6"></path>
-            <path d="M12 18V6"></path>
-            <path d="M15 9l-3-3-3 3"></path>
+            <path d="M2 12h20M2 12l10-10M2 12l10 10"></path>
           </svg>
-          <span data-i18n="tas.title">True Airspeed (TAS) Calculator</span>
+          <span data-i18n="profile.title">Profile Estimator</span>
         </h1>
       </header>
 
-      <!-- File Upload Section -->
+      <!-- Load/Save Parameters -->
       <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
         <label
           for="loadFile"
@@ -104,59 +102,29 @@
         </div>
       </div>
 
-      <!-- Inputs for TAS Calculation -->
+      <!-- Row 1: THR Elevation and TCH -->
       <fieldset>
-        <legend class="sr-only">Airspeed &amp; Altitude Parameters</legend>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <legend class="sr-only">Threshold Parameters</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <!-- THR Elevation -->
           <div class="space-y-2">
             <label
-              for="ias"
+              for="thrElev"
               class="block font-medium text-gray-700 dark:text-gray-300"
-              data-i18n="tas.ias"
-              >Indicated Airspeed (IAS)</label
+              data-i18n="profile.thrElev"
+              >THR Elev (ft)</label
             >
             <div
               class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
             >
               <input
-                id="ias"
+                id="thrElev"
                 type="number"
                 class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                placeholder="Enter IAS"
-                data-i18n="tas.phEnterIAS"
-                data-i18n-attr="placeholder"
-              />
-              <div
-                class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 flex items-center"
-              >
-                <span
-                  class="text-gray-700 dark:text-white"
-                  data-i18n="common.knots"
-                  >knots</span
-                >
-              </div>
-            </div>
-          </div>
-          <div class="space-y-2">
-            <label
-              for="altitude"
-              class="block font-medium text-gray-700 dark:text-gray-300"
-              data-i18n="tas.altitude"
-              >Altitude</label
-            >
-            <div
-              class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
-            >
-              <input
-                id="altitude"
-                type="number"
-                class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                placeholder="Enter altitude"
-                data-i18n="tas.phEnterAltitude"
-                data-i18n-attr="placeholder"
+                placeholder="Enter THR Elev"
               />
               <select
-                id="altitudeUnit"
+                id="thrElevUnit"
                 class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
               >
                 <option value="ft" selected data-i18n="common.feet">ft</option>
@@ -164,25 +132,104 @@
               </select>
             </div>
           </div>
+          <!-- TCH -->
           <div class="space-y-2">
             <label
-              for="isaDeviation"
+              for="tch"
               class="block font-medium text-gray-700 dark:text-gray-300"
-              data-i18n="tas.isaDeviationVar"
-              >ISA Deviation (VAR) in °C</label
+              data-i18n="profile.tch"
+              >TCH (ft)</label
+            >
+            <div
+              class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+            >
+              <input
+                id="tch"
+                type="number"
+                class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                placeholder="Enter TCH"
+              />
+              <select
+                id="tchUnit"
+                class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+              >
+                <option value="ft" selected data-i18n="common.feet">ft</option>
+                <option value="m" data-i18n="common.meters">m</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Row 2: VPA, Distance to FAF, Intermediate Length, Initial Length -->
+      <fieldset>
+        <legend class="sr-only">Approach Geometry</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <!-- VPA -->
+          <div class="space-y-2">
+            <label
+              for="vpa"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="profile.vpa"
+              >VPA (°)</label
             >
             <input
-              id="isaDeviation"
+              id="vpa"
+              type="number"
+              step="0.01"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="Enter VPA"
+            />
+          </div>
+          <!-- Distance to FAF -->
+          <div class="space-y-2">
+            <label
+              for="distToFaf"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="profile.distToFaf"
+              >Distance to FAF (NM)</label
+            >
+            <input
+              id="distToFaf"
               type="number"
               class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              placeholder="Enter ISA Deviation"
-              data-i18n="tas.phEnterIsaDeviation"
-              data-i18n-attr="placeholder"
+              placeholder="Enter Distance to FAF"
+            />
+          </div>
+          <!-- Intermediate Length -->
+          <div class="space-y-2">
+            <label
+              for="intermediateLength"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="profile.intermediateLength"
+              >Intermediate Length (NM)</label
+            >
+            <input
+              id="intermediateLength"
+              type="number"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="Enter Intermediate Length"
+            />
+          </div>
+          <!-- Initial Length -->
+          <div class="space-y-2">
+            <label
+              for="initialLength"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="profile.initialLength"
+              >Initial Length (NM)</label
+            >
+            <input
+              id="initialLength"
+              type="number"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="Enter Initial Length"
             />
           </div>
         </div>
       </fieldset>
 
+      <!-- Calculate Button -->
       <div class="flex justify-end mt-6">
         <button
           type="button"
@@ -203,13 +250,13 @@
           >
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
           </svg>
-          <span data-i18n="tas.calcTas">Calculate True Airspeed</span>
+          <span data-i18n="common.calculate">Calculate</span>
         </button>
       </div>
 
-      <!-- Results for TAS -->
+      <!-- Results and SVG Diagram -->
       <div
-        id="tasResults"
+        id="results"
         role="region"
         aria-live="polite"
         aria-atomic="true"
@@ -217,24 +264,24 @@
       >
         <h2
           class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
-          data-i18n="tas.tasResultsTitle"
+          data-i18n="profile.resultsTitle"
         >
-          TAS Results
+          Profile Results
         </h2>
 
         <!-- Output values in a grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <div
             class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
           >
             <p
               class="text-sm text-gray-500 dark:text-gray-400"
-              data-i18n="tas.kFactor"
+              data-i18n="profile.thrElev"
             >
-              k Factor
+              THR Elev (ft)
             </p>
             <p class="text-lg font-semibold dark:text-white">
-              <span id="kFactor"></span>
+              <span id="outputThrElev"></span> ft
             </p>
           </div>
           <div
@@ -242,13 +289,86 @@
           >
             <p
               class="text-sm text-gray-500 dark:text-gray-400"
-              data-i18n="tas.trueAirspeed"
+              data-i18n="profile.tch"
             >
-              True Airspeed (TAS)
+              TCH (ft)
             </p>
             <p class="text-lg font-semibold dark:text-white">
-              <span id="tas"></span> <span data-i18n="common.knots">knots</span>
+              <span id="outputTch"></span> ft
             </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="profile.fafElevation"
+            >
+              FAF Elevation (ft)
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="fafElevation"></span> ft
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="profile.intermediateElevation"
+            >
+              Intermediate Elevation (ft)
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="intermediateElevation"></span> ft
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="profile.initialElevation"
+            >
+              Initial Elevation (ft)
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="initialElevation"></span> ft
+            </p>
+          </div>
+        </div>
+
+        <!-- SVG Profile Diagram -->
+        <div class="mt-6">
+          <h3
+            class="font-medium text-gray-700 dark:text-gray-300 mb-2"
+            data-i18n="profile.diagramTitle"
+          >
+            Profile Diagram:
+          </h3>
+          <div
+            class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm overflow-auto"
+          >
+            <svg
+              id="profileSvg"
+              width="100%"
+              height="400"
+              viewBox="-20 0 520 400"
+              xmlns="http://www.w3.org/2000/svg"
+              class="mx-auto dark:text-white"
+            >
+              <!-- Polyline for profile -->
+              <polyline
+                id="profilePolyline"
+                points=""
+                stroke="#0284c7"
+                class="dark:stroke-blue-400"
+                stroke-width="3"
+                fill="none"
+              />
+              <!-- Group for all grid lines, vertical markers, and annotations -->
+              <g id="profileAnnotations"></g>
+            </svg>
           </div>
         </div>
 
@@ -275,12 +395,12 @@
               ></path>
               <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
             </svg>
-            <span data-i18n="common.copyTable">Copy Results as Table</span>
+            <span data-i18n="common.copyToWord">Copy to Word Document</span>
           </button>
         </div>
       </div>
     </main>
 
-    <script src="js/tas.js"></script>
+    <script src="../js/profile_check.js" defer></script>
   </body>
 </html>

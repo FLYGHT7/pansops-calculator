@@ -1,15 +1,16 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title data-i18n="profile.title">Profile Estimator</title>
-    <script src="suppress-tailwind-warn.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="shared-config.js"></script>
-    <link rel="stylesheet" href="dark-mode.css" />
-    <script src="aviation-utils.js"></script>
-    <script src="i18n/i18n.js"></script>
+    <title>DME Slant Range & Tolerance Calculator</title>
+    <link rel="stylesheet" href="../css/tailwind.css" />
+    <script src="../js/shared/shared-config.js" defer></script>
+    <link rel="stylesheet" href="../css/dark-mode.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script src="../js/shared/aviation-utils.js" defer></script>
+    <script src="../i18n/i18n.js" defer></script>
   </head>
   <body
     class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4"
@@ -33,9 +34,11 @@
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <path d="M2 12h20M2 12l10-10M2 12l10 10"></path>
+            <circle cx="12" cy="12" r="4"></circle>
+            <circle cx="12" cy="12" r="8" stroke-dasharray="4 4"></circle>
+            <circle cx="12" cy="12" r="12" stroke-dasharray="4 4"></circle>
           </svg>
-          <span data-i18n="profile.title">Profile Estimator</span>
+          <span data-i18n="dme.title">DME Slant Range & Tolerance</span>
         </h1>
       </header>
 
@@ -44,10 +47,8 @@
         <label
           for="loadFile"
           class="text-gray-700 dark:text-gray-300 font-medium"
-          data-i18n="rateTurn.loadParamsFile"
+          >Load Parameters File (JSON)</label
         >
-          Load Parameters File (JSON)
-        </label>
         <div class="flex gap-3 flex-wrap">
           <button
             type="button"
@@ -101,134 +102,204 @@
         </div>
       </div>
 
-      <!-- Row 1: THR Elevation and TCH -->
+      <!-- Inputs for DME Calculation -->
       <fieldset>
-        <legend class="sr-only">Threshold Parameters</legend>
+        <legend class="sr-only">Station &amp; Aircraft Position</legend>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <!-- THR Elevation -->
+          <!-- Navaid Elevation with Unit Selector -->
           <div class="space-y-2">
             <label
-              for="thrElev"
+              for="navaidElevation"
               class="block font-medium text-gray-700 dark:text-gray-300"
-              data-i18n="profile.thrElev"
-              >THR Elev (ft)</label
+              data-i18n="dme.navaidElevation"
+              >Navaid Elevation</label
             >
             <div
               class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
             >
               <input
-                id="thrElev"
+                id="navaidElevation"
                 type="number"
                 class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                placeholder="Enter THR Elev"
+                placeholder="Enter Navaid Elevation"
+                data-i18n="dme.navaidElevation"
+                data-i18n-attr="placeholder"
               />
               <select
-                id="thrElevUnit"
+                id="navaidUnit"
                 class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
               >
-                <option value="ft" selected data-i18n="common.feet">ft</option>
-                <option value="m" data-i18n="common.meters">m</option>
+                <option value="feet" data-i18n="common.feet">Feet</option>
+                <option value="meters" data-i18n="common.meters">Meters</option>
               </select>
             </div>
           </div>
-          <!-- TCH -->
+          <!-- Fix Ground Distance -->
           <div class="space-y-2">
             <label
-              for="tch"
+              for="groundDistance"
               class="block font-medium text-gray-700 dark:text-gray-300"
-              data-i18n="profile.tch"
-              >TCH (ft)</label
+              data-i18n="dme.fixGroundDistance"
+              >Fix Ground Distance (in NM)</label
+            >
+            <input
+              id="groundDistance"
+              type="number"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="Enter Ground Distance"
+            />
+          </div>
+          <!-- Aircraft Elevation -->
+          <div class="space-y-2 md:col-span-2">
+            <label
+              for="aircraftElevation"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="dme.aircraftElevation"
+              >Aircraft Elevation</label
             >
             <div
               class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
             >
               <input
-                id="tch"
+                id="aircraftElevation"
                 type="number"
                 class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                placeholder="Enter TCH"
+                placeholder="Enter Aircraft Elevation"
+                data-i18n="dme.aircraftElevation"
+                data-i18n-attr="placeholder"
               />
               <select
-                id="tchUnit"
+                id="aircraftUnit"
                 class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
               >
-                <option value="ft" selected data-i18n="common.feet">ft</option>
-                <option value="m" data-i18n="common.meters">m</option>
+                <option value="feet" data-i18n="common.feet">Feet</option>
+                <option value="meters" data-i18n="common.meters">Meters</option>
               </select>
             </div>
           </div>
         </div>
       </fieldset>
 
-      <!-- Row 2: VPA, Distance to FAF, Intermediate Length, Initial Length -->
-      <fieldset>
-        <legend class="sr-only">Approach Geometry</legend>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          <!-- VPA -->
-          <div class="space-y-2">
-            <label
-              for="vpa"
-              class="block font-medium text-gray-700 dark:text-gray-300"
-              data-i18n="profile.vpa"
-              >VPA (°)</label
-            >
-            <input
-              id="vpa"
-              type="number"
-              step="0.01"
-              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              placeholder="Enter VPA"
-            />
-          </div>
-          <!-- Distance to FAF -->
-          <div class="space-y-2">
-            <label
-              for="distToFaf"
-              class="block font-medium text-gray-700 dark:text-gray-300"
-              data-i18n="profile.distToFaf"
-              >Distance to FAF (NM)</label
-            >
-            <input
-              id="distToFaf"
-              type="number"
-              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              placeholder="Enter Distance to FAF"
-            />
-          </div>
-          <!-- Intermediate Length -->
-          <div class="space-y-2">
-            <label
-              for="intermediateLength"
-              class="block font-medium text-gray-700 dark:text-gray-300"
-              data-i18n="profile.intermediateLength"
-              >Intermediate Length (NM)</label
-            >
-            <input
-              id="intermediateLength"
-              type="number"
-              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              placeholder="Enter Intermediate Length"
-            />
-          </div>
-          <!-- Initial Length -->
-          <div class="space-y-2">
-            <label
-              for="initialLength"
-              class="block font-medium text-gray-700 dark:text-gray-300"
-              data-i18n="profile.initialLength"
-              >Initial Length (NM)</label
-            >
-            <input
-              id="initialLength"
-              type="number"
-              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              placeholder="Enter Initial Length"
-            />
-          </div>
-        </div>
-      </fieldset>
+      <!-- Reference Diagram (Always Visible) -->
+      <div
+        class="mt-6 flex flex-col items-center bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600"
+      >
+        <h2 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Diagram: Relationship between Ground Distance, Height Above Station,
+          and Slant Range
+        </h2>
+        <svg
+          width="100%"
+          height="250"
+          viewBox="-20 0 360 200"
+          xmlns="http://www.w3.org/2000/svg"
+          class="mt-2 dark:text-white"
+        >
+          <!-- Define key points:
+             B = (50,150): Left end of the blue line (start of slant line).
+             A = (250,150): DME fix (base of red vertical line).
+             C = (250,50): Aircraft location (top of red vertical line). -->
 
-      <!-- Calculate Button -->
+          <!-- Blue horizontal line for Ground Distance -->
+          <line
+            x1="50"
+            y1="150"
+            x2="250"
+            y2="150"
+            stroke="#0284c7"
+            class="dark:stroke-blue-400"
+            stroke-width="2"
+          />
+
+          <!-- Red vertical line for Height Above Station -->
+          <line
+            x1="250"
+            y1="150"
+            x2="250"
+            y2="50"
+            stroke="#ef4444"
+            class="dark:stroke-red-400"
+            stroke-width="2"
+          />
+
+          <!-- Green straight line for Slant Range -->
+          <line
+            id="greenLine"
+            x1="50"
+            y1="150"
+            x2="250"
+            y2="50"
+            stroke="#22c55e"
+            class="dark:stroke-green-400"
+            stroke-width="2"
+          />
+
+          <!-- DME Elevation label (2 lines) positioned to the left of point B -->
+          <text
+            x="40"
+            y="150"
+            font-size="12"
+            fill="#334155"
+            class="dark:fill-white"
+            text-anchor="end"
+            font-weight="bold"
+          >
+            <tspan x="40" dy="0">DME</tspan>
+            <tspan x="40" dy="15">Elevation</tspan>
+          </text>
+
+          <!-- Ground Distance label (2 lines) centered below the blue line -->
+          <text
+            x="150"
+            y="170"
+            font-size="12"
+            fill="#0284c7"
+            class="dark:fill-blue-400"
+            text-anchor="middle"
+            font-weight="bold"
+          >
+            <tspan x="150" dy="0">Ground</tspan>
+            <tspan x="150" dy="15">Distance</tspan>
+          </text>
+
+          <!-- Height Above Station label (3 lines) to the right of the red vertical line -->
+          <text
+            x="255"
+            y="80"
+            font-size="12"
+            fill="#ef4444"
+            class="dark:fill-red-400"
+            text-anchor="start"
+            font-weight="bold"
+          >
+            <tspan x="255" dy="0">Height</tspan>
+            <tspan x="255" dy="15">Above</tspan>
+            <tspan x="255" dy="15">Station</tspan>
+          </text>
+
+          <!-- Slant Range label: placed over the green line at (150,90) -->
+          <text
+            x="150"
+            y="90"
+            font-size="12"
+            fill="#22c55e"
+            class="dark:fill-green-400"
+            text-anchor="middle"
+            font-weight="bold"
+          >
+            Slant Range
+          </text>
+
+          <!-- Aircraft symbol: small black triangle at point C -->
+          <polygon
+            points="250,40 245,50 255,50"
+            fill="#334155"
+            class="dark:fill-white"
+          />
+        </svg>
+      </div>
+
+      <!-- Calculation Button -->
       <div class="flex justify-end mt-6">
         <button
           type="button"
@@ -253,7 +324,7 @@
         </button>
       </div>
 
-      <!-- Results and SVG Diagram -->
+      <!-- Results Section (Initially Hidden) -->
       <div
         id="results"
         role="region"
@@ -263,24 +334,25 @@
       >
         <h2
           class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
-          data-i18n="profile.resultsTitle"
+          data-i18n="dme.resultsTitle"
         >
-          Profile Results
+          DME Results
         </h2>
 
         <!-- Output values in a grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div
             class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
           >
             <p
               class="text-sm text-gray-500 dark:text-gray-400"
-              data-i18n="profile.thrElev"
+              data-i18n="dme.slantRange"
             >
-              THR Elev (ft)
+              Slant Range
             </p>
             <p class="text-lg font-semibold dark:text-white">
-              <span id="outputThrElev"></span> ft
+              <span id="slantRange"></span>
+              <span data-i18n="common.nauticalMiles">NM</span>
             </p>
           </div>
           <div
@@ -288,12 +360,13 @@
           >
             <p
               class="text-sm text-gray-500 dark:text-gray-400"
-              data-i18n="profile.tch"
+              data-i18n="dme.dmeTolerance"
             >
-              TCH (ft)
+              DME Tolerance
             </p>
             <p class="text-lg font-semibold dark:text-white">
-              <span id="outputTch"></span> ft
+              ±<span id="dmeTolerance"></span>
+              <span data-i18n="common.nauticalMiles">NM</span>
             </p>
           </div>
           <div
@@ -301,12 +374,13 @@
           >
             <p
               class="text-sm text-gray-500 dark:text-gray-400"
-              data-i18n="profile.fafElevation"
+              data-i18n="dme.slantRangeMin"
             >
-              FAF Elevation (ft)
+              Slant Range (Min)
             </p>
             <p class="text-lg font-semibold dark:text-white">
-              <span id="fafElevation"></span> ft
+              <span id="slantRangeMin"></span>
+              <span data-i18n="common.nauticalMiles">NM</span>
             </p>
           </div>
           <div
@@ -314,60 +388,14 @@
           >
             <p
               class="text-sm text-gray-500 dark:text-gray-400"
-              data-i18n="profile.intermediateElevation"
+              data-i18n="dme.slantRangeMax"
             >
-              Intermediate Elevation (ft)
+              Slant Range (Max)
             </p>
             <p class="text-lg font-semibold dark:text-white">
-              <span id="intermediateElevation"></span> ft
+              <span id="slantRangeMax"></span>
+              <span data-i18n="common.nauticalMiles">NM</span>
             </p>
-          </div>
-          <div
-            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
-          >
-            <p
-              class="text-sm text-gray-500 dark:text-gray-400"
-              data-i18n="profile.initialElevation"
-            >
-              Initial Elevation (ft)
-            </p>
-            <p class="text-lg font-semibold dark:text-white">
-              <span id="initialElevation"></span> ft
-            </p>
-          </div>
-        </div>
-
-        <!-- SVG Profile Diagram -->
-        <div class="mt-6">
-          <h3
-            class="font-medium text-gray-700 dark:text-gray-300 mb-2"
-            data-i18n="profile.diagramTitle"
-          >
-            Profile Diagram:
-          </h3>
-          <div
-            class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm overflow-auto"
-          >
-            <svg
-              id="profileSvg"
-              width="100%"
-              height="400"
-              viewBox="-20 0 520 400"
-              xmlns="http://www.w3.org/2000/svg"
-              class="mx-auto dark:text-white"
-            >
-              <!-- Polyline for profile -->
-              <polyline
-                id="profilePolyline"
-                points=""
-                stroke="#0284c7"
-                class="dark:stroke-blue-400"
-                stroke-width="3"
-                fill="none"
-              />
-              <!-- Group for all grid lines, vertical markers, and annotations -->
-              <g id="profileAnnotations"></g>
-            </svg>
           </div>
         </div>
 
@@ -394,12 +422,12 @@
               ></path>
               <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
             </svg>
-            <span data-i18n="common.copyToWord">Copy to Word Document</span>
+            <span data-i18n="common.copyTable">Copy Results as Table</span>
           </button>
         </div>
       </div>
     </main>
 
-    <script src="js/profile_check.js?v=2"></script>
+    <script src="../js/dme_tolerance.js" defer></script>
   </body>
 </html>
