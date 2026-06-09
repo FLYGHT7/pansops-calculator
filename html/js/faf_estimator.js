@@ -1,13 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
-  try {
-    if (
-      window.parent &&
-      window.parent.document.documentElement.classList.contains("dark")
-    ) {
-      document.documentElement.classList.add("dark");
-    }
-  } catch (e) {
-    console.log("Running in standalone mode");
+  checkDarkMode();
+
+  if (window.I18N) {
+    I18N.init({ defaultLang: "en", supported: ["en", "es"], path: "i18n" }).catch(console.error);
   }
 
   // Auto-fill lower/upper whenever VPA changes
@@ -32,6 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("btnFilterNotUsable").addEventListener("click", function () {
     setFilter("notUsable");
   });
+
 });
 
 const NM_TO_M = 1852;
@@ -152,7 +148,7 @@ function renderTable() {
         : "hover:bg-gray-50 dark:hover:bg-gray-700/50";
       const badge = r.usable
         ? '<span class="inline-block bg-green-100 text-green-800 dark:bg-green-800/60 dark:text-green-200 text-xs font-bold px-2 py-0.5 rounded-full">YES</span>'
-        : '<span class="inline-block bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400 text-xs font-medium px-2 py-0.5 rounded-full">NO</span>';
+        : '<span class="inline-block bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 text-xs font-medium px-2 py-0.5 rounded-full">NO</span>';
       const roundedClass = r.usable
         ? "font-bold text-green-700 dark:text-green-300"
         : "text-gray-700 dark:text-gray-300";
@@ -177,10 +173,74 @@ function renderTable() {
         '<td class="px-4 py-2 text-center">' +
         badge +
         "</td>" +
+        '<td class="px-3 py-2 text-center">' +
+        '<button type="button" onclick="copyRowToWord(' + r.d + ')" ' +
+        'title="Copy row to Word" aria-label="Copy row to Word" ' +
+        'class="inline-flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:text-primary-300 dark:hover:bg-primary-900/30 transition-colors">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+        '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>' +
+        '<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>' +
+        '</svg>' +
+        '</button>' +
+        "</td>" +
         "</tr>"
       );
     })
     .join("");
+}
+
+function copyRowToWord(d) {
+  var row = _rows.find(function (r) { return r.d === d; });
+  if (!row) { showToast("Run a calculation first.", "error"); return; }
+
+  const { thrRaw, thrUnit, rdhRaw, rdhUnit, vpa, lower, upper } = _params;
+  const th =
+    "padding:6px 10px;border:1px solid #ccc;background:#0c2240;color:#fff;font-weight:bold;text-align:center;";
+  const td = "padding:6px 10px;border:1px solid #ccc;text-align:right;";
+  const tdc = "padding:6px 10px;border:1px solid #ccc;text-align:center;";
+
+  const inputHtml =
+    '<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;font-weight:bold;margin:0 0 4px">FAF Estimator — Inputs</p>' +
+    '<table border="1" style="border-collapse:collapse;font-family:Calibri,Arial,sans-serif;font-size:10pt;margin-bottom:14px">' +
+    "<tr><th style=\"" + th + "\">Parameter</th><th style=\"" + th + "\">Value</th></tr>" +
+    "<tr><td style=\"" + tdc + "\">THR Elevation</td><td style=\"" + tdc + "\">" + thrRaw + " " + thrUnit + "</td></tr>" +
+    "<tr><td style=\"" + tdc + "\">RDH</td><td style=\"" + tdc + "\">" + rdhRaw + " " + rdhUnit + "</td></tr>" +
+    "<tr><td style=\"" + tdc + "\">VPA</td><td style=\"" + tdc + "\">" + vpa + "°</td></tr>" +
+    "<tr><td style=\"" + tdc + "\">Lower limit</td><td style=\"" + tdc + "\">" + lower.toFixed(2) + "°</td></tr>" +
+    "<tr><td style=\"" + tdc + "\">Upper limit</td><td style=\"" + tdc + "\">" + upper.toFixed(2) + "°</td></tr>" +
+    "</table>";
+
+  const resultHtml =
+    '<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;font-weight:bold;margin:0 0 4px">FAF Estimator — Selected Altitude</p>' +
+    '<table border="1" style="border-collapse:collapse;font-family:Calibri,Arial,sans-serif;font-size:10pt">' +
+    "<tr>" +
+    "<th style=\"" + th + "\">Dist (NM)</th>" +
+    "<th style=\"" + th + "\">Exact Alt (ft)</th>" +
+    "<th style=\"" + th + "\">Rounded (ft)</th>" +
+    "<th style=\"" + th + "\">Back VPA (°)</th>" +
+    "<th style=\"" + th + "\">Usable</th>" +
+    "</tr>" +
+    "<tr style=\"background:" + (row.usable ? "#e8f5e9" : "#ffffff") + "\">" +
+    "<td style=\"" + tdc + "\">" + row.d.toFixed(1) + "</td>" +
+    "<td style=\"" + td + "\">" + row.exactFt.toFixed(2) + "</td>" +
+    "<td style=\"" + td + ";font-weight:bold\">" + row.roundedFt + "</td>" +
+    "<td style=\"" + td + "\">" + row.backVPA.toFixed(4) + "</td>" +
+    "<td style=\"" + tdc + "\">" + (row.usable ? "YES" : "NO") + "</td>" +
+    "</tr>" +
+    "</table>";
+
+  const textContent =
+    "FAF Estimator — " + row.d.toFixed(1) + " NM / " + row.roundedFt + " ft (" + (row.usable ? "YES" : "NO") + ")\n" +
+    "THR: " + thrRaw + " " + thrUnit + "  RDH: " + rdhRaw + " " + rdhUnit + "  VPA: " + vpa + "°\n\n" +
+    "Dist(NM)\tExact(ft)\tRounded(ft)\tBack VPA(°)\tUsable\n" +
+    row.d.toFixed(1) + "\t" + row.exactFt.toFixed(2) + "\t" + row.roundedFt + "\t" + row.backVPA.toFixed(4) + "\t" + (row.usable ? "YES" : "NO");
+
+  const blob = new Blob([inputHtml + resultHtml], { type: "text/html" });
+  const textBlob = new Blob([textContent], { type: "text/plain" });
+  navigator.clipboard
+    .write([new ClipboardItem({ "text/html": blob, "text/plain": textBlob })])
+    .then(function () { showToast(row.roundedFt + " ft · " + row.d.toFixed(1) + " NM copied.", "success"); })
+    .catch(function () { showToast("Copy failed. Please try again.", "error"); });
 }
 
 function copyToWordDocument() {
@@ -206,22 +266,27 @@ function copyToWordDocument() {
     "<tr><td style=\"" + tdc + "\">Upper limit</td><td style=\"" + tdc + "\">" + upper.toFixed(2) + "°</td></tr>" +
     "</table>";
 
-  const usableOnly = _rows.filter((r) => r.usable);
-  const resultRows = usableOnly
+  const rowsToExport = _filter === "usable"
+    ? _rows.filter(function (r) { return r.usable; })
+    : _filter === "notUsable"
+    ? _rows.filter(function (r) { return !r.usable; })
+    : _rows;
+  const resultRows = rowsToExport
     .map(
       (r) =>
-        "<tr style=\"background:#e8f5e9\">" +
+        "<tr style=\"background:" + (r.usable ? "#e8f5e9" : "#ffffff") + "\">" +
         "<td style=\"" + tdc + "\">" + r.d.toFixed(1) + "</td>" +
         "<td style=\"" + td + "\">" + r.exactFt.toFixed(2) + "</td>" +
         "<td style=\"" + td + ";font-weight:bold\">" + r.roundedFt + "</td>" +
         "<td style=\"" + td + "\">" + r.backVPA.toFixed(4) + "</td>" +
-        "<td style=\"" + tdc + "\">YES</td>" +
+        "<td style=\"" + tdc + "\">" + (r.usable ? "YES" : "NO") + "</td>" +
         "</tr>"
     )
     .join("");
 
+  const exportLabel = _filter === "usable" ? "Usable Altitudes" : _filter === "notUsable" ? "Not Usable Altitudes" : "All Altitudes";
   const resultHtml =
-    '<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;font-weight:bold;margin:0 0 4px">FAF Estimator — Usable Altitudes</p>' +
+    '<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;font-weight:bold;margin:0 0 4px">FAF Estimator — ' + exportLabel + '</p>' +
     '<table border="1" style="border-collapse:collapse;font-family:Calibri,Arial,sans-serif;font-size:10pt">' +
     "<tr>" +
     "<th style=\"" + th + "\">Dist (NM)</th>" +
