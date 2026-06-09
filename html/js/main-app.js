@@ -541,18 +541,20 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Font size toggle
+  // Font size toggle — scale sidebar + iframe only, never the shell root
+  // (scaling html.style.fontSize shifts the topbar height due to rem units)
   const fontSizeToggle = document.getElementById("fontSizeToggle");
+  const sidebarEl = document.getElementById("sidebar");
   const savedScale = localStorage.getItem("pansops-font-scale");
   if (savedScale === "large") {
-    html.style.fontSize = "112.5%";
+    if (sidebarEl) sidebarEl.style.fontSize = "112.5%";
     fontSizeToggle?.classList.add("bg-white/10");
   }
   if (fontSizeToggle) {
     fontSizeToggle.addEventListener("click", function () {
-      const isLarge = html.style.fontSize === "112.5%";
+      const isLarge = localStorage.getItem("pansops-font-scale") === "large";
       const nextSize = isLarge ? "" : "112.5%";
-      html.style.fontSize = nextSize;
+      if (sidebarEl) sidebarEl.style.fontSize = nextSize;
       localStorage.setItem("pansops-font-scale", isLarge ? "normal" : "large");
       fontSizeToggle.classList.toggle("bg-white/10", !isLarge);
       try {
