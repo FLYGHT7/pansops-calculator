@@ -279,6 +279,29 @@ function rbtn(label, onclick, disabled) {
 
 // ─── Cell edit → state sync ───────────────────────────────────────────────────
 function attachCellListeners(container, bi) {
+  // Duplicate-guard for inline GS column header edits
+  container.querySelectorAll("[contenteditable][data-field='gsCol']").forEach(function (el) {
+    el.addEventListener("focus", function () {
+      el.dataset.prevVal = el.textContent.trim();
+    });
+    el.addEventListener("blur", function () {
+      var block = tableBlocks[parseInt(el.dataset.block, 10)];
+      if (!block) return;
+      var ci = parseInt(el.dataset.col, 10);
+      var val = el.textContent.trim();
+      if (val === "") return;
+      var isDupe = block.gsColumns.some(function (v, i) {
+        return i !== ci && v.trim() === val;
+      });
+      if (isDupe) {
+        var prev = el.dataset.prevVal || "";
+        el.textContent = prev;
+        block.gsColumns[ci] = prev;
+        showToast("Duplicate GS value \"" + val + "\". Column reverted.", "error");
+      }
+    });
+  });
+
   container.querySelectorAll("[contenteditable][data-field]").forEach(function (el) {
     el.addEventListener("input", function () {
       var block = tableBlocks[parseInt(el.dataset.block, 10)];
