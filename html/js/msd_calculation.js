@@ -532,9 +532,10 @@ function renderWPResults(n, result, name) {
     minNote.textContent =
       "\u26A0\uFE0F 50\u00B0 minimum applied \u2014 entered " +
       result.inputTurn.toFixed(1) + "\u00B0, using 50\u00B0";
-    minNote.classList.remove("hidden");
+    minNote.classList.remove("invisible");
   } else {
-    minNote.classList.add("hidden");
+    minNote.textContent = "\u00A0";
+    minNote.classList.add("invisible");
   }
 
   document.getElementById(prefix + "L1Cell").classList.remove("hidden");
