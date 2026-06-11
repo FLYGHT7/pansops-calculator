@@ -1,13 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
-  try {
-    if (
-      window.parent &&
-      window.parent.document.documentElement.classList.contains("dark")
-    ) {
-      document.documentElement.classList.add("dark");
-    }
-  } catch (e) {
-    console.log("Running in standalone mode");
+  checkDarkMode();
+
+  if (window.I18N) {
+    I18N.init({ defaultLang: "en", supported: ["en", "es"], path: "i18n" }).catch(console.error);
   }
 
   // Auto-fill lower/upper whenever VPA changes
@@ -21,6 +16,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.getElementById("btnCalculate").addEventListener("click", estimateFAF);
   document.getElementById("btnCopy").addEventListener("click", copyToWordDocument);
+
+  _SORT_COLS.forEach(function (entry) {
+    var th = document.getElementById(entry.thId);
+    if (th) th.addEventListener("click", function () { sortBy(entry.col); });
+  });
 
   // Filter pill buttons
   document.getElementById("btnFilterAll").addEventListener("click", function () {
@@ -40,6 +40,13 @@ const FT_TO_M = 0.3048;
 let _rows = [];
 let _params = {};
 let _filter = "all";
+let _sort = { col: null, dir: "asc" };
+
+const _SORT_COLS = [
+  { col: "exactFt",   iconId: "sortIconExact",   thId: "thExact"   },
+  { col: "roundedFt", iconId: "sortIconRounded",  thId: "thRounded" },
+  { col: "backVPA",   iconId: "sortIconBackVpa",  thId: "thBackVpa" },
+];
 
 function toMetres(value, unit) {
   return unit === "m" ? value : value * FT_TO_M;
@@ -101,8 +108,63 @@ function estimateFAF() {
     lower.toFixed(2) + "° – " + upper.toFixed(2) + "°";
 
   _filter = "all";
+  _sort = { col: null, dir: "asc" };
+  updateSortHeaders();
   setFilter("all");
   document.getElementById("resultsSection").classList.remove("hidden");
+}
+
+function sortBy(col) {
+  if (_sort.col === col) {
+    if (_sort.dir === "asc") {
+      _sort.dir = "desc";
+    } else {
+      _sort.col = null;
+      _sort.dir = "asc";
+    }
+  } else {
+    _sort.col = col;
+    _sort.dir = "asc";
+  }
+  updateSortHeaders();
+  renderTable();
+}
+
+function getSortedRows(rows) {
+  if (!_sort.col) return rows;
+  const col = _sort.col;
+  const dir = _sort.dir === "asc" ? 1 : -1;
+  return rows.slice().sort(function (a, b) {
+    return (a[col] - b[col]) * dir;
+  });
+}
+
+function sortIconHtml(state) {
+  if (state === "asc") {
+    return '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 16 16" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3,11 8,4 13,11"/></svg>';
+  }
+  if (state === "desc") {
+    return '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 16 16" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3,5 8,12 13,5"/></svg>';
+  }
+  return '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 opacity-50" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3,7 8,3 13,7"/><polyline points="3,9 8,13 13,9"/></svg>';
+}
+
+function updateSortHeaders() {
+  _SORT_COLS.forEach(function (entry) {
+    const iconEl = document.getElementById(entry.iconId);
+    const thEl = document.getElementById(entry.thId);
+    if (!iconEl || !thEl) return;
+    const isActive = _sort.col === entry.col;
+    const state = isActive ? _sort.dir : "none";
+    iconEl.innerHTML = sortIconHtml(state);
+    if (isActive) {
+      thEl.classList.add("text-primary-500", "dark:text-primary-400");
+      thEl.classList.remove("text-gray-500", "dark:text-gray-400");
+    } else {
+      thEl.classList.remove("text-primary-500", "dark:text-primary-400");
+      thEl.classList.add("text-gray-500", "dark:text-gray-400");
+    }
+  });
 }
 
 function setFilter(mode) {
@@ -131,12 +193,13 @@ function setFilter(mode) {
 }
 
 function renderTable() {
-  const visible =
+  const filtered =
     _filter === "usable"
       ? _rows.filter((r) => r.usable)
       : _filter === "notUsable"
       ? _rows.filter((r) => !r.usable)
       : _rows;
+  const visible = getSortedRows(filtered);
   const tbody = document.getElementById("fafTableBody");
 
   if (visible.length === 0) {
@@ -152,7 +215,7 @@ function renderTable() {
         : "hover:bg-gray-50 dark:hover:bg-gray-700/50";
       const badge = r.usable
         ? '<span class="inline-block bg-green-100 text-green-800 dark:bg-green-800/60 dark:text-green-200 text-xs font-bold px-2 py-0.5 rounded-full">YES</span>'
-        : '<span class="inline-block bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400 text-xs font-medium px-2 py-0.5 rounded-full">NO</span>';
+        : '<span class="inline-block bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 text-xs font-medium px-2 py-0.5 rounded-full">NO</span>';
       const roundedClass = r.usable
         ? "font-bold text-green-700 dark:text-green-300"
         : "text-gray-700 dark:text-gray-300";
