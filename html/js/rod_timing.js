@@ -67,6 +67,7 @@ function createBlockFromInputs() {
     gsLabel  : "Ground Speed",
     gsUnit   : gsUnit,
     gsColumns: gsValues.map(String),
+    gradient : gradient,
     rows: [
       {
         label : timingLabel,
@@ -462,6 +463,19 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("btnCalcROD").addEventListener("click", buildTable);
   document.getElementById("btnAddBlock").addEventListener("click", addBlock);
   document.getElementById("btnCopy").addEventListener("click", copyToWord);
+
+  document.getElementById("rodRoundROD").addEventListener("change", function () {
+    if (tableBlocks.length === 0) return;
+    var isRound = this.checked;
+    tableBlocks.forEach(function (block) {
+      if (block.rows.length < 2) return;
+      block.rows[1].values = block.gsColumns.map(function (gs) {
+        var v = computeROD(parseInt(gs, 10), block.gradient);
+        return String(isRound ? Math.round(v / 5) * 5 : v);
+      });
+    });
+    renderAllBlocks();
+  });
 });
 
 (function () {
