@@ -19,6 +19,13 @@ function computeROD(gsKt, gradientPct) {
   return Math.floor((gsKt * gradientPct * NM_TO_FT_ROD) / 100 / 60);
 }
 
+// ─── Gradient (%) ↔ VPA (°) conversion ─────────────────────────────────────────
+function pctToVPA(pct) { return Math.atan(pct / 100) * 180 / Math.PI; }
+function vpaToPct(deg) { return Math.tan(deg * Math.PI / 180) * 100; }
+function gradientToPct(rawValue, mode) {
+  return mode === "vpa" ? vpaToPct(rawValue) : rawValue;
+}
+
 function parseGSValues(raw) {
   var out = [];
   raw.split(",").forEach(function (s) {
@@ -36,6 +43,28 @@ function escapeHtml(str) {
 
 // ─── State ────────────────────────────────────────────────────────────────────
 var tableBlocks = [];
+var rodGradientMode = "pct"; // "pct" | "vpa"
+
+// ─── Gradient / VPA mode toggle ────────────────────────────────────────────────
+function setRodGradientMode(mode) {
+  if (mode === rodGradientMode) return;
+  var input = document.getElementById("rodGradient");
+  var raw = parseFloat(input.value);
+  if (!isNaN(raw)) {
+    var converted = mode === "vpa" ? pctToVPA(raw) : vpaToPct(raw);
+    input.value = Math.round(converted * 100) / 100;
+  }
+  if (mode === "vpa") {
+    input.max = "20";
+  } else {
+    input.max = "30";
+  }
+  document.getElementById("rodModePct").classList.toggle("rod-mode-btn-active", mode === "pct");
+  document.getElementById("rodModePct").setAttribute("aria-pressed", mode === "pct");
+  document.getElementById("rodModeVPA").classList.toggle("rod-mode-btn-active", mode === "vpa");
+  document.getElementById("rodModeVPA").setAttribute("aria-pressed", mode === "vpa");
+  rodGradientMode = mode;
+}
 
 // block shape:
 // {
@@ -49,8 +78,9 @@ var tableBlocks = [];
 
 // ─── Build a block from current form inputs ───────────────────────────────────
 function createBlockFromInputs() {
-  var distance   = parseFloat(document.getElementById("rodDistance").value);
-  var gradient   = parseFloat(document.getElementById("rodGradient").value);
+  var distance    = parseFloat(document.getElementById("rodDistance").value);
+  var gradientRaw = parseFloat(document.getElementById("rodGradient").value);
+  var gradient    = gradientToPct(gradientRaw, rodGradientMode);
   var timingUnit = document.getElementById("rodTimingUnit").value;
   var gsUnit     = document.getElementById("rodGSUnit").value || "KT";
   var gsValues   = parseGSValues(document.getElementById("rodGSValues").value);
@@ -59,7 +89,7 @@ function createBlockFromInputs() {
   var round5           = document.getElementById("rodRoundROD").checked;
 
   var timingLabel = timingLabelInput || "FAF-MAPt " + distance + "NM";
-  var rodLabel    = rodLabelInput    || "Rate of Descent " + gradient + "%";
+  var rodLabel    = rodLabelInput    || "Rate of Descent " + gradientRaw + (rodGradientMode === "vpa" ? "°" : "%");
 
   return {
     title    : document.getElementById("rodTitleRow").value.trim(),
@@ -67,7 +97,6 @@ function createBlockFromInputs() {
     gsLabel  : "Ground Speed",
     gsUnit   : gsUnit,
     gsColumns: gsValues.map(String),
-    gradient : gradient,
     rows: [
       {
         label : timingLabel,
@@ -93,8 +122,15 @@ function validateInputs() {
   if (isNaN(distance) || distance <= 0) {
     showToast("Please enter a valid distance (NM > 0).", "error"); return false;
   }
-  if (isNaN(gradient) || gradient <= 0 || gradient > 30) {
-    showToast("Please enter a gradient between 0.1% and 30%.", "error"); return false;
+  var maxGradient = rodGradientMode === "vpa" ? 20 : 30;
+  if (isNaN(gradient) || gradient <= 0 || gradient > maxGradient) {
+    showToast(
+      rodGradientMode === "vpa"
+        ? "Please enter a VPA between 0.1° and 20°."
+        : "Please enter a gradient between 0.1% and 30%.",
+      "error"
+    );
+    return false;
   }
   var gsValues = parseGSValues(document.getElementById("rodGSValues").value);
   if (gsValues.length === 0) {
@@ -432,8 +468,9 @@ function copyToWord() {
 // ─── Save / Load ──────────────────────────────────────────────────────────────
 function saveParameters() {
   var data = {
-    distance   : document.getElementById("rodDistance").value,
-    gradient   : document.getElementById("rodGradient").value,
+    distance     : document.getElementById("rodDistance").value,
+    gradient     : document.getElementById("rodGradient").value,
+    gradientMode : rodGradientMode,
     titleRow   : document.getElementById("rodTitleRow").value,
     footerRow  : document.getElementById("rodFooterRow").value,
     timingLabel: document.getElementById("rodTimingLabel").value,
@@ -457,6 +494,7 @@ function loadParameters(event) {
   reader.onload = function (e) {
     try {
       var d = JSON.parse(e.target.result);
+      if (d.gradientMode != null) setRodGradientMode(d.gradientMode);
       if (d.distance    != null) document.getElementById("rodDistance").value    = d.distance;
       if (d.gradient    != null) document.getElementById("rodGradient").value    = d.gradient;
       if (d.titleRow    != null) document.getElementById("rodTitleRow").value    = d.titleRow;
@@ -486,19 +524,8 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("btnCalcROD").addEventListener("click", buildTable);
   document.getElementById("btnAddBlock").addEventListener("click", addBlock);
   document.getElementById("btnCopy").addEventListener("click", copyToWord);
-
-  document.getElementById("rodRoundROD").addEventListener("change", function () {
-    if (tableBlocks.length === 0) return;
-    var isRound = this.checked;
-    tableBlocks.forEach(function (block) {
-      if (block.rows.length < 2) return;
-      block.rows[1].values = block.gsColumns.map(function (gs) {
-        var v = computeROD(parseInt(gs, 10), block.gradient);
-        return String(isRound ? Math.round(v / 5) * 5 : v);
-      });
-    });
-    renderAllBlocks();
-  });
+  document.getElementById("rodModePct").addEventListener("click", function () { setRodGradientMode("pct"); });
+  document.getElementById("rodModeVPA").addEventListener("click", function () { setRodGradientMode("vpa"); });
 });
 
 (function () {

@@ -217,6 +217,32 @@
         opacity: 0.4;
         cursor: default;
       }
+
+      /* ── Gradient / VPA unit toggle ───────────────────── */
+      .rod-mode-btn {
+        background: #f9fafb;
+        color: #6b7280;
+        cursor: pointer;
+        transition: background 120ms, color 120ms;
+      }
+      .rod-mode-btn:first-child {
+        border-right: 1px solid #d1d5db;
+      }
+      .rod-mode-btn-active {
+        background: #4f46e5;
+        color: #fff;
+      }
+      .dark .rod-mode-btn {
+        background: rgba(51, 65, 85, 0.5);
+        color: #94a3b8;
+      }
+      .dark .rod-mode-btn:first-child {
+        border-right-color: rgba(148, 163, 184, 0.4);
+      }
+      .dark .rod-mode-btn-active {
+        background: #6366f1;
+        color: #fff;
+      }
     </style>
   </head>
 
@@ -283,9 +309,18 @@
                   data-i18n-attr="placeholder" data-i18n="rod.phDistance" placeholder="e.g. 5.2" />
               </div>
               <div>
-                <label for="rodGradient"
-                  class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1"
-                  data-i18n="rod.gradient">Gradient (%)</label>
+                <div class="flex items-center justify-between mb-1">
+                  <label for="rodGradient" id="rodGradientLabel"
+                    class="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+                    data-i18n="rod.gradient">Gradient</label>
+                  <div class="flex rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden text-[11px] font-bold leading-none"
+                    role="group" aria-label="Gradient input unit">
+                    <button type="button" id="rodModePct" data-mode="pct" aria-pressed="true"
+                      class="px-2 py-1 rod-mode-btn rod-mode-btn-active">%</button>
+                    <button type="button" id="rodModeVPA" data-mode="vpa" aria-pressed="false"
+                      class="px-2 py-1 rod-mode-btn">°</button>
+                  </div>
+                </div>
                 <input id="rodGradient" type="number" step="0.1" min="0.1" max="30"
                   class="w-full px-2.5 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   data-i18n-attr="placeholder" data-i18n="rod.phGradient" placeholder="e.g. 5.3" />
