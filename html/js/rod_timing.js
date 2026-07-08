@@ -19,6 +19,12 @@ function computeROD(gsKt, gradientPct) {
   return Math.floor((gsKt * gradientPct * NM_TO_FT_ROD) / 100 / 60);
 }
 
+// High-ROD flag: values >= 1000 ft/min are highlighted (issue #137)
+function isHighROD(unit, val) {
+  var n = parseFloat(val);
+  return (unit || "").trim().toLowerCase() === "ft/min" && !isNaN(n) && n >= 1000;
+}
+
 // ─── Gradient (%) ↔ VPA (°) conversion ─────────────────────────────────────────
 function pctToVPA(pct) { return Math.atan(pct / 100) * 180 / Math.PI; }
 function vpaToPct(deg) { return Math.tan(deg * Math.PI / 180) * 100; }
@@ -256,8 +262,9 @@ function buildBlockElement(block, bi) {
 
     // values
     row.values.forEach(function (val, ci) {
+      var hiClass = isHighROD(row.unit, val) ? ' class="rod-high-fpm"' : '';
       h += '<td contenteditable="true" data-field="rowVal" data-block="' + bi + '" data-row="' + ri + '" data-col="' + ci + '" ' +
-        'style="padding:7px 10px;text-align:right">' +
+        'style="padding:7px 10px;text-align:right"' + hiClass + '>' +
         escapeHtml(val) + '</td>';
     });
 
@@ -358,7 +365,21 @@ function attachCellListeners(container, bi) {
         case "rowVal":
           block.rows[parseInt(el.dataset.row, 10)].values[parseInt(el.dataset.col, 10)] = val; break;
       }
+      if (el.dataset.field === "rowVal" || el.dataset.field === "rowUnit") {
+        updateRowHighlight(container, parseInt(el.dataset.block, 10), parseInt(el.dataset.row, 10));
+      }
     });
+  });
+}
+
+// Re-toggle the high-ROD highlight on a row's value cells after a live edit
+function updateRowHighlight(container, bi, ri) {
+  var row = tableBlocks[bi].rows[ri];
+  container.querySelectorAll(
+    '[data-field="rowVal"][data-block="' + bi + '"][data-row="' + ri + '"]'
+  ).forEach(function (td) {
+    var ci = parseInt(td.dataset.col, 10);
+    td.classList.toggle("rod-high-fpm", isHighROD(row.unit, row.values[ci]));
   });
 }
 
@@ -445,7 +466,8 @@ function buildWordHTML() {
       rows += '<td style="padding:7px 10px;font-weight:500">' + escapeHtml(row.label) + '</td>';
       rows += '<td style="padding:7px 10px">' + escapeHtml(row.unit) + '</td>';
       row.values.forEach(function (v) {
-        rows += '<td style="padding:7px 10px;text-align:right">' + escapeHtml(v) + '</td>';
+        var hiStyle = isHighROD(row.unit, v) ? ';background:#fde68a;color:#92400e;font-weight:bold' : '';
+        rows += '<td style="padding:7px 10px;text-align:right' + hiStyle + '">' + escapeHtml(v) + '</td>';
       });
       rows += '</tr>';
     });
