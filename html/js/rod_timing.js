@@ -1,5 +1,5 @@
 // ─── Constants ────────────────────────────────────────────────────────────────
-var NM_TO_FT_ROD = 6068.0; // empirically derived for ICAO chart table compatibility
+var NM_TO_FT_ROD = 1852 / 0.3048; // ft per NM (matches aviation-utils.js FT_PER_NM)
 
 // ─── Core formulas ────────────────────────────────────────────────────────────
 function formatSeconds(totalSeconds, unit) {
@@ -16,7 +16,7 @@ function computeTiming(distanceNM, gsKt, unit) {
 }
 
 function computeROD(gsKt, gradientPct) {
-  return Math.floor((gsKt * gradientPct * NM_TO_FT_ROD) / 100 / 60);
+  return Math.round((gsKt * gradientPct * NM_TO_FT_ROD) / 100 / 60);
 }
 
 // High-ROD flag: values >= 1000 ft/min are highlighted (issue #137)
