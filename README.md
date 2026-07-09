@@ -18,3 +18,11 @@ Labeling guidelines:
 - Always include units in the Value column (ft, m, NM, °C, knots, etc.).
 
 If you create a new calculator, follow the same pattern using `ClipboardItem` with both `text/html` and `text/plain` representations for best cross-application paste results.
+
+## Building the CSS
+
+`html/css/tailwind.css` is a compiled, minified build — do not edit it directly. Its source is `src/input.css` (Tailwind v4 syntax). After changing `src/input.css`, regenerate it with:
+
+```
+npx @tailwindcss/cli -i src/input.css -o html/css/tailwind.css --minify
+```

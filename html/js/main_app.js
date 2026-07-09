@@ -194,7 +194,7 @@ const PAGE_MAP = {
   "#rate-turn": { url: "calculators/rate_turn.html", buttonId: "rateTurnButton" },
   "#dme": { url: "calculators/dme_tolerance.html", buttonId: "dmeButton" },
   "#profile": { url: "calculators/profile_check.html", buttonId: "elevationButton" },
-  "#faf-estimator": { url: "FAF_Estimator.html", buttonId: "fafEstimatorButton" },
+  "#faf-estimator": { url: "calculators/faf_estimator.html", buttonId: "fafEstimatorButton" },
   "#npa-soc": {
     url: "calculators/npa_soc.html",
     buttonId: "npaSocButton",
@@ -250,7 +250,7 @@ const PAGE_TITLES = {
   "calculators/rate_turn.html": "Rate & Radius of Turn",
   "calculators/dme_tolerance.html": "DME Tolerance",
   "calculators/profile_check.html": "Profile Estimator",
-  "FAF_Estimator.html": "FAF Estimator",
+  "calculators/faf_estimator.html": "FAF Estimator",
   "calculators/rod_timing.html": "GS / Rate of Descent",
   "calculators/npa_soc.html": "NPA SOC Calculation",
   "calculators/vss_ocs.html": "VSS / OCS Parameters",
