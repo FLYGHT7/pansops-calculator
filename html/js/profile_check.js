@@ -308,8 +308,57 @@ function estimateProfile() {
   document.getElementById("results").classList.remove("hidden");
 }
 
-// Copy inputs and outputs as a formatted HTML table for Word.
-function copyToWordDocument() {
+// Clone #profileSvg, force explicit numeric width/height from its viewBox
+// (a "100%" width doesn't resolve correctly outside document layout), and serialize.
+function serializeProfileSvgForExport(svgElement) {
+  const width =
+    svgElement.viewBox.baseVal.width || svgElement.clientWidth || 520;
+  const height = svgElement.viewBox.baseVal.height || 400;
+  const clone = svgElement.cloneNode(true);
+  clone.setAttribute("width", width);
+  clone.setAttribute("height", height);
+  const markup = new XMLSerializer().serializeToString(clone);
+  return { markup, width, height };
+}
+
+// Rasterize SVG markup to a PNG data URL via an offscreen canvas.
+// scale=2 renders at 2x for crispness when embedded at logical size in Word.
+function svgMarkupToPngDataUrl(markup, width, height, scale = 2) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = width * scale;
+      canvas.height = height * scale;
+      const ctx = canvas.getContext("2d");
+      // White background — the diagram's translucent fills are meant to sit
+      // over the app's page background, but Word documents are white.
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL("image/png"));
+    };
+    img.onerror = reject;
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(markup);
+  });
+}
+
+// Capture the live Profile Diagram as a PNG data URL for clipboard export.
+async function captureProfileDiagramAsPngDataUrl() {
+  const svgElement = document.getElementById("profileSvg");
+  const { markup, width, height } = serializeProfileSvgForExport(svgElement);
+  const dataUrl = await svgMarkupToPngDataUrl(markup, width, height, 2);
+  return { dataUrl, width, height };
+}
+
+// Copy inputs and outputs as a formatted HTML table (plus the profile
+// diagram) for Word.
+async function copyToWordDocument() {
+  if (document.getElementById("results").classList.contains("hidden")) {
+    showToast("Please calculate the profile first.", "error");
+    return;
+  }
+
   const thrElev = document.getElementById("thrElev").value || "N/A";
   const thrElevUnit = document.getElementById("thrElevUnit").value || "N/A";
   const tch = document.getElementById("tch").value || "N/A";
@@ -330,7 +379,7 @@ function copyToWordDocument() {
   const initialElevation =
     document.getElementById("initialElevation").textContent || "N/A";
 
-  const htmlContent = `
+  const tableHtml = `
         <table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
           <tr style="background:#0c2240;color:#ffffff"><th style="padding:8px;text-align:left;font-weight:bold">Parameter</th><th style="padding:8px;text-align:left;font-weight:bold">Value</th></tr>
           <tr><td style="padding:8px;text-align:left">THR Elev (ft)</td><td style="padding:8px;text-align:left">${outputThrElev} (Input: ${thrElev} ${thrElevUnit})</td></tr>
@@ -344,9 +393,21 @@ function copyToWordDocument() {
           <tr><td style="padding:8px;text-align:left">Initial Elevation (ft)</td><td style="padding:8px;text-align:left">${initialElevation}</td></tr>
         </table>
       `;
+
+  let diagramHtml = "";
+  try {
+    const { dataUrl, width, height } =
+      await captureProfileDiagramAsPngDataUrl();
+    diagramHtml = `<p style="text-align:center;margin-top:12px"><img src="${dataUrl}" width="${width}" height="${height}" style="max-width:100%" /></p>`;
+  } catch (err) {
+    console.error("Diagram capture failed:", err);
+  }
+
+  const htmlContent = tableHtml + diagramHtml;
   const blob = new Blob([htmlContent], { type: "text/html" });
-  // Plain-text fallback by stripping tags and using tabs/newlines
-  const stripped = htmlContent
+  // Plain-text fallback by stripping tags and using tabs/newlines (table only —
+  // the diagram has no plain-text representation).
+  const stripped = tableHtml
     .replace(/<table[^>]*>/gi, "")
     .replace(/<tr[^>]*>/gi, "")
     .replace(/<th[^>]*>/gi, "")
