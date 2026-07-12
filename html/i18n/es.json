@@ -21,7 +21,9 @@
     "nauticalMiles": "NM",
     "celsius": "°C",
     "copyRounded": "Redondeado (4 dec.)",
-    "copyExact": "Exacto"
+    "copyExact": "Exacto",
+    "yes": "Sí",
+    "no": "No"
   },
   "rateTurn": {
     "title": "Tasa y Radio de Giro",
@@ -96,6 +98,23 @@
     "methodA": "Altitud FAP por triángulo rectángulo",
     "methodB": "Altitud FAP considerando curvatura terrestre",
     "rdhAdjustment": "Ajuste RDH >15m"
+  },
+  "heightLoss": {
+    "title": "Calculadora de Pérdida de Altura",
+    "sidebarLabel": "Pérdida de Altura",
+    "resultsTitle": "Resultados de Pérdida de Altura",
+    "adElevation": "Elevación del Aeródromo",
+    "vpa": "VPA",
+    "elevAdjustmentRequired": "Ajuste por Elevación Requerido",
+    "vpaAdjustmentRequired": "Ajuste por VPA Requerido",
+    "resultsUnit": "Unidad de Resultados",
+    "category": "Categoría",
+    "vat": "Vat (kt)",
+    "radioAlt": "Radioaltímetro",
+    "pressureAlt": "Altímetro de Presión",
+    "adjElev": "Ajuste por Elevación",
+    "adjVpa": "Ajuste por VPA",
+    "adjustedHeightLoss": "Pérdida de Altura Ajustada"
   },
   "bearings": {
     "title": "Ángulos y Rumbos",

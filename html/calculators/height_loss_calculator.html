@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="heightLoss.title">Height Loss Calculator</title>
+    <link rel="stylesheet" href="../css/tailwind.css" />
+    <script src="../js/shared/shared-config.js" defer></script>
+    <link rel="stylesheet" href="../css/dark-mode.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script src="../js/shared/aviation-utils.js" defer></script>
+    <script src="../i18n/i18n.js" defer></script>
+  </head>
+  <body
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4"
+  >
+    <main
+      class="max-w-4xl w-full mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
+    >
+      <!-- Header with title and buttons -->
+      <div class="flex flex-wrap justify-between items-center mb-6">
+        <header>
+          <h1
+            class="text-2xl sm:text-3xl font-bold text-primary-700 dark:text-primary-300 flex items-center"
+            data-i18n="heightLoss.title"
+          >
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-7 w-7 sm:h-8 sm:w-8 mr-2"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M2 12h20M2 12l10-10M2 12l10 10"></path>
+            </svg>
+            Height Loss Calculator
+          </h1>
+        </header>
+        <div class="flex gap-3">
+          <button
+            type="button"
+            id="btnSave"
+            class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
+          >
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-1"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+              ></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            <span data-i18n="common.save">Save Parameters</span>
+          </button>
+          <input id="loadFile" type="file" accept=".json" class="hidden" />
+          <button
+            type="button"
+            id="btnLoad"
+            class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center text-sm"
+          >
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-1"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span data-i18n="common.load">Load Parameters</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Inputs -->
+      <fieldset>
+        <legend class="sr-only">Height Loss Parameters</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div class="space-y-2">
+            <label
+              for="adElevation"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="heightLoss.adElevation"
+              >AD Elevation</label
+            >
+            <div
+              class="flex rounded-lg overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600"
+            >
+              <input
+                id="adElevation"
+                type="number"
+                class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                placeholder="e.g. 1200"
+              />
+              <select
+                id="adElevationUnit"
+                class="bg-gray-100 dark:bg-gray-600 px-3 py-2 border-l border-gray-300 dark:border-gray-600 focus:outline-none dark:text-white"
+              >
+                <option value="m" selected data-i18n="common.meters">m</option>
+                <option value="ft" data-i18n="common.feet">ft</option>
+              </select>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label
+              for="vpa"
+              class="block font-medium text-gray-700 dark:text-gray-300"
+              data-i18n="heightLoss.vpa"
+              >VPA (°)</label
+            >
+            <input
+              id="vpa"
+              type="number"
+              step="0.1"
+              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              placeholder="e.g. 3.5"
+            />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Calculate button -->
+      <div class="flex justify-end mt-6">
+        <button
+          type="button"
+          id="btnCalculate"
+          class="bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800 text-white font-medium py-3 px-6 rounded-lg shadow transition-colors flex items-center"
+        >
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          <span data-i18n="common.calculate">Calculate</span>
+        </button>
+      </div>
+
+      <!-- Results -->
+      <div
+        id="results"
+        role="region"
+        aria-live="polite"
+        aria-atomic="true"
+        class="mt-8 hidden bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-200 dark:border-gray-600"
+      >
+        <h2 class="text-xl font-bold text-green-800 dark:text-green-300 mb-4">
+          <span data-i18n="heightLoss.resultsTitle">Height Loss Results</span>
+        </h2>
+
+        <!-- Derived indicator tiles -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="heightLoss.elevAdjustmentRequired"
+            >
+              Adjustment due to Elevation Required
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="elevAdjustmentRequired"></span>
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-green-100 dark:border-gray-600 shadow-sm"
+          >
+            <p
+              class="text-sm text-gray-500 dark:text-gray-400"
+              data-i18n="heightLoss.vpaAdjustmentRequired"
+            >
+              Adjustment due to VPA Required
+            </p>
+            <p class="text-lg font-semibold dark:text-white">
+              <span id="vpaAdjustmentRequired"></span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Results unit selector -->
+        <div class="flex items-center gap-3 mb-4">
+          <label
+            for="resultsUnit"
+            class="font-medium text-gray-700 dark:text-gray-300 text-sm"
+            data-i18n="heightLoss.resultsUnit"
+            >Results Unit</label
+          >
+          <select
+            id="resultsUnit"
+            class="p-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm"
+          >
+            <option value="m" data-i18n="common.meters">m</option>
+            <option value="ft" data-i18n="common.feet">ft</option>
+          </select>
+        </div>
+
+        <!-- Height loss table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border-collapse">
+            <thead>
+              <tr class="bg-primary-700 text-white">
+                <th class="p-2 text-left" data-i18n="heightLoss.category">
+                  Category
+                </th>
+                <th class="p-2 text-left" data-i18n="heightLoss.vat">
+                  Vat (kt)
+                </th>
+                <th class="p-2 text-left" data-i18n="heightLoss.radioAlt">
+                  Radio Altimeter
+                </th>
+                <th class="p-2 text-left" data-i18n="heightLoss.pressureAlt">
+                  Pressure Altimeter
+                </th>
+                <th class="p-2 text-left" data-i18n="heightLoss.adjElev">
+                  Adjustment due to Elevation
+                </th>
+                <th class="p-2 text-left" data-i18n="heightLoss.adjVpa">
+                  Adjustment due to VPA
+                </th>
+                <th
+                  class="p-2 text-left"
+                  data-i18n="heightLoss.adjustedHeightLoss"
+                >
+                  Adjusted Height Loss
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              id="heightLossRows"
+              class="divide-y divide-gray-100 dark:divide-gray-700"
+            ></tbody>
+          </table>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button
+            type="button"
+            id="btnCopy"
+            class="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow transition-colors flex items-center"
+          >
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-2"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+              ></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+            <span data-i18n="common.copyToWord">Copy to Word Document</span>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script src="../js/height_loss_calculator.js" defer></script>
+  </body>
+</html>

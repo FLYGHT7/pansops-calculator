@@ -21,7 +21,9 @@
     "nauticalMiles": "NM",
     "celsius": "°C",
     "copyRounded": "Rounded (4 dec.)",
-    "copyExact": "Exact"
+    "copyExact": "Exact",
+    "yes": "Yes",
+    "no": "No"
   },
   "rateTurn": {
     "title": "Rate & Radius of Turn",
@@ -96,6 +98,23 @@
     "methodA": "Right Angle Computation FAP Altitude",
     "methodB": "Considering Earth Curvature FAP Altitude",
     "rdhAdjustment": "RDH >15m Adjustment"
+  },
+  "heightLoss": {
+    "title": "Height Loss Calculator",
+    "sidebarLabel": "Height Loss",
+    "resultsTitle": "Height Loss Results",
+    "adElevation": "AD Elevation",
+    "vpa": "VPA",
+    "elevAdjustmentRequired": "Adjustment due to Elevation Required",
+    "vpaAdjustmentRequired": "Adjustment due to VPA Required",
+    "resultsUnit": "Results Unit",
+    "category": "Category",
+    "vat": "Vat (kt)",
+    "radioAlt": "Radio Altimeter",
+    "pressureAlt": "Pressure Altimeter",
+    "adjElev": "Adjustment due to Elevation",
+    "adjVpa": "Adjustment due to VPA",
+    "adjustedHeightLoss": "Adjusted Height Loss"
   },
   "bearings": {
     "title": "Bearings Angles",
