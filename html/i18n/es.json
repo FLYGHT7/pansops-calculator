@@ -330,6 +330,24 @@
     "addTable": "Agregar",
     "roundROD": "Redondear ROD al múltiplo de 5 más cercano"
   },
+  "distAlt": {
+    "title": "Calculadora de Distancia/Altitud",
+    "sidebarLabel": "Distancia/Altitud",
+    "resultsTitle": "Resultados de Distancia/Altitud",
+    "fafAltitude": "Altitud del FAF",
+    "maptAltitude": "Altitud del MAPt",
+    "fafMaptDistance": "Distancia FAF - MAPt",
+    "tchRdh": "TCH/RDH",
+    "oca": "OCA",
+    "gradientVpa": "Gradiente/VPA",
+    "heightLossPerMile": "Pérdida de altura por milla",
+    "tableDistance": "Distancia desde el MAPt (NM)",
+    "tableCalculatedAltitude": "Altitud calculada (ft)",
+    "tablePublicationAltitude": "Altitud de publicación (ft)",
+    "tableCalculatedHeight": "Altura calculada (ft)",
+    "tableAdvisoryAltitude": "Altitud de referencia",
+    "belowOca": "bajo el OCA"
+  },
   "windSpiral": {
     "title": "Calculadora de Espiral de Viento"
   },

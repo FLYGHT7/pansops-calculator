@@ -233,6 +233,10 @@ const PAGE_MAP = {
     url: "calculators/bearings_angles.html",
     buttonId: "bearingsAnglesButton",
   },
+  "#dist-alt": {
+    url: "calculators/dist_alt_calculator.html",
+    buttonId: "distAltButton",
+  },
   "#about": { url: "calculators/about.html", buttonId: "aboutButton" },
 };
 // Reverse lookup: url → hash
@@ -260,6 +264,7 @@ const PAGE_TITLES = {
   "calculators/ils_height.html": "ILS Height Calculations",
   "calculators/ils_distance.html": "ILS Distance Calculations",
   "calculators/bearings_angles.html": "Bearings & Angles",
+  "calculators/dist_alt_calculator.html": "Distance/Altitude Calculator",
   "calculators/about.html": "About",
 };
 

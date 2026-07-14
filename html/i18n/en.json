@@ -330,6 +330,24 @@
     "addTable": "Add",
     "roundROD": "Round ROD to nearest 5"
   },
+  "distAlt": {
+    "title": "Distance/Altitude Calculator",
+    "sidebarLabel": "Distance/Altitude",
+    "resultsTitle": "Distance/Altitude Results",
+    "fafAltitude": "FAF Altitude",
+    "maptAltitude": "MAPt Altitude",
+    "fafMaptDistance": "FAF - MAPt Distance",
+    "tchRdh": "TCH/RDH",
+    "oca": "OCA",
+    "gradientVpa": "Gradient/VPA",
+    "heightLossPerMile": "Height Loss per Mile",
+    "tableDistance": "Distance from MAPt (NM)",
+    "tableCalculatedAltitude": "Calculated Altitude (ft)",
+    "tablePublicationAltitude": "Publication Altitude (ft)",
+    "tableCalculatedHeight": "Calculated Height (ft)",
+    "tableAdvisoryAltitude": "Advisory Altitude",
+    "belowOca": "below OCA"
+  },
   "windSpiral": {
     "title": "Wind Spiral Calculator"
   },
