@@ -354,8 +354,8 @@
     "sidebarLabel": "Distance/Altitude",
     "resultsTitle": "Distance/Altitude Results",
     "fafAltitude": "FAF Altitude",
-    "maptAltitude": "MAPt Altitude",
-    "fafMaptDistance": "FAF - MAPt Distance",
+    "thrElevation": "THR Elevation",
+    "fafThrDistance": "FAF - THR Distance",
     "tchRdh": "TCH/RDH",
     "oca": "OCA",
     "gradientVpa": "Gradient/VPA",
@@ -365,7 +365,9 @@
     "tablePublicationAltitude": "Publication Altitude (ft)",
     "tableCalculatedHeight": "Calculated Height (ft)",
     "tableAdvisoryAltitude": "Advisory Altitude",
-    "belowOca": "below OCA"
+    "belowOca": "below OCA",
+    "offsetMaptEnabled": "Offset MAPt",
+    "offsetMaptDistance": "Offset Distance"
   },
   "windSpiral": {
     "title": "Wind Spiral Calculator"
