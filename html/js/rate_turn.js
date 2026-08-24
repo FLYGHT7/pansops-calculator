@@ -167,14 +167,9 @@ function calculateTAS() {
 
 // Calculate Rate of Turn (cap at 3°/s) and Radius of Turn.
 function calculateTurn() {
-  let tas;
-
-  // Check if TAS has been calculated
-  if (document.getElementById("tas").textContent === "") {
-    tas = calculateTAS();
-  } else {
-    tas = parseFloat(document.getElementById("tas").textContent);
-  }
+  // Always recalculate TAS from the current inputs — reading the rendered
+  // span here reused a stale TAS and ignored IAS changes after the first run.
+  const tas = calculateTAS();
 
   const bankAngle = parseFloat(document.getElementById("bankAngle").value);
 
