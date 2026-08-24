@@ -957,17 +957,80 @@
         </h2>
 
         <div class="space-y-1">
-          <!-- v0.4.0 — current -->
+          <!-- v0.4.2 — current -->
           <div
             class="timeline-item bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5"
           >
             <div class="flex items-center gap-3 mb-2">
               <span
-                class="app-version ver-badge px-2 py-0.5 rounded"
+                class="ver-badge px-2 py-0.5 rounded"
                 style="
                   background: rgba(56, 189, 248, 0.12);
                   border: 1px solid rgba(56, 189, 248, 0.3);
                   color: #0284c7;
+                "
+                >v0.4.2</span
+              >
+              <span
+                style="
+                  font-family: &quot;Barlow&quot;, sans-serif;
+                  font-size: 0.7rem;
+                  color: var(--text-muted);
+                "
+                >2026 — ROD &amp; Distance/Altitude</span
+              >
+            </div>
+            <ul
+              style="
+                font-family: &quot;Barlow&quot;, sans-serif;
+                font-size: 0.82rem;
+                color: var(--text-muted);
+                list-style: disc;
+                padding-left: 1.25rem;
+                line-height: 1.8;
+              "
+            >
+              <li>
+                Allow <strong style="color: var(--text)">VPA (°)</strong> as
+                alternative input to Gradient (%) for ROD calculations
+              </li>
+              <li>
+                Highlight
+                <strong style="color: var(--text)">ROD values ≥ 1000 fpm</strong>
+                on ROD calculations
+              </li>
+              <li>
+                <strong style="color: var(--text)">GS / Rate of Descent</strong>
+                calculation correction for wrong NM→ft constant
+              </li>
+              <li><strong style="color: var(--text)">Directory setup</strong> and naming convention cleanup</li>
+              <li>
+                Copy <strong style="color: var(--text)">Profile Diagram</strong>
+                along with results table to Word
+              </li>
+              <li><strong style="color: var(--text)">Distance/Altitude Table</strong> calculator</li>
+              <li>
+                Add <strong style="color: var(--text)">Height Loss Calculator</strong>
+                and integrate into sidebar navigation
+              </li>
+              <li>
+                Distance/Altitude Calculator —
+                <strong style="color: var(--text)">offset MAPt + THR</strong> rename
+              </li>
+            </ul>
+          </div>
+
+          <!-- v0.4.0 -->
+          <div
+            class="timeline-item bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5"
+          >
+            <div class="flex items-center gap-3 mb-2">
+              <span
+                class="ver-badge px-2 py-0.5 rounded"
+                style="
+                  background: rgba(100, 116, 139, 0.1);
+                  border: 1px solid rgba(100, 116, 139, 0.25);
+                  color: var(--text-muted);
                 "
                 >v0.4.0</span
               >
