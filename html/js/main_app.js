@@ -198,6 +198,10 @@ const PAGE_MAP = {
     url: "calculators/overhead_navaid_tolerance.html",
     buttonId: "overheadNavaidButton",
   },
+  "#holding-racetrack": {
+    url: "calculators/holding_racetrack.html",
+    buttonId: "holdingRacetrackButton",
+  },
   "#profile": { url: "calculators/profile_check.html", buttonId: "elevationButton" },
   "#faf-estimator": { url: "calculators/faf_estimator.html", buttonId: "fafEstimatorButton" },
   "#npa-soc": {
@@ -260,6 +264,7 @@ const PAGE_TITLES = {
   "calculators/dme_tolerance.html": "DME Tolerance",
   "calculators/base_turn.html": "Base Turn Calculations",
   "calculators/overhead_navaid_tolerance.html": "Overhead VOR Tolerance",
+  "calculators/holding_racetrack.html": "Holding and Racetrack Template",
   "calculators/profile_check.html": "Profile Estimator",
   "calculators/faf_estimator.html": "FAF Estimator",
   "calculators/rod_timing.html": "GS / Rate of Descent",
