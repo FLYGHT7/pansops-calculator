@@ -241,6 +241,21 @@
                 </li>
                 <li>
                   <button
+                    id="baseTurnButton"
+                    data-label="Base Turn Calculations"
+                    onclick="loadPage('calculators/base_turn.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                  >
+                    <svg aria-hidden="true" focusable="false" class="text-primary-400 w-5 h-5 mr-3 sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 19c1-8 5-12 12-12M4 19c6 0 10-2 13-7M4 19l7-4" />
+                      <circle cx="4" cy="19" r="1.5" />
+                      <path d="M14 5h5v5" />
+                    </svg>
+                    <span class="sidebar-label" data-i18n="baseTurn.title">Base Turn Calculations</span>
+                  </button>
+                </li>
+                <li>
+                  <button
                     id="overheadNavaidButton"
                     data-label="Overhead VOR Tolerance"
                     onclick="loadPage('calculators/overhead_navaid_tolerance.html', this)"
