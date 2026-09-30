@@ -1,0 +1,65 @@
+.holding-table {
+  min-width: 34rem;
+}
+
+.holding-input {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.holding-value-heading {
+  text-align: right;
+}
+
+.holding-table thead th:first-child,
+.holding-table .holding-data-row > th {
+  width: 4.5rem;
+}
+
+.holding-group-row th {
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  color: #334155;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.holding-data-row {
+  border-bottom: 1px solid var(--border);
+}
+
+.holding-data-row:hover {
+  background: rgba(2, 132, 199, 0.055);
+}
+
+.holding-result {
+  font-weight: 600;
+  text-align: right;
+}
+
+.holding-unit {
+  color: var(--text-muted);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  margin-left: 0.5rem;
+}
+
+.dark .holding-group-row th {
+  background: var(--card);
+  color: #bfdbfe;
+}
+
+.dark .holding-data-row:hover {
+  background: rgba(56, 189, 248, 0.08);
+}
+
+@media (max-width: 640px) {
+  .holding-table {
+    min-width: 29rem;
+  }
+}

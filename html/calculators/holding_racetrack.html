@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Holding and Racetrack Template</title>
+    <link rel="stylesheet" href="../css/tailwind.css" />
+    <script src="../js/shared/shared-config.js" defer></script>
+    <link rel="stylesheet" href="../css/dark-mode.css" />
+    <link rel="stylesheet" href="../css/holding-racetrack.css" />
+    <script src="../js/shared/aviation-utils.js" defer></script>
+    <script src="../i18n/i18n.js" defer></script>
+    <script src="../js/holding_racetrack.js" defer></script>
+  </head>
+  <body class="min-h-screen bg-gray-50 p-4 dark:bg-gray-900">
+    <main class="mx-auto max-w-4xl rounded-xl border border-gray-200 bg-white p-5 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+      <header class="mb-6">
+        <h1 class="text-2xl font-bold text-primary-700 dark:text-primary-300 sm:text-3xl" data-i18n="holding.title">Holding and Racetrack Template</h1>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300" data-i18n="holding.subtitle">Calculate the 33 non-SI values for the holding and racetrack template.</p>
+      </header>
+
+      <div class="mb-6 flex flex-wrap justify-end gap-3">
+        <button type="button" id="btnSave" class="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700" data-i18n="common.save">Save Parameters</button>
+        <input id="loadFile" type="file" accept=".json,application/json" class="hidden" />
+        <button type="button" id="btnLoad" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700" data-i18n="common.load">Load Parameters</button>
+      </div>
+
+      <form id="holdingForm" novalidate>
+        <fieldset>
+          <legend class="sr-only" data-i18n="holding.inputs">Holding calculation inputs</legend>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div class="space-y-2">
+              <label for="ias" class="block font-medium text-gray-700 dark:text-gray-200" data-i18n="holding.ias">IAS</label>
+              <div class="flex overflow-hidden rounded-lg border border-gray-300 dark:border-gray-600">
+                <input id="ias" type="number" min="0" step="any" inputmode="decimal" value="220" class="holding-input flex-1 p-3 dark:bg-gray-700 dark:text-white" />
+                <span class="flex items-center border-l border-gray-300 bg-gray-100 px-3 text-sm dark:border-gray-600 dark:bg-gray-600 dark:text-white">kt</span>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label for="altitude" class="block font-medium text-gray-700 dark:text-gray-200" data-i18n="holding.altitude">Altitude</label>
+              <div class="flex overflow-hidden rounded-lg border border-gray-300 dark:border-gray-600">
+                <input id="altitude" type="number" step="any" inputmode="decimal" value="10000" class="holding-input flex-1 p-3 dark:bg-gray-700 dark:text-white" />
+                <span class="flex items-center border-l border-gray-300 bg-gray-100 px-3 text-sm dark:border-gray-600 dark:bg-gray-600 dark:text-white">ft</span>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label for="legTime" class="block font-medium text-gray-700 dark:text-gray-200" data-i18n="holding.legTime">Outbound leg time (T)</label>
+              <div class="flex overflow-hidden rounded-lg border border-gray-300 dark:border-gray-600">
+                <input id="legTime" type="number" min="0" step="any" inputmode="decimal" value="1" class="holding-input flex-1 p-3 dark:bg-gray-700 dark:text-white" />
+                <span class="flex items-center border-l border-gray-300 bg-gray-100 px-3 text-sm dark:border-gray-600 dark:bg-gray-600 dark:text-white">min</span>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label for="isaDeviation" class="block font-medium text-gray-700 dark:text-gray-200" data-i18n="holding.isaDeviation">ISA Deviation</label>
+              <div class="flex overflow-hidden rounded-lg border border-gray-300 dark:border-gray-600">
+                <input id="isaDeviation" type="number" step="any" inputmode="decimal" value="15" class="holding-input flex-1 p-3 dark:bg-gray-700 dark:text-white" />
+                <span class="flex items-center border-l border-gray-300 bg-gray-100 px-3 text-sm dark:border-gray-600 dark:bg-gray-600 dark:text-white">°C</span>
+              </div>
+            </div>
+          </div>
+          <p class="mt-4 text-sm text-gray-500 dark:text-gray-400" data-i18n="holding.bankHint">Bank angle is fixed at 25°. Turn rate is limited to 3°/s as in the reference table.</p>
+        </fieldset>
+
+        <div class="mt-6 flex justify-end">
+          <button type="submit" class="rounded-lg bg-primary-600 px-5 py-3 font-semibold text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2" data-i18n="common.calculate">Calculate</button>
+        </div>
+      </form>
+
+      <section id="results" class="mt-8 hidden" role="region" aria-live="polite" aria-labelledby="resultsTitle">
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h2 id="resultsTitle" class="text-xl font-semibold text-gray-800 dark:text-white" data-i18n="holding.resultsTitle">Holding and Racetrack Results</h2>
+          <button type="button" id="btnCopy" class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-500 dark:bg-gray-600 dark:text-white" data-i18n="common.copyTable">Copy Results as Table</button>
+        </div>
+        <dl id="inputSummary" class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"></dl>
+        <div class="overflow-x-auto rounded-lg border border-gray-300 dark:border-gray-600">
+          <table id="resultTable" class="holding-table w-full border-collapse text-left text-sm">
+            <caption class="sr-only" data-i18n="holding.resultsCaption">Non-SI holding and racetrack template values</caption>
+            <thead class="bg-gray-100 text-xs uppercase tracking-wide text-gray-700 dark:bg-gray-700 dark:text-gray-200">
+              <tr>
+                <th scope="col" class="whitespace-nowrap border-b border-gray-300 px-3 py-3 dark:border-gray-600" data-i18n="holding.line">Line</th>
+                <th scope="col" class="whitespace-nowrap border-b border-gray-300 px-3 py-3 dark:border-gray-600" data-i18n="holding.parameter">Parameter</th>
+                <th scope="col" class="holding-value-heading whitespace-nowrap border-b border-gray-300 px-3 py-3 dark:border-gray-600" data-i18n="holding.value">Value</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <p class="mt-3 text-xs text-gray-500 dark:text-gray-400" data-i18n="holding.precisionNote">Calculations retain full precision; displayed values are rounded.</p>
+      </section>
+    </main>
+  </body>
+</html>
