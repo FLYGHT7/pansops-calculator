@@ -642,7 +642,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <!-- DA/DH -->
             <div class="space-y-2">
-              <label for="daDh"
+              <label id="daDhLabel" for="daDh"
                 class="block font-medium text-gray-700 dark:text-gray-300"
                 data-i18n="vssOcs.daDh"
                 >DA/DH</label
@@ -654,6 +654,8 @@
                   id="daDh"
                   type="number"
                   placeholder="Enter DA/DH"
+                  data-i18n="vssOcs.daDhPlaceholder"
+                  data-i18n-attr="placeholder"
                   class="flex-grow p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                 />
                 <select
@@ -965,7 +967,7 @@
               class="text-xl font-bold text-green-800 dark:text-green-300 mb-4"
               data-i18n="vssOcs.locResultsTitle"
             >
-              LOC OAS Results
+              LOC VSS Results
             </h2>
 
             <!-- Output values in a grid -->
@@ -975,12 +977,12 @@
               >
                 <p
                   class="text-sm text-gray-500 dark:text-gray-400"
-                  data-i18n="vssOcs.oasHeight"
+                  data-i18n="vssOcs.ochDerived"
                 >
-                  OAS Height
+                  OCH
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
-                  <span id="locOasHeightOutput"></span>
+                  <span id="locOchOutput"></span>
                 </p>
               </div>
               <div
@@ -988,12 +990,12 @@
               >
                 <p
                   class="text-sm text-gray-500 dark:text-gray-400"
-                  data-i18n="vssOcs.oasLength"
+                  data-i18n="vssOcs.vssDistance"
                 >
-                  OAS Length
+                  VSS Distance
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
-                  <span id="locOasLengthOutput"></span>
+                  <span id="locVssDistanceOutput"></span>
                 </p>
               </div>
               <div
@@ -1001,12 +1003,12 @@
               >
                 <p
                   class="text-sm text-gray-500 dark:text-gray-400"
-                  data-i18n="vssOcs.oasWidth"
+                  data-i18n="vssOcs.vssWidth"
                 >
-                  OAS Width
+                  VSS Width
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
-                  <span id="locOasWidthOutput"></span>
+                  <span id="locVssWidthOutput"></span>
                 </p>
               </div>
               <div
@@ -1016,13 +1018,20 @@
                   class="text-sm text-gray-500 dark:text-gray-400"
                   data-i18n="vssOcs.locSensitivity"
                 >
-                  LOC Sensitivity
+                  LOC Sensitivity (reference only)
                 </p>
                 <p class="text-lg font-semibold dark:text-white">
                   <span id="locSensitivityOutput"></span>
                 </p>
               </div>
             </div>
+
+            <p
+              class="text-sm text-gray-600 dark:text-gray-300 mb-6"
+              data-i18n="vssOcs.vssLocStartNote"
+            >
+              VSS distance is measured from a point 60 m beyond the threshold.
+            </p>
 
             <div class="flex justify-end mt-6">
               <button type="button" id="btnCopyLOC"
