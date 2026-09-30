@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Overhead VOR Tolerance Calculator</title>
+    <link rel="stylesheet" href="../css/tailwind.css" />
+    <script src="../js/shared/shared-config.js" defer></script>
+    <link rel="stylesheet" href="../css/dark-mode.css" />
+    <script src="../js/shared/aviation-utils.js" defer></script>
+    <script src="../i18n/i18n.js" defer></script>
+    <script src="../js/overhead_navaid_tolerance.js" defer></script>
+  </head>
+  <body class="min-h-screen bg-gray-50 p-4 dark:bg-gray-900 sm:p-6">
+    <main class="mx-auto max-w-4xl rounded-xl border border-gray-200 bg-white p-5 shadow-lg dark:border-gray-700 dark:bg-gray-800 sm:p-7">
+      <header class="mb-6">
+        <h1 class="text-2xl font-bold text-primary-700 dark:text-primary-300 sm:text-3xl" data-i18n="overhead.title">Overhead VOR Tolerance</h1>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300" data-i18n="overhead.subtitle">Calculate the VOR fix tolerance area above a station.</p>
+      </header>
+
+      <div class="mb-6 flex flex-wrap justify-end gap-3">
+        <button type="button" id="btnSave" class="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700" data-i18n="common.save">Save Parameters</button>
+        <input id="loadFile" type="file" accept=".json,application/json" class="hidden" />
+        <button type="button" id="btnLoad" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700" data-i18n="common.load">Load Parameters</button>
+      </div>
+
+      <fieldset>
+        <legend class="sr-only" data-i18n="overhead.inputGroup">Station and aircraft inputs</legend>
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div class="space-y-2">
+            <label for="aircraftAltitude" class="block font-medium text-gray-700 dark:text-gray-200" data-i18n="overhead.aircraftAltitude">Aircraft altitude</label>
+            <div class="flex overflow-hidden rounded-lg border border-gray-300 dark:border-gray-600">
+              <input id="aircraftAltitude" type="number" step="any" inputmode="decimal" class="min-w-0 flex-1 p-3 dark:bg-gray-700 dark:text-white" data-i18n="overhead.aircraftAltitudePlaceholder" data-i18n-attr="placeholder" placeholder="Enter aircraft altitude" />
+              <select id="aircraftUnit" aria-label="Aircraft altitude unit" data-i18n="overhead.aircraftUnit" data-i18n-attr="aria-label" class="border-l border-gray-300 bg-gray-100 px-3 dark:border-gray-600 dark:bg-gray-600 dark:text-white">
+                <option value="feet" data-i18n="common.feet">ft</option>
+                <option value="meters" data-i18n="common.meters">m</option>
+              </select>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label for="stationElevation" class="block font-medium text-gray-700 dark:text-gray-200" data-i18n="overhead.stationElevation">Station elevation</label>
+            <div class="flex overflow-hidden rounded-lg border border-gray-300 dark:border-gray-600">
+              <input id="stationElevation" type="number" step="any" inputmode="decimal" class="min-w-0 flex-1 p-3 dark:bg-gray-700 dark:text-white" data-i18n="overhead.stationElevationPlaceholder" data-i18n-attr="placeholder" placeholder="Enter station elevation" />
+              <select id="stationUnit" aria-label="Station elevation unit" data-i18n="overhead.stationUnit" data-i18n-attr="aria-label" class="border-l border-gray-300 bg-gray-100 px-3 dark:border-gray-600 dark:bg-gray-600 dark:text-white">
+                <option value="feet" data-i18n="common.feet">ft</option>
+                <option value="meters" data-i18n="common.meters">m</option>
+              </select>
+            </div>
+          </div>
+          <div class="space-y-2 md:col-span-2">
+            <label for="coneAngle" class="block font-medium text-gray-700 dark:text-gray-200" data-i18n="overhead.coneAngle">Cone semi-angle β (°)</label>
+            <input id="coneAngle" type="number" min="0" max="90" step="any" value="50" inputmode="decimal" class="w-full rounded-lg border border-gray-300 p-3 dark:border-gray-600 dark:bg-gray-700 dark:text-white" aria-describedby="coneAngleHint" />
+            <p id="coneAngleHint" class="text-sm text-gray-500 dark:text-gray-400" data-i18n="overhead.coneAngleHint">ICAO default: 50°. Enter another value when specified by the appropriate authority.</p>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="mt-6 flex justify-end">
+        <button type="button" id="btnCalculate" class="rounded-lg bg-primary-600 px-5 py-3 font-semibold text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800" data-i18n="common.calculate">Calculate</button>
+      </div>
+
+      <section id="results" class="mt-6 hidden" role="region" aria-live="polite" aria-labelledby="resultsTitle">
+        <div class="rounded-xl border border-primary-200 bg-primary-50 p-5 dark:border-primary-800 dark:bg-gray-700">
+          <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 id="resultsTitle" class="text-xl font-semibold text-gray-800 dark:text-white" data-i18n="overhead.resultsTitle">VOR Tolerance Results</h2>
+            <button type="button" id="btnCopy" class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500" data-i18n="common.copyTable">Copy Results as Table</button>
+          </div>
+          <dl class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div class="rounded-lg bg-white p-4 dark:bg-gray-800"><dt class="text-sm text-gray-600 dark:text-gray-300" data-i18n="overhead.heightAboveStation">Height above station (h)</dt><dd class="mt-1 text-xl font-semibold text-gray-900 dark:text-white"><span id="heightResult"></span> <span id="heightUnitResult">ft</span></dd></div>
+            <div class="rounded-lg bg-white p-4 dark:bg-gray-800"><dt class="text-sm text-gray-600 dark:text-gray-300" data-i18n="overhead.coneRadius">Cone radius (zV)</dt><dd class="mt-1 text-xl font-semibold text-gray-900 dark:text-white"><span id="radiusResult"></span> NM</dd></div>
+            <div class="rounded-lg bg-white p-4 dark:bg-gray-800"><dt class="text-sm text-gray-600 dark:text-gray-300" data-i18n="overhead.trackOffset">Track offset (qV)</dt><dd class="mt-1 text-xl font-semibold text-gray-900 dark:text-white"><span id="offsetResult"></span> NM</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <figure class="mt-8 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-700 sm:p-6">
+        <figcaption class="mb-4 text-lg font-semibold text-gray-800 dark:text-white" data-i18n="overhead.diagramTitle">VOR overhead tolerance construction</figcaption>
+        <svg class="h-auto w-full text-gray-700 dark:text-gray-100" viewBox="0 0 760 330" role="img" aria-labelledby="overheadSvgTitle overheadSvgDesc" xmlns="http://www.w3.org/2000/svg">
+          <title id="overheadSvgTitle" data-i18n="overhead.diagramTitle">VOR overhead tolerance construction</title>
+          <desc id="overheadSvgDesc" data-i18n="overhead.diagramDescription">Plan view of the VOR tolerance area and side view of the inverted cone. Diagram is not to scale.</desc>
+          <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#334155" /></marker></defs>
+          <text x="190" y="26" text-anchor="middle" font-size="16" font-weight="700" fill="currentColor" data-i18n="overhead.planView">Plan view</text>
+          <circle cx="190" cy="174" r="112" fill="#dbeafe" fill-opacity="0.55" stroke="#2563eb" stroke-width="2" />
+          <path d="M88 151 L88 197 L190 224 L253 209 L278 197 L278 151 L253 139 L190 124 Z" fill="#fef3c7" fill-opacity="0.8" stroke="#d97706" stroke-width="2" />
+          <line x1="42" y1="174" x2="326" y2="174" stroke="#334155" stroke-width="2" marker-end="url(#arrow)" />
+          <line x1="88" y1="151" x2="278" y2="151" stroke="#dc2626" stroke-dasharray="5 4" />
+          <line x1="88" y1="197" x2="278" y2="197" stroke="#dc2626" stroke-dasharray="5 4" />
+          <circle cx="190" cy="174" r="5" fill="#111827" />
+          <line x1="190" y1="174" x2="190" y2="62" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)" />
+          <text x="198" y="76" font-size="14" fill="currentColor">zV</text>
+          <text x="103" y="145" font-size="13" fill="currentColor">+qV</text>
+          <text x="103" y="215" font-size="13" fill="currentColor">−qV</text>
+          <text x="65" y="167" text-anchor="end" font-size="12" fill="currentColor" data-i18n="overhead.inboundTrack">Inbound track</text>
+          <text x="190" y="270" text-anchor="middle" font-size="12" fill="currentColor" data-i18n="overhead.unscaled">Schematic — not to scale</text>
+
+          <line x1="420" y1="278" x2="730" y2="278" stroke="#64748b" stroke-width="2" />
+          <path d="M468 78 L682 78 L575 278 Z" fill="#dbeafe" fill-opacity="0.65" stroke="#2563eb" stroke-width="2" />
+          <line x1="575" y1="84" x2="575" y2="267" stroke="#334155" stroke-dasharray="5 4" />
+          <line x1="575" y1="278" x2="575" y2="78" stroke="#d97706" stroke-width="2" marker-end="url(#arrow)" />
+          <path d="M575 116 A38 38 0 0 1 604 130" fill="none" stroke="#dc2626" stroke-width="2" />
+          <text x="610" y="132" font-size="14" fill="currentColor">β</text>
+          <text x="585" y="175" font-size="14" fill="currentColor">h</text>
+          <circle cx="575" cy="278" r="5" fill="#111827" />
+          <text x="575" y="303" text-anchor="middle" font-size="13" fill="currentColor" data-i18n="overhead.station">VOR station</text>
+          <text x="575" y="46" text-anchor="middle" font-size="16" font-weight="700" fill="currentColor" data-i18n="overhead.sideView">Side view</text>
+        </svg>
+      </figure>
+    </main>
+  </body>
+</html>
