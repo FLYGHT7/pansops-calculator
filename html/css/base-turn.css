@@ -1,0 +1,56 @@
+.base-turn-table {
+  min-width: 32rem;
+}
+
+.base-turn-table thead th:first-child,
+.base-turn-table .base-turn-data-row > th {
+  width: 4.5rem;
+}
+
+.base-turn-group-row th {
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  color: #334155;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.base-turn-data-row {
+  border-bottom: 1px solid var(--border);
+}
+
+.base-turn-data-row:hover {
+  background: rgba(2, 132, 199, 0.055);
+}
+
+.base-turn-result {
+  text-align: right;
+  font-weight: 600;
+}
+
+.base-turn-unit {
+  margin-left: 0.5rem;
+  color: var(--text-muted);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.dark .base-turn-group-row th {
+  background: var(--card);
+  color: #bfdbfe;
+}
+
+.dark .base-turn-data-row:hover {
+  background: rgba(56, 189, 248, 0.08);
+}
+
+@media (max-width: 640px) {
+  .base-turn-table {
+    min-width: 29rem;
+  }
+}
