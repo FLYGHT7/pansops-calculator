@@ -193,6 +193,10 @@ const PAGE_MAP = {
   "#tas": { url: "calculators/tas.html", buttonId: "tasButton" },
   "#rate-turn": { url: "calculators/rate_turn.html", buttonId: "rateTurnButton" },
   "#dme": { url: "calculators/dme_tolerance.html", buttonId: "dmeButton" },
+  "#overhead-navaid": {
+    url: "calculators/overhead_navaid_tolerance.html",
+    buttonId: "overheadNavaidButton",
+  },
   "#profile": { url: "calculators/profile_check.html", buttonId: "elevationButton" },
   "#faf-estimator": { url: "calculators/faf_estimator.html", buttonId: "fafEstimatorButton" },
   "#npa-soc": {
@@ -253,6 +257,7 @@ const PAGE_TITLES = {
   "calculators/tas.html": "True Airspeed",
   "calculators/rate_turn.html": "Rate & Radius of Turn",
   "calculators/dme_tolerance.html": "DME Tolerance",
+  "calculators/overhead_navaid_tolerance.html": "Overhead VOR Tolerance",
   "calculators/profile_check.html": "Profile Estimator",
   "calculators/faf_estimator.html": "FAF Estimator",
   "calculators/rod_timing.html": "GS / Rate of Descent",

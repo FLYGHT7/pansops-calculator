@@ -241,6 +241,20 @@
                 </li>
                 <li>
                   <button
+                    id="overheadNavaidButton"
+                    data-label="Overhead VOR Tolerance"
+                    onclick="loadPage('calculators/overhead_navaid_tolerance.html', this)"
+                    class="sidebar-item w-full flex items-center p-3 text-gray-300 rounded-lg hover:bg-gray-700 group transition-colors"
+                  >
+                    <svg aria-hidden="true" focusable="false" class="text-primary-400 w-5 h-5 mr-3 sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="2" />
+                      <path d="M12 10V3M8 21l4-7 4 7M5 8a10 10 0 0 1 14 0M2 5a14 14 0 0 1 20 0" />
+                    </svg>
+                    <span class="sidebar-label" data-i18n="overhead.title">Overhead VOR Tolerance</span>
+                  </button>
+                </li>
+                <li>
+                  <button
                     id="windSpiralButton"
                     data-label="Wind Spiral Calculator"
                     onclick="loadPage('calculators/wind_spiral.html', this)"
