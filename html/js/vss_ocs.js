@@ -127,6 +127,20 @@ function updateApproach() {
 // Update fields based on specific approach type
 function updateApproachFields() {
   const approachType = document.getElementById("specificApproachType").value;
+  const heightLabel = document.getElementById("daDhLabel");
+  const heightInput = document.getElementById("daDh");
+  const isLoc = approachType === "loc";
+
+  heightLabel.setAttribute(
+    "data-i18n",
+    isLoc ? "vssOcs.oca" : "vssOcs.daDh",
+  );
+  heightInput.setAttribute(
+    "data-i18n",
+    isLoc ? "vssOcs.ocaPlaceholder" : "vssOcs.daDhPlaceholder",
+  );
+  heightInput.setAttribute("data-i18n-attr", "placeholder");
+  if (window.I18N) window.I18N.apply();
 
   // Hide all specific fields
   document.getElementById("ilsSpecificFields").classList.add("hidden");
@@ -313,20 +327,20 @@ function calculateApproachParameters() {
     rdh_m = rdh * 0.3048;
   }
 
-  // Convert DA/DH to meters if needed
-  let daDh_m;
+  // Convert DA/DH or OCA to meters, depending on the selected approach.
+  let height_m;
   if (daDhUnit === "ft") {
-    daDh_m = daDhInput * 0.3048;
+    height_m = daDhInput * 0.3048;
   } else {
-    daDh_m = daDhInput;
+    height_m = daDhInput;
   }
 
   if (approachType === "ils") {
-    calculateILS(thrElev_m, rdh_m, gpAngle, aircraftCategory, daDh_m);
+    calculateILS(thrElev_m, rdh_m, gpAngle, aircraftCategory, height_m);
   } else if (approachType === "apv") {
-    calculateAPV(thrElev_m, rdh_m, gpAngle, aircraftCategory, daDh_m);
+    calculateAPV(thrElev_m, rdh_m, gpAngle, aircraftCategory, height_m);
   } else if (approachType === "loc") {
-    calculateLOC(thrElev_m, rdh_m, gpAngle, aircraftCategory, daDh_m);
+    calculateLOC(thrElev_m, rdh_m, gpAngle, aircraftCategory, height_m);
   }
 }
 
@@ -398,34 +412,38 @@ function calculateAPV(thrElev_m, rdh, gpAngle, aircraftCategory, daDh_m) {
 }
 
 // Function to calculate LOC parameters
-function calculateLOC(thrElev_m, rdh, gpAngle, aircraftCategory, daDh_m) {
+function calculateLOC(thrElev_m, rdh, gpAngle, aircraftCategory, oca_m) {
   const locSensitivity = parseFloat(
     document.getElementById("locSensitivity").value,
   );
 
-  if (isNaN(locSensitivity)) {
-    showToast("Please enter a valid LOC Sensitivity value.", "error");
+  if (oca_m <= thrElev_m) {
+    showToast("OCA must be higher than THR Elevation.", "error");
     return;
   }
 
-  // Calculate OAS Height (using DA/DH)
-  const oasHeight = daDh_m;
+  const vssAngle = gpAngle - 1.12;
+  if (vssAngle <= 0) {
+    showToast("GP Angle must be greater than 1.12° for VSS.", "error");
+    return;
+  }
 
-  // Calculate OAS Length
-  const oasLength = oasHeight / Math.tan((Math.PI / 180) * gpAngle);
-
-  // Calculate OAS Width (based on LOC sensitivity)
-  const oasWidth = oasLength * Math.tan((Math.PI / 180) * 3.5) + 200;
+  // Match QPANSOPY: OCH = OCA - THR elevation; VSS distance = OCH / tan(VPA - 1.12°).
+  const och_m = oca_m - thrElev_m;
+  const vssDistance_m = och_m / Math.tan((Math.PI / 180) * vssAngle);
+  const vssWidth_m = 120;
 
   // Display results
-  document.getElementById("locOasHeightOutput").textContent =
-    oasHeight.toFixed(2) + " m";
-  document.getElementById("locOasLengthOutput").textContent =
-    (oasLength / 1852).toFixed(2) + " NM (" + oasLength.toFixed(2) + " m)";
-  document.getElementById("locOasWidthOutput").textContent =
-    (oasWidth / 1852).toFixed(2) + " NM (" + oasWidth.toFixed(2) + " m)";
+  document.getElementById("locOchOutput").textContent = och_m.toFixed(2) + " m";
+  document.getElementById("locVssDistanceOutput").textContent =
+    (vssDistance_m / 1852).toFixed(2) +
+    " NM (" +
+    vssDistance_m.toFixed(2) +
+    " m)";
+  document.getElementById("locVssWidthOutput").textContent =
+    vssWidth_m.toFixed(2) + " m";
   document.getElementById("locSensitivityOutput").textContent =
-    locSensitivity.toFixed(2);
+    isNaN(locSensitivity) ? "N/A" : locSensitivity.toFixed(2);
 
   // Show results section
   document.getElementById("resultsLOC").classList.remove("hidden");
@@ -484,6 +502,20 @@ function loadParametersB(event) {
   reader.onload = function (e) {
     try {
       const data = JSON.parse(e.target.result);
+      const savedApproachType =
+        data["Approach Type"] ||
+        document.getElementById("specificApproachType").value;
+      const isLoc = savedApproachType === "loc";
+      const hasSavedOca = Object.prototype.hasOwnProperty.call(data, "OCA");
+      const hasLegacyLocHeight =
+        isLoc &&
+        !hasSavedOca &&
+        Object.prototype.hasOwnProperty.call(data, "DA/DH");
+      let legacyLocFile = false;
+
+      if (data["Approach Type"])
+        document.getElementById("specificApproachType").value =
+          data["Approach Type"];
       if (data["THR Elev"])
         document.getElementById("thrElevB").value = data["THR Elev"];
       if (data["thrElevUnit"]) {
@@ -502,25 +534,42 @@ function loadParametersB(event) {
       if (data["Aircraft Category"])
         document.getElementById("aircraftCategory").value =
           data["Aircraft Category"];
-      if (data["DA/DH"]) document.getElementById("daDh").value = data["DA/DH"];
-      if (data["daDhUnit"]) {
+      if (isLoc && hasSavedOca) {
+        document.getElementById("daDh").value = data.OCA;
+      } else if (
+        !isLoc &&
+        Object.prototype.hasOwnProperty.call(data, "DA/DH")
+      ) {
+        document.getElementById("daDh").value = data["DA/DH"];
+      } else if (hasLegacyLocHeight) {
+        document.getElementById("daDh").value = "";
+        legacyLocFile = true;
+      }
+
+      const savedHeightUnit = isLoc
+        ? data.ocaUnit || (legacyLocFile ? "" : data.daDhUnit)
+        : data.daDhUnit;
+      if (savedHeightUnit) {
         const unitSelect = document.getElementById("daDhUnit");
         unitSelect.dataset.lastUnit = unitSelect.value; // Save current unit
-        unitSelect.value = data["daDhUnit"];
+        unitSelect.value = savedHeightUnit;
       }
-      if (data["Approach Type"]) {
-        document.getElementById("specificApproachType").value =
-          data["Approach Type"];
-        updateApproachFields();
-      }
+      updateApproachFields();
       if (data["ILS Category"])
         document.getElementById("ilsCategory").value = data["ILS Category"];
       if (data["APV Type"])
         document.getElementById("apvType").value = data["APV Type"];
-      if (data["LOC Sensitivity"])
+      if (Object.prototype.hasOwnProperty.call(data, "LOC Sensitivity"))
         document.getElementById("locSensitivity").value =
           data["LOC Sensitivity"];
-      showToast("Parameters successfully loaded!", "success");
+      if (legacyLocFile) {
+        showToast(
+          "This LOC file contains DA/DH, not OCA. Enter a verified OCA before calculating.",
+          "error",
+        );
+      } else {
+        showToast("Parameters successfully loaded!", "success");
+      }
     } catch (err) {
       showToast(
         "Invalid JSON file. Please upload a valid parameters file.",
@@ -572,8 +621,9 @@ function saveParametersB() {
   const gpAngle = document.getElementById("gpAngle").value || "";
   const aircraftCategory =
     document.getElementById("aircraftCategory").value || "";
-  const daDh = document.getElementById("daDh").value || "";
-  const daDhUnit = document.getElementById("daDhUnit").value || "ft";
+  const approachHeight = document.getElementById("daDh").value || "";
+  const approachHeightUnit =
+    document.getElementById("daDhUnit").value || "ft";
   const approachType =
     document.getElementById("specificApproachType").value || "";
 
@@ -584,10 +634,16 @@ function saveParametersB() {
     rdhUnit: rdhUnit,
     "GP Angle": gpAngle,
     "Aircraft Category": aircraftCategory,
-    "DA/DH": daDh,
-    daDhUnit: daDhUnit,
     "Approach Type": approachType,
   };
+
+  if (approachType === "loc") {
+    data.OCA = approachHeight;
+    data.ocaUnit = approachHeightUnit;
+  } else {
+    data["DA/DH"] = approachHeight;
+    data.daDhUnit = approachHeightUnit;
+  }
 
   // Add approach-specific parameters
   if (approachType === "ils") {
@@ -785,16 +841,15 @@ function copyToWordDocument(type) {
     const rdh = document.getElementById("rdhB").value || "N/A";
     const rdhUnit = document.getElementById("rdhUnitB").value || "N/A";
     const gpAngle = document.getElementById("gpAngle").value || "N/A";
-    const daDh = document.getElementById("daDh").value || "N/A";
-    const daDhUnit = document.getElementById("daDhUnit").value || "N/A";
+    const oca = document.getElementById("daDh").value || "N/A";
+    const ocaUnit = document.getElementById("daDhUnit").value || "N/A";
     const locSensitivity =
       document.getElementById("locSensitivity").value || "N/A";
-    const oasHeight =
-      document.getElementById("locOasHeightOutput").textContent || "N/A";
-    const oasLength =
-      document.getElementById("locOasLengthOutput").textContent || "N/A";
-    const oasWidth =
-      document.getElementById("locOasWidthOutput").textContent || "N/A";
+    const och = document.getElementById("locOchOutput").textContent || "N/A";
+    const vssDistance =
+      document.getElementById("locVssDistanceOutput").textContent || "N/A";
+    const vssWidth =
+      document.getElementById("locVssWidthOutput").textContent || "N/A";
 
     htmlContent = `
           <table border="1" style="border-collapse:collapse;width:100%;font-family:Calibri,Arial,sans-serif;font-size:11pt">
@@ -804,13 +859,11 @@ function copyToWordDocument(type) {
             <tr><td style="padding:8px;text-align:left">GP Angle (°)</td><td style="padding:8px;text-align:left">${parseFloat(
               gpAngle,
             ).toFixed(2)}</td></tr>
-            <tr><td style="padding:8px;text-align:left">DA/DH</td><td style="padding:8px;text-align:left">${daDh} ${daDhUnit}</td></tr>
-            <tr><td style="padding:8px;text-align:left">LOC Sensitivity</td><td style="padding:8px;text-align:left">${parseFloat(
-              locSensitivity,
-            ).toFixed(2)}</td></tr>
-            <tr><td style="padding:8px;text-align:left">OAS Height</td><td style="padding:8px;text-align:left">${oasHeight}</td></tr>
-            <tr><td style="padding:8px;text-align:left">OAS Length</td><td style="padding:8px;text-align:left">${oasLength}</td></tr>
-            <tr><td style="padding:8px;text-align:left">OAS Width</td><td style="padding:8px;text-align:left">${oasWidth}</td></tr>
+            <tr><td style="padding:8px;text-align:left">OCA</td><td style="padding:8px;text-align:left">${oca} ${ocaUnit}</td></tr>
+            <tr><td style="padding:8px;text-align:left">Derived OCH</td><td style="padding:8px;text-align:left">${och}</td></tr>
+            <tr><td style="padding:8px;text-align:left">VSS Distance</td><td style="padding:8px;text-align:left">${vssDistance}</td></tr>
+            <tr><td style="padding:8px;text-align:left">VSS Width</td><td style="padding:8px;text-align:left">${vssWidth}</td></tr>
+            <tr><td style="padding:8px;text-align:left">LOC Sensitivity (reference only)</td><td style="padding:8px;text-align:left">${locSensitivity}</td></tr>
           </table>`;
 
     textRows = [
@@ -818,11 +871,11 @@ function copyToWordDocument(type) {
       ["THR Elev", `${thrElev} ${thrElevUnit}`],
       ["RDH", `${rdh} ${rdhUnit}`],
       ["GP Angle (°)", `${parseFloat(gpAngle).toFixed(2)}`],
-      ["DA/DH", `${daDh} ${daDhUnit}`],
-      ["LOC Sensitivity", `${parseFloat(locSensitivity).toFixed(2)}`],
-      ["OAS Height", `${oasHeight}`],
-      ["OAS Length", `${oasLength}`],
-      ["OAS Width", `${oasWidth}`],
+      ["OCA", `${oca} ${ocaUnit}`],
+      ["Derived OCH", `${och}`],
+      ["VSS Distance", `${vssDistance}`],
+      ["VSS Width", `${vssWidth}`],
+      ["LOC Sensitivity (reference only)", `${locSensitivity}`],
     ];
   }
 
