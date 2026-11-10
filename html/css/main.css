@@ -486,11 +486,12 @@ label {
 }
 .section-group {
   overflow: hidden;
-  max-height: 1200px;
-  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  height: auto;
+  interpolate-size: allow-keywords;
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .section-group.collapsed {
-  max-height: 0;
+  height: 0;
 }
 
 /* 10.4 — Upgraded active item glow bar (replaces border-left) */
