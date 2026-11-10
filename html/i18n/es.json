@@ -188,6 +188,9 @@
     "copied": "Resultados copiados al portapapeles.",
     "copyFailed": "No se pudo copiar. Revise los permisos del navegador."
   },
+  "procedureTurn80260": {
+    "title": "Viraje de procedimiento 80°–260°"
+  },
   "procedureTurn": {
     "title": "Viraje 45°–180°",
     "subtitle": "Calcule los 21 valores de la plantilla de viraje 45°–180°.",

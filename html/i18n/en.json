@@ -188,6 +188,9 @@
     "copied": "Results copied to clipboard.",
     "copyFailed": "Copy failed. Check browser permissions."
   },
+  "procedureTurn80260": {
+    "title": "80°–260° Procedure Turn"
+  },
   "procedureTurn": {
     "title": "45°–180° Procedure Turn",
     "subtitle": "Calculate the 21 values for the 45°–180° procedure turn template.",
